@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Dashboard - Empower Vocabulary</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: #1a1a24;
+  --bg-item: #252532;
+  --accent-primary: #6366f1;
+  --accent-secondary: #8b5cf6;
+  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-color: rgba(99, 102, 241, 0.2);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-left h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.8em;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+
+.header-left p {
+  color: var(--text-secondary);
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.9em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--accent-gradient);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.stat-card .icon {
+  font-size: 2em;
+  margin-bottom: 12px;
+}
+
+.stat-card .value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.2em;
+  font-weight: 700;
+  color: var(--accent-primary);
+  margin-bottom: 4px;
+}
+
+.stat-card .label {
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
+
+/* Sections */
+.section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.section-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.3em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  padding: 10px 16px;
+  background: var(--bg-item);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.search-input {
+  padding: 10px 16px;
+  background: var(--bg-item);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9em;
+  width: 200px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+/* Students Table */
+.students-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.students-table th,
+.students-table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.students-table th {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.students-table tr:hover td {
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.student-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-avatar {
+  width: 40px;
+  height: 40px;
+  background: var(--accent-gradient);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1em;
+}
+
+.student-name {
+  font-weight: 600;
+}
+
+.student-email {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
+.progress-mini {
+  width: 100px;
+  height: 8px;
+  background: var(--bg-item);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-mini .fill {
+  height: 100%;
+  background: var(--accent-gradient);
+  border-radius: 4px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+.badge-active {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+}
+
+.badge-inactive {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--error);
+}
+
+/* Recent Activity */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--bg-item);
+  border-radius: 12px;
+}
+
+.activity-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+}
+
+.activity-details h4 {
+  font-weight: 600;
+  font-size: 0.95em;
+  margin-bottom: 2px;
+}
+
+.activity-details p {
+  font-size: 0.8em;
+  color: var(--text-muted);
+}
+
+.activity-score {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.1em;
+  color: var(--success);
+}
+
+.activity-score.medium { color: var(--warning); }
+.activity-score.low { color: var(--error); }
+
+/* Charts placeholder */
+.chart-container {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-item);
+  border-radius: 12px;
+  color: var(--text-muted);
+}
+
+/* Export button */
+.export-btn {
+  padding: 8px 16px;
+  background: var(--bg-item);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.export-btn:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--bg-item);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+}
+
+/* Access denied */
+.access-denied {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.access-denied .icon {
+  font-size: 4em;
+  margin-bottom: 20px;
+}
+
+.access-denied h2 {
+  margin-bottom: 12px;
+}
+
+.access-denied p {
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+/* Responsive */
+@media (max-width: 1000px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .students-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filters {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div id="loadingScreen" class="loading">
+    <div class="spinner"></div>
+    <p style="color: var(--text-secondary);">Loading dashboard...</p>
+  </div>
+
+  <div id="accessDenied" class="access-denied" style="display: none;">
+    <div class="icon">🔒</div>
+    <h2>Access Denied</h2>
+    <p>This dashboard is only available for teachers.</p>
+    <a href="app.html" class="btn btn-primary">Go to Practice</a>
+  </div>
+
+  <div id="mainContent" style="display: none;">
+    <div class="dashboard-header">
+      <div class="header-left">
+        <h1>👨‍🏫 Teacher Dashboard</h1>
+        <p>Monitor student progress and performance</p>
+      </div>
+      <div class="header-actions">
+        <a href="app.html" class="btn btn-secondary">📚 Practice Mode</a>
+        <button class="btn btn-secondary" onclick="logout()">🚪 Logout</button>
+      </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="icon">👥</div>
+        <div class="value" id="totalStudents">0</div>
+        <div class="label">Total Students</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">📊</div>
+        <div class="value" id="totalSessions">0</div>
+        <div class="label">Total Sessions</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">✅</div>
+        <div class="value" id="activeToday">0</div>
+        <div class="label">Active Today</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">📈</div>
+        <div class="value" id="avgScore">0%</div>
+        <div class="label">Avg. Score</div>
+      </div>
+    </div>
+
+    <!-- Students List -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">👥 Students</h2>
+        <div class="filters">
+          <input type="text" class="search-input" placeholder="🔍 Search students..." id="searchInput" oninput="filterStudents()">
+          <select class="filter-select" id="universityFilter" onchange="filterStudents()">
+            <option value="">All Universities</option>
+          </select>
+          <button class="export-btn" onclick="exportToCSV()">📥 Export CSV</button>
+        </div>
+      </div>
+      
+      <table class="students-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>University</th>
+            <th>Sessions</th>
+            <th>Words Studied</th>
+            <th>Avg. Score</th>
+            <th>Best Streak</th>
+            <th>Last Active</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="studentsTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">🕐 Recent Activity</h2>
+        <select class="filter-select" id="activityFilter" onchange="loadRecentActivity()">
+          <option value="all">All Activities</option>
+          <option value="choice">Multiple Choice</option>
+          <option value="match">Match Game</option>
+          <option value="spelling">Spelling</option>
+        </select>
+      </div>
+      <div class="activity-list" id="activityList">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Level Distribution -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">📊 Level Distribution</h2>
+      </div>
+      <div class="stats-grid" style="margin-bottom: 0;">
+        <div class="stat-card" id="levelA2">
+          <div class="value">0</div>
+          <div class="label">A2 Sessions</div>
+        </div>
+        <div class="stat-card" id="levelB1">
+          <div class="value">0</div>
+          <div class="label">B1 Sessions</div>
+        </div>
+        <div class="stat-card" id="levelB1plus">
+          <div class="value">0</div>
+          <div class="label">B1+ Sessions</div>
+        </div>
+        <div class="stat-card" id="levelB2">
+          <div class="value">0</div>
+          <div class="label">B2 Sessions</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
+  authDomain: "empower-vocabulary-practice.firebaseapp.com",
+  projectId: "empower-vocabulary-practice",
+  storageBucket: "empower-vocabulary-practice.firebasestorage.app",
+  messagingSenderId: "136270199832",
+  appId: "1:136270199832:web:174222066ef1cbdc8f576d",
+  measurementId: "G-1BBXBVEP5C"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let currentUser = null;
+let userData = null;
+let allStudents = [];
+let allSessions = [];
+
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    currentUser = user;
+    await checkAccess();
+  } else {
+    window.location.href = 'index.html';
+  }
+});
+
+async function checkAccess() {
+  try {
+    const doc = await db.collection('users').doc(currentUser.uid).get();
+    userData = doc.data();
+    
+    if (userData.role !== 'teacher') {
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('accessDenied').style.display = 'block';
+      return;
+    }
+    
+    await loadDashboard();
+    
+  } catch (error) {
+    console.error('Error checking access:', error);
+  }
+}
+
+async function loadDashboard() {
+  try {
+    // Load all students
+    const studentsSnap = await db.collection('users')
+      .where('role', '==', 'student')
+      .get();
+    
+    allStudents = [];
+    studentsSnap.forEach(doc => allStudents.push({ id: doc.id, ...doc.data() }));
+    
+    // Load all sessions
+    const sessionsSnap = await db.collection('sessions')
+      .orderBy('timestamp', 'desc')
+      .limit(500)
+      .get();
+    
+    allSessions = [];
+    sessionsSnap.forEach(doc => allSessions.push({ id: doc.id, ...doc.data() }));
+    
+    // Populate university filter
+    populateUniversityFilter();
+    
+    // Update UI
+    updateStats();
+    renderStudentsTable();
+    loadRecentActivity();
+    updateLevelDistribution();
+    
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    
+  } catch (error) {
+    console.error('Error loading dashboard:', error);
+  }
+}
+
+function populateUniversityFilter() {
+  const universities = [...new Set(allStudents.map(s => s.university).filter(Boolean))];
+  const select = document.getElementById('universityFilter');
+  
+  universities.forEach(uni => {
+    const option = document.createElement('option');
+    option.value = uni;
+    option.textContent = uni;
+    select.appendChild(option);
+  });
+}
+
+function updateStats() {
+  document.getElementById('totalStudents').textContent = allStudents.length;
+  document.getElementById('totalSessions').textContent = allSessions.length;
+  
+  // Active today
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const activeToday = new Set(
+    allSessions
+      .filter(s => s.timestamp?.toDate && s.timestamp.toDate() >= today)
+      .map(s => s.userId)
+  ).size;
+  document.getElementById('activeToday').textContent = activeToday;
+  
+  // Average score
+  if (allSessions.length > 0) {
+    const avgScore = Math.round(
+      allSessions.reduce((sum, s) => sum + (s.percentage || 0), 0) / allSessions.length
+    );
+    document.getElementById('avgScore').textContent = avgScore + '%';
+  }
+}
+
+function renderStudentsTable() {
+  const tbody = document.getElementById('studentsTableBody');
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+  const universityFilter = document.getElementById('universityFilter').value;
+  
+  let filtered = allStudents;
+  
+  if (searchTerm) {
+    filtered = filtered.filter(s => 
+      s.name?.toLowerCase().includes(searchTerm) ||
+      s.email?.toLowerCase().includes(searchTerm)
+    );
+  }
+  
+  if (universityFilter) {
+    filtered = filtered.filter(s => s.university === universityFilter);
+  }
+  
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted);">
+          No students found
+        </td>
+      </tr>
+    `;
+    return;
+  }
+  
+  tbody.innerHTML = filtered.map(student => {
+    const studentSessions = allSessions.filter(s => s.userId === student.id);
+    const avgScore = studentSessions.length > 0
+      ? Math.round(studentSessions.reduce((sum, s) => sum + s.percentage, 0) / studentSessions.length)
+      : 0;
+    
+    const lastActive = student.lastLogin?.toDate ? student.lastLogin.toDate() : null;
+    const lastActiveStr = lastActive 
+      ? lastActive.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      : 'Never';
+    
+    const isActive = lastActive && (Date.now() - lastActive.getTime()) < 7 * 24 * 60 * 60 * 1000;
+    
+    return `
+      <tr>
+        <td>
+          <div class="student-info">
+            <div class="student-avatar">${(student.name || 'U').charAt(0).toUpperCase()}</div>
+            <div>
+              <div class="student-name">${student.name || 'Unknown'}</div>
+              <div class="student-email">${student.email || ''}</div>
+            </div>
+          </div>
+        </td>
+        <td>${student.university || '-'}</td>
+        <td>${student.stats?.totalSessions || 0}</td>
+        <td>${student.stats?.totalWordsStudied || 0}</td>
+        <td>
+          <div class="progress-mini">
+            <div class="fill" style="width: ${avgScore}%"></div>
+          </div>
+          <span style="font-size: 0.85em; color: var(--text-muted)">${avgScore}%</span>
+        </td>
+        <td>🔥 ${student.stats?.bestStreak || 0}</td>
+        <td>${lastActiveStr}</td>
+        <td>
+          <span class="badge ${isActive ? 'badge-active' : 'badge-inactive'}">
+            ${isActive ? 'Active' : 'Inactive'}
+          </span>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function filterStudents() {
+  renderStudentsTable();
+}
+
+function loadRecentActivity() {
+  const container = document.getElementById('activityList');
+  const filter = document.getElementById('activityFilter').value;
+  
+  let filtered = allSessions;
+  if (filter !== 'all') {
+    filtered = filtered.filter(s => s.activity === filter);
+  }
+  
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <p>No activity found</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const activityIcons = {
+    choice: '✓',
+    match: '🔗',
+    spelling: '✍️'
+  };
+  
+  const activityNames = {
+    choice: 'Multiple Choice',
+    match: 'Match Game',
+    spelling: 'Spelling'
+  };
+  
+  container.innerHTML = filtered.slice(0, 30).map(session => {
+    const date = session.timestamp?.toDate ? session.timestamp.toDate() : new Date();
+    const timeAgo = getTimeAgo(date);
+    
+    let scoreClass = '';
+    if (session.percentage < 50) scoreClass = 'low';
+    else if (session.percentage < 70) scoreClass = 'medium';
+    
+    return `
+      <div class="activity-item">
+        <div class="activity-info">
+          <div class="activity-icon">${activityIcons[session.activity] || '📝'}</div>
+          <div class="activity-details">
+            <h4>${session.userName || 'Student'}</h4>
+            <p>${activityNames[session.activity] || session.activity} • ${session.level} • ${timeAgo}</p>
+          </div>
+        </div>
+        <div class="activity-score ${scoreClass}">${session.percentage}%</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function getTimeAgo(date) {
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  
+  if (seconds < 60) return 'Just now';
+  if (seconds < 3600) return Math.floor(seconds / 60) + ' min ago';
+  if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
+  if (seconds < 604800) return Math.floor(seconds / 86400) + ' days ago';
+  
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function updateLevelDistribution() {
+  const levels = { A2: 0, B1: 0, 'B1+': 0, B2: 0 };
+  
+  allSessions.forEach(s => {
+    if (levels.hasOwnProperty(s.level)) {
+      levels[s.level]++;
+    }
+  });
+  
+  document.querySelector('#levelA2 .value').textContent = levels.A2;
+  document.querySelector('#levelB1 .value').textContent = levels.B1;
+  document.querySelector('#levelB1plus .value').textContent = levels['B1+'];
+  document.querySelector('#levelB2 .value').textContent = levels.B2;
+}
+
+function exportToCSV() {
+  const headers = ['Name', 'Email', 'University', 'Sessions', 'Words Studied', 'Best Streak', 'Last Login'];
+  
+  const rows = allStudents.map(s => [
+    s.name || '',
+    s.email || '',
+    s.university || '',
+    s.stats?.totalSessions || 0,
+    s.stats?.totalWordsStudied || 0,
+    s.stats?.bestStreak || 0,
+    s.lastLogin?.toDate ? s.lastLogin.toDate().toISOString() : ''
+  ]);
+  
+  const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+  
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `students_export_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function logout() {
+  await auth.signOut();
+  window.location.href = 'index.html';
+}
+</script>
+
+</body>
+</html>
