@@ -1,0 +1,60 @@
+import json
+import re
+
+with open('datasets.json', 'r', encoding='utf-8') as f:
+    empower = json.load(f)
+with open('gateway_dataset.json', 'r', encoding='utf-8') as f:
+    gateway = json.load(f)
+
+# Extended map including irregular and regular verbs
+past_tense_map = {
+    'go': ['went'], 'come': ['came'], 'see': ['saw'], 'write': ['wrote'], 
+    'take': ['took'], 'make': ['made'], 'give': ['gave'], 'find': ['found'],
+    'know': ['knew'], 'think': ['thought'], 'say': ['said'], 'get': ['got'],
+    'have': ['had'], 'do': ['did'], 'be': ['was', 'were'], 'break': ['broke'],
+    'begin': ['began'], 'understand': ['understood'], 'remember': ['remembered'],
+    'leave': ['left'], 'tell': ['told'], 'show': ['showed', 'shown'], 'ask': ['asked'],
+    'speak': ['spoke', 'spoken'], 'try': ['tried'], 'run': ['ran'], 'keep': ['kept'],
+    'stand': ['stood'], 'sit': ['sat'], 'open': ['opened'], 'close': ['closed'],
+    'buy': ['bought'], 'sell': ['sold'], 'meet': ['met'], 'spend': ['spent'],
+    'bring': ['brought'], 'teach': ['taught'], 'watch': ['watched'], 'listen': ['listened'],
+    'read': ['read'], 'move': ['moved'], 'feel': ['felt'], 'hear': ['heard'],
+    'lose': ['lost'], 'win': ['won'], 'choose': ['chose', 'chosen'], 'mean': ['meant'],
+    'pay': ['paid'], 'eat': ['ate', 'eaten'], 'drink': ['drank', 'drunk'], 'sleep': ['slept'],
+    'wake': ['woke', 'woken'], 'grow': ['grew', 'grown'], 'sing': ['sang', 'sung'], 
+    'dance': ['danced'], 'laugh': ['laughed'], 'smile': ['smiled'], 'die': ['died'], 
+    'kill': ['killed'], 'hurt': ['hurt'], 'save': ['saved'], 'help': ['helped'], 
+    'fight': ['fought'], 'worry': ['worried'], 'hope': ['hoped'], 'fear': ['feared'], 
+    'follow': ['followed'], 'lead': ['led'], 'explain': ['explained'], 'describe': ['described'], 
+    'build': ['built'], 'draw': ['drew', 'drawn'], 'cry': ['cried'], 'learn': ['learned', 'learnt'], 
+    'change': ['changed'], 'turn': ['turned'], 'continue': ['continued'], 'pass': ['passed'], 
+    'play': ['played'], 'walk': ['walked'], 'work': ['worked'], 'talk': ['talked'], 
+    'wait': ['waited'], 'call': ['called'], 'answer': ['answered'], 'become': ['became'], 
+    'seem': ['seemed'], 'appear': ['appeared'], 'sound': ['sounded'], 'look': ['looked'], 
+    'start': ['started'], 'stop': ['stopped'], 'reach': ['reached'], 'return': ['returned'], 
+    'arrive': ['arrived'], 'mention': ['mentioned'], 'offer': ['offered'], 'point': ['pointed'], 
+    'prepare': ['prepared'], 'push': ['pushed'], 'suggest': ['suggested'], 'suppose': ['supposed'], 
+    'use': ['used'], 'want': ['wanted'], 'wear': ['wore', 'worn'], 'refuse': ['refused'], 
+    'steal': ['stole', 'stolen'], 'cut': ['cut'], 'spread': ['spread'], 'let': ['let'], 
+    'order': ['ordered'], 'include': ['included'], 'disappear': ['disappeared'],
+    'raise': ['raised'], 'ignore': ['ignored'], 'connect': ['connected'], 'consider': ['considered'],
+    'cover': ['covered'], 'deliver': ['delivered'], 'depend': ['depended'], 'develop': ['developed'],
+    'discover': ['discovered'], 'divide': ['divided'], 'encourage': ['encouraged'], 
+    'establish': ['established'], 'experience': ['experienced'], 'focus': ['focused'],
+    'gain': ['gained'], 'gather': ['gathered'], 'handle': ['handled'], 'identify': ['identified'],
+    'improve': ['improved'], 'increase': ['increased'], 'involve': ['involved'], 'join': ['joined'],
+    'maintain': ['maintained'], 'manage': ['managed'], 'measure': ['measured'], 'miss': ['missed'],
+    'need': ['needed'], 'obtain': ['obtained'], 'perform': ['performed'], 'plan': ['planned'],
+    'prefer': ['preferred'], 'present': ['presented'], 'prevent': ['prevented'], 'produce': ['produced'],
+    'protect': ['protected'], 'provide': ['provided'], 'publish': ['published'], 'pull': ['pulled'],
+    'receive': ['received'], 'recognize': ['recognized'], 'recommend': ['recommended'], 
+    'record': ['recorded'], 'reduce': ['reduced'], 'reflect': ['reflected'], 'regard': ['regarded'],
+    'release': ['released'], 'rely': ['relied'], 'remain': ['remained'], 'remind': ['reminded'],
+    'remove': ['removed'], 'rent': ['rented'], 'repair': ['repaired'], 'repeat': ['repeated'],
+    'replace': ['replaced'], 'report': ['reported'], 'represent': ['represented'], 
+    'require': ['required'], 'respond': ['responded'], 'restore': ['restored'], 'result': ['resulted'],
+    'reveal': ['revealed'], 'rise': ['rose', 'risen'], 'roll': ['rolled'], 'rush': ['rushed'],
+    'satisfy': ['satisfied'], 'search': ['searched'], 'secure': ['secured'], 'seek': ['sought'],
+    'select': ['selected'], 'send': ['sent'], 'separate': ['separated'], 'serve': ['served'],
+    'set': ['set'], 'settle': ['settled'], 'share': ['shared'], 'shift': ['shifted'],
+    'shoot': ['shot'], 'shut'

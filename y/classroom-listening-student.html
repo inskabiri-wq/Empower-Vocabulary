@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listening Exam | Empower Lab</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/brand.css">
+<link rel="stylesheet" href="classroom/css/styles.css">
+<link rel="stylesheet" href="classroom/css/listening.css">
+</head>
+<body class="listening">
+
+<div class="listening-shell">
+
+  <div class="listening-top">
+    <div class="listening-brand">
+      <span class="logo">🎧</span>
+      <span>Listening Exam</span>
+    </div>
+    <div id="myIdStrip" class="listening-id-strip" style="display:none; margin:0;"></div>
+  </div>
+
+  <!-- ════════ Join ════════ -->
+  <div id="view-join" style="display:none;">
+    <div class="listening-pane" style="max-width: 420px; margin: 40px auto;">
+      <h2 style="margin: 0 0 6px;">Join the exam</h2>
+      <p style="color: var(--l-text-mut); margin: 0 0 18px;">Get the code from your teacher.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div>
+          <label style="font-size: 0.78em; font-weight: 700; letter-spacing: 0.08em;
+                       text-transform: uppercase; color: var(--l-text-mut); display:block; margin-bottom: 4px;"
+                 for="codeInput">Room code</label>
+          <input id="codeInput" type="text" maxlength="4"
+                 style="width: 100%; background: var(--l-surface-2);
+                        border: 1.5px solid var(--l-border); color: var(--l-text);
+                        padding: 14px 16px; border-radius: 10px; font-family: JetBrains Mono;
+                        font-size: 1.4em; letter-spacing: 0.2em; text-align: center;
+                        text-transform: uppercase;"
+                 placeholder="ABCD">
+        </div>
+        <div>
+          <label style="font-size: 0.78em; font-weight: 700; letter-spacing: 0.08em;
+                       text-transform: uppercase; color: var(--l-text-mut); display:block; margin-bottom: 4px;"
+                 for="nameInput">Your name</label>
+          <input id="nameInput" type="text" maxlength="24"
+                 style="width: 100%; background: var(--l-surface-2);
+                        border: 1.5px solid var(--l-border); color: var(--l-text);
+                        padding: 12px 14px; border-radius: 10px; font-family: inherit;
+                        font-size: 1em;"
+                 placeholder="e.g. Maya">
+        </div>
+        <button type="button" id="joinBtn" class="listening-btn primary" style="width: 100%;">
+          🎧 Join exam
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ Waiting ════════ -->
+  <div id="view-waiting" style="display:none;">
+    <div class="listening-pane" style="max-width: 420px; margin: 40px auto; text-align:center;">
+      <div style="font-size:3em; margin-bottom: 14px;">🎧</div>
+      <h2 style="margin:0 0 8px;">Ready to listen</h2>
+      <p style="color: var(--l-text-mut);">
+        Your teacher will play the audio in class. You'll see the questions on this screen.
+      </p>
+    </div>
+  </div>
+
+  <!-- ════════ Exam ════════ -->
+  <div id="view-exam" style="display:none;">
+    <div class="listening-exam-pane">
+
+      <div class="exam-head">
+        <div class="exam-head-row">
+          <h2 id="examTitle" style="margin:0;">Exam</h2>
+          <span class="listening-chip" id="examTimer" style="display:none;">⏱ <span id="examTimerVal">--:--</span></span>
+        </div>
+        <!-- Audio status hint — live string from session.audioStatus -->
+        <div class="audio-status-row" id="audioStatusRow">
+          <span class="audio-status-dot" id="audioStatusDot"></span>
+          <span id="audioStatusText">Listen for your teacher to start the audio.</span>
+        </div>
+        <div class="exam-progress">
+          <span id="answeredCount">0</span> / <span id="totalCount">0</span> answered
+        </div>
+      </div>
+
+      <div id="examSections" class="exam-sections"></div>
+
+      <div class="exam-footer">
+        <button type="button" id="submitBtn" class="listening-btn primary" style="width: 100%;">
+          📤 Submit all answers
+        </button>
+        <p style="color: var(--l-text-mut); font-size: 0.78em; margin: 10px 0 0; text-align: center;">
+          You can change any answer before you submit. After submit, you'll see your score — but not which questions you got right or wrong, until your teacher reveals them.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ Submitted ════════ -->
+  <div id="view-submitted" style="display:none;">
+    <div class="listening-pane" style="max-width: 480px; margin: 40px auto; text-align:center;">
+      <div style="font-size:3.6em; margin-bottom: 8px;">📤</div>
+      <h2 style="margin: 0 0 6px;">Submitted</h2>
+      <p style="color: var(--l-text-mut); margin: 0 0 22px;">
+        Your answers are locked in. Good listening!
+      </p>
+
+      <div class="score-card">
+        <div class="score-label">Your score</div>
+        <div class="score-value"><span id="finalScore">0</span> <span class="score-of">/ <span id="finalTotal">0</span></span></div>
+        <div class="score-percent" id="finalPercent">—</div>
+      </div>
+
+      <p style="color: var(--l-text-mut); margin: 22px 0 0; font-size: 0.9em;">
+        Wait for your teacher to release the per-question breakdown.<br>
+        Discuss your answers with classmates in the meantime.
+      </p>
+    </div>
+  </div>
+
+  <!-- ════════ Revealed ════════ -->
+  <div id="view-revealed" style="display:none;">
+    <div class="listening-pane" style="max-width: 720px; margin: 30px auto;">
+      <div style="text-align:center; margin-bottom: 22px;">
+        <div style="font-size:2.6em; margin-bottom: 6px;">🔓</div>
+        <h2 style="margin: 0 0 6px;">Answers revealed</h2>
+        <div class="score-card" style="display:inline-flex; margin-top: 14px;">
+          <div>
+            <div class="score-label">Your score</div>
+            <div class="score-value"><span id="revealScore">0</span> <span class="score-of">/ <span id="revealTotal">0</span></span></div>
+            <div class="score-percent" id="revealPercent">—</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="color: var(--l-text-mut); font-size: 0.85em; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin: 18px 0 12px;">
+        Question-by-question
+      </h3>
+      <div id="revealList" class="reveal-list"></div>
+
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:24px; flex-wrap:wrap;">
+        <a href="classroom-student.html" class="listening-btn" style="text-decoration:none;">➕ Join another</a>
+        <a href="student-dashboard.html" class="listening-btn primary" style="text-decoration:none;">🏠 Back to dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ Done ════════ -->
+  <div id="view-done" style="display:none;">
+    <div class="listening-pane" style="max-width: 420px; margin: 40px auto; text-align:center;">
+      <div style="font-size:3em; margin-bottom: 14px;">🏁</div>
+      <h2 style="margin:0 0 8px;">Exam closed</h2>
+      <p style="color: var(--l-text-mut);">
+        Your teacher ended the session before revealing the answers. Ask them for your breakdown after class.
+      </p>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:24px; flex-wrap:wrap;">
+        <a href="classroom-student.html" class="listening-btn" style="text-decoration:none;">➕ Join another</a>
+        <a href="student-dashboard.html" class="listening-btn primary" style="text-decoration:none;">🏠 Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Themed confirm modal -->
+<div id="listeningConfirm" class="modal-overlay" style="display:none;">
+  <div class="modal-content" style="max-width: 380px; border-color: rgba(56, 189, 248, 0.45) !important;">
+    <h3 class="modal-title" id="listeningConfirmTitle">Submit?</h3>
+    <p class="modal-message" id="listeningConfirmMsg">Once you submit, you cannot change your answers.</p>
+    <div class="modal-buttons">
+      <button type="button" class="modal-btn modal-btn-cancel" id="listeningConfirmCancel">Cancel</button>
+      <button type="button" class="modal-btn modal-btn-confirm" id="listeningConfirmOk">Submit</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="classroom/js/refresh-guard.js"></script>
+<script src="classroom/js/listening-student.js"></script>
+
+</body>
+</html>

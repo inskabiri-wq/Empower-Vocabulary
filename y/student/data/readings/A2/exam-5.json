@@ -1,0 +1,423 @@
+{
+  "id": "a2-r5",
+  "level": "A2",
+  "title": "A2 Reading 5 — Garlic",
+  "subtitle": "One passage · Headings, MCQ, vocab, reference",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Garlic",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Some people can't <strong>stand</strong> garlic. \"That smell! It's too strong. And it doesn't go away! There is nothing worse than garlic,\" they say. Other people say garlic tastes great and it's good for you, too. Chester Aeron grows eighty-seven kinds of garlic on his farm. He wrote a book called \"Garlic is Life.\" It seems that people either love garlic or hate it.</p><p class=\"rd-para\" data-para=\"2\">Garlic has a long history. The first wild garlic <strong>probably</strong> grew somewhere in western Russia. People in that area found it and learned to use it. Later, travellers carried garlic with them to China, India, Europe and North Africa. Farmers began planting it over 5,000 years ago. They grew garlic to eat and used it as medicine when <strong>they</strong> were sick. They also grew it for use in religious ceremonies.</p><p class=\"rd-para\" data-para=\"3\">People in many cultures shared similar ideas about garlic. For example, they made their slaves eat it. They believed garlic made it possible for slaves to work harder and longer. In Greece, the athletes of the first Olympic Games ate garlic. <strong>They</strong> wanted to become stronger and faster, and they believed that garlic would help. Soldiers in the Roman army ate garlic, too. They ate it to help them fight better. But garlic wasn't only for slaves, athletes, and soldiers. In some places, garlic was called \"food for lovers.\"</p><p class=\"rd-para\" data-para=\"4\">People had even more uses for garlic. They added it to other foods because it tasted good. In China, people also used garlic to keep meat fresh. The Chinese were probably the first people to write about the uses of garlic. They wrote about <strong>it</strong> 4,000 years ago.</p><p class=\"rd-para\" data-para=\"5\">People in many cultures ate garlic when they got sick. It was thought to make a cold or fever go away. It was also supposed to help with different kinds of pain — for example, when someone's head, ear, or muscles hurt.</p><p class=\"rd-para\" data-para=\"6\">Is eating garlic actually good for you, or should we just laugh at these old ideas? The truth is, doctors today are telling <strong>their</strong> patients, \"eat garlic!\" Recent <strong>research</strong> shows that garlic is good for your heart. It turns out that garlic helps people stay healthy.</p><p class=\"rd-para\" data-para=\"7\">However, we can't <strong>accept</strong> every idea about garlic from the past. In many cultures, people <strong>trusted</strong> garlic to protect <strong>them</strong> from all kinds of bad luck. Garlic is great, but it can't do that! Also, don't tie garlic around your neck. It won't keep vampires away, as people used to think. It would probably just keep your friends away.</p>",
+      "sections": [
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part A",
+          "instructions": "Match the paragraphs with the main ideas. There is ONE EXTRA main idea.",
+          "options": [
+            {
+              "id": "A",
+              "text": "Eating garlic to become physically better"
+            },
+            {
+              "id": "B",
+              "text": "Results of current scientific studies on benefits of garlic"
+            },
+            {
+              "id": "C",
+              "text": "Old ideas about using garlic to stop misfortune"
+            },
+            {
+              "id": "D",
+              "text": "Different feelings of people about garlic"
+            },
+            {
+              "id": "E",
+              "text": "The harms of eating too much garlic"
+            },
+            {
+              "id": "F",
+              "text": "Eating garlic to become healthy again"
+            },
+            {
+              "id": "G",
+              "text": "Origins of garlic"
+            },
+            {
+              "id": "H",
+              "text": "Using garlic while cooking"
+            }
+          ],
+          "items": [
+            {
+              "id": "p1",
+              "label": "Paragraph 1",
+              "answer": "D"
+            },
+            {
+              "id": "p2",
+              "label": "Paragraph 2",
+              "answer": "G"
+            },
+            {
+              "id": "p3",
+              "label": "Paragraph 3",
+              "answer": "A"
+            },
+            {
+              "id": "p4",
+              "label": "Paragraph 4",
+              "answer": "H"
+            },
+            {
+              "id": "p5",
+              "label": "Paragraph 5",
+              "answer": "F"
+            },
+            {
+              "id": "p6",
+              "label": "Paragraph 6",
+              "answer": "B"
+            },
+            {
+              "id": "p7",
+              "label": "Paragraph 7",
+              "answer": "C"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Answer the following questions according to the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "We can understand from paragraph 1 that __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "most people love garlic but only a few people hate it"
+                },
+                {
+                  "id": "b",
+                  "text": "there are many types of garlic"
+                },
+                {
+                  "id": "c",
+                  "text": "Chester Aeron wrote a book to tell people why he hates garlic"
+                },
+                {
+                  "id": "d",
+                  "text": "some people hate garlic because it makes them sick"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "Which one is FALSE according to paragraph 2?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "The history of garlic goes back to a very long time ago."
+                },
+                {
+                  "id": "b",
+                  "text": "People in Russia first discovered garlic."
+                },
+                {
+                  "id": "c",
+                  "text": "Some people on journey took garlic from Russia to many different countries."
+                },
+                {
+                  "id": "d",
+                  "text": "People used garlic only to eat it after they started planting it."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m3",
+              "question": "Which one is FALSE according to paragraph 3?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Slaves ate garlic because people thought garlic made them stronger."
+                },
+                {
+                  "id": "b",
+                  "text": "Athletes ate garlic because they thought garlic made them faster."
+                },
+                {
+                  "id": "c",
+                  "text": "Soldiers ate garlic because they thought garlic made them a better soldier."
+                },
+                {
+                  "id": "d",
+                  "text": "Lovers ate garlic because they thought garlic made them smell better."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m4",
+              "question": "We can understand from paragraph 4 that the Chinese __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "first started eating garlic 5,000 years ago"
+                },
+                {
+                  "id": "b",
+                  "text": "never used garlic when they cooked their meals"
+                },
+                {
+                  "id": "c",
+                  "text": "first mentioned the uses of garlic on paper"
+                },
+                {
+                  "id": "d",
+                  "text": "ate meat with garlic because it tasted good"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m5",
+              "question": "We can understand from paragraphs 5 and 6 that garlic is good for your __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "psychology"
+                },
+                {
+                  "id": "b",
+                  "text": "body"
+                },
+                {
+                  "id": "c",
+                  "text": "budget"
+                },
+                {
+                  "id": "d",
+                  "text": "diet"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m6",
+              "question": "According to paragraph 7, people __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "should be careful of the old beliefs about the magical powers of garlic"
+                },
+                {
+                  "id": "b",
+                  "text": "believed in the past that garlic brought bad luck, so they never used it in their meals"
+                },
+                {
+                  "id": "c",
+                  "text": "should put garlic on their neck because it smells very good"
+                },
+                {
+                  "id": "d",
+                  "text": "can use garlic to fight against vampires because vampires hate the smell of garlic"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m7",
+              "question": "The purpose of the text is __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "to warn people about the dangers of garlic"
+                },
+                {
+                  "id": "b",
+                  "text": "to persuade people to use garlic in their food"
+                },
+                {
+                  "id": "c",
+                  "text": "to inform people about the history of garlic and its different uses for food and health"
+                },
+                {
+                  "id": "d",
+                  "text": "to educate people about the best ways of using garlic in the kitchen"
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part C (vocabulary)",
+          "instructions": "Find the words in the passage that match the meanings.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "Find the word in paragraph 1 which means \"to tolerate, to bear\":",
+              "answer": "stand"
+            },
+            {
+              "id": "sa2",
+              "definition": "Find the word in paragraph 2 which means \"possibly, perhaps\":",
+              "answer": "probably"
+            },
+            {
+              "id": "sa3",
+              "definition": "Find the word in paragraph 6 which means \"study, inquiry, experiment\":",
+              "answer": "research"
+            },
+            {
+              "id": "sa4",
+              "definition": "Find the word in paragraph 7 which means \"to agree, to approve\":",
+              "answer": "accept"
+            },
+            {
+              "id": "sa5",
+              "definition": "Find the word in paragraph 7 which means \"to believe, to depend on\":",
+              "answer": "trusted",
+              "acceptable": [
+                "trusted",
+                "trust"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part D (reference)",
+          "instructions": "Circle the best option for what the words refer to.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "The word \"them\" (paragraph 2) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "farmers"
+                },
+                {
+                  "id": "b",
+                  "text": "travelers"
+                },
+                {
+                  "id": "c",
+                  "text": "Russian people"
+                },
+                {
+                  "id": "d",
+                  "text": "Chinese people"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "The word \"They\" (paragraph 3) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "slaves"
+                },
+                {
+                  "id": "b",
+                  "text": "athletes"
+                },
+                {
+                  "id": "c",
+                  "text": "lovers"
+                },
+                {
+                  "id": "d",
+                  "text": "soldiers"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m3",
+              "question": "The word \"it\" (paragraph 4) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "garlic"
+                },
+                {
+                  "id": "b",
+                  "text": "meat"
+                },
+                {
+                  "id": "c",
+                  "text": "use"
+                },
+                {
+                  "id": "d",
+                  "text": "food"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m4",
+              "question": "The word \"their\" (paragraph 6) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "people's"
+                },
+                {
+                  "id": "b",
+                  "text": "doctors'"
+                },
+                {
+                  "id": "c",
+                  "text": "doctors"
+                },
+                {
+                  "id": "d",
+                  "text": "people"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m5",
+              "question": "The word \"them\" (paragraph 7) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "people"
+                },
+                {
+                  "id": "b",
+                  "text": "vampires"
+                },
+                {
+                  "id": "c",
+                  "text": "cultures"
+                },
+                {
+                  "id": "d",
+                  "text": "friends"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

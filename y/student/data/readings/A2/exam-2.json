@@ -1,0 +1,523 @@
+{
+  "id": "a2-r2",
+  "level": "A2",
+  "title": "A2 Reading 2 — Immigrant Stories",
+  "subtitle": "One passage · Sentence-insert, matching, MCQ",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Immigrant Stories",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Immigrants in London. Why are they in London? Are they happy to live here? Do they plan to stay? Read their stories and find the answers!</p><p class=\"rd-para\" data-para=\"2\">Story 1: Sun Yun Wing</p><p class=\"rd-para\" data-para=\"3\">My name is Sun Yun Wing. I am from a small town near Hong Kong. In 1960, there weren't many jobs there. <span class=\"rd-gap\" data-gap=\"1\"></span> So, I came to London. I was 20 years old.</p><p class=\"rd-para\" data-para=\"4\">There were many problems at first. <span class=\"rd-gap\" data-gap=\"2\"></span> I was lonely because my family wasn't with me, but there were good things about living in London. There were many jobs with good pay.</p><p class=\"rd-para\" data-para=\"5\">My first job was in a Chinese restaurant. Now, I have my own restaurant. I work there with my wife. She is also Chinese. Her English is good. She talks to the customers. I am the chef. We work very hard.</p><p class=\"rd-para\" data-para=\"6\">We have three children. They have good jobs. They do not want to go and live in Hong Kong. My wife and I don't know anyone in Hong Kong now. Our life is here. This is our home.</p><p class=\"rd-para\" data-para=\"7\">Story 2: Bashar Ali</p><p class=\"rd-para\" data-para=\"8\">My name is Bashar Ali. I am from a small town in Bangladesh. I came to England in 1980 with my wife and two small children. I was 25 years old. There were many jobs in England. It was the best way to support my family.</p><p class=\"rd-para\" data-para=\"9\">My first job in England was in a factory. <span class=\"rd-gap\" data-gap=\"3\"></span> There were classes in English and business. I was happy to be a student. There were no opportunities for me to go to school in my hometown in Bangladesh.</p><p class=\"rd-para\" data-para=\"10\">Now, I have my own business. <span class=\"rd-gap\" data-gap=\"4\"></span> My business is very successful. I have several clothing stores.</p><p class=\"rd-para\" data-para=\"11\">I try to help my people. In London, I hold English classes at my stores for the Bangladeshi community. I send money to my relatives and my town in Bangladesh. I support a children's language school there.</p><p class=\"rd-para\" data-para=\"12\">I have good children. They work in my company. They keep Bangladeshi ways in their families. They have success in England, but they are still Bangladeshi in their hearts.</p><p class=\"rd-para\" data-para=\"13\">Story 3: Apara Asuquo</p><p class=\"rd-para\" data-para=\"14\">My name is Apara Asuquo. I am from Nigeria. I came to London in 2003 with my husband. I was 45 years old. My husband works for an international bank here in London. There was an office of the same bank in Nigeria. <span class=\"rd-gap\" data-gap=\"5\"></span></p><p class=\"rd-para\" data-para=\"15\">I was a businesswoman in my country. Here, there were no good jobs for me. After two years, my husband said, \"This is a different country. This is your new life. <span class=\"rd-gap\" data-gap=\"6\"></span>\" Now, I am an office worker. The pay isn't very good, but I like the people.</p><p class=\"rd-para\" data-para=\"16\">Our children go to university in England. My husband and I plan to return to Nigeria, but our children plan to stay here. There are many opportunities for them here. It is always sad to say goodbye, but for my husband and me, Nigeria is our home.</p>",
+      "sections": [
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part A",
+          "instructions": "Read the article and complete the gaps with the correct sentence below. There is ONE EXTRA sentence.",
+          "options": [
+            {
+              "id": "a",
+              "text": "You need to start from the beginning again."
+            },
+            {
+              "id": "b",
+              "text": "At night, I went to school."
+            },
+            {
+              "id": "c",
+              "text": "British people are always welcoming and friendly."
+            },
+            {
+              "id": "d",
+              "text": "We came here for his career."
+            },
+            {
+              "id": "e",
+              "text": "There were many job opportunities in England."
+            },
+            {
+              "id": "f",
+              "text": "I sell clothing from Bangladesh."
+            },
+            {
+              "id": "g",
+              "text": "The English language was hard for me, and the weather was cold and rainy."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "e"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "g"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "b"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "f"
+            },
+            {
+              "id": "5",
+              "label": "Gap 5",
+              "answer": "d"
+            },
+            {
+              "id": "6",
+              "label": "Gap 6",
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Match the information to the people. There is an EXTRA item.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Apara Asuquo:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "\"Home is not the place you were born; it is where you live.\""
+                },
+                {
+                  "id": "b",
+                  "text": "\"Sometimes, being away is a better way to help people you like.\""
+                },
+                {
+                  "id": "c",
+                  "text": "\"Leaving your own country because of your children's future is necessary.\""
+                },
+                {
+                  "id": "d",
+                  "text": "\"Leaving your home country is never a good idea.\""
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "Bashar Ali:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "\"Home is not the place you were born; it is where you live.\""
+                },
+                {
+                  "id": "b",
+                  "text": "\"Sometimes, being away is a better way to help people you like.\""
+                },
+                {
+                  "id": "c",
+                  "text": "\"Leaving your own country because of your children's future is necessary.\""
+                },
+                {
+                  "id": "d",
+                  "text": "\"Leaving your home country is never a good idea.\""
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m3",
+              "question": "Sun Yun Wing:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "\"Home is not the place you were born; it is where you live.\""
+                },
+                {
+                  "id": "b",
+                  "text": "\"Sometimes, being away is a better way to help people you like.\""
+                },
+                {
+                  "id": "c",
+                  "text": "\"Leaving your own country because of your children's future is necessary.\""
+                },
+                {
+                  "id": "d",
+                  "text": "\"Leaving your home country is never a good idea.\""
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part C",
+          "instructions": "Answer the questions about the people you have just read about.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Sun Yun Wing __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "came to England to study."
+                },
+                {
+                  "id": "b",
+                  "text": "was happy to be away from his family."
+                },
+                {
+                  "id": "c",
+                  "text": "now works for a Chinese restaurant."
+                },
+                {
+                  "id": "d",
+                  "text": "is now wealthy."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m2",
+              "question": "Sun Yun Wing __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "works in his own restaurant with his wife and children."
+                },
+                {
+                  "id": "b",
+                  "text": "still misses Hong Kong."
+                },
+                {
+                  "id": "c",
+                  "text": "doesn't work much because he owns the restaurant."
+                },
+                {
+                  "id": "d",
+                  "text": "considers England as his home."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m3",
+              "question": "Bashar Ali __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "got married in England in 1980."
+                },
+                {
+                  "id": "b",
+                  "text": "came to England to study."
+                },
+                {
+                  "id": "c",
+                  "text": "makes clothes in England and sells them in Bangladesh."
+                },
+                {
+                  "id": "d",
+                  "text": "teaches English to Bangladeshi kids."
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "Bashar Ali __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "still has social connections with his people."
+                },
+                {
+                  "id": "b",
+                  "text": "makes a lot of money from language courses."
+                },
+                {
+                  "id": "c",
+                  "text": "is worried that his children will forget their origins."
+                },
+                {
+                  "id": "d",
+                  "text": "has a children's language school in England."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "Apara Asuquo __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "met her husband after she visited England in 2003."
+                },
+                {
+                  "id": "b",
+                  "text": "worked in an office back in Nigeria."
+                },
+                {
+                  "id": "c",
+                  "text": "found a different job in England."
+                },
+                {
+                  "id": "d",
+                  "text": "makes much more money in England."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m6",
+              "question": "Apara Asuquo __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "immigrated for her career."
+                },
+                {
+                  "id": "b",
+                  "text": "and her husband don't want to be away from their home country anymore."
+                },
+                {
+                  "id": "c",
+                  "text": "doesn't want her children to come to Nigeria."
+                },
+                {
+                  "id": "d",
+                  "text": "is sure that she will feel lonely in Nigeria."
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "mcq3",
+          "type": "mcq",
+          "label": "Part D (vocabulary and reference)",
+          "instructions": "Guess the meaning of the words from the context.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "The word \"opportunities\" (paragraph 2) means __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "problems"
+                },
+                {
+                  "id": "b",
+                  "text": "controls"
+                },
+                {
+                  "id": "c",
+                  "text": "possibilities"
+                },
+                {
+                  "id": "d",
+                  "text": "seekers"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "The word \"support\" (paragraph 6) means __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "help"
+                },
+                {
+                  "id": "b",
+                  "text": "report"
+                },
+                {
+                  "id": "c",
+                  "text": "surprise"
+                },
+                {
+                  "id": "d",
+                  "text": "cheat"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m3",
+              "question": "The word \"several\" (paragraph 8) means __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "different"
+                },
+                {
+                  "id": "b",
+                  "text": "few"
+                },
+                {
+                  "id": "c",
+                  "text": "many"
+                },
+                {
+                  "id": "d",
+                  "text": "couple"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "The word \"community\" (paragraph 9) means __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "people"
+                },
+                {
+                  "id": "b",
+                  "text": "classes"
+                },
+                {
+                  "id": "c",
+                  "text": "individual"
+                },
+                {
+                  "id": "d",
+                  "text": "places"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "The word \"international\" (paragraph 11) means __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "city"
+                },
+                {
+                  "id": "b",
+                  "text": "local"
+                },
+                {
+                  "id": "c",
+                  "text": "global"
+                },
+                {
+                  "id": "d",
+                  "text": "village"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m6",
+              "question": "The word \"there\" (paragraph 2) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "England"
+                },
+                {
+                  "id": "b",
+                  "text": "London"
+                },
+                {
+                  "id": "c",
+                  "text": "Hong Kong"
+                },
+                {
+                  "id": "d",
+                  "text": "a small town in London"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m7",
+              "question": "The word \"we\" (paragraph 4) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Chinese people"
+                },
+                {
+                  "id": "b",
+                  "text": "Sun Yun and his children"
+                },
+                {
+                  "id": "c",
+                  "text": "Sun Yun and his wife"
+                },
+                {
+                  "id": "d",
+                  "text": "Sun Yun and the chef"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m8",
+              "question": "The word \"there\" (paragraph 9) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Bangladesh"
+                },
+                {
+                  "id": "b",
+                  "text": "England"
+                },
+                {
+                  "id": "c",
+                  "text": "stores"
+                },
+                {
+                  "id": "d",
+                  "text": "London"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m9",
+              "question": "The word \"they\" (paragraph 10) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "families"
+                },
+                {
+                  "id": "b",
+                  "text": "successful children"
+                },
+                {
+                  "id": "c",
+                  "text": "Bashar Ali's children"
+                },
+                {
+                  "id": "d",
+                  "text": "Bangladeshi children working for Bashar Ali"
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "id": "b2-r12",
+  "level": "B2",
+  "title": "B2 Reading 12 — In Defense of Advertising",
+  "subtitle": "One passage · Gaps, True/False",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "In Defense of Advertising",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">How often do we hear comments such as these: \"I hate advertising,\" or \"There's too much advertising in the world!\" In the 21st century, it seems that advertising is everywhere. We see it along highways, in trains, buses, even in taxicabs, as well as on the Internet and on TV. It's hard to escape advertising. But do we really want to? Actually, when you think about it, advertising provides us with quite a few benefits.</p><p class=\"rd-para\" data-para=\"2\"><span class=\"rd-gap\" data-gap=\"2\"></span> For instance, if you want to buy a new appliance or a new car, you can look for the best \"deals\" in ads that appear in newspapers, in magazines, on television or even on the radio. These ads give you details about the product and help you find out where you can get the best price for something. You don't actually have to go to lots of different stores. So, in this way, advertising provides a service for the customer.</p><p class=\"rd-para\" data-para=\"3\">Besides providing information, advertising also supports the arts, including television and movies. It may be annoying to sit through commercials during your favorite TV show, but the advertisers have paid for its production. <span class=\"rd-gap\" data-gap=\"3\"></span> Even public broadcasting has supporters. The companies' names appear at the beginning or end of the shows. Without their support, there would be more hours of pledge drives asking you, the consumer, for more money. As for movies, we find out about them through ads, and we decide which ones we want to see based on the ads for them. Additionally, many performing arts, such as actors or musicians, get their starts from writing or appearing in commercials or print advertisements. It's a way for them to get both experience and exposure.</p><p class=\"rd-para\" data-para=\"4\">And what about advertising and sports? There are hundreds of large banners surrounding sports stadiums, and hundreds, thousands, even millions of people notice them. Professional sports depend on advertising to pay for the fields, the equipment, and yes, even salaries of professional athletes. <span class=\"rd-gap\" data-gap=\"4\"></span> Everyone looks forward to this annual event, even those who do not like football, because the commercials are known to be the best of the year. Companies pay as much as a million dollars for 60 seconds of advertising time during this event, so a lot of effort goes into these commercials. As a result, viewers want to watch the commercials almost as much as the sports.</p><p class=\"rd-para\" data-para=\"5\">When we're not out shopping or being entertained, many of us enjoy \"surfing\" the Web. Whenever you open a page in Google or go on a social networking site, such as Facebook, there are dozens of ads. These ads help pay for the services that the websites provide. <span class=\"rd-gap\" data-gap=\"5\"></span> They would not have the money to continue.</p><p class=\"rd-para\" data-para=\"6\">There has always been a \"good\" side to advertising in the form of public service announcements (PSAs). These are advertisements that provide people with information about issues like diseases or medical problems, as well as public health and safety. The commercials are often very creative and informative. They provide viewers with the information they need in a memorable way. Various companies pay for the PSAs. <span class=\"rd-gap\" data-gap=\"6\"></span></p><p class=\"rd-para\" data-para=\"7\">It would be a much duller, certainly less colorful world without advertising. Think of all the ways that advertising improves our world. <span class=\"rd-gap\" data-gap=\"7\"></span> From clothing designers, photographers, models and artists, to paper company workers and store employees — thousands of people worked to help produce that catalog. And when you watch your favorite TV show, remember that the commercials were partly responsible for what you've just watched and enjoyed. We may wish that commercials and advertisements weren't necessary at all, but, for the most part, we are all content to have them as part of our lives.</p>",
+      "sections": [
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part A",
+          "instructions": "Match the paragraphs in column A with a sentence that completes the paragraph from column B. There is ONE EXTRA sentence.",
+          "options": [
+            {
+              "id": "a",
+              "text": "This, in turn, pays the actors for their work."
+            },
+            {
+              "id": "b",
+              "text": "Professional sports do not actually depend on advertising."
+            },
+            {
+              "id": "c",
+              "text": "Also, advertising agencies make donations of their time and expertise to produce them."
+            },
+            {
+              "id": "d",
+              "text": "The next time you look at that clothing catalog, think of all the creativity and work that went into making it."
+            },
+            {
+              "id": "e",
+              "text": "First, advertising gives us information that we need."
+            },
+            {
+              "id": "f",
+              "text": "Think about the Super Bowl in the United States."
+            },
+            {
+              "id": "g",
+              "text": "Without the advertising, the websites could not provide those services."
+            }
+          ],
+          "items": [
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "e"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "a"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "f"
+            },
+            {
+              "id": "5",
+              "label": "Gap 5",
+              "answer": "g"
+            },
+            {
+              "id": "6",
+              "label": "Gap 6",
+              "answer": "c"
+            },
+            {
+              "id": "7",
+              "label": "Gap 7",
+              "answer": "d"
+            }
+          ]
+        },
+        {
+          "id": "truefalse",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Choose True or False for each statement.",
+          "items": [
+            {
+              "id": "tf1",
+              "question": "Websites would still be able to provide services even without advertising.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf2",
+              "question": "Public service announcements (PSAs) are sponsored by a single company.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf3",
+              "question": "Advertisers pay for the production of television shows and movies.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf4",
+              "question": "Advertising provides a service for the customer when they want to purchase new tools or technology.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf5",
+              "question": "Advertising improves our world mostly emotionally rather than economically.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

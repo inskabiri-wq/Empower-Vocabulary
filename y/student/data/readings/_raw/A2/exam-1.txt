@@ -1,0 +1,144 @@
+ID: a2-r1
+LEVEL: A2
+TITLE: A2 Reading 1 — The Lies People Tell
+SUBTITLE: One passage · Fill-in, headings, MCQ, vocabulary
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: The Lies People Tell
+
+PASSAGE:
+Most people don't *admit* it, but people often tell lies. These are nine lies people often tell.
+
+Lie 1: A woman asks her husband, "Does my hair look OK?" The husband doesn't like *it*, but he says something nice. He says, "You look great!" Why? He wants his wife to be happy. He doesn't want to hurt *her* feelings.
+
+{gap:2} A boy breaks a cup. His mother asks, "Who broke the cup?" The boy says, "I didn't do it." Why? The boy did something wrong. He is afraid of the *punishment*. He tells a lie so he doesn't get in *trouble*.
+
+{gap:3} Lina works in an office. Another worker in her office, Pete, has trouble with his car. Pete often arrives late to work. The *boss* is not happy with *him*. The boss asks Lina, "Did Pete come to work on time today?" He didn't, but Lina says, "Yes." *She* lies to *protect* him.
+
+{gap:4} The family cat dies. "It went to a farm to play with other cats," say the parents. *They* don't say the cat died. Why not? They lie to protect their children from the truth. They think it will hurt her too much.
+
+{gap:5} A boy hits his little sister at his birthday party. The parents say, "Stop! You won't get your gifts if you hit *her* again!" This is not true. They plan to give their son his gifts even if *he* *continues* to *behave* badly. Why do they tell a lie? They lie to *control* their son.
+
+{gap:6} Joe is telling a story about his fishing trip. He says a fish he caught was three feet long, but it wasn't really very big. Why? He lies in order to tell a more interesting story.
+
+{gap:7} Pamela tells her classmates, "I can speak three languages." She can really speak only two languages. Why does she lie? She wants to make a good *impression* on her new classmates. Pamela wants *them* to think she is very intelligent.
+
+{gap:8} A store ad says *it* has special prices on furniture for today only. The truth is that the price is the same every day. Why does the store lie? It lies in order to make more money. Customers buy more furniture when they believe the prices are special for one day only.
+
+{gap:9} A man tells people at work that a new worker's boss *fired* her from her last job. *This* is not true. The man tells the lie to hurt the other worker's *reputation*.
+
+# SHORTANSWER
+LABEL: Part A
+INSTRUCTIONS: Fill in the blanks with 1-4 words from the text.
+1. Not to __________, a husband might lie about his wife's appearance.
+   ANSWER: hurt his wife's feelings / hurt her feelings
+2. People, especially kids, are worried about __________ so they lie about their mistakes.
+   ANSWER: punishment / the punishment
+3. __________ sometimes try not to tell the truth to children so as not to upset them.
+   ANSWER: parents / the parents
+4. For __________, some people lie about themselves to look smart.
+   ANSWER: a good impression / a good reputation / impression
+5. Companies lie about their prices since __________.
+   ANSWER: they want to make more money / to make more money
+
+# GAPS
+LABEL: Part B
+INSTRUCTIONS: Match the paragraph numbers (the "Lie N" paragraphs) with the headings on the right. There is ONE EXTRA heading.
+a: I can speak three languages
+b: Her boss fired her from her last job
+c: I didn't do it!
+d: The fish was three feet long!
+e: You look great!
+f: He came to work on time
+g: You won't get any gifts!
+h: This special price is for today only
+i: The cat went to a farm
+ANSWERS: 2=c, 3=f, 4=i, 5=g, 6=d, 7=a, 8=h, 9=b
+
+# MCQ
+LABEL: Part C
+INSTRUCTIONS: Circle the correct answer for the following questions.
+1. Why does a boy lie about a broken cup?
+   a) to protect other people
+   b) not to hurt someone
+   c) to control other people
+   d) not to have problems
+   ANSWER: d
+2. Which one is NOT TRUE?
+   a) People might tell lies to protect their friends
+   b) Lina tells a lie in order to protect herself
+   c) Lina and Peter work in the same office
+   d) Lina and Peter are good friends
+   ANSWER: b
+3. Which one is TRUE?
+   a) Parents want to hurt their children
+   b) Parents don't want to tell the truth not to hurt their children
+   c) Parents want to control their children
+   d) Parents want their children to get into trouble
+   ANSWER: b
+4. Which one is FALSE?
+   a) Pamela wants to show herself as a clever girl
+   b) Pamela thinks other people's opinions about her are important
+   c) Pamela prefers telling the truth to her classmates
+   d) Pamela tells a lie to her classmates about the languages she speaks
+   ANSWER: c
+5. What is the main idea of Paragraph 8?
+   a) The store always tells the truth to its customers
+   b) The store tells a lie to its customers in order to earn more money
+   c) The store always offers special prices to its customers
+   d) Customers don't always believe what they see on the ads
+   ANSWER: b
+6. According to Paragraph 9 __________.
+   a) a colleague might tell a lie to damage another worker's self-respect
+   b) the new workers may cause some problems in the office
+   c) the boss fired the new worker because he told a lie
+   d) the boss told a lie to his workers about the new worker
+   ANSWER: a
+
+# MCQ
+LABEL: Part D (vocabulary in context)
+INSTRUCTIONS: Circle the best option.
+1. "manager or director" (paragraph 3) = __________
+   a) worker
+   b) boss
+   c) work
+   d) office
+   ANSWER: b
+2. "things such as chairs, tables etc. that are put in a house or building" (paragraph 8) = __________
+   a) price
+   b) store
+   c) furniture
+   d) customers
+   ANSWER: c
+3. "to keep doing something" (paragraph 5) = __________
+   a) control
+   b) behave
+   c) plan
+   d) continue
+   ANSWER: d
+4. "to keep someone safe from damage" (paragraph 3) = __________
+   a) trouble
+   b) protect
+   c) arrive
+   d) lies
+   ANSWER: b
+5. "problems or difficulties" (paragraph 2) = __________
+   a) punishment
+   b) wrong
+   c) trouble
+   d) afraid of
+   ANSWER: c
+
+# SHORTANSWER
+LABEL: Part D (continued — find the word)
+INSTRUCTIONS: Find the words in the text which mean the following.
+1. "to remove someone from their job" (paragraph 9):
+   ANSWER: fire / fired
+2. "bad treatment towards someone" (paragraph 2):
+   ANSWER: punishment
+3. "fame" (paragraph 9):
+   ANSWER: reputation
+4. "to order or rule something or someone's actions" (paragraph 5):
+   ANSWER: control
+5. "to accept that something is true" (paragraph 1):
+   ANSWER: admit

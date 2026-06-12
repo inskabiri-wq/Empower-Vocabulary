@@ -1,0 +1,299 @@
+{
+  "id": "b2-r8",
+  "level": "B2",
+  "title": "B2 Reading 8 — Students of the Internet Age",
+  "subtitle": "One passage · MCQ, True/False",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Students of the Internet Age",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Today's youth are different from any generation before them. They are <strong>exposed to</strong> digital technology in nearly all parts of their daily life, and it is not difficult to see that this is having a deep <strong>impact</strong> on their personalities, including their attitudes and approach to learning. This is not to say that they are especially good at using the technology that surrounds them, but the mere exposure to it is enough to have an impact. From the educators' perspective, this technology is making today's kids the most demanding and challenging students in history.</p><p class=\"rd-para\" data-para=\"2\">Today's generation of students has grown up surrounded by digital media. Computers can be found in the home, school, retail stores, and offices; and digital technologies are commonplace. Most importantly, the Internet is becoming clearly the most preferred way of doing things in their everyday life. It is because, whereas TV is controlled by adults and the kids are passive <strong>observers</strong>, children control much of their world on the Net. It is something they do themselves. <strong>They</strong> are not merely viewers; they are also active users. They do not just observe; they <strong>participate</strong>. They inquire, discuss, argue, play, shop, critique, investigate, ridicule, fantasise, seek, and inform in mass communication.</p><p class=\"rd-para\" data-para=\"3\">This makes the Internet fundamentally different from previous communications <strong>innovations</strong>, such as the printing press, radio, and television, all of which are very hierarchical, <strong>inflexible</strong>, and centralised. Not surprisingly, they reflect the values of their adult owners. By contrast, the new media is interactive, flexible, and distributed in control. As such, <strong>it</strong> has greater neutrality. The new media will do what we command of them. For this reason, children are taking control of critical elements of a communications revolution for the first time.</p><p class=\"rd-para\" data-para=\"4\">On the Net, children must search for, rather than simply look at, information. Yes, this forces them to develop thinking, investigative skills, and much more. They must become critics. Which Websites are good? How can I tell what is real and what is fictitious? Because these kids have the tools to question, challenge, and disagree, they are becoming a generation of critical thinkers. They <strong>rely on</strong> their point of view, test it, and change <strong>it</strong> if necessary. There is nothing more important to the future of humanity.</p><p class=\"rd-para\" data-para=\"5\">Unfortunately, education is commonly <strong>perceived</strong> as something to be transmitted from \"The Wise to the Ignorant\"; something outside of ourselves that can be achieved, absorbed or collected. However, in reality, simply sitting in class does not guarantee that a student will learn.</p><p class=\"rd-para\" data-para=\"6\">Until now education has <strong>tended to</strong> focus on the teacher not the student. This is especially true in post secondary education where the specific interests and background of the teacher strongly influences the content. Most of the activity in the classroom involves the teacher speaking and the student listening.</p><p class=\"rd-para\" data-para=\"7\">The new media, particularly the Internet, <strong>enables</strong> centring of the learning experience on the individual rather than on the transmitter. It is important to realise that <strong>shifting</strong> from teacher-centred to learner-centred education does not suggest the teacher is suddenly playing a less important role. A teacher is equally critical and valued in the learner centred context, and his/her <strong>contribution</strong> is essential for the learning experience. Much of this depends on the subject; no one would suggest, for example, that the best way to learn the piano is the discovery mode.</p><p class=\"rd-para\" data-para=\"8\">Learning will become a social activity, facilitated by a new generation of educators. For example, suppose a 6th grade class is studying salt-water fish. The teacher divides the class into teams, asking each to prepare a presentation on a fish of their choice covering the topics of history, breathing, propulsion, reproduction, diet, predators, and \"cool facts.\" The students <strong>have access to</strong> the Web and are allowed to use any resources they want. Questions should be addressed to others in their team or to others in the class, not the teacher.</p><p class=\"rd-para\" data-para=\"9\">Two weeks later, one group is up first. They have created a shark project home page with hot links for each of the topics. The presentation is projected onto a screen at the front of the class as the girls talk. They have video clips of different types of sharks and also a clip from Jacques Cousteau discussing the shark as an endangered species. Then they go live to Aquarius, an underwater Web site located off the Florida Keys. The class can ask questions of the Aquarius staff, but most inquiries are directed at the project team. One of the big discussions is about the dangers posed by sharks versus the dangers to sharks posed by humans.</p><p class=\"rd-para\" data-para=\"10\">The class decides to hold an online forum on this subject and invite kids from their sister classes in other countries to participate. The team invites the classes to browse through their project at any time, from any location, as it will be \"up\" for the rest of the school year. In fact the team decides that they are going to <strong>maintain</strong> the site, adding new links and fresh information throughout the year. It becomes a living project. Other learners from other countries find the shark home page helpful in their projects and build links to it. The team has to resource the information, tools and materials they need.</p><p class=\"rd-para\" data-para=\"11\">This scenario is not science fiction. It is currently <strong>occurring</strong> in advanced schools in several countries. The teacher is not an instructional transmitter. She is a facilitator to social learning, whereby learners <strong>construct</strong> their own knowledge. Students will remember what they learned about sharks as the topic now interests <strong>them</strong>.</p><p class=\"rd-para\" data-para=\"12\">The new media has helped create a culture for learning, where the learner enjoys <strong>enhanced</strong> interactivity and connections with others. Rather than some professor lecturing about some facts and theories to students, they discuss and learn from each other with the teacher as a participant. Various digital forums enable brainstorming, debate, the influencing of each other — in other words, social learning.</p><p class=\"rd-para\" data-para=\"13\">Needless to say, a whole generation of teachers needs to learn new tools, new approaches, and new skills. This will be a challenge for the teacher because cutbacks have resulted in a lack of time due to the pressures of increased workloads, reduced retraining budgets, and low teacher morale. Indeed, another challenge will be overcoming the resistance of some teachers to change.</p>",
+      "sections": [
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part A",
+          "instructions": "Choose the best response according to the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Today's generation of students is different from their parents because they _______.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "invent technological devices"
+                },
+                {
+                  "id": "b",
+                  "text": "are better at using technology"
+                },
+                {
+                  "id": "c",
+                  "text": "are exposed to more digital devices"
+                },
+                {
+                  "id": "d",
+                  "text": "are being negatively affected by digital devices"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "Kids prefer the Internet over TV because _______.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "they don't have to take control of the Internet"
+                },
+                {
+                  "id": "b",
+                  "text": "they are in charge of the Internet"
+                },
+                {
+                  "id": "c",
+                  "text": "the Internet allows kids to be passive observers"
+                },
+                {
+                  "id": "d",
+                  "text": "the Internet helps parents to observe the activities of their kids"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m3",
+              "question": "The Internet is NOT like typical media mainly because it _______.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "is hierarchical, inflexible and centralised"
+                },
+                {
+                  "id": "b",
+                  "text": "reflects the values of its owner"
+                },
+                {
+                  "id": "c",
+                  "text": "is more interesting for children"
+                },
+                {
+                  "id": "d",
+                  "text": "is more neutral than other media"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m4",
+              "question": "When searching for information on the Internet children do NOT _______.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "simply look at the information"
+                },
+                {
+                  "id": "b",
+                  "text": "become critical thinkers"
+                },
+                {
+                  "id": "c",
+                  "text": "ask about the qualities of what they find"
+                },
+                {
+                  "id": "d",
+                  "text": "have more investigative and thinking skills"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "\"From the Wise to the Ignorant\" implies that _______.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Teachers control what information the students study"
+                },
+                {
+                  "id": "b",
+                  "text": "Students can make decisions about their own learning"
+                },
+                {
+                  "id": "c",
+                  "text": "If students listen to their teacher, they will learn better"
+                },
+                {
+                  "id": "d",
+                  "text": "Students learn by investigating with their teacher"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m6",
+              "question": "Which is TRUE about the teachers' role in learner-centred education?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "They play an important role."
+                },
+                {
+                  "id": "b",
+                  "text": "They are transmitters of knowledge."
+                },
+                {
+                  "id": "c",
+                  "text": "They do not contribute a lot to the learning experience."
+                },
+                {
+                  "id": "d",
+                  "text": "They do most of the speaking in the classroom."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m7",
+              "question": "Which is NOT true about education through the new media?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Learners interact with each other to make important decisions about their projects."
+                },
+                {
+                  "id": "b",
+                  "text": "Teachers are the most important audience for student projects."
+                },
+                {
+                  "id": "c",
+                  "text": "Teachers have the role of a facilitator."
+                },
+                {
+                  "id": "d",
+                  "text": "Learners construct knowledge."
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "truefalse",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Choose True or False for each statement according to the text.",
+          "items": [
+            {
+              "id": "tf1",
+              "question": "From the teachers' perspective learners with more technological opportunities are more comfortable to teach to.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf2",
+              "question": "TV does not allow kids to be in an active interaction with it.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf3",
+              "question": "Children use the Net merely for entertainment purposes.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf4",
+              "question": "Thanks to the Internet, the leading actors of a lesson now are the students, not the teachers.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf5",
+              "question": "In a learner-centred classroom, teachers both assist and also manage student projects.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf6",
+              "question": "Even though the Net is full of tools, students do not want to use this upgraded new type of media.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf7",
+              "question": "Teachers, mostly experienced ones, are more likely to object to the new ways of teaching incorporating technology.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

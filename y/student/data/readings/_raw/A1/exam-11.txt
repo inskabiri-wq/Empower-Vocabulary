@@ -1,0 +1,92 @@
+ID: a1-r11
+LEVEL: A1
+TITLE: A1 Reading 11 — Elle MacPherson
+SUBTITLE: One passage · Short-answer, ordering, MCQ, vocab, T/F
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Elle MacPherson
+
+PASSAGE:
+Eleanor Gow was born in March in 1964. She was the eldest of four children from a wealthy family in Sydney, Australia. Her parents divorced when she was fourteen, and her mother later married Neil MacPherson.
+
+An agent for a modeling company discovered her at the age of sixteen while she was on holiday in Aspen, Colorado, U.S.A. She began modeling part-time, but two years later she left the law course at the University of Sydney to work full-time for the Click modeling agency.
+
+At twenty-one, she married Gilles Bensimon, a French photographer and creative manager of the top fashion magazine "Elle." She modeled for the magazine for six years and she became a supermodel. "Time" magazine called her "The Body."
+
+Elle then moved into movies. However, unlike many other models, Elle was a talented actor. Her first movie was "Alice" (1990). She appeared in many more movies, such as "Sirens," "If Lucy Fell," "The Mirror Has Two Faces," and "Batman and Robin." Elle also starred in several television programs and appeared many times in the popular comedy show "Friends."
+
+Yet Elle is not only a model, actor, and media personality — she is also a successful businesswoman. She has her own company called Elle MacPherson, Inc. The company sells "Elle MacPherson Intimates", women's underwear. She also models for her company. There is also underwear for men. Its name is "Elle MacPherson's Men." The company is the biggest of its kind in Australia and a huge multimillion-dollar success.
+
+Elle also began a restaurant called The Fashion Café with supermodels Claudia Schiffer, Naomi Campbell, and Christy Turlington. She produces her own calendar and has her own fitness video called "The Body Workout."
+
+Her personal life is not quite so successful. She and Gilles Bensimon divorced, and since then, she has had several relationships. Her partner is now a Swiss businessman, Arpade Busson, and the couple has a son called Flynn.
+
+# SHORTANSWER
+LABEL: Part A
+INSTRUCTIONS: Answer the following questions according to the text.
+1. What was Elle MacPherson's original surname?
+   ANSWER: Gow
+2. What happened when she was on holiday in Aspen?
+   ANSWER: An agent for a modeling company discovered her
+3. What is her nationality?
+   ANSWER: Australian
+4. Who gave her the nickname "the body"?
+   ANSWER: Time magazine
+5. In which films did she act?
+   ANSWER: Alice / Sirens / If Lucy Fell / The Mirror Has Two Faces / Batman and Robin
+
+# SHORTANSWER
+LABEL: Part B
+INSTRUCTIONS: Put these events in Elle MacPherson's early life in order (write 1–6).
+1. She left university.
+   ANSWER: 3
+2. Her parents got divorced.
+   ANSWER: 1
+3. She started modeling.
+   ANSWER: 2
+4. She began modeling full-time.
+   ANSWER: 4
+5. She married the creative manager of "Elle" magazine.
+   ANSWER: 5
+6. She became known as "the body".
+   ANSWER: 6
+
+# MCQ
+LABEL: Part C
+INSTRUCTIONS: Circle the correct option.
+1. Which of the following is TRUE according to the text?
+   a) Ella left the university when she was 18.
+   b) Ella is the youngest in the family.
+   c) At twenty-one Ella became a supermodel.
+   d) Ella was talented like other models.
+   ANSWER: a
+2. Which of the following sentences about Ella is NOT TRUE?
+   a) She owns a restaurant.
+   b) She has an underwear company.
+   c) She is the manager of Elle magazine.
+   d) She acts in movies and appears in TV shows.
+   ANSWER: c
+
+# SHORTANSWER
+LABEL: Part D (guess the meaning)
+INSTRUCTIONS: Find a word in the passage that matches each meaning.
+1. Find a word in paragraph 1 which means "rich":
+   ANSWER: wealthy
+2. Find a word in paragraph 2 which means "company":
+   ANSWER: agency
+3. Find a word in paragraph 4 which means "some, a few":
+   ANSWER: several
+4. Find a word in paragraph 5 which means "very big":
+   ANSWER: huge
+
+# TRUEFALSE
+LABEL: Part G
+INSTRUCTIONS: Choose True or False for each statement.
+1. She immediately quit school to become a full-time model with the Click modeling agency.
+   ANSWER: F
+2. She was successful in several fields in media.
+   ANSWER: T
+3. Her company works with famous models for men's underwear.
+   ANSWER: F
+4. She has her own app for fitness practice.
+   ANSWER: F

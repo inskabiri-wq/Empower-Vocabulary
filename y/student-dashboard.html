@@ -1,0 +1,1244 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Empower Lab</title>
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Empower Lab">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<!-- Crystal-design assignment cards use Outfit (display) + JetBrains Mono
+     (level chips, progress label). Loaded with display=swap so the rest
+     of the dashboard renders immediately while these fetch. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<!-- Nunito: the dashboard font. The @import in extra.css is buried mid-file
+     (invalid - @import must be first), so it never loaded. Load it here. -->
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- Modular CSS -->
+<!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css?v=14">
+<!-- Shared themed dialog (alert/confirm/prompt) — replaces native browser popups app-wide. -->
+<script src="js/app-dialog.js"></script>
+<link rel="stylesheet" href="student/css/styles.css">
+<link rel="stylesheet" href="student/css/extra.css">
+<link rel="stylesheet" href="student/css/hub.css?v=14">
+<link rel="stylesheet" href="student/css/skills.css">
+<link rel="stylesheet" href="student/css/grammar.css?v=15">
+<link rel="stylesheet" href="student/css/reading-exam.css">
+<link rel="stylesheet" href="assignments/css/assignments.css">
+</head>
+<body>
+<!-- Custom Logout Modal -->
+<!-- ════════════════════════════════════════════════════════════════
+     VERIFY GATE MODAL — bi-monthly academic info verification.
+     Uses the app's dark-glass modal pattern (.modal-overlay) but
+     overrides the inner card with verify-gate-specific styling
+     (.vg-* classes) so the form fields, focus rings, and accents
+     match the wider design language. Cyan/blue accent — this is
+     an informational prompt, not a danger action.
+     ════════════════════════════════════════════════════════════════ -->
+<div id="verifyGateModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content vg-card">
+
+    <!-- Header strip: gradient icon disc + title + subtitle -->
+    <div class="vg-head">
+      <div class="vg-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 11l3 3L22 4"/>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+      </div>
+      <div class="vg-head-text">
+        <h2 class="vg-title">Quick check-in</h2>
+        <p class="vg-subtitle">It's been about two months — confirm your class so the app gives you the right practice material.</p>
+      </div>
+    </div>
+
+    <!-- Inline error banner — only shown if the submit fails. -->
+    <div id="verifyGateError" class="vg-error" role="alert"></div>
+
+    <form id="verifyGateForm" class="vg-form" novalidate>
+      <!-- Level -->
+      <div class="vg-field">
+        <label class="vg-label" for="verifyLevel">Level</label>
+        <div class="vg-select-wrap">
+          <select id="verifyLevel" class="vg-select" required>
+            <option value="A2">A2 — Elementary</option>
+            <option value="B1">B1 — Intermediate</option>
+            <option value="B1+">B1+ — Upper Intermediate</option>
+            <option value="B2">B2 — Advanced</option>
+          </select>
+          <span class="vg-chev" aria-hidden="true">▾</span>
+        </div>
+      </div>
+
+      <!-- Class: letter + number side by side -->
+      <div class="vg-field">
+        <label class="vg-label" for="verifyClassLetter">Class</label>
+        <div class="vg-row">
+          <div class="vg-select-wrap vg-class-letter">
+            <select id="verifyClassLetter" class="vg-select" required>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+            </select>
+            <span class="vg-chev" aria-hidden="true">▾</span>
+          </div>
+          <input id="verifyClassNumber" class="vg-input" type="number" placeholder="125" min="100" max="199" required>
+        </div>
+      </div>
+
+      <!-- Module — emphasized because it must change -->
+      <div class="vg-field vg-field-key">
+        <label class="vg-label" for="verifyModule">
+          Module
+          <span class="vg-must-change">must change ↑</span>
+        </label>
+        <div class="vg-select-wrap">
+          <select id="verifyModule" class="vg-select" required>
+            <!-- populated by verify-gate.js with current module excluded -->
+          </select>
+          <span class="vg-chev" aria-hidden="true">▾</span>
+        </div>
+        <p class="vg-hint" id="verifyModuleHint">After every 2-month exam your module advances. Pick the next one.</p>
+      </div>
+
+      <!-- Academic year -->
+      <div class="vg-field">
+        <label class="vg-label" for="verifyYear">Academic Year</label>
+        <div class="vg-select-wrap">
+          <select id="verifyYear" class="vg-select" required>
+            <option value="2025-2026">2025-2026</option>
+            <option value="2026-2027">2026-2027</option>
+            <option value="2027-2028">2027-2028</option>
+          </select>
+          <span class="vg-chev" aria-hidden="true">▾</span>
+        </div>
+      </div>
+
+      <button type="submit" class="vg-submit">
+        <span>Save &amp; continue</span>
+        <span class="vg-submit-arrow" aria-hidden="true">→</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<div id="logoutModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-icon">🚪</div>
+    <h2 class="modal-title">Leaving So Soon?</h2>
+    <p class="modal-message">Are you sure you want to log out? Your progress will be saved, but you'll need to sign in again to continue practicing.</p>
+    <div class="modal-buttons">
+      <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="confirmLogout()">Yes, Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal (NEW) -->
+<div id="settingsModal" class="modal-overlay">
+  <div class="modal-content settings-modal">
+    <button class="modal-close-btn" onclick="closeSettingsModal()">×</button>
+    <h2 class="modal-title">⚙️ Settings</h2>
+    
+    <div class="settings-modal-content">
+      <div class="setting-row" id="soundToggle" onclick="toggleSound()">
+        <div class="setting-left">
+          <span class="setting-icon" id="soundIcon">🔊</span>
+          <div class="setting-text">
+            <span class="setting-name">Sound Effects</span>
+            <span class="setting-desc">Play sounds for correct/incorrect answers</span>
+          </div>
+        </div>
+        <div class="toggle-switch-new"></div>
+      </div>
+      
+      <div class="setting-row" id="trToggle" onclick="toggleTurkish()">
+        <div class="setting-left">
+          <span class="setting-icon">🇹🇷</span>
+          <div class="setting-text">
+            <span class="setting-name">Turkish Hints</span>
+            <span class="setting-desc">Show Turkish translations (A2 level)</span>
+          </div>
+        </div>
+        <div class="toggle-switch-new"></div>
+      </div>
+      
+      <div class="setting-row" id="themeToggle" onclick="toggleTheme()">
+        <div class="setting-left">
+          <span class="setting-icon" id="themeIcon">🌙</span>
+          <div class="setting-text">
+            <span class="setting-name" id="themeLabel">Dark Mode</span>
+            <span class="setting-desc">Switch between dark and light theme</span>
+          </div>
+        </div>
+        <div class="toggle-switch-new"></div>
+      </div>
+    </div>
+    
+    <div id="turkishInfo" class="turkish-info-modal">
+      🇹🇷 Turkish hints available for A2 level (263 words)
+    </div>
+  </div>
+</div>
+
+<!-- Profile Avatar Modal -->
+<div id="profileModal" class="modal-overlay">
+  <div class="modal-content profile-modal">
+    <button class="modal-close-btn" onclick="closeProfileModal()">×</button>
+    <h2 class="modal-title">👤 Customize Your Profile</h2>
+    
+    <div class="profile-preview">
+      <div class="avatar-large" id="avatarPreview">
+        <span class="avatar-emoji" id="avatarPreviewEmoji">🦊</span>
+      </div>
+      <div class="profile-preview-name" id="previewName">Student</div>
+      <div class="profile-xp-bar">
+        <div class="xp-fill" id="xpFill" style="width: 30%"></div>
+      </div>
+      <div class="profile-xp-text">Level <span id="previewLevel">1</span> • <span id="previewXP">0</span>/<span id="previewXPMax">100</span> XP</div>
+    </div>
+    
+    <div class="avatar-section">
+      <h3>Choose Your Avatar</h3>
+      <div class="avatar-grid" id="avatarGrid">
+        <!-- Emoji Avatars — zero API, zero loading, always works -->
+        <div class="avatar-option selected" data-avatar="fox" data-emoji="🦊" data-color="#ff6b35">
+          <div class="avatar-img-wrap" style="background:#fff3e0"><span class="avatar-emoji">🦊</span></div>
+          <span class="avatar-name">Fox</span>
+        </div>
+        <div class="avatar-option" data-avatar="panda" data-emoji="🐼" data-color="#4caf50">
+          <div class="avatar-img-wrap" style="background:#e8f5e9"><span class="avatar-emoji">🐼</span></div>
+          <span class="avatar-name">Panda</span>
+        </div>
+        <div class="avatar-option" data-avatar="lion" data-emoji="🦁" data-color="#ff9800">
+          <div class="avatar-img-wrap" style="background:#fff8e1"><span class="avatar-emoji">🦁</span></div>
+          <span class="avatar-name">Lion</span>
+        </div>
+        <div class="avatar-option" data-avatar="owl" data-emoji="🦉" data-color="#795548">
+          <div class="avatar-img-wrap" style="background:#efebe9"><span class="avatar-emoji">🦉</span></div>
+          <span class="avatar-name">Owl</span>
+        </div>
+        <div class="avatar-option" data-avatar="butterfly" data-emoji="🦋" data-color="#9c27b0">
+          <div class="avatar-img-wrap" style="background:#f3e5f5"><span class="avatar-emoji">🦋</span></div>
+          <span class="avatar-name">Butterfly</span>
+        </div>
+        <div class="avatar-option" data-avatar="dolphin" data-emoji="🐬" data-color="#0288d1">
+          <div class="avatar-img-wrap" style="background:#e1f5fe"><span class="avatar-emoji">🐬</span></div>
+          <span class="avatar-name">Dolphin</span>
+        </div>
+        <div class="avatar-option" data-avatar="unicorn" data-emoji="🦄" data-color="#e91e63">
+          <div class="avatar-img-wrap" style="background:#fce4ec"><span class="avatar-emoji">🦄</span></div>
+          <span class="avatar-name">Unicorn</span>
+        </div>
+        <div class="avatar-option" data-avatar="rocket" data-emoji="🚀" data-color="#3f51b5">
+          <div class="avatar-img-wrap" style="background:#e8eaf6"><span class="avatar-emoji">🚀</span></div>
+          <span class="avatar-name">Rocket</span>
+        </div>
+        <div class="avatar-option" data-avatar="penguin" data-emoji="🐧" data-color="#37474f">
+          <div class="avatar-img-wrap" style="background:#eceff1"><span class="avatar-emoji">🐧</span></div>
+          <span class="avatar-name">Penguin</span>
+        </div>
+        <div class="avatar-option" data-avatar="star" data-emoji="⭐" data-color="#ffc107">
+          <div class="avatar-img-wrap" style="background:#fffde7"><span class="avatar-emoji">⭐</span></div>
+          <span class="avatar-name">Star</span>
+        </div>
+        <div class="avatar-option" data-avatar="dragon" data-emoji="🐲" data-color="#2e7d32">
+          <div class="avatar-img-wrap" style="background:#e8f5e9"><span class="avatar-emoji">🐲</span></div>
+          <span class="avatar-name">Dragon</span>
+        </div>
+        <div class="avatar-option" data-avatar="cat" data-emoji="🐱" data-color="#ff7043">
+          <div class="avatar-img-wrap" style="background:#fbe9e7"><span class="avatar-emoji">🐱</span></div>
+          <span class="avatar-name">Cat</span>
+        </div>
+        <!-- Locked Premium Avatars -->
+        <div class="avatar-option locked" data-avatar="crown" data-emoji="👑" data-color="#ffd700" data-unlock="500">
+          <div class="avatar-img-wrap" style="background:#fff8e1"><span class="avatar-emoji">👑</span></div>
+          <span class="avatar-name">Crown</span>
+          <span class="lock-badge">🔒 500 XP</span>
+        </div>
+        <div class="avatar-option locked" data-avatar="phoenix" data-emoji="🔥" data-color="#ff5722" data-unlock="1000">
+          <div class="avatar-img-wrap" style="background:#fbe9e7"><span class="avatar-emoji">🔥</span></div>
+          <span class="avatar-name">Phoenix</span>
+          <span class="lock-badge">🔒 1K XP</span>
+        </div>
+        <div class="avatar-option locked" data-avatar="alien" data-emoji="👾" data-color="#7c4dff" data-unlock="2000">
+          <div class="avatar-img-wrap" style="background:#ede7f6"><span class="avatar-emoji">👾</span></div>
+          <span class="avatar-name">Alien</span>
+          <span class="lock-badge">🔒 2K XP</span>
+        </div>
+        <div class="avatar-option locked" data-avatar="diamond" data-emoji="💎" data-color="#00bcd4" data-unlock="5000">
+          <div class="avatar-img-wrap" style="background:#e0f7fa"><span class="avatar-emoji">💎</span></div>
+          <span class="avatar-name">Diamond</span>
+          <span class="lock-badge">🔒 5K XP</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="profile-stats-section">
+      <h3>Your Achievements</h3>
+      <div class="achievements-grid" id="achievementsGrid">
+        <div class="achievement unlocked">
+          <span class="achievement-icon">🎯</span>
+          <span class="achievement-name">First Steps</span>
+          <span class="achievement-desc">Complete your first activity</span>
+        </div>
+        <div class="achievement">
+          <span class="achievement-icon">🔥</span>
+          <span class="achievement-name">On Fire</span>
+          <span class="achievement-desc">Get a 10 streak</span>
+        </div>
+        <div class="achievement">
+          <span class="achievement-icon">📚</span>
+          <span class="achievement-name">Bookworm</span>
+          <span class="achievement-desc">Learn 100 words</span>
+        </div>
+        <div class="achievement">
+          <span class="achievement-icon">⚡</span>
+          <span class="achievement-name">Speed Demon</span>
+          <span class="achievement-desc">Answer 20 in a row under 3s each</span>
+        </div>
+      </div>
+    </div>
+    
+    <button class="save-profile-btn" onclick="saveProfile()">💾 Save Profile</button>
+  </div>
+</div>
+
+<!-- Learning Map Modal - Quest Board -->
+<div id="learningMapModal" class="modal-overlay">
+  <div class="modal-content learning-map-modal">
+    <button class="modal-close-btn" onclick="closeLearningMap()">×</button>
+    <h2 class="modal-title">🗺️ Quest Board</h2>
+    <p style="text-align: center; color: rgba(255,255,255,0.6); margin: -8px 0 16px; font-size: 0.9rem;">Complete challenges to master each unit</p>
+
+    <div class="level-tabs">
+      <button class="level-tab active" data-level="A2" onclick="showMapLevel('A2')">A2</button>
+      <button class="level-tab" data-level="B1" onclick="showMapLevel('B1')">B1</button>
+      <button class="level-tab" data-level="B1+" onclick="showMapLevel('B1+')">B1+</button>
+      <button class="level-tab" data-level="B2" onclick="showMapLevel('B2')">B2</button>
+    </div>
+
+    <div class="learning-map-container" id="learningMapContainer">
+      <!-- Quest cards generated by JS -->
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- ============================================================
+       HUB SCREEN — multi-skill landing (new)
+       Shows 6 skill cards; first screen seen after sign-in.
+       ============================================================ -->
+  <div id="hubScreen" class="screen active">
+
+    <!-- Same dashboard header as menuScreen (profile / settings / logout) -->
+    <div class="dashboard-header">
+      <div class="header-left">
+        <h1>
+          <svg class="dash-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="capGradHub" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#fb923c"/>
+              </linearGradient>
+            </defs>
+            <polygon points="14,3 27,10 14,17 1,10" fill="url(#capGradHub)"/>
+            <path d="M7 12.5v6a7 7 0 0 0 14 0v-6" fill="url(#capGradHub)" opacity="0.75"/>
+            <line x1="27" y1="10" x2="27" y2="19" stroke="url(#capGradHub)" stroke-width="2.2" stroke-linecap="round"/>
+            <circle cx="27" cy="21.5" r="2.5" fill="#f59e0b"/>
+          </svg>
+          FSM Language Trainer
+        </h1>
+        <p class="subtitle">Pick a skill to practice today</p>
+      </div>
+      <div class="header-right">
+        <button class="header-icon-btn" onclick="openSettingsModal()" title="Settings">
+          <span>⚙️</span>
+        </button>
+        <button class="profile-badge" onclick="openProfileModal()">
+          <div class="avatar-display" id="avatarDisplayHub" style="background:#fff3e0">
+            <span class="avatar-emoji" id="avatarDisplayEmojiHub">🦊</span>
+          </div>
+          <div class="profile-info">
+            <span class="profile-name" id="profileNameHub">Student</span>
+            <span class="profile-level">Level <span id="profileXPLevelHub">1</span> • <span id="profileXPHub">0</span> XP</span>
+          </div>
+        </button>
+        <button class="logout-btn" onclick="openLogoutModal()">
+          <span>🚪</span>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Two-column landing: Skills grid (left) + a rail (right) holding a
+         compact stats card and the always-visible Assignments box. Fills the
+         page on wide screens; collapses to one column ≤1024px (see hub.css). -->
+    <div class="hub-two-col">
+
+      <!-- LEFT — skills -->
+      <div class="hub-main">
+        <div class="hub-section-lbl">Skills</div>
+        <div class="hub-grid" id="hubGrid"><!-- populated by hub.js --></div>
+      </div>
+
+      <!-- RIGHT — rail -->
+      <aside class="hub-rail">
+
+        <!-- (Streak/Sessions/XP card removed per request — the assignments
+             box's own summary "N assignments · X pending · Y done" is the
+             rail's top now.) -->
+
+        <!-- Always-visible Assignments box. Populated by student-assignments.js
+             (renderMyAssignments()) — the same renderer from its original
+             vocabulary-sidebar home, so the narrow rail is its native fit.
+             Each card's "Start Practice" hands off to startAssignment(),
+             which pre-sets book/level/unit and routes to the right screen.
+             IDs preserved (#assignmentsSection / #assignmentsContainer /
+             #assignmentBadge) so the renderer is untouched. -->
+        <!-- (The rail course card was removed: the hub's Courses tile is
+             the single entry point now, no duplication.) -->
+
+        <div class="hub-assignments-box">
+          <div class="assignments-card" id="assignmentsSection">
+            <!-- Student info chips (class / level / module / year) at the TOP of
+                 the box, above the title, with a hairline divider below them so
+                 they read as the student's own info, not as assignment metadata.
+                 Populated by student/js/auth.js from the already-loaded user doc
+                 — 0 extra Firestore reads. Only non-empty values show. -->
+            <div class="student-info-chips" id="studentInfoChips" style="display:none;">
+              <span class="info-chip" id="infoClass"  style="display:none;"></span>
+              <span class="info-chip" id="infoLevel"  style="display:none;"></span>
+              <span class="info-chip" id="infoModule" style="display:none;"></span>
+              <span class="info-chip" id="infoYear"   style="display:none;"></span>
+            </div>
+            <div class="assignments-card-header">
+              <div class="assignments-card-title">
+                <span>📋</span>
+                <span>Your Assignments</span>
+                <span class="assignment-badge" id="assignmentBadge" style="display: none;">0</span>
+              </div>
+            </div>
+            <div id="assignmentsContainer">
+              <div class="no-assignments">
+                <span class="no-assignments-icon">⏳</span>
+                <span class="no-assignments-text">Loading assignments...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <!-- MENU SCREEN with new dashboard layout -->
+  <div id="menuScreen" class="screen">
+    
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+      <div class="header-left">
+        <h1>
+          <svg class="dash-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="capGrad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#fb923c"/>
+              </linearGradient>
+            </defs>
+            <polygon points="14,3 27,10 14,17 1,10" fill="url(#capGrad)"/>
+            <path d="M7 12.5v6a7 7 0 0 0 14 0v-6" fill="url(#capGrad)" opacity="0.75"/>
+            <line x1="27" y1="10" x2="27" y2="19" stroke="url(#capGrad)" stroke-width="2.2" stroke-linecap="round"/>
+            <circle cx="27" cy="21.5" r="2.5" fill="#f59e0b"/>
+          </svg>
+          Empower Lab
+        </h1>
+        <p class="subtitle">Master <strong>2,679 words</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">from your Empower coursebook</span></span></p>
+      </div>
+      <div class="header-right">
+        <button class="header-icon-btn" onclick="openSettingsModal()" title="Settings">
+          <span>⚙️</span>
+        </button>
+        <button class="profile-badge" onclick="openProfileModal()">
+          <div class="avatar-display" id="avatarDisplay" style="background:#fff3e0">
+            <span class="avatar-emoji" id="avatarDisplayEmoji">🦊</span>
+          </div>
+          <div class="profile-info">
+            <span class="profile-name" id="profileName">Student</span>
+            <span class="profile-level">Level <span id="profileXPLevel">1</span> • <span id="profileXP">0</span> XP</span>
+          </div>
+        </button>
+        <button class="logout-btn" onclick="openLogoutModal()">
+          <span>🚪</span>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Dashboard Body - Two Columns -->
+    <div class="dashboard-body">
+      
+      <!-- Main Content (Left) -->
+      <div class="main-content">
+
+        <!-- Welcome Banner (design v2) -->
+        <div class="dash-welcome">
+          <div class="dash-welcome-text">
+            <h2>Welcome back, <span id="welcomeName">Student</span>!</h2>
+            <p>
+              You're on a <strong class="streak-hot">
+                <span id="welcomeStreak">0</span>-day streak</strong>.
+              Keep it up!<br>
+              <span id="welcomeWordCount">0</span> words ready to practice.
+            </p>
+          </div>
+          <div class="dash-welcome-ava" id="welcomeAvatar">🦊</div>
+        </div>
+
+        <!-- XP Block (design v2 — moved from sidebar) -->
+        <div class="dash-xp-block">
+          <div class="dash-xp-top">
+            <div class="xp-badge-pill">
+              Level <span id="currentLevelDisplay">1</span> · <span id="levelRank">Beginner</span>
+            </div>
+            <div class="xp-num">
+              <span id="currentXPDisplay">0</span> / <span id="nextLevelXP">100</span> XP
+            </div>
+          </div>
+          <div class="xp-bar-container">
+            <div class="xp-bar-fill" id="xpBarFill"></div>
+            <div class="xp-bar-glow"></div>
+          </div>
+          <div class="xp-milestones" id="xpMilestones">
+            <span class="xp-milestone hit" data-xp="0">0</span>
+            <span class="xp-milestone" data-xp="25">25</span>
+            <span class="xp-milestone" data-xp="50">50</span>
+            <span class="xp-milestone" data-xp="75">75</span>
+            <span class="xp-milestone" data-xp="100">100</span>
+          </div>
+          <!-- Hidden legacy badge that avatar.js still touches via #levelBadgeIcon -->
+          <div id="levelBadgeIcon" style="display:none">🏆</div>
+        </div>
+
+        <!-- Stats Row (design v2 — 5 columns, moved from sidebar) -->
+        <div class="dash-stats">
+          <div class="dash-stat" data-accent="streak">
+            <div class="dash-stat-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <div class="dash-stat-val" id="currentStreak">0</div>
+            <div class="dash-stat-lbl">Streak</div>
+          </div>
+          <div class="dash-stat" data-accent="best">
+            <div class="dash-stat-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+            </div>
+            <div class="dash-stat-val" id="bestStreak">0</div>
+            <div class="dash-stat-lbl">Best</div>
+          </div>
+          <div class="dash-stat" data-accent="accuracy">
+            <div class="dash-stat-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#22c55e"/></svg>
+            </div>
+            <div class="dash-stat-val" id="journeyAccuracy">0%</div>
+            <div class="dash-stat-lbl">Accuracy</div>
+          </div>
+          <div class="dash-stat" data-accent="words">
+            <div class="dash-stat-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <div class="dash-stat-val" id="journeyWords">0</div>
+            <div class="dash-stat-lbl">Words</div>
+          </div>
+          <div class="dash-stat" data-accent="sessions">
+            <div class="dash-stat-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <div class="dash-stat-val" id="journeySessions">0</div>
+            <div class="dash-stat-lbl">Sessions</div>
+          </div>
+        </div>
+
+        <div class="section-title">
+          <span class="icon">🎯</span>
+          Choose Your Activity
+        </div>
+        
+        <div class="activity-grid">
+
+          <div class="activity-card" onclick="startActivity('match')">
+            <div class="icon game-badge" style="background:rgba(139,92,246,0.18);border-color:rgba(139,92,246,0.5);box-shadow:0 4px 16px rgba(139,92,246,0.25)">🃏</div>
+            <h3>Match</h3>
+            <p>Word ↔ Definition</p>
+          </div>
+
+          <div class="activity-card" onclick="startActivity('choice')">
+            <div class="icon game-badge" style="background:rgba(59,130,246,0.18);border-color:rgba(59,130,246,0.5);box-shadow:0 4px 16px rgba(59,130,246,0.25)">🎯</div>
+            <h3>Multiple Choice</h3>
+            <p>Sentence → Meaning</p>
+          </div>
+
+          <div class="activity-card" onclick="startActivity('reverse')">
+            <div class="icon game-badge" style="background:rgba(251,146,60,0.18);border-color:rgba(251,146,60,0.5);box-shadow:0 4px 16px rgba(251,146,60,0.25)">🎧</div>
+            <h3>Listening Mode</h3>
+            <p>Hear definition → Choose word</p>
+          </div>
+
+          <div class="activity-card" id="spellingCard">
+            <div class="icon game-badge" style="background:rgba(99,102,241,0.18);border-color:rgba(99,102,241,0.5);box-shadow:0 4px 16px rgba(99,102,241,0.25)">✍️</div>
+            <h3>Spelling</h3>
+            <p class="activity-desc">Type the word</p>
+          </div>
+
+          <div class="activity-card" id="fillblankCard">
+            <div class="icon game-badge" style="background:rgba(245,158,11,0.18);border-color:rgba(245,158,11,0.5);box-shadow:0 4px 16px rgba(245,158,11,0.25)">📝</div>
+            <h3>Fill in Blank</h3>
+            <p class="activity-desc">Complete sentences</p>
+          </div>
+
+          <div class="activity-card" id="orderCard">
+            <div class="icon game-badge" style="background:rgba(16,185,129,0.18);border-color:rgba(16,185,129,0.5);box-shadow:0 4px 16px rgba(16,185,129,0.25)">🧩</div>
+            <h3>Word Order</h3>
+            <p class="activity-desc">Arrange the sentence</p>
+          </div>
+
+          <div class="activity-card" onclick="startActivity('pronunciation')">
+            <div class="icon game-badge" style="background:rgba(14,165,233,0.18);border-color:rgba(14,165,233,0.5);box-shadow:0 4px 16px rgba(14,165,233,0.25)">🗣️</div>
+            <h3>Pronunciation</h3>
+            <p>Listen and practice</p>
+          </div>
+
+          <div class="activity-card" onclick="startActivity('unscramble')">
+            <div class="icon game-badge" style="background:rgba(244,63,94,0.18);border-color:rgba(244,63,94,0.5);box-shadow:0 4px 16px rgba(244,63,94,0.25)">🔡</div>
+            <h3>Unscramble</h3>
+            <p>Rearrange the letters</p>
+          </div>
+
+          <!-- Listening Exam card MOVED to #listeningScreen (hub → Listening skill). -->
+          <!-- Classroom Mode card PROMOTED to #hubScreen as the 7th skill tile.
+               Lives on the main hub now (rendered by hub.js → SKILLS array)
+               so it's discoverable as a peer of the six skills instead of
+               buried inside vocab activities. -->
+
+        </div>
+        
+        <div class="keyboard-hints">
+          <span><kbd>1-4</kbd> select option</span>
+          <span><kbd>Enter</kbd> next</span>
+          <span><kbd>Esc</kbd> back to menu</span>
+        </div>
+      </div>
+
+      <!-- Sidebar (Right) - design v2 -->
+      <div class="sidebar">
+
+        <!-- Select Content (pills) -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">
+            <span class="icon">📚</span>
+            Select Content
+          </div>
+
+          <div class="sel-group">
+            <div class="sel-lbl">Book</div>
+            <div class="sel-opts" id="bookPills">
+              <div class="sel-opt" data-value="empower">Empower</div>
+              <div class="sel-opt" data-value="gateway">Gateway</div>
+            </div>
+            <select id="bookSelect" class="dash-v2-native" aria-hidden="true" onchange="changeBook(this.value)">
+              <option value="empower">📘 Empower</option>
+              <option value="gateway">📗 Gateway</option>
+            </select>
+          </div>
+
+          <div class="sel-group">
+            <div class="sel-lbl">Level</div>
+            <div class="sel-opts" id="levelPills">
+              <div class="sel-opt" data-value="A2">A2</div>
+              <div class="sel-opt" data-value="B1">B1</div>
+              <div class="sel-opt" data-value="B1+">B1+</div>
+              <div class="sel-opt" data-value="B2">B2</div>
+            </div>
+            <select id="levelSelect" class="dash-v2-native" aria-hidden="true" onchange="changeLevel(this.value)">
+              <option value="A2">A2 - Elementary</option>
+              <option value="B1">B1 - Intermediate</option>
+              <option value="B1+">B1+ - Upper Intermediate</option>
+              <option value="B2">B2 - Advanced</option>
+            </select>
+          </div>
+
+          <div class="sel-group">
+            <div class="sel-lbl">Unit</div>
+            <div class="sel-opts" id="unitPills">
+              <div class="sel-opt active" data-value="all">All</div>
+            </div>
+            <select id="unitSelect" class="dash-v2-native" aria-hidden="true" onchange="changeUnit(this.value)">
+              <option value="all">All Units</option>
+            </select>
+          </div>
+
+          <div class="word-count-display">
+            <div class="word-count-number" id="wordCount">966</div>
+            <div class="word-count-label">words selected</div>
+          </div>
+        </div>
+
+        <!-- Assignments are now hub-only — see #hubScreen Assignments tab.
+             Removed from the vocabulary page so there's a single source of
+             truth for "what's assigned to me". The hub fans out to the
+             skill-specific drill-down view. -->
+
+        <!-- Standalone Map Button (design v2) -->
+        <button class="map-btn-gamified" onclick="openLearningMap()">
+          <span class="map-btn-icon">🗺️</span>
+          <span class="map-btn-text">Explore Learning Map</span>
+          <span class="map-btn-arrow">→</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       LISTENING SKILL SCREEN — lists listening activities.
+       Populated by student/js/skills/listening.js.
+       ============================================================ -->
+  <div id="listeningScreen" class="screen">
+    <div class="skill-screen">
+      <div class="skill-header">
+        <div class="skill-header-left">
+          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to hub">
+            <span class="chev" aria-hidden="true">←</span>
+            <span>Hub</span>
+          </button>
+          <div class="skill-title">
+            <div class="icon" aria-hidden="true">🎧</div>
+            <div>
+              <h2>Listening</h2>
+              <div class="skill-sub">Exams & practice</div>
+            </div>
+          </div>
+        </div>
+        <div class="skill-header-right">
+          <span class="skill-progress-pill" id="listeningProgressPill">0%</span>
+        </div>
+      </div>
+
+      <div class="skill-section-lbl">Activities</div>
+      <div class="skill-activity-grid" id="listeningActivityGrid">
+        <!-- populated by listening.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       EMPTY SKILL SHELLS — Grammar / Reading / Writing / Speaking
+       Each renders just the skill-header. Bodies are intentionally
+       empty per the spec: "you click and the page is empty".
+       ============================================================ -->
+  <div id="grammarScreen" class="screen">
+    <div class="skill-screen">
+      <div class="skill-header">
+        <div class="skill-header-left">
+          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to hub">
+            <span class="chev" aria-hidden="true">←</span><span>Hub</span>
+          </button>
+          <div class="skill-title">
+            <div class="icon" aria-hidden="true">✏️</div>
+            <div><h2>Grammar</h2><div class="skill-sub">Practice by level</div></div>
+          </div>
+        </div>
+        <div class="skill-header-right">
+          <button class="header-icon-btn" onclick="openSettingsModal()" title="Settings"><span>⚙️</span></button>
+          <button class="profile-badge" onclick="openProfileModal()">
+            <div class="avatar-display" id="grAvatarDisplay" style="background:#fff3e0"><span class="avatar-emoji" id="grAvatarEmoji">🦊</span></div>
+            <div class="profile-info">
+              <span class="profile-name" id="grProfileName">Student</span>
+              <span class="profile-level">Level <span id="grProfileLevel">1</span> • <span id="grProfileXP">0</span> XP</span>
+            </div>
+          </button>
+          <button class="logout-btn" onclick="openLogoutModal()"><span>🚪</span><span>Logout</span></button>
+        </div>
+      </div>
+      <div class="grammar-body" id="grammarBody"></div>
+    </div>
+  </div>
+
+  <div id="readingScreen" class="screen">
+    <div class="skill-screen">
+      <div class="skill-header">
+        <div class="skill-header-left">
+          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to hub">
+            <span class="chev" aria-hidden="true">←</span><span>Hub</span>
+          </button>
+          <div class="skill-title">
+            <div class="icon" aria-hidden="true">📖</div>
+            <div>
+              <h2>Reading</h2>
+              <div class="skill-sub">Exams &amp; practice</div>
+            </div>
+          </div>
+        </div>
+        <div class="skill-header-right">
+          <span class="skill-progress-pill" id="readingProgressPill">0%</span>
+        </div>
+      </div>
+
+      <!-- Level tabs + exam cards rendered by skills/reading.js -->
+      <div class="skill-section-lbl">Choose your level</div>
+      <div class="rd-home-levels" id="readingLevelTabs"></div>
+
+      <div class="skill-section-lbl" style="margin-top:18px">Exams</div>
+      <div class="rd-exam-list" id="readingExamList"></div>
+    </div>
+  </div>
+
+  <!-- Reading exam runtime container — populated by reading-exam.js -->
+  <div id="readingExamScreen" class="screen"></div>
+
+  <div id="writingScreen" class="screen">
+    <div class="skill-screen">
+      <div class="skill-header">
+        <div class="skill-header-left">
+          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to hub">
+            <span class="chev" aria-hidden="true">←</span><span>Hub</span>
+          </button>
+          <div class="skill-title">
+            <div class="icon" aria-hidden="true">✍️</div>
+            <div><h2>Writing</h2><div class="skill-sub">—</div></div>
+          </div>
+        </div>
+        <div class="skill-header-right">
+          <span class="skill-progress-pill">0%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="speakingScreen" class="screen">
+    <div class="skill-screen">
+      <div class="skill-header">
+        <div class="skill-header-left">
+          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to hub">
+            <span class="chev" aria-hidden="true">←</span><span>Hub</span>
+          </button>
+          <div class="skill-title">
+            <div class="icon" aria-hidden="true">🎤</div>
+            <div><h2>Speaking</h2><div class="skill-sub">—</div></div>
+          </div>
+        </div>
+        <div class="skill-header-right">
+          <span class="skill-progress-pill">0%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- All other screens remain the same -->
+  <div id="matchScreen" class="screen">
+    <button class="back-btn" onclick="backToMenu()">← Back</button>
+    <div class="progress-bar"><div id="matchProgress" class="progress-fill" style="width:0%"></div></div>
+    <div class="score-display">
+      <span>Score: <span id="matchScore">0</span> / <span id="matchTotal">0</span></span>
+      <span>🔥 <span id="matchStreak">0</span></span>
+    </div>
+    <div class="question-box"><h2>Match Words with Definitions</h2><p>Click a word, then its definition</p></div>
+    <div id="matchContainer" class="match-container"></div>
+    <div class="button-container button-container-right">
+      <button id="matchNextRound" class="action-btn" onclick="nextMatchRound()" style="display:none">Next Round →</button>
+    </div>
+  </div>
+
+  <div id="choiceScreen" class="screen">
+    <button class="back-btn" onclick="backToMenu()">← Back</button>
+    <div class="progress-bar"><div id="choiceProgress" class="progress-fill" style="width:0%"></div></div>
+    <div class="score-display">
+      <span>Score: <span id="choiceScore">0</span> / <span id="choiceTotal">0</span></span>
+      <span>🔥 <span id="choiceStreak">0</span></span>
+    </div>
+    <div class="question-box">
+      <p style="margin-bottom:8px;font-size:0.9em;color:var(--text-muted)">Read the sentence and find the meaning of the highlighted word</p>
+      <div class="context-sentence" id="choiceSentence"></div>
+      <div style="margin-top:10px">
+        <span class="pos-tag" id="choicePOS"></span>
+        <span class="turkish-translation" id="choiceTR" style="margin-left:10px"></span>
+      </div>
+    </div>
+    <div id="choiceContainer" class="choice-grid"></div>
+    <div class="button-container button-container-right">
+      <button id="choiceNext" class="action-btn" onclick="nextChoice()" style="display:none">Next →</button>
+    </div>
+  </div>
+
+  <div id="reverseScreen" class="screen">
+    <button class="back-btn" onclick="backToMenu()">← Back</button>
+    <div class="progress-bar"><div id="reverseProgress" class="progress-fill" style="width:0%"></div></div>
+    <div class="score-display">
+      <span>Score: <span id="reverseScore">0</span> / <span id="reverseTotal">0</span></span>
+      <span>🔥 <span id="reverseStreak">0</span></span>
+    </div>
+    <div class="question-box">
+      <p style="margin-bottom:8px;font-size:0.9em;color:var(--text-muted)">Listen carefully and choose the correct word</p>
+      <div class="definition-display" id="reverseDef"></div>
+      <div class="context-sentence" id="reverseSentence"></div>
+    </div>
+    <div id="reverseContainer" class="choice-grid"></div>
+    <div class="button-container button-container-right">
+      <button id="reverseNext" class="action-btn" onclick="nextReverse()" style="display:none">Next →</button>
+    </div>
+  </div>
+
+  <div id="spellingScreen" class="screen">
+    <button class="back-btn" onclick="backToMenu()">← Back</button>
+    <div class="progress-bar"><div id="spellingProgress" class="progress-fill" style="width:0%"></div></div>
+    <div class="score-display">
+      <span>Score: <span id="spellingScore">0</span> / <span id="spellingTotal">0</span></span>
+      <span>🔥 <span id="spellingStreak">0</span></span>
+    </div>
+    <div class="question-box">
+      <h2 id="spellingDef"></h2>
+      <span class="pos-tag" id="spellingPOS"></span>
+      <div class="turkish-hint" id="spellingTR"></div>
+      <p style="margin-top:10px">Type the word that matches this definition</p>
+    </div>
+    <div id="spellingHint" class="spelling-hint"></div>
+    <input type="text" id="spellingInput" class="spelling-input" placeholder="Type the word..." autocomplete="off" autocapitalize="off">
+    <div id="spellingFeedback" class="correct-answer-display" style="display:none"></div>
+    <div class="button-container">
+      <button class="hint-btn" id="spellingHintBtn" onclick="showSpellingHint()">💡 Letter Hint</button>
+      <button class="play-btn" id="spellingPlayBtn" onclick="speakSpellingWord()">🔊 Hear Word</button>
+    </div>
+    <div class="button-container button-container-right">
+      <button id="spellingCheck" class="action-btn" onclick="checkSpelling()">Check</button>
+      <button id="spellingNext" class="action-btn" onclick="nextSpelling()" style="display:none">Next →</button>
+    </div>
+  </div>
+
+  <div id="fillblankScreen" class="screen">
+    <button class="back-btn" onclick="backToMenu()">← Back</button>
+    <div class="progress-bar"><div id="fillProgress" class="progress-fill" style="width:0%"></div></div>
+    <div class="score-display">
+      <span>Score: <span id="fillScore">0</span> / <span id="fillTotal">0</span></span>
+      <span>🔥 <span id="fillStreak">0</span></span>
+    </div>
+    <div class="question-box">
+      <h2>Fill in the Blank</h2>
+      <p>Complete the sentence with the correct word</p>
+      <div class="definition-display" id="fillDef" style="margin-top:10px"></div>
+      <div class="turkish-hint" id="fillTR"></div>
+    </div>
+    <div id="fillSentence" class="fill-sentence"></div>
+    <div id="fillContainer" class="choice-grid"></div>
+    <div class="button-container button-container-right">
+      <button id="fillNext" class="action-btn" onclick="nextFill()" style="display:none">Next →</button>
+    </div>
+  </div>
+
+  <div id="orderScreen" class="screen">
+    <button class="back-btn" onclick="backToMenu()">← Back</button>
+    <div class="progress-bar"><div id="orderProgress" class="progress-fill" style="width:0%"></div></div>
+    <div class="score-display">
+      <span>Score: <span id="orderScore">0</span> / <span id="orderTotal">0</span></span>
+      <span>🔥 <span id="orderStreak">0</span></span>
+    </div>
+    <div class="question-box">
+      <h2>Word Order</h2>
+      <p>Click the words in the correct order to form the sentence</p>
+    </div>
+    <div id="orderAnswer" class="answer-area"></div>
+    <div id="orderTokens" class="sentence-tokens"></div>
+    <div id="orderFeedback" class="correct-answer-display" style="display:none"></div>
+    <div id="orderAttemptInfo" class="attempt-info" style="display:none"></div>
+    <div class="button-container">
+      <button class="clear-btn" id="orderClear" onclick="clearOrderAnswer()">🗑️ Clear</button>
+    </div>
+    <div class="button-container button-container-right">
+      <button id="orderCheck" class="action-btn" onclick="checkOrder()">Check</button>
+      <button id="orderNext" class="action-btn" onclick="nextOrder()" style="display:none">Next →</button>
+    </div>
+  </div>
+
+  <div id="pronunciationScreen" class="screen">
+    <button class="back-btn" onclick="backToMenu()">← Back</button>
+    <div class="progress-bar"><div id="pronProgress" class="progress-fill" style="width:0%"></div></div>
+    <div id="ttsWarning" class="tts-warning" style="display:none">⚠️ Text-to-speech may not be available in your browser</div>
+    <div class="accent-toggle">
+      <button class="accent-btn active" id="accentUS" onclick="setAccent('US')">🇺🇸 American</button>
+      <button class="accent-btn" id="accentUK" onclick="setAccent('UK')">🇬🇧 British</button>
+    </div>
+    <div class="question-box"><p>Listen and repeat each word</p></div>
+    <div class="pronunciation-box">
+      <div class="word-with-turkish">
+        <h2 id="pronWord"></h2>
+        <div class="turkish-translation" id="pronTR"></div>
+      </div>
+      <span class="pos-tag" id="pronPOS"></span>
+      <p id="pronDef" style="color:var(--text-secondary);margin-top:10px"></p>
+      <div class="example-sentence" id="pronExample"></div>
+    </div>
+    <div class="button-container">
+      <button class="play-btn" onclick="speakWord()">🔊 Play Sound</button>
+      <button class="action-btn" onclick="nextPronunciation()">Next →</button>
+    </div>
+    <p style="text-align:center;color:var(--text-muted);margin-top:10px">Word <span id="pronCurrent">1</span> of <span id="pronTotal">10</span></p>
+  </div>
+
+  <!-- Unscramble Difficulty Picker -->
+  <div id="unscrambleDiffScreen" class="screen">
+    <button class="back-btn" onclick="backToMenu()">← Back</button>
+    <div class="question-box" style="text-align:center">
+      <h2>🔤 Unscramble</h2>
+      <p>Rearrange the scrambled letters to spell the word</p>
+    </div>
+    <div class="difficulty-grid">
+      <div class="difficulty-card heroic" onclick="startUnscrambleWithDifficulty('heroic')">
+        <div class="diff-icon">⚔️</div>
+        <h3>Heroic</h3>
+        <p>Single words · Letter count hint</p>
+      </div>
+      <div class="difficulty-card nightmare" onclick="startUnscrambleWithDifficulty('nightmare')">
+        <div class="diff-icon">💀</div>
+        <h3>Nightmare</h3>
+        <p>All entries · No hints</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unscramble Game Screen -->
+  <div id="unscrambleScreen" class="screen">
+    <button class="back-btn" onclick="backToMenu()">← Back</button>
+    <div class="progress-bar"><div id="unscrambleProgress" class="progress-fill" style="width:0%"></div></div>
+    <div class="score-display">
+      <span>Score: <span id="unscrambleScore">0</span> / <span id="unscrambleTotal">0</span></span>
+      <span>🔥 <span id="unscrambleStreak">0</span></span>
+    </div>
+    <div class="question-box">
+      <h2 id="unscrambleDef"></h2>
+      <span class="pos-tag" id="unscramblePOS"></span>
+      <div class="turkish-hint" id="unscrambleTR"></div>
+    </div>
+    <div id="unscrambleHint" class="unscramble-hint"></div>
+    <div id="unscrambleAnswer" class="answer-area unscramble-answer"></div>
+    <div id="unscrambleTiles" class="sentence-tokens unscramble-tiles-area"></div>
+    <div id="unscrambleFeedback" class="correct-answer-display" style="display:none"></div>
+    <div id="unscrambleAttemptInfo" class="attempt-info" style="display:none"></div>
+    <div class="button-container">
+      <button class="clear-btn" id="unscrambleClear" onclick="clearUnscramble()">🗑️ Clear</button>
+    </div>
+    <div class="button-container button-container-right">
+      <button id="unscrambleCheck" class="action-btn" onclick="checkUnscramble()">Check</button>
+      <button id="unscrambleNext" class="action-btn" onclick="nextUnscramble()" style="display:none">Next →</button>
+    </div>
+  </div>
+
+  <!-- ═══════ LISTENING EXAM SCREEN ═══════ -->
+  <div id="listeningExamScreen" class="screen">
+    <div class="exam-header">
+      <button class="exam-back-btn" onclick="backFromExam()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5m0 0l7 7m-7-7l7-7"/></svg>
+        <span>Back</span>
+      </button>
+      <h2 id="examTitle">Listening Exam</h2>
+    </div>
+
+    <!-- Modern Audio Player -->
+    <div class="exam-player">
+      <div class="exam-player-top">
+        <div class="exam-now-playing">
+          <div class="exam-vinyl">
+            <div class="exam-vinyl-inner" id="examVinyl">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="rgba(255,255,255,0.7)"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+            </div>
+          </div>
+          <div class="exam-track-info">
+            <span class="exam-track-title" id="examTrackTitle">FSMEPT Listening</span>
+            <span class="exam-track-sub">Sample Exam Audio</span>
+          </div>
+        </div>
+        <div class="exam-player-controls">
+          <button class="exam-ctrl-btn" onclick="rewindExamAudio()" title="Rewind 10s">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/><text x="12" y="15.5" text-anchor="middle" font-size="7" fill="currentColor" stroke="none" font-weight="700">10</text></svg>
+          </button>
+          <button class="exam-ctrl-btn exam-play-btn" id="examPlayBtn" onclick="toggleExamAudio()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+          <button class="exam-ctrl-btn" onclick="forwardExamAudio()" title="Forward 10s">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10"/><text x="12" y="15.5" text-anchor="middle" font-size="7" fill="currentColor" stroke="none" font-weight="700">10</text></svg>
+          </button>
+          <button class="exam-ctrl-btn exam-speed-btn" id="examSpeedBtn" onclick="changeExamSpeed()">1x</button>
+        </div>
+      </div>
+      <div class="exam-progress-wrap">
+        <span class="exam-time-label" id="examAudioTime">0:00</span>
+        <div class="exam-progress-bar" onclick="seekExamAudio(event)">
+          <div class="exam-progress-fill" id="examProgressFill"></div>
+          <div class="exam-progress-knob" id="examProgressKnob"></div>
+        </div>
+        <span class="exam-time-label" id="examAudioDuration">0:00</span>
+      </div>
+      <audio id="examAudio" preload="auto"></audio>
+    </div>
+
+    <!-- Mobile-only tab switcher (shown once has-transcript is set on the screen).
+         Replaces the slide-up bottom-sheet drawer with a clean [Answers]/[Transcript]
+         toggle. Only one view is visible at a time; each gets full screen width. -->
+    <div class="exam-mobile-tabs" id="examMobileTabs">
+      <button type="button" class="exam-mobile-tab active" data-view="answers" onclick="switchExamMobileView('answers')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Your Answers</span>
+      </button>
+      <button type="button" class="exam-mobile-tab" data-view="transcript" onclick="switchExamMobileView('transcript')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Transcript</span>
+      </button>
+    </div>
+
+    <!-- Questions (full-width); transcript lives in a slide-in drawer below -->
+    <div class="exam-split">
+      <div class="exam-split-main">
+        <!-- Exam Sections -->
+        <div id="examSectionsContainer"></div>
+
+        <!-- Submit -->
+        <div style="text-align:center;margin:24px 0;">
+          <button class="exam-submit-btn" id="examSubmitBtn" onclick="submitListeningExam()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Submit Answers
+          </button>
+        </div>
+
+        <!-- Results -->
+        <div id="examResultsArea" style="display:none;"></div>
+      </div>
+
+      <!-- Transcript drawer (slides in from the right) -->
+      <aside class="exam-split-side" id="examTranscriptDrawer">
+        <button class="transcript-close" onclick="toggleTranscriptDrawer(false)" title="Close transcript" aria-label="Close transcript">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div id="examTranscript"></div>
+      </aside>
+    </div>
+
+    <!-- Floating toggle tab (shown once transcript is available) -->
+    <button class="transcript-toggle" id="transcriptToggle" onclick="toggleTranscriptDrawer()" title="Show transcript" aria-label="Show transcript">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>Transcript</span>
+    </button>
+  </div>
+
+  <div id="completionScreen" class="screen completion-screen">
+    <h2>🎉 Session Complete!</h2>
+    <p class="score" id="finalScore">0/0 (0%)</p>
+    <p class="message" id="finalMessage"></p>
+    <div id="reviewSection" class="review-section" style="display:none">
+      <h3>🔍 Words to Review</h3>
+      <div id="reviewList"></div>
+    </div>
+    <div class="button-container" style="flex-direction:column;gap:12px;align-items:center;">
+      <button class="action-btn" style="width:100%;max-width:300px;" onclick="backToMenu()">🏠 Back to Main Menu</button>
+      <button class="action-btn secondary" style="width:100%;max-width:300px;background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(6,182,212,0.25));border:2px solid var(--accent-primary);" onclick="practiceAgain()">🔄 Practice Missed Words</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
+<script src="activity-tracker/js/activity-config.js"></script>
+<script src="activity-tracker/js/activity-logger.js"></script>
+
+<!-- Modular JavaScript - Load order matters! -->
+<script src="student/js/config.js"></script>
+<script src="student/js/auth.js"></script>
+<!-- Phase J — bi-monthly verification gate. Watches for
+     window.currentStudentData (populated by auth.js after the user
+     doc loads) and pops the #verifyGateModal if their lastVerifiedAt
+     is missing or > 60 days old. Must load AFTER auth.js so the
+     global is set first. -->
+<script src="student/js/verify-gate.js"></script>
+<script src="student/js/ui.js"></script>
+<script src="student/js/pronunciation.js"></script>
+<script src="student/js/inflection.js"></script>
+<script src="student/js/games.js"></script>
+<script src="student/js/progress.js"></script>
+<script src="student/js/student.js"></script>
+<!-- Skill registry MUST load before student-assignments.js so the
+     skill pills + per-skill row meta + smart router can read from it. -->
+<script src="assignments/js/skill-registry.js?v=2"></script>
+<!-- Phase G — exam-registry is the single source of truth for the
+     skill → level → exam catalog. reading-exam.js derives its
+     READINGS_INDEX from it at boot, so the registry MUST load
+     before reading-exam.js or the student sees zero readings. -->
+<script src="assignments/js/exam-registry.js"></script>
+<!-- Writing feedback v2: the comment bank (for criterion labels) + the
+     annotation engine, so the student feedback modal can render the
+     teacher's inline highlights. Read-only on the student side. Must
+     load before student-assignments.js uses them. -->
+<script src="assignments/js/writing-comment-bank.js"></script>
+<script src="assignments/js/writing-annotations.js"></script>
+<script src="assignments/js/student-assignments.js?v=2"></script>
+<script src="student/js/listening-exam.js"></script>
+<script src="student/js/reading-exam.js"></script>
+<script src="student/js/avatar.js"></script>
+<script src="student/js/hub.js?v=4"></script>
+<script src="student/js/skills/listening.js"></script>
+<!-- Phone/system back-button → in-app navigation. Loaded LAST so it can
+     wrap showScreen() after every other module has loaded. -->
+<script src="student/js/back-nav.js"></script>
+<script src="student/js/skills/grammar-content.js?v=10"></script>
+<script src="student/js/skills/grammar.js?v=17"></script>
+<!-- Feature toggles for the hub tiles (settings/featureToggles). -->
+<script src="student/js/feature-toggles.js?v=1"></script>
+<script src="student/js/skills/reading.js"></script>
+<script src="student/js/skills/writing.js"></script>
+<script src="student/js/skills/speaking.js"></script>
+
+<script>
+// ── Dashboard subtitle text cycle ────────────────────────────────────────────
+(function () {
+  const phrases = [
+    'from your Empower coursebook',
+    'across A2 · B1 · B1+ · B2',
+    'with 10 interactive activities',
+    'one session at a time',
+    'and track your progress'
+  ];
+  let idx = 0;
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const wrapper = document.querySelector('.dash-cycle-wrapper');
+    if (!wrapper) return;
+
+    setInterval(function () {
+      idx = (idx + 1) % phrases.length;
+
+      const current = wrapper.querySelector('.dash-cycle-word:not(.exit)');
+      if (current) {
+        current.classList.add('exit');
+        setTimeout(() => current.remove(), 370);
+      }
+
+      const next = document.createElement('span');
+      next.className   = 'dash-cycle-word';
+      next.textContent = phrases[idx];
+      wrapper.appendChild(next);
+    }, 3000);
+  });
+})();
+</script>
+
+<script src="/pwa-register.js"></script>
+</body>
+</html>

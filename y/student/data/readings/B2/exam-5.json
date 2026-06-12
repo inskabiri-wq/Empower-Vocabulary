@@ -1,0 +1,291 @@
+{
+  "id": "b2-r5",
+  "level": "B2",
+  "title": "B2 Reading 5 — Language Development",
+  "subtitle": "One passage · MCQ, reference, writing",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Language Development",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Under normal circumstances, children start hearing language from the day they are born, and by the age of two, most children have learned a vocabulary of 50 words or so. By the age of five, children have generally acquired most of the sounds of their native language and a good deal of the grammar as well. Of course, each individual child is different, but there are general patterns of language acquisition. So, most children acquire the basics of their native language or languages at an early age. If for some reason a child is not exposed to language during the first years of her life, can she still learn to speak when she is older? In his 1967 book, Biological Foundations of Language, Eric Lenneberg discussed the critical period hypothesis. According to this hypothesis, there's an ideal age range for children to acquire language. Beyond this age, <strong>it</strong>'s much more difficult to acquire language. Lenneberg, whose field was psychology, was not the first scientist to propose the critical period hypothesis, but he brought popular attention to it. How can such a hypothesis be tested? Lenneberg based his ideas on evidence from brain damaged and isolated children. Isolated children; that is, children who have been isolated from society for one reason or another, provide a unique opportunity to study this hypothesis. These are children who were not exposed to human language during the so-called critical period of their lives. Could they acquire language at a later age?</p><p class=\"rd-para\" data-para=\"2\">There are several well-known cases of isolated children, also called \"wild children\" or \"feral children.\" They have been a subject of interest since long before linguists began studying the critical period hypothesis. One of the earliest known cases is Victor, a boy who was discovered in a small town in France around the year 1800. He had been living on his own in the woods and was about 12 years old at the time he was found. He didn't speak, or follow any of the <strong>norms</strong> of society such as wearing clothes or sleeping in a bed. He was brought to the attention of Jean-Marc-Gaspard Itard, a doctor and teacher of the deaf. Itard brought Victor to live in his house with a goal to civilize him. Itard's interest was in proving that Victor was as human as any other person, even though he'd been living in the woods like an animal. This may seem silly to us now, but during Itard's time this was an important point. Itard's contemporaries were interested in defining what makes humans different from animals. Itard thought that if he could teach Victor to speak, <strong>that</strong> would show a distinction between humans and animals. Unfortunately, although Victor learned many civilized behaviors such as wearing clothes and eating with a knife and fork, he only learned to speak three words, and Itard <strong>eventually</strong> left him to the care of <strong>his</strong> housekeeper. At this point in time, there are too many unknowns about Victor to use his case as a proof for the critical period hypothesis.</p><p class=\"rd-para\" data-para=\"3\">A more modern case is that of Genie, a girl who had been isolated from her family for the first 13 years of her life. She lived in extremely abusive conditions, locked in a darkened bedroom with little contact with the rest of her family. When she was brought to the attention of authorities in 1970 at the age of 13, she could barely walk and didn't talk. She was given into the care of a hospital for a while and received intensive language teaching. She did acquire a large vocabulary, but what she couldn't learn was grammar. She used many words but was unable to put them together into complete, grammatically correct sentences. But because Genie was severely abused during most of her childhood, the effects of <strong>this</strong> on her mental development may also have contributed to her difficulties in acquiring language. So while her case does provide some support for the critical period hypothesis, <strong>it</strong> cannot be considered as proof.</p><p class=\"rd-para\" data-para=\"4\">Then there is the case of a woman known as Chelsea. Hers was not a case of abuse. She was deaf from childhood, but no one realized this. It was not until she was 31 years old that her deafness was discovered and she was given hearing aids. Finally, she was able to hear spoken language. Like Genie, she acquired a significant vocabulary, but was unable to put together grammatically correct sentences. But just as there were with Genie, there are questions about Chelsea's case. Why did no one realize she was deaf as a child? Didn't she try to develop other forms of communication? Other factors which may have affected her ability to learn are unknown and cannot be controlled for.</p>",
+      "sections": [
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part A",
+          "instructions": "Circle the correct answer.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Who was Eric Lenneberg?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "A biologist"
+                },
+                {
+                  "id": "b",
+                  "text": "A psychologist"
+                },
+                {
+                  "id": "c",
+                  "text": "A teacher of the deaf"
+                },
+                {
+                  "id": "d",
+                  "text": "A medical doctor"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "According to the critical period hypothesis _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "the ability to learn a language is linked to age"
+                },
+                {
+                  "id": "b",
+                  "text": "brain damaged and isolated children cannot learn languages"
+                },
+                {
+                  "id": "c",
+                  "text": "children have a limited knowledge of vocabulary and grammar"
+                },
+                {
+                  "id": "d",
+                  "text": "the hardest time to acquire a language is during the critical period"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m3",
+              "question": "What does the writer imply about Itard's goal with Victor?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "It was inhumane."
+                },
+                {
+                  "id": "b",
+                  "text": "It took too long."
+                },
+                {
+                  "id": "c",
+                  "text": "It seems uninteresting."
+                },
+                {
+                  "id": "d",
+                  "text": "It was appropriate for his time."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m4",
+              "question": "Itard's work with Victor _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "illustrates the work of an early linguistics professor"
+                },
+                {
+                  "id": "b",
+                  "text": "is the best support for the critical period hypothesis"
+                },
+                {
+                  "id": "c",
+                  "text": "is one of the first known cases of work with an isolated child"
+                },
+                {
+                  "id": "d",
+                  "text": "shows how theories of language changed over time"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m5",
+              "question": "Which of the following is TRUE about Genie?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "She was isolated by her family because she couldn't talk."
+                },
+                {
+                  "id": "b",
+                  "text": "She made some progress with learning a language."
+                },
+                {
+                  "id": "c",
+                  "text": "She was an ideal case for doctors because of her traumatic childhood."
+                },
+                {
+                  "id": "d",
+                  "text": "The language training she received was totally useless."
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m6",
+              "question": "What can we infer about the critical period hypothesis?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "There is no clear proof for it."
+                },
+                {
+                  "id": "b",
+                  "text": "Most linguists agree with it."
+                },
+                {
+                  "id": "c",
+                  "text": "Few people are interested in it."
+                },
+                {
+                  "id": "d",
+                  "text": "It is true for some children."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m7",
+              "question": "What is the text mainly about?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Causes of child abuse"
+                },
+                {
+                  "id": "b",
+                  "text": "How to teach children to speak"
+                },
+                {
+                  "id": "c",
+                  "text": "Education of handicapped children"
+                },
+                {
+                  "id": "d",
+                  "text": "A theory about how language is learned"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m8",
+              "question": "The word \"norm\" in Paragraph 2 is closest in meaning to _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "type"
+                },
+                {
+                  "id": "b",
+                  "text": "fact"
+                },
+                {
+                  "id": "c",
+                  "text": "standard"
+                },
+                {
+                  "id": "d",
+                  "text": "level"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m9",
+              "question": "The word \"eventually\" in Paragraph 2 is closest in meaning to _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "never"
+                },
+                {
+                  "id": "b",
+                  "text": "finally"
+                },
+                {
+                  "id": "c",
+                  "text": "already"
+                },
+                {
+                  "id": "d",
+                  "text": "certainly"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m10",
+              "question": "The word \"it\" in paragraph 1 refers to _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "the field of psychology"
+                },
+                {
+                  "id": "b",
+                  "text": "the critical period hypothesis"
+                },
+                {
+                  "id": "c",
+                  "text": "acquiring a language"
+                },
+                {
+                  "id": "d",
+                  "text": "testing the hypothesis"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part B",
+          "instructions": "What do the following words refer to? They are bold and underlined in the passage.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"that\" (paragraph 2):",
+              "answer": "teaching Victor to speak"
+            },
+            {
+              "id": "sa2",
+              "definition": "\"his\" (paragraph 2):",
+              "answer": "Itard's"
+            },
+            {
+              "id": "sa3",
+              "definition": "\"this\" (paragraph 3):",
+              "answer": "being severely abused (during most of her childhood)"
+            },
+            {
+              "id": "sa4",
+              "definition": "\"it\" (paragraph 3):",
+              "answer": "her case"
+            }
+          ]
+        },
+        {
+          "id": "writing",
+          "type": "writing",
+          "label": "Part C",
+          "instructions": "Answer the question in your own words (min. 50 words).",
+          "prompt": "The text discusses the importance of age in learning a first language. How important do you think age is when learning a second language?",
+          "minWords": 50
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- Disable iOS / Android auto-link helpers (phone numbers, emails,
+     addresses, dates). One of many layers of the secure-exam lockdown. -->
+<meta name="format-detection" content="telephone=no, address=no, email=no, date=no">
+<!-- Hide referrer so the writing page never leaks the prompt URL. -->
+<meta name="referrer" content="no-referrer">
+<title>Writing Exam — Empower</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css">
+<link rel="stylesheet" href="css/fsmvu-loader.css">
+<!-- Shared themed dialog (alert/confirm/prompt) — replaces native browser popups app-wide. -->
+<script src="js/app-dialog.js"></script>
+<link rel="stylesheet" href="student/css/writing-exam.css">
+</head>
+<body data-theme="dark">
+
+<!-- Loading splash while we resolve the assignmentId from URL. -->
+<div id="wrLoading" class="wr-loading">
+  <div class="fsmvu-loader fsmvu-loader--progress fsmvu-loader--white" role="status" aria-label="Loading">
+    <div class="fsmvu-ring-wrap"><span class="fsmvu-track"></span><span class="fsmvu-arc"></span><span class="fsmvu-seal"></span></div>
+  </div>
+  <div class="msg">Loading writing exam…</div>
+</div>
+
+<!-- Top bar — sticky, contains title, timer, word count, submit. -->
+<div class="wr-topbar" id="wrTopbar" style="display:none;">
+  <div class="wr-topbar-left">
+    <div>
+      <div class="wr-title" id="wrTitle">Writing Exam</div>
+      <div class="wr-subtitle" id="wrSubtitle">—</div>
+    </div>
+  </div>
+  <div class="wr-topbar-right">
+    <span class="wr-stat" title="Number of words you've written">
+      <span class="lbl">Words:</span> <strong id="wrWordCount">0</strong>
+      <span id="wrWordTarget" class="lbl"></span>
+    </span>
+    <span class="wr-stat">
+      <span class="lbl">Time:</span>
+      <span id="wrTimer" class="wr-timer">--:--</span>
+    </span>
+    <button class="wr-icon-btn" id="wrSettingsBtn" title="Settings" aria-label="Settings">⚙️</button>
+    <button class="wr-btn" id="wrSubmitBtn">Submit</button>
+  </div>
+</div>
+
+<!-- Two-pane stage: editor left, prompt right. -->
+<main class="wr-stage" id="wrStage" style="display:none;">
+  <!-- LEFT: editor -->
+  <section class="wr-editor-pane">
+    <!-- contenteditable instead of <textarea> so we can fully control
+         input, block paste/drag, and strip formatting on every event. -->
+    <div id="wrEditor"
+         class="wr-editor"
+         contenteditable="true"
+         role="textbox"
+         aria-multiline="true"
+         spellcheck="false"
+         autocorrect="off"
+         autocapitalize="off"
+         autocomplete="off"
+         translate="no"
+         data-gramm="false"
+         data-gramm_editor="false"
+         data-enable-grammarly="false"
+         data-placeholder="Start writing your response here…"></div>
+  </section>
+
+  <!-- RIGHT: prompt -->
+  <aside class="wr-prompt-pane">
+    <h2>Prompt</h2>
+    <div class="wr-prompt-body" id="wrPromptBody">Loading…</div>
+    <div class="wr-prompt-meta" id="wrPromptMeta">
+      <!-- populated by JS: question type, time limit, word counts, etc. -->
+    </div>
+  </aside>
+</main>
+
+<!-- Final "submitted" splash -->
+<div id="wrDone" class="wr-done">
+  <div class="icon">✅</div>
+  <h2>Submitted</h2>
+  <p>Your response has been saved. You can close this tab now.</p>
+  <div class="recap" id="wrDoneRecap">—</div>
+  <a class="wr-btn wr-btn-secondary" href="student-dashboard.html#writing" id="wrDoneBackBtn">Back to dashboard</a>
+</div>
+
+<!-- Settings panel — mirrors reading-exam settings architecture. -->
+<div class="wr-settings-overlay" id="wrSettingsOverlay"></div>
+<aside class="wr-settings-panel" id="wrSettingsPanel">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <h3>Settings</h3>
+    <button class="wr-icon-btn" id="wrSettingsCloseBtn" aria-label="Close settings">✕</button>
+  </div>
+
+  <div class="wr-set-section">
+    <div class="wr-set-label">Theme</div>
+    <div class="wr-set-row" id="wrThemeRow">
+      <button data-theme="dark"     class="active">Dark</button>
+      <button data-theme="light">Light</button>
+      <button data-theme="sepia">Sepia</button>
+      <button data-theme="contrast">Contrast</button>
+    </div>
+  </div>
+
+  <div class="wr-set-section">
+    <div class="wr-set-label">Text size</div>
+    <div class="wr-set-row" id="wrScaleRow">
+      <button data-scale="0.85">A−</button>
+      <button data-scale="1"     class="active">A</button>
+      <button data-scale="1.15">A+</button>
+      <button data-scale="1.30">A++</button>
+    </div>
+  </div>
+
+  <div class="wr-set-section">
+    <div class="wr-set-label">Line spacing</div>
+    <div class="wr-set-row" id="wrSpacingRow">
+      <button data-spacing="1.4">Tight</button>
+      <button data-spacing="1.7" class="active">Normal</button>
+      <button data-spacing="2.1">Loose</button>
+    </div>
+  </div>
+
+  <div class="wr-set-section">
+    <div class="wr-set-label">Editor font</div>
+    <div class="wr-set-row" id="wrFontRow">
+      <button data-font="serif"      class="active">Serif</button>
+      <button data-font="sans">Sans</button>
+      <button data-font="mono">Mono</button>
+    </div>
+  </div>
+
+  <div class="wr-set-section">
+    <div class="wr-set-label">Reset</div>
+    <div class="wr-set-row">
+      <button id="wrSettingsResetBtn">Reset to defaults</button>
+    </div>
+  </div>
+</aside>
+
+<!-- Confirm-submit modal -->
+<div class="wr-modal-overlay" id="wrSubmitConfirm">
+  <div class="wr-modal">
+    <h3>Submit your response?</h3>
+    <p id="wrSubmitConfirmMsg">Once submitted, you can't edit your response.</p>
+    <div class="wr-modal-actions">
+      <button class="wr-btn wr-btn-secondary" id="wrSubmitCancelBtn">Keep writing</button>
+      <button class="wr-btn" id="wrSubmitConfirmBtn">Yes, submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
+<!-- Firebase project config — same as other pages -->
+<script>
+firebase.initializeApp({
+  apiKey:            "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
+  authDomain:        "empower-vocabulary-practice.firebaseapp.com",
+  projectId:         "empower-vocabulary-practice",
+  storageBucket:     "empower-vocabulary-practice.firebasestorage.app",
+  messagingSenderId: "136270199832",
+  appId:             "1:136270199832:web:174222066ef1cbdc8f576d",
+  measurementId:     "G-1BBXBVEP5C"
+});
+const auth = firebase.auth();
+const db   = firebase.firestore();
+</script>
+
+<script src="student/js/writing-exam.js"></script>
+</body>
+</html>

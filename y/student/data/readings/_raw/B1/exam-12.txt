@@ -1,0 +1,157 @@
+ID: b1-r12
+LEVEL: B1
+TITLE: B1 Reading 12 — Stress in the Workplace
+SUBTITLE: One passage · Headings, True/False, MCQ, vocab, reference
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Stress in the Workplace
+
+PASSAGE:
+Three out of every four American workers describe their work as stressful. Occupational stress has been defined as a "global problem" by the United Nations' International Labor Organization. There are a lot of physical effects of *this* problem. In addition to this, the economic consequences of this global problem are also alarming. Workplace stress costs U.S. employers $200 billion per year in absenteeism, lower productivity, staff turnover, medical insurance and other stress-related expenses.
+
+Of course, stress is a factor in everyone's life, particularly during major events such as marriage, divorce or buying a home. But many of the most stressful events are related to the workplace: fear of losing your job, changes in your post, changes in financial status, having new responsibilities, having trouble with the boss, variations in work hours or conditions, and vacation dates.
+
+Surprisingly, stress is not always a bad thing. It can increase creativity and productivity. According to Robert Ostermann, professor of psychology at FDU's Teaneck-Hackensack Campus, "No one reaches *peak* performance without being stressed, whether an athlete, an office worker or a manager." The problem *occurs* when stress is so significant.
+
+Ostermann has found that sources of stress change in different professions. For factory workers, stress often is related directly to the work situation, such as dealing with dangerous heavy equipment or working in an uncomfortable environment. In contrast, office workers are more likely to experience stress related inter-personal relationships on the job. "People pressures" such as unclear supervision, tension among team members and fear of dislike can cause stress.
+
+"For many people the *core* of their social life is the people whom they work with," explains Ostermann. "Most people take it personally, but work is not a social situation. When you begin to get some things that are not exactly the qualities of good relationships — such as rumors and power plays among *executives* who are competing for the next promotion — the amount of stress that you get increases."
+
+Occupational stress is not related only to what goes on at work. Conflicts between the demands of the workplace and of home life are increasingly common. One can be stressed when there is an unbalance between family life and work life. According to a survey of the U.S. Department of Labor, 10% of people who are married or living with children under 18 experience *severe* work-family conflict.
+
+In the current "information age" things move faster than ever before with faxes and instant e-mail messages. In some professions people may face more stress due to the fast changes in technology. For example: "Airline pilots are flying more complicated planes, carrying more people under more pressing time demands and with much more airport traffic than ever before," Ostermann says. Technology in automation has allowed employers to get rid of many jobs. *This* causes a fear of being replaced by a machine, and those who keep their jobs must take further education and training. They tend to have a higher level of responsibility, and thus *it* causes greater stress on them.
+
+"Other managerial changes," *he* adds, "especially increased use of part-timers, administrative changes, increased diversity and adjustments in salaries," lead to increased levels of job insecurity. "Now only about half of managers and employees comment that they feel safe in their jobs, 20 years ago this rate was about 80%."
+
+A particularly alarming cause of stress is *aggression* or violence in the workplace. It is estimated by the U.S. Justice Department that each year more than a million people are the victims of violence at work. Aggressive behavior in the workplace ranges from the few "serious instances of physical assault" to the more common 'passive' forms of aggression, such as not sharing the information with other workers, not answering the phone calls and being late to meetings. Although these passive-aggressive behaviours seem to be not very disturbing, Ostermann notes that "when *they* are constantly repeated, they can result in great psychological harm and loss of personal and organizational productivity."
+
+The physical consequences of excessive stress have long been recognized — from heart attacks and strokes to ulcers and other gastrointestinal disorders. Psychologically, stress can lead to depression, anxiety and even panic attacks. 60% of lost workdays each year can be attributed to stress. In addition, an estimated 75 to 90% of visits to health care providers are due to stress-related conditions, costing employers in increased health care costs. Stress also can have a direct effect on the way people handle their jobs. Employees under stress may make more mistakes, have trouble concentrating, become disorganized, become angry or just stop caring about their work. The Wall Street Journal reported that one third of people surveyed considered quitting their jobs because of stress and 14% actually *did it*.
+
+Many people look for help to solve their problems about stress, and employers are responding. "We look for support systems, things that will balance the stress," comments Ostermann. Options include flexible work weeks and telecommuting opportunities. On the physical side, some organizations provide health clubs where employees can work out and keep fit and cafeterias where workers can choose from a healthy range of meals. Most *corporations* make counseling readily available.
+
+Handling stress, however, is a very individual matter. Alice Mills, co-director of counseling services in the Teaneck-Hackensack Campus Wellness Center, suggests several ways individuals can deal with stress. "The first step is to analyze the situation to determine what is causing the stress and what techniques might best suit the individual," she says. Mills notes that there are many relaxation skills including the use of music, meditation, aerobic exercise, muscle relaxation and imagery. Many of these techniques can be learned through books and video- and audiotapes such as those that the Wellness Center makes available to students, faculty and staff through *its* stress lab. Another important way to combat stress is to sharpen one's communication skills. "You need to learn how to speak about your own needs and wants and how to give positive and negative feedback to others," Mills explains. And, perhaps most importantly, "Take care of yourself."
+
+# HEADINGS
+LABEL: Part A
+INSTRUCTIONS: Match the main ideas with the paragraphs. There is ONE EXTRA idea.
+LABELS: ,,,Paragraph 4,Paragraph 5,Paragraph 6,Paragraph 7,Paragraph 8,Paragraph 9
+A: Changes in management system can lead to stress
+B: Ways of helping workers who have stress
+C: Changes due to advances in technology may result in stress
+D: Violence in the office can cause stress
+E: Personal relationships in an office can be another cause of stress
+F: Family life can also contribute to the stress in work life
+G: Causes of stress can alter in different occupations
+ANSWERS: 4=G, 5=E, 6=F, 7=C, 8=A, 9=D
+
+# TRUEFALSE
+LABEL: Part B
+INSTRUCTIONS: Choose True or False for each statement.
+1. Occupational stress affects the majority of American workers.
+   ANSWER: T
+2. The United Nations' International Labor Organization has classified workplace stress as a top-priority issue.
+   ANSWER: F
+3. The economic consequences of workplace stress include only absenteeism and lower productivity.
+   ANSWER: F
+4. Stress is primarily related to external factors like job loss and financial changes.
+   ANSWER: F
+5. Stress always has a negative impact on performance, according to Robert Ostermann.
+   ANSWER: F
+6. Stress is mainly related to physical working conditions for office workers.
+   ANSWER: F
+7. The "information age" has generally reduced stress levels for workers.
+   ANSWER: F
+8. Job insecurity is decreasing among managers and employees in the current work environment.
+   ANSWER: F
+9. Workplace aggression is primarily limited to physical assaults.
+   ANSWER: F
+10. The majority of lost workdays each year can be attributed to stress-related causes.
+    ANSWER: T
+
+# MCQ
+LABEL: Part C
+INSTRUCTIONS: Choose the best answer for the following questions.
+1. Which of the following is NOT an effect of workplace stress?
+   a) not going to work
+   b) leaving the job
+   c) becoming less productive
+   d) having medical insurance
+   ANSWER: d
+2. According to paragraph 2, changes in work hours or conditions __________.
+   a) are examples of workplace related stressful events
+   b) are less stress causing events than having trouble with the boss
+   c) cause employees to get divorced
+   d) are not considered as major stressful events
+   ANSWER: a
+3. According to Robert Ostermann, __________.
+   a) people should never get stressed at workplace
+   b) an athlete cannot reach his peak performance if he is stressed
+   c) people can benefit from stress as well
+   d) when stress is significant, medical support becomes necessary
+   ANSWER: c
+4. In paragraph 4, what does the writer mean with the phrase "people pressures"?
+   a) It is the number of people working in a company; if it is too high, you have people pressure.
+   b) If there are not enough people to do a job, employees get stressed.
+   c) If people do not know how to use complex equipments, it can cause stress.
+   d) It is the effect of other people's behaviour and feelings which causes stress.
+   ANSWER: d
+5. Which one is FALSE? Because of advanced technology, __________.
+   a) workers need to keep up with the fast changes
+   b) only people who know how to use machines will be hired
+   c) people need to learn how to use more complicated machines
+   d) in some sectors, machines will replace workers
+   ANSWER: b
+6. Which one is an example of passive form of violence?
+   a) When you are physically attacked by someone, you shouldn't fight back; instead you should report it to the police.
+   b) If your colleague does not inform you about the meeting time on purpose, this is considered as violence.
+   c) If the boss shouts at the employees in a meeting, this can be considered as passive violence.
+   d) When aggressive behaviour becomes disturbing, you should not stay passive.
+   ANSWER: b
+7. "60% of lost workdays each year can be attributed to stress." What do you understand from this statement?
+   a) Many people work less or do not work at all because of stress.
+   b) Many people decide to quit their jobs when they are on holidays.
+   c) Many people do not go to work because of stress.
+   d) Many people do not want to have variations in their work days.
+   ANSWER: c
+8. According to Alice Mills, __________.
+   a) if there is no stress, there is no productivity
+   b) having good communication skills is a way to fight with stress
+   c) companies cannot deal with all the employees at the same time
+   d) employees should attend courses to learn relaxation skills such as mediation and aerobic exercise
+   ANSWER: b
+
+# SHORTANSWER
+LABEL: Part D (vocabulary)
+INSTRUCTIONS: Find a word in the text which is closest in meaning to each definition.
+1. "the highest" (paragraph 3):
+   ANSWER: peak
+2. "to appear" (paragraph 3):
+   ANSWER: occur / occurs
+3. "center" (paragraph 5):
+   ANSWER: core
+4. "manager" (paragraph 5):
+   ANSWER: executives / executive
+5. "very serious" (paragraph 6):
+   ANSWER: severe
+6. "angry or threatening" (paragraph 9):
+   ANSWER: aggressive / aggression
+7. "a group of companies acting together" (paragraph 11):
+   ANSWER: corporations / corporation
+
+# SHORTANSWER
+LABEL: Part E (reference)
+INSTRUCTIONS: What do these words in the text refer to?
+1. "this" (paragraph 1):
+   ANSWER: occupational stress / workplace stress
+2. "This" (paragraph 7):
+   ANSWER: technology allowing employers to get rid of many jobs / automation getting rid of many jobs / technology allowing employers to get rid of jobs
+3. "it" (paragraph 7):
+   ANSWER: having a higher level of responsibility / a higher level of responsibility
+4. "he" (paragraph 8):
+   ANSWER: Ostermann
+5. "they" (paragraph 9):
+   ANSWER: passive aggressive behaviours / passive-aggressive behaviours / these passive-aggressive behaviours
+6. "did it" (paragraph 10):
+   ANSWER: quit their jobs / quit
+7. "its" (paragraph 12):
+   ANSWER: Wellness Center's / the Wellness Center's

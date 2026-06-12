@@ -1,0 +1,308 @@
+{
+  "id": "a2-r10",
+  "level": "A2",
+  "title": "A2 Reading 10 — Pablo Picasso",
+  "subtitle": "One passage · Headings, ordering, sentence-insert, MCQ, vocab, reference",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Pablo Picasso",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Pablo Picasso was an artist. He is famous for inventing new and very different ways to paint. Picasso was born on October 25, 1881, in Malaga, Spain. <strong>His</strong> father was also an artist. When he was young, Picasso studied art with his father and at art schools in Malaga and then in Barcelona. In 1897, he went to the Royal Academy in Madrid, but left and went home to Barcelona.</p><p class=\"rd-para\" data-para=\"2\">In Barcelona, he became part of a group of artists and writers. <span class=\"rd-gap\" data-gap=\"1\"></span> After 1904, he lived in France most of the time.</p><p class=\"rd-para\" data-para=\"3\">During his long life, Picasso painted in many different ways. From 1901 to 1904, he did most of his paintings in blue. <strong>This</strong> is called his Blue Period. <span class=\"rd-gap\" data-gap=\"2\"></span></p><p class=\"rd-para\" data-para=\"4\">In 1907, he <strong>invented</strong> a new kind of painting called cubism. He painted people and object figures as geometrical forms, such as cubes. At first, most people did not like <strong>this</strong> new type of painting, but it slowly became more popular. In 1937, Picasso painted Guernica, one of his most famous cubist paintings. <span class=\"rd-gap\" data-gap=\"3\"></span></p><p class=\"rd-para\" data-para=\"5\">Picasso worked on many other new types of paintings, but he was also a sculptor and a designer. In 1917, he designed the set and the costumes for a ballet. <span class=\"rd-gap\" data-gap=\"4\"></span> Picasso was very poor when he was a young artist, but he became <strong>wealthy</strong> and very famous. He was married twice and had four children. He died at age 91 in Antibes, France, on April 8, 1973.</p>",
+      "sections": [
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part A",
+          "instructions": "Match the headings with the paragraphs. There is ONE extra heading.",
+          "options": [
+            {
+              "id": "A",
+              "text": "His new kind of invention on painting"
+            },
+            {
+              "id": "B",
+              "text": "His past occupations"
+            },
+            {
+              "id": "C",
+              "text": "His school life"
+            },
+            {
+              "id": "D",
+              "text": "His awards and certificates"
+            },
+            {
+              "id": "E",
+              "text": "Colorful periods in his painting life"
+            },
+            {
+              "id": "F",
+              "text": "How his traveling life started"
+            }
+          ],
+          "items": [
+            {
+              "id": "p1",
+              "label": "Paragraph 1",
+              "answer": "C"
+            },
+            {
+              "id": "p2",
+              "label": "Paragraph 2",
+              "answer": "F"
+            },
+            {
+              "id": "p3",
+              "label": "Paragraph 3",
+              "answer": "E"
+            },
+            {
+              "id": "p4",
+              "label": "Paragraph 4",
+              "answer": "A"
+            },
+            {
+              "id": "p5",
+              "label": "Paragraph 5",
+              "answer": "B"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part B",
+          "instructions": "Read the text very carefully and put the events in order (write 1–8).",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "He painted most of his paintings in blue.",
+              "answer": "3"
+            },
+            {
+              "id": "sa2",
+              "definition": "He wrote a play and two books of poetry.",
+              "answer": "8"
+            },
+            {
+              "id": "sa3",
+              "definition": "He designed the set and the costumes for a ballet.",
+              "answer": "6"
+            },
+            {
+              "id": "sa4",
+              "definition": "He lived in France most of the time.",
+              "answer": "4"
+            },
+            {
+              "id": "sa5",
+              "definition": "He invented a new kind of painting called Cubism.",
+              "answer": "5"
+            },
+            {
+              "id": "sa6",
+              "definition": "He went to a Royal Academy.",
+              "answer": "1"
+            },
+            {
+              "id": "sa7",
+              "definition": "He painted his masterpiece, Guernica.",
+              "answer": "7"
+            },
+            {
+              "id": "sa8",
+              "definition": "He began to travel to Paris.",
+              "answer": "2"
+            }
+          ]
+        },
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part C",
+          "instructions": "Read the text and complete the gaps with the correct sentences. There is ONE extra sentence.",
+          "options": [
+            {
+              "id": "a",
+              "text": "Picasso began to travel to Paris in 1900 to meet and work with other young artists."
+            },
+            {
+              "id": "b",
+              "text": "Pablo Picasso's father was an artist in his own right, earning a living painting birds."
+            },
+            {
+              "id": "c",
+              "text": "In the 1940s, he wrote a play and two books of poetry."
+            },
+            {
+              "id": "d",
+              "text": "The painting is now considered to be a masterpiece."
+            },
+            {
+              "id": "e",
+              "text": "From 1904 to 1906, he used mostly red and pink, which is called his Pink Period."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "a"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "e"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "d"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part D",
+          "instructions": "Read the questions and choose the correct option.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "As an artist, Pablo Picasso is famous for __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "designing costumes."
+                },
+                {
+                  "id": "b",
+                  "text": "inventing new ways of painting."
+                },
+                {
+                  "id": "c",
+                  "text": "organizing colorful shows."
+                },
+                {
+                  "id": "d",
+                  "text": "writing poetry books."
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "He began to spend a lot of time in France because __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "he had to look after his father."
+                },
+                {
+                  "id": "b",
+                  "text": "his school was there."
+                },
+                {
+                  "id": "c",
+                  "text": "he met and worked with other young artists there."
+                },
+                {
+                  "id": "d",
+                  "text": "he met his wife in Paris."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "According to the text, which information is TRUE about cubism?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Cubism is a new kind of sculpture."
+                },
+                {
+                  "id": "b",
+                  "text": "Cubism became very popular as soon as it appeared."
+                },
+                {
+                  "id": "c",
+                  "text": "People and objects are in geometrical forms in Cubism."
+                },
+                {
+                  "id": "d",
+                  "text": "There were two periods in Picasso's Cubism; Blue and Pink Periods."
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer2",
+          "type": "find-word",
+          "label": "Part E (reference and vocabulary)",
+          "instructions": "Answer the following questions.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "What does \"his\" refer to in paragraph 1?",
+              "answer": "Pablo's",
+              "acceptable": [
+                "Pablo's",
+                "Picasso's",
+                "Pablo Picasso's"
+              ]
+            },
+            {
+              "id": "sa2",
+              "definition": "What does \"this\" refer to in paragraph 3?",
+              "answer": "he did most of his paintings in blue",
+              "acceptable": [
+                "he did most of his paintings in blue",
+                "Blue Period",
+                "painting in blue"
+              ]
+            },
+            {
+              "id": "sa3",
+              "definition": "What does \"this\" refer to in paragraph 4?",
+              "answer": "He painted people and object figures as geometrical forms",
+              "acceptable": [
+                "He painted people and object figures as geometrical forms",
+                "cubism",
+                "the new kind of painting called cubism"
+              ]
+            },
+            {
+              "id": "sa4",
+              "definition": "Find the word in paragraph 4 that means \"create or make something new\":",
+              "answer": "invent",
+              "acceptable": [
+                "invent",
+                "invented"
+              ]
+            },
+            {
+              "id": "sa5",
+              "definition": "Find the word in paragraph 4 that means \"a piece of art done with very great skill\":",
+              "answer": "masterpiece"
+            },
+            {
+              "id": "sa6",
+              "definition": "Find the word in paragraph 5 that means \"rich\":",
+              "answer": "wealthy"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

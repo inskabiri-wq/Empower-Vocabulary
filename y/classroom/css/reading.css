@@ -1,0 +1,920 @@
+/* ═══════════════════════════════════════════════════════════════
+   READING CLASSROOM — theme overlay
+   Same brand language as Trust No One (dark glass, gradient
+   headlines, glow-on-focus) — but with rose as the dominant accent
+   to match the Reading skill tile on the hub.
+
+   Loaded AFTER classroom/css/styles.css so it overrides the
+   lobby/QR/.player-card chrome where needed.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ---------- Tokens ---------- */
+body.reading {
+  --r-bg-0:      #0a0e1f;
+  --r-bg-1:      #14172d;
+  --r-surface:   rgba(15, 23, 42, 0.85);
+  --r-surface-2: rgba(15, 23, 42, 0.55);
+  --r-border:    rgba(148, 163, 184, 0.18);
+  --r-text:      #f1f5f9;
+  --r-text-mut:  #94a3b8;
+  --r-rose:      #f43f5e;
+  --r-rose-2:    #fb7185;
+  --r-violet:    #a78bfa;
+  --r-emerald:   #34d399;
+  --r-amber:     #f59e0b;
+  background:
+    radial-gradient(1200px 700px at 80% 0%, rgba(244, 63, 94, 0.10), transparent 60%),
+    radial-gradient(900px 600px at 0% 100%, rgba(167, 139, 250, 0.10), transparent 60%),
+    linear-gradient(180deg, var(--r-bg-0) 0%, var(--r-bg-1) 100%);
+  background-attachment: fixed;
+  color: var(--r-text);
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+}
+
+/* Container */
+.reading-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 22px 18px 48px;
+}
+
+/* Top bar */
+.reading-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 14px;
+  background: var(--r-surface);
+  border: 1px solid var(--r-border);
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 14px;
+}
+.reading-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 800;
+  font-size: 1.05em;
+  letter-spacing: 0.02em;
+}
+.reading-brand .logo {
+  font-size: 1.4em;
+  filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.5));
+}
+
+/* Buttons */
+.reading-btn {
+  background: var(--r-surface-2);
+  border: 1px solid var(--r-border);
+  color: var(--r-text);
+  font-family: inherit;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s, border-color 0.15s, background 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.reading-btn:hover  { filter: brightness(1.1); border-color: rgba(251, 113, 133, 0.35); }
+.reading-btn:active { transform: translateY(1px); }
+.reading-btn.primary {
+  background: linear-gradient(135deg, var(--r-rose), var(--r-rose-2));
+  border-color: transparent;
+  color: #fff;
+}
+.reading-btn.primary:hover { filter: brightness(1.08); }
+.reading-btn.danger {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+.reading-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: none;
+}
+
+/* Chips */
+.reading-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--r-surface-2);
+  border: 1px solid var(--r-border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.85em;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+}
+
+/* Identity strip (student) */
+.reading-id-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Generic pane */
+.reading-pane {
+  background: var(--r-surface);
+  border: 1px solid var(--r-border);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(12px);
+}
+
+/* Placeholder (auto-creating) */
+.reading-placeholder {
+  text-align: center;
+  padding: 80px 30px;
+  background: var(--r-surface);
+  border: 1px solid var(--r-border);
+  border-radius: 18px;
+  backdrop-filter: blur(12px);
+}
+.reading-placeholder .book-glyph {
+  font-size: 4em;
+  filter: drop-shadow(0 0 18px rgba(244, 63, 94, 0.4));
+  animation: bookFloat 2.4s ease-in-out infinite;
+  margin-bottom: 14px;
+}
+@keyframes bookFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+/* ─── Host live view ─── */
+.reading-passage-pane {
+  background: var(--r-surface);
+  border: 1px solid var(--r-border);
+  border-radius: 16px;
+  padding: 22px 26px;
+  backdrop-filter: blur(12px);
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+.reading-passage-pane .passage-header h2 {
+  margin: 0 0 4px;
+  font-size: 1.6em;
+  background: linear-gradient(135deg, var(--r-rose-2), var(--r-violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.reading-passage-body {
+  font-size: 1.05em;
+  line-height: 1.7;
+  margin-top: 14px;
+  color: var(--r-text);
+}
+.reading-passage-body p { margin: 0 0 14px; }
+.reading-passage-body strong { color: var(--r-rose-2); font-weight: 700; }
+.reading-passage-body .rd-gap {
+  display: inline-block;
+  min-width: 36px;
+  padding: 0 8px;
+  border-bottom: 2px solid var(--r-rose);
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--r-rose-2);
+  font-weight: 700;
+}
+.reading-passage-body .rd-gap::before {
+  content: attr(data-gap);
+}
+
+.reading-host-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.reading-board {
+  background: var(--r-surface);
+  border: 1px solid var(--r-border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  backdrop-filter: blur(12px);
+}
+.reading-board h3 {
+  margin: 0 0 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1em;
+}
+
+/* Live progress grid */
+.progress-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+.progress-empty {
+  color: var(--r-text-mut);
+  font-size: 0.9em;
+  padding: 12px;
+  text-align: center;
+}
+.progress-tile {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--r-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.progress-tile.submitted {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.10), rgba(15, 23, 42, 0.5));
+  border-color: rgba(52, 211, 153, 0.4);
+}
+.pt-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.pt-ava { font-size: 1.1em; }
+.pt-name { font-weight: 700; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pt-submitted {
+  background: rgba(52, 211, 153, 0.16);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  color: var(--r-emerald);
+  font-size: 0.7em;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.pt-stats {
+  display: flex;
+  gap: 8px;
+  font-size: 0.78em;
+  color: var(--r-text-mut);
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.pt-stat.strong { color: var(--r-rose-2); font-weight: 600; }
+.pt-dots {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+.ak-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--r-border);
+}
+.ak-dot.empty { background: rgba(148, 163, 184, 0.1); }
+.ak-dot.right { background: var(--r-emerald); border-color: var(--r-emerald); }
+.ak-dot.wrong { background: var(--r-rose); border-color: var(--r-rose); }
+/* Projector-safe neutral dot — visible when the eye-toggle is OFF.
+   Uses brand violet so no green/red leaks correctness to the room. */
+.ak-dot.answered { background: rgba(167,139,250,0.85); border-color: rgba(167,139,250,1); }
+
+/* Projector-safe chip — shown next to the timer when the eye toggle
+   is OFF, so the teacher visually confirms the screen is safe to mirror. */
+.reading-chip.projector-safe {
+  background: linear-gradient(135deg, rgba(99,102,241,0.20), rgba(167,139,250,0.16));
+  border-color: rgba(167,139,250,0.55);
+  color: #c4b5fd;
+  font-weight: 700;
+}
+/* Eye-toggle button pressed state */
+#eyesToggleBtn[aria-pressed="true"] {
+  background: linear-gradient(135deg, rgba(34,197,94,0.16), rgba(56,189,248,0.10));
+  border-color: rgba(34,197,94,0.45);
+  color: #86efac;
+}
+
+/* Host answer-key reference (collapsible) */
+.reading-answer-key summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--r-text-mut);
+  font-size: 0.85em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  list-style: none;
+}
+.reading-answer-key summary::-webkit-details-marker { display: none; }
+.reading-answer-key summary::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 0.7em;
+  transition: transform 0.2s;
+}
+.reading-answer-key[open] summary::before { transform: rotate(90deg); }
+.answer-key-body { margin-top: 8px; }
+.ak-section {
+  font-size: 0.85em;
+  margin: 8px 0 4px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--r-border);
+}
+.ak-section:first-child { border-top: 0; padding-top: 0; }
+.ak-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 6px;
+  font-size: 0.88em;
+}
+.ak-row .ak-id { font-family: 'JetBrains Mono', monospace; color: var(--r-text-mut); }
+.ak-row .ak-ans { color: var(--r-rose-2); font-weight: 700; }
+
+/* ─── Student exam view ─── */
+.reading-exam-pane {
+  background: var(--r-surface);
+  border: 1px solid var(--r-border);
+  border-radius: 16px;
+  padding: 22px;
+  backdrop-filter: blur(12px);
+  max-width: 720px;
+  margin: 0 auto;
+}
+.exam-head {
+  border-bottom: 1px dashed var(--r-border);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+.exam-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.exam-progress {
+  margin-top: 8px;
+  font-size: 0.85em;
+  color: var(--r-text-mut);
+  font-family: 'JetBrains Mono', monospace;
+}
+.exam-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+/* Section header is a <button> so it gets keyboard focus +
+   click semantics for free. Reset native button chrome so it
+   inherits the page's font + colours, then re-apply the original
+   row-of-labels look. Cursor changes to a pointer so students
+   see the affordance. */
+.exam-section-h {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 4px;
+  padding: 8px 4px 8px 4px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--r-border);
+  font-family: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px 6px 0 0;
+  transition: background 0.15s ease, padding 0.2s ease;
+}
+.exam-section-h:hover {
+  background: rgba(251, 113, 133, 0.06);
+}
+.exam-section-h:focus-visible {
+  outline: 2px solid rgba(251, 113, 133, 0.55);
+  outline-offset: 2px;
+}
+.exam-section-label {
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--r-rose-2);
+}
+.exam-section-type {
+  font-size: 0.75em;
+  color: var(--r-text-mut);
+  font-family: 'JetBrains Mono', monospace;
+}
+/* Chevron — rendered as a real button-shaped chip at the right of
+   the section header so it's clearly an interactive control, not a
+   stray punctuation mark. Branded rose tint + glow on hover.
+   Rotates -90° when the section collapses. */
+.exam-section-chevron {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(251, 113, 133, 0.14);
+  border: 1.5px solid rgba(251, 113, 133, 0.45);
+  color: var(--r-rose-2);
+  font-size: 1.15em;
+  line-height: 1;
+  font-weight: 800;
+  transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1),
+              background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.exam-section-h:hover .exam-section-chevron {
+  background: rgba(251, 113, 133, 0.24);
+  border-color: var(--r-rose-2);
+  box-shadow: 0 0 14px rgba(251, 113, 133, 0.4);
+}
+.exam-section.is-collapsed .exam-section-chevron { transform: rotate(-90deg); }
+
+/* Accordion body — max-height + overflow: hidden. Universally
+   supported and guarantees a true 0-height collapse (the
+   grid-template-rows trick had inconsistent browser support that
+   left an empty rectangle below the header on some engines). */
+.exam-section-body {
+  max-height: 4000px;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.35s ease;
+}
+.exam-section.is-collapsed .exam-section-body {
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.22s ease;
+}
+.exam-section-body > * {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.32s ease 0.1s,
+              transform 0.38s cubic-bezier(0.34, 1.4, 0.64, 1) 0.1s;
+}
+.exam-section.is-collapsed .exam-section-body > * {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.18s ease,
+              transform 0.22s ease;
+}
+
+.exam-section-instr {
+  font-size: 0.9em;
+  color: var(--r-text-mut);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.exam-item {
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--r-border);
+}
+.exam-item:last-child { border-bottom: none; }
+/* Question header is now a flex row so the per-question chevron
+   button sits on the right. The text span keeps natural selection
+   behaviour; the chevron is a discrete button. */
+.exam-item-stem {
+  margin-bottom: 10px;
+  line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.exam-item-stem-text { flex: 1; min-width: 0; }
+/* Per-question chevron — bigger, branded, button-shaped so it's
+   obviously a control. Rotates -90° when the question collapses. */
+.exam-item-toggle {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(251, 113, 133, 0.10);
+  border: 1.5px solid rgba(251, 113, 133, 0.35);
+  color: var(--r-rose-2);
+  font-size: 1.05em;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1),
+              background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  margin-top: 2px;
+}
+.exam-item-toggle:hover {
+  background: rgba(251, 113, 133, 0.22);
+  border-color: var(--r-rose-2);
+  box-shadow: 0 0 10px rgba(251, 113, 133, 0.35);
+}
+.exam-item-toggle:focus-visible {
+  outline: 2px solid var(--r-rose-2);
+  outline-offset: 2px;
+}
+.exam-item.is-collapsed .exam-item-toggle { transform: rotate(-90deg); }
+
+/* Per-question accordion body — max-height-based, snappier. */
+.exam-item-body {
+  max-height: 2000px;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease;
+}
+.exam-item.is-collapsed .exam-item-body {
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.18s ease;
+}
+.exam-item-body > * {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.28s ease 0.08s,
+              transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1) 0.08s;
+}
+.exam-item.is-collapsed .exam-item-body > * {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.15s ease,
+              transform 0.2s ease;
+}
+
+/* ─── MCQ options ───
+   This is the SINGLE MOST IMPORTANT visual rule of this file:
+   selected state is BRAND VIOLET. Never green, never red. No
+   correctness signal until the teacher reveals. */
+.exam-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.exam-opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--r-border);
+  background: var(--r-surface-2);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.exam-opt:hover { border-color: rgba(167, 139, 250, 0.45); }
+.exam-opt input[type="radio"] {
+  margin: 4px 0 0;
+  accent-color: var(--r-violet);
+}
+.exam-opt-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  color: var(--r-text-mut);
+  min-width: 22px;
+}
+.exam-opt-text {
+  flex: 1;
+  line-height: 1.4;
+}
+.exam-opt.is-selected {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.18), rgba(99, 102, 241, 0.10));
+  border-color: var(--r-violet);
+}
+.exam-opt.is-selected .exam-opt-label { color: var(--r-violet); }
+
+/* Select (match-gaps / match-headings) */
+.exam-select {
+  width: 100%;
+  background: var(--r-surface-2);
+  border: 1.5px solid var(--r-border);
+  color: var(--r-text);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 1em;
+  transition: border-color 0.15s;
+}
+.exam-select:hover  { border-color: rgba(167, 139, 250, 0.45); }
+.exam-select:focus  { outline: none; border-color: var(--r-violet); }
+
+/* Text input (find-word) */
+.exam-text {
+  width: 100%;
+  background: var(--r-surface-2);
+  border: 1.5px solid var(--r-border);
+  color: var(--r-text);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 1em;
+  transition: border-color 0.15s;
+}
+.exam-text:hover { border-color: rgba(167, 139, 250, 0.45); }
+.exam-text:focus { outline: none; border-color: var(--r-violet); }
+
+/* Exam footer */
+.exam-footer {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--r-border);
+}
+
+/* ─── Submitted / Revealed views ─── */
+.score-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--r-surface-2);
+  border: 1px solid var(--r-border);
+  border-radius: 16px;
+  padding: 18px 26px;
+  text-align: left;
+  margin-top: 8px;
+}
+.score-label {
+  font-size: 0.78em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--r-text-mut);
+  margin-bottom: 2px;
+}
+.score-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  font-size: 2.4em;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--r-rose-2), var(--r-violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.score-of {
+  font-size: 0.5em;
+  color: var(--r-text-mut);
+  -webkit-text-fill-color: var(--r-text-mut);
+  background: none;
+}
+.score-percent {
+  font-size: 1em;
+  color: var(--r-rose-2);
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 4px;
+}
+
+/* Revealed per-question list */
+.reveal-list { display: flex; flex-direction: column; gap: 8px; }
+.reveal-section-h {
+  margin: 18px 0 4px;
+  font-size: 0.85em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--r-text-mut);
+  font-weight: 700;
+}
+.reveal-row {
+  display: grid;
+  grid-template-columns: 38px 1fr 32px;
+  gap: 8px;
+  background: var(--r-surface-2);
+  border: 1px solid var(--r-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  align-items: start;
+}
+.reveal-row.right { border-color: rgba(52, 211, 153, 0.45); }
+.reveal-row.wrong { border-color: rgba(244, 63, 94, 0.45); }
+.reveal-row.empty { border-color: rgba(148, 163, 184, 0.35); opacity: 0.85; }
+.reveal-row-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--r-text-mut);
+  text-align: center;
+}
+.reveal-row-body { line-height: 1.45; min-width: 0; }
+.reveal-q { font-size: 0.9em; margin-bottom: 4px; }
+.reveal-mine, .reveal-correct {
+  font-size: 0.85em;
+  margin-top: 2px;
+}
+.reveal-lbl {
+  display: inline-block;
+  min-width: 56px;
+  color: var(--r-text-mut);
+  font-weight: 600;
+}
+.reveal-row.wrong .reveal-mine { color: #fca5a5; }
+.reveal-row.right .reveal-mine { color: var(--r-emerald); }
+.reveal-correct { color: var(--r-emerald); }
+.reveal-row-mark {
+  font-size: 1.6em;
+  font-weight: 800;
+  text-align: center;
+  align-self: center;
+}
+.reveal-row.right .reveal-row-mark { color: var(--r-emerald); }
+.reveal-row.wrong .reveal-row-mark { color: var(--r-rose); }
+.reveal-row.empty .reveal-row-mark { color: var(--r-text-mut); }
+
+/* ─── Results screen ─── */
+.reading-results {
+  background: var(--r-surface);
+  border: 1px solid var(--r-border);
+  border-radius: 18px;
+  padding: 30px 26px;
+  max-width: 940px;
+  margin: 0 auto;
+  backdrop-filter: blur(12px);
+}
+.reading-win-banner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.16), rgba(167, 139, 250, 0.10));
+  border: 1.5px solid rgba(244, 63, 94, 0.45);
+  border-radius: 16px;
+  padding: 22px 24px;
+  margin-bottom: 24px;
+}
+.reading-win-banner .win-icon {
+  font-size: 3em;
+  filter: drop-shadow(0 0 18px rgba(244, 63, 94, 0.4));
+}
+.reading-win-banner .win-text h1 {
+  margin: 0 0 4px;
+  font-size: 1.9em;
+  background: linear-gradient(135deg, var(--r-rose-2), var(--r-violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.reading-win-banner .win-text p { margin: 0; color: var(--r-text-mut); }
+
+.reading-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.stat-tile {
+  background: var(--r-surface-2);
+  border: 1px solid var(--r-border);
+  border-radius: 12px;
+  padding: 14px 12px;
+  text-align: center;
+}
+.stat-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.8em;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--r-rose-2), var(--r-violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+}
+.stat-lbl {
+  margin-top: 4px;
+  font-size: 0.78em;
+  color: var(--r-text-mut);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.results-section-h {
+  font-size: 0.9em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--r-text-mut);
+  margin: 22px 0 12px;
+}
+
+.per-question-grid { display: flex; flex-direction: column; gap: 6px; }
+.per-q-section-h {
+  font-size: 0.85em;
+  font-weight: 700;
+  color: var(--r-rose-2);
+  margin-top: 12px;
+}
+.per-q-row {
+  display: grid;
+  grid-template-columns: 50px 100px 1fr 110px;
+  gap: 10px;
+  align-items: center;
+  background: var(--r-surface-2);
+  border: 1px solid var(--r-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.88em;
+}
+.per-q-id { font-family: 'JetBrains Mono', monospace; color: var(--r-text-mut); }
+.per-q-ans strong { color: var(--r-rose-2); }
+.per-q-bar {
+  height: 8px;
+  background: rgba(148, 163, 184, 0.15);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.per-q-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--r-rose), var(--r-rose-2));
+  transition: width 0.3s;
+}
+.per-q-pct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em;
+  color: var(--r-text-mut);
+  text-align: right;
+}
+
+/* Results table (collapsible) */
+.reading-results-table {
+  background: var(--r-surface-2);
+  border: 1px solid var(--r-border);
+  border-radius: 12px;
+  padding: 6px 14px;
+  margin-top: 18px;
+}
+.reading-results-table summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--r-text-mut);
+  font-size: 0.85em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 0;
+  list-style: none;
+}
+.reading-results-table summary::-webkit-details-marker { display: none; }
+.reading-results-table summary::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 0.7em;
+  transition: transform 0.2s;
+}
+.reading-results-table[open] summary::before { transform: rotate(90deg); }
+.reading-results-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92em;
+  margin-top: 8px;
+}
+.reading-results-table th,
+.reading-results-table td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid var(--r-border);
+}
+.reading-results-table tr.unsubmitted { opacity: 0.55; }
+
+/* ─── Toasts ─── */
+.reading-toast {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--r-surface);
+  border: 1px solid var(--r-border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 0.9em;
+  color: var(--r-text);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  z-index: 9999;
+  animation: toastUp 0.2s ease-out;
+}
+.reading-toast.success { border-color: rgba(52, 211, 153, 0.5); }
+.reading-toast.fail    { border-color: rgba(244, 63, 94, 0.5); color: #fca5a5; }
+@keyframes toastUp {
+  from { transform: translate(-50%, 10px); opacity: 0; }
+  to   { transform: translate(-50%, 0);    opacity: 1; }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  /* Stack host's split-pane on tablets — passage above, host
+     sidebar below. Important: this view is host-only, so it
+     just needs to fit smaller projector-attached laptops. */
+  #view-live > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+@media (max-width: 720px) {
+  .reading-shell { padding: 14px 12px 36px; }
+  .reading-passage-pane,
+  .reading-exam-pane { padding: 16px; }
+  .reading-passage-pane { max-height: none; }
+  .reading-passage-pane .passage-header h2 { font-size: 1.3em; }
+  .reveal-row { grid-template-columns: 32px 1fr 28px; }
+  .per-q-row {
+    grid-template-columns: 40px 1fr;
+    grid-template-rows: auto auto;
+  }
+  .per-q-row .per-q-ans { grid-column: 2; }
+  .per-q-row .per-q-bar,
+  .per-q-row .per-q-pct { grid-column: 1 / -1; }
+}

@@ -1,0 +1,92 @@
+{
+  "_doc": "Hint packs for The Heist classroom game. Each pack is a closed pool of words students pick passwords from AND a stream of 'earn' questions for the left-side panel. Each entry needs: word (the vault password / answer), def (used as one of the 4 MCQ options for the earn panel), example (optional, used for fill-in earn variant), tabooHint (the Taboo-style clue an attacker sees when targeting a vault — must EVOKE the word without naming it or using its forms). Add new packs by appending to the `packs` array.",
+
+  "packs": [
+    {
+      "id": "b1-common-verbs",
+      "name": "B1 Common Verbs",
+      "level": "B1",
+      "description": "Twenty everyday verbs from B1 vocabulary.",
+      "words": [
+        { "word": "endure",      "def": "to suffer something painful for a long time", "example": "Marathon runners ______ hours of pain.", "tabooHint": "What a marathon runner does for hours." },
+        { "word": "apologize",   "def": "to say you are sorry", "example": "I want to ______ for being late.",  "tabooHint": "What you say after bumping into a stranger." },
+        { "word": "recover",     "def": "to become healthy again after illness", "example": "It took her weeks to ______ from the flu.", "tabooHint": "What you slowly do after the flu." },
+        { "word": "persuade",    "def": "to convince someone to do something", "example": "Can you ______ him to come?", "tabooHint": "What a good salesperson does to you." },
+        { "word": "exploit",     "def": "to use someone unfairly for your own benefit", "example": "Bad bosses ______ their workers.", "tabooHint": "What a cruel boss does to workers." },
+        { "word": "withhold",    "def": "to refuse to give something", "example": "They will ______ the salary if you break the rules.", "tabooHint": "What a parent does with dessert when you misbehave." },
+        { "word": "invest",      "def": "to put money into something to make more", "example": "She decided to ______ in stocks.", "tabooHint": "What you do with savings hoping they grow." },
+        { "word": "inherit",     "def": "to receive money or things from someone who has died", "example": "He will ______ the house from his grandfather.", "tabooHint": "What happens when a rich uncle dies." },
+        { "word": "afford",      "def": "to have enough money to pay for something", "example": "I can't ______ a new car.", "tabooHint": "What you say you can't do when something is too expensive." },
+        { "word": "accomplish",  "def": "to succeed in doing something difficult", "example": "She wants to ______ great things.", "tabooHint": "What an Olympic athlete finally does after years of training." },
+        { "word": "determine",   "def": "to find out or decide something officially", "example": "The judge will ______ the punishment.", "tabooHint": "What a judge does after hearing all the evidence." },
+        { "word": "commit",      "def": "to promise to do something seriously", "example": "Are you ready to ______ to this project?", "tabooHint": "What you do at the altar when you say 'I do'." },
+        { "word": "donate",      "def": "to give something to a charity or person who needs it", "example": "Please ______ your old clothes.", "tabooHint": "What you do with old clothes at a charity bin." },
+        { "word": "complain",    "def": "to say you are not happy about something", "example": "She always ______ about the food.", "tabooHint": "What an unhappy customer does at the restaurant." },
+        { "word": "appreciate",  "def": "to feel grateful for something", "example": "I really ______ your help.", "tabooHint": "What you feel after a friend helps you move." },
+        { "word": "assume",      "def": "to think something is true without proof", "example": "Don't ______ anything until you have evidence.", "tabooHint": "What you do when you guess without checking." },
+        { "word": "confess",     "def": "to admit you did something wrong", "example": "He ______ed to the police.", "tabooHint": "What a guilty criminal finally does at the police station." },
+        { "word": "depend",      "def": "to rely on someone or something", "example": "A baby ______s on its parents.", "tabooHint": "What a baby does on its parents for everything." },
+        { "word": "negotiate",   "def": "to discuss in order to reach an agreement", "example": "They will ______ a new contract tomorrow.", "tabooHint": "What two business people do over the price of a deal." },
+        { "word": "discover",    "def": "to find something for the first time", "example": "Columbus ______ed America.", "tabooHint": "What Columbus did in 1492." }
+      ]
+    },
+
+    {
+      "id": "a2-common-verbs",
+      "name": "A2 Common Verbs",
+      "level": "A2",
+      "description": "Twenty everyday verbs from A2 vocabulary — gentler than the B1 pack.",
+      "words": [
+        { "word": "arrive",   "def": "to reach a place after a journey", "example": "We will ______ at the airport at 9 a.m.", "tabooHint": "What the plane does at the airport." },
+        { "word": "borrow",   "def": "to take something for a short time, planning to give it back", "example": "Can I ______ your pen?", "tabooHint": "What you ask a friend to do with their pen for ten minutes." },
+        { "word": "believe",  "def": "to think that something is true", "example": "I don't ______ his story.", "tabooHint": "What you do when someone says a ghost is real." },
+        { "word": "choose",   "def": "to pick one from two or more options", "example": "______ any colour you like.", "tabooHint": "What you do at a restaurant when there are too many menu items." },
+        { "word": "cook",     "def": "to prepare food using heat", "example": "She ______ s dinner every evening.", "tabooHint": "What a chef does for a living." },
+        { "word": "enjoy",    "def": "to like doing something", "example": "I really ______ swimming.", "tabooHint": "What you do at your own birthday party." },
+        { "word": "explain",  "def": "to make something clear by giving more details", "example": "Can you ______ the rules?", "tabooHint": "What a teacher does when the class looks confused." },
+        { "word": "forget",   "def": "to fail to remember something", "example": "Don't ______ your keys.", "tabooHint": "What you wish you didn't do before an exam." },
+        { "word": "happen",   "def": "(of an event) to take place", "example": "What ______ ed last night?", "tabooHint": "What people ask about when they hear an ambulance siren." },
+        { "word": "include",  "def": "to have something as a part", "example": "The price ______ s breakfast.", "tabooHint": "What a tip does to your total restaurant bill." },
+        { "word": "invite",   "def": "to ask someone to come to an event", "example": "She ______ d 50 people to the party.", "tabooHint": "What you do to friends for your wedding." },
+        { "word": "leave",    "def": "to go away from a place", "example": "We ______ at 7 a.m. tomorrow.", "tabooHint": "What you do when the party ends." },
+        { "word": "notice",   "def": "to see or become aware of something", "example": "Did you ______ her new shoes?", "tabooHint": "What you do to a friend's new haircut." },
+        { "word": "prepare",  "def": "to get something ready", "example": "I'm ______ ing dinner now.", "tabooHint": "What a chef does in the kitchen before customers arrive." },
+        { "word": "remember", "def": "to keep something in your mind", "example": "I can't ______ his name.", "tabooHint": "What you struggle to do with all your passwords." },
+        { "word": "share",    "def": "to give part of something to someone else", "example": "Let's ______ this pizza.", "tabooHint": "What you do with a pizza when friends visit." },
+        { "word": "travel",   "def": "to go from one place to another", "example": "I love to ______ in summer.", "tabooHint": "What you do to escape the cold winter." },
+        { "word": "worry",    "def": "to feel anxious about something", "example": "Don't ______ , everything is fine.", "tabooHint": "What parents do when their teenager is late home." },
+        { "word": "answer",   "def": "to reply to a question", "example": "Please ______ the phone.", "tabooHint": "What you do when the phone rings." },
+        { "word": "promise",  "def": "to say strongly that you will do something", "example": "I ______ I'll be on time.", "tabooHint": "What a child does to their mother to get dessert." }
+      ]
+    },
+
+    {
+      "id": "b2-advanced-verbs",
+      "name": "B2 Advanced Verbs",
+      "level": "B2",
+      "description": "Twenty higher-frequency B2 verbs students often see in IELTS / academic writing.",
+      "words": [
+        { "word": "allege",       "def": "to claim something is true without proof",                            "example": "The newspaper ______ d he took bribes.", "tabooHint": "What a tabloid does when it has no real evidence." },
+        { "word": "broaden",      "def": "to make something wider or more varied",                              "example": "Travel ______ s the mind.",              "tabooHint": "What backpacking around Asia does to your worldview." },
+        { "word": "consolidate",  "def": "to combine several things into one stronger whole",                   "example": "She ______ d her loans.",                "tabooHint": "What a bank does to many small debts when you refinance." },
+        { "word": "deteriorate",  "def": "to become worse",                                                    "example": "His health ______ d quickly.",          "tabooHint": "What fruit does when you leave it on the counter for a week." },
+        { "word": "elaborate",    "def": "to explain something in more detail",                                "example": "Could you ______ on that point?",        "tabooHint": "What a professor does when the class looks confused." },
+        { "word": "fluctuate",    "def": "to change frequently in level or amount",                            "example": "Prices ______ throughout the day.",       "tabooHint": "What stock prices do all day on the screen." },
+        { "word": "grasp",        "def": "to understand something complex",                                    "example": "I can't ______ the new theory.",         "tabooHint": "What you can barely do with a slippery concept on the first try." },
+        { "word": "hinder",       "def": "to delay or make something difficult",                               "example": "Heavy traffic ______ ed our progress.",  "tabooHint": "What slow internet does to your work-from-home day." },
+        { "word": "implement",    "def": "to put a plan or policy into action",                                "example": "The school will ______ the new rules.",  "tabooHint": "What a manager does with a new company policy." },
+        { "word": "justify",      "def": "to give a good reason for something",                                "example": "You can't ______ that expense.",         "tabooHint": "What you try to do for an expensive impulse buy when your partner asks." },
+        { "word": "linger",       "def": "to stay around longer than expected",                                "example": "The smell ______ ed for hours.",         "tabooHint": "What perfume does in an elevator long after the wearer leaves." },
+        { "word": "mitigate",     "def": "to make something less harmful or severe",                           "example": "Sunscreen ______ s skin damage.",        "tabooHint": "What sunscreen does to UV damage." },
+        { "word": "nurture",      "def": "to care for and encourage growth",                                   "example": "Good parents ______ their kids' talents.","tabooHint": "What a gardener does to a delicate seedling every morning." },
+        { "word": "overhaul",     "def": "to repair or improve something thoroughly",                          "example": "They ______ ed the whole engine.",       "tabooHint": "What a mechanic does to a broken-down car over several days." },
+        { "word": "perceive",     "def": "to become aware of something through the senses",                    "example": "She ______ d a faint sound.",            "tabooHint": "What a dog does that humans completely miss." },
+        { "word": "quench",       "def": "to satisfy a thirst or strong desire",                               "example": "Water ______ es thirst.",                "tabooHint": "What ice water does after a long run." },
+        { "word": "resemble",     "def": "to look like or be similar to",                                      "example": "She ______ s her mother.",               "tabooHint": "What a baby tends to do to one of their parents." },
+        { "word": "scrutinize",   "def": "to examine carefully and in detail",                                 "example": "The detective ______ d every clue.",     "tabooHint": "What a detective does to every piece of evidence under a magnifier." },
+        { "word": "tolerate",     "def": "to accept something unpleasant without complaining",                 "example": "I can't ______ his noise anymore.",       "tabooHint": "What you can barely do with a noisy neighbour at 2am." },
+        { "word": "undermine",    "def": "to weaken something gradually",                                      "example": "Gossip can ______ a friendship.",         "tabooHint": "What constant gossip does to a friendship over time." }
+      ]
+    }
+  ]
+}

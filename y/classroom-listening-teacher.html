@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listening Exam · Teacher | Empower Lab</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/brand.css">
+<link rel="stylesheet" href="classroom/css/styles.css">
+<link rel="stylesheet" href="classroom/css/listening.css">
+</head>
+<body class="listening">
+
+<script>
+  (function () {
+    try {
+      var auto = new URLSearchParams(location.search).get('auto') === '1';
+      if (!auto) {
+        window.location.replace('classroom-teacher.html');
+        return;
+      }
+      document.documentElement.setAttribute('data-listening-view', 'auto-creating');
+    } catch (_) {}
+  })();
+</script>
+<style>
+  html[data-listening-view="auto-creating"] #view-auto-creating { display: block !important; }
+</style>
+
+<div class="listening-shell">
+
+  <div class="listening-top">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <span style="font-size:1.4rem;">👨‍🏫</span>
+      <div style="display:flex; align-items:baseline; gap:8px;">
+        <a href="classroom-teacher.html" id="backToClassroom"
+           style="color:var(--l-text-mut); text-decoration:none; font-weight:600;">
+          Classroom Mode
+        </a>
+        <span style="color:var(--l-text-mut);">›</span>
+        <strong>Listening Exam</strong>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span style="color:var(--l-text-mut); font-size:0.9em;">Hello, <span id="teacherName">…</span></span>
+      <a href="teacher-dashboard.html" id="backToDashboard" class="listening-btn" style="text-decoration:none; padding: 7px 14px; font-size:0.85em;">← Dashboard</a>
+    </div>
+  </div>
+
+  <!-- ════════ AUTO-CREATING ════════ -->
+  <div id="view-auto-creating" style="display:none;">
+    <div class="listening-placeholder">
+      <div class="headphones-glyph">🎧</div>
+      <h2 style="margin:0 0 8px;">Preparing the listening room…</h2>
+      <p style="color:var(--l-text-mut); margin:0;">
+        Generating a 4-letter code and warming up the audio.
+      </p>
+    </div>
+  </div>
+
+  <!-- ════════ LOBBY ════════ -->
+  <div id="view-lobby" style="display:none;">
+    <div class="container">
+      <div class="card">
+
+        <div class="session-code-display">
+          <div class="session-code-label">Session Code</div>
+          <div class="session-code" id="roomCode">----</div>
+          <div class="session-code-hint">Share this code with your students</div>
+          <button class="btn btn-secondary" style="margin-top: 16px;"
+                  onclick="(function(b){const c=document.getElementById('roomCode').textContent;navigator.clipboard.writeText(c).then(()=>{const t=b.textContent;b.textContent='✓ Copied!';setTimeout(()=>b.textContent=t,2000);});})(this)">
+            📋 Copy Code
+          </button>
+        </div>
+
+        <div class="session-qr-card">
+          <div class="session-qr-tile">
+            <img id="qrImg" alt="Scan to join this exam" width="220" height="220">
+          </div>
+          <div class="session-qr-label">📱 Scan with phone camera to join</div>
+        </div>
+
+        <a id="joinUrl" target="_blank" rel="noopener" style="display:none;">join link</a>
+
+        <div id="sessionInfo" style="text-align: center; color: var(--text-secondary, #94a3b8); margin-bottom: 18px;">
+          <span id="lobbyExamTitle">Loading exam…</span>
+          <div id="lobbyReplayHint" style="font-size: 0.85em; margin-top: 6px;"></div>
+        </div>
+
+        <div class="players-section">
+          <div class="players-header">
+            <h3 class="players-count">👥 Students: <span id="rosterCount">0</span></h3>
+          </div>
+          <div class="players-grid" id="roster">
+            <p style="color: var(--text-muted, #6b7280); text-align: center; padding: 20px; grid-column: 1/-1;">
+              Waiting for students to join…
+            </p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+          <button id="startBtn" class="btn btn-success btn-large" disabled style="flex:1;">
+            🎧 Need at least 1 student to start
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ LIVE (host's exam dashboard) ════════ -->
+  <div id="view-live" style="display:none;">
+    <div class="listening-top" style="margin-top: 14px;">
+      <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+        <strong style="font-family: JetBrains Mono; letter-spacing: 0.1em;">CODE <span id="liveCode" style="color: var(--l-sky-2);"></span></strong>
+        <span class="listening-chip">⏱ <span id="liveTimer">--:--</span></span>
+        <span class="listening-chip">✅ <span id="liveSubmittedCount">0</span> / <span id="liveTotalStudents">0</span> submitted</span>
+        <span class="listening-chip" id="liveReplayCount">🔁 <span id="replayCountVal">0</span> replays</span>
+        <!-- Projector-safe chip: visible when the eye-toggle is OFF. -->
+        <span class="listening-chip projector-safe" id="projectorSafeChip">📺 Projector-safe</span>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <button id="eyesToggleBtn" class="listening-btn" title="Show/hide answer info (host eyes only)" aria-pressed="false">
+          <span id="eyesIcon">🙈</span><span id="eyesLabel">Show answers</span>
+        </button>
+        <button id="revealBtn" class="listening-btn" style="background: rgba(34,197,94,0.14); border-color: rgba(34,197,94,0.4); color: #86efac;">
+          🔓 Reveal answers
+        </button>
+        <button id="endBtn" class="listening-btn danger">End exam</button>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap: 14px; margin-top: 14px;">
+
+      <!-- Audio player pane (instead of the passage) -->
+      <div class="audio-pane">
+        <div class="audio-head">
+          <h2 id="audioTitle">Audio</h2>
+          <p id="audioSubtitle" style="color: var(--l-text-mut); margin: 4px 0 0; font-size: 0.92em;"></p>
+        </div>
+
+        <!-- Big play button + progress bar + scrubber -->
+        <div class="audio-controls">
+          <button type="button" id="playPauseBtn" class="big-play-btn" aria-label="Play / pause">
+            <span id="playPauseIcon">▶</span>
+          </button>
+          <div class="audio-meta">
+            <div class="audio-time">
+              <span id="audioCurrent">0:00</span>
+              <span style="opacity:0.5;"> / </span>
+              <span id="audioDuration">--:--</span>
+            </div>
+            <div class="audio-progress" id="audioProgressWrap">
+              <div class="audio-progress-fill" id="audioProgressFill"></div>
+              <input type="range" id="audioSeek" min="0" max="0" step="0.1" value="0"
+                     class="audio-seek" aria-label="Seek">
+            </div>
+          </div>
+        </div>
+
+        <div class="audio-secondary-controls">
+          <button type="button" id="restartBtn" class="listening-btn">⏮ Restart</button>
+          <button type="button" id="back10Btn" class="listening-btn">⏪ -10s</button>
+          <button type="button" id="fwd10Btn"  class="listening-btn">⏩ +10s</button>
+          <span class="listening-chip" id="policyChip">Policy: …</span>
+        </div>
+
+        <audio id="hostAudio" preload="auto"></audio>
+
+        <!-- Q-marker navigator: prev / next question advances the
+             session.activeQuestionKey field so students' phones
+             scroll to the matching item. -->
+        <div class="qmarker-row">
+          <button type="button" id="qPrevBtn" class="listening-btn">← Prev Q</button>
+          <span id="qMarkerLabel" class="qmarker-label">No Q broadcast</span>
+          <button type="button" id="qNextBtn" class="listening-btn">Next Q →</button>
+          <button type="button" id="qClearBtn" class="listening-btn" style="opacity:0.7;">Clear</button>
+        </div>
+      </div>
+
+      <!-- Host-only progress grid + answer key (same shape as reading) -->
+      <div class="listening-host-side">
+        <div class="listening-board">
+          <h3>👥 Student progress <span id="liveProgressCount" style="color:var(--l-text-mut); font-size:0.85em; font-weight:400; letter-spacing:0;"></span></h3>
+          <div id="progressGrid" class="progress-grid">
+            <div class="progress-empty">Students will appear here as they answer.</div>
+          </div>
+        </div>
+
+        <details class="listening-board listening-answer-key" id="answerKeyDetails">
+          <summary>🔑 Answer key (host only)</summary>
+          <div id="answerKeyBody" class="answer-key-body"></div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ RESULTS ════════ -->
+  <div id="view-results" style="display:none;">
+    <div class="listening-results">
+
+      <div class="listening-win-banner">
+        <div class="win-icon">🏁</div>
+        <div class="win-text">
+          <h1 id="resultsTitle">Exam complete</h1>
+          <p id="resultsSub">Final results below.</p>
+        </div>
+      </div>
+
+      <div class="listening-stats-grid" id="resultsStats"></div>
+
+      <h3 class="results-section-h">📊 Per-question breakdown</h3>
+      <div class="per-question-grid" id="perQuestionGrid"></div>
+
+      <details class="listening-results-table" open>
+        <summary>Per-student standings</summary>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Student</th><th>Score</th>
+              <th>Correct</th><th>Submitted</th>
+            </tr>
+          </thead>
+          <tbody id="resultsTable"></tbody>
+        </table>
+      </details>
+
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:24px; flex-wrap:wrap;">
+        <button id="newGameBtn" class="listening-btn primary">🔁 Run another exam</button>
+        <a href="classroom-teacher.html" class="listening-btn" style="text-decoration:none;">← Back to Classroom</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Themed confirm modal -->
+<div id="listeningConfirm" class="modal-overlay" style="display:none;">
+  <div class="modal-content" style="max-width: 380px; border-color: rgba(56, 189, 248, 0.45) !important;">
+    <h3 class="modal-title" id="listeningConfirmTitle">Are you sure?</h3>
+    <p class="modal-message" id="listeningConfirmMsg">This action cannot be undone.</p>
+    <div class="modal-buttons">
+      <button type="button" class="modal-btn modal-btn-cancel" id="listeningConfirmCancel">Cancel</button>
+      <button type="button" class="modal-btn modal-btn-confirm" id="listeningConfirmOk">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase + content + app scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="assignments/js/exam-registry.js"></script>
+<!-- Listening-exam.js exposes LISTENING_EXAMS at script scope; the
+     host needs it for the question content (the registry only carries
+     id + audio path metadata, not the question bank). -->
+<script src="student/js/listening-exam.js"></script>
+<script src="classroom/js/listening-teacher.js"></script>
+
+</body>
+</html>

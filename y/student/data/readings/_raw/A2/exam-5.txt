@@ -1,0 +1,129 @@
+ID: a2-r5
+LEVEL: A2
+TITLE: A2 Reading 5 — Garlic
+SUBTITLE: One passage · Headings, MCQ, vocab, reference
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Garlic
+
+PASSAGE:
+Some people can't *stand* garlic. "That smell! It's too strong. And it doesn't go away! There is nothing worse than garlic," they say. Other people say garlic tastes great and it's good for you, too. Chester Aeron grows eighty-seven kinds of garlic on his farm. He wrote a book called "Garlic is Life." It seems that people either love garlic or hate it.
+
+Garlic has a long history. The first wild garlic *probably* grew somewhere in western Russia. People in that area found it and learned to use it. Later, travellers carried garlic with them to China, India, Europe and North Africa. Farmers began planting it over 5,000 years ago. They grew garlic to eat and used it as medicine when *they* were sick. They also grew it for use in religious ceremonies.
+
+People in many cultures shared similar ideas about garlic. For example, they made their slaves eat it. They believed garlic made it possible for slaves to work harder and longer. In Greece, the athletes of the first Olympic Games ate garlic. *They* wanted to become stronger and faster, and they believed that garlic would help. Soldiers in the Roman army ate garlic, too. They ate it to help them fight better. But garlic wasn't only for slaves, athletes, and soldiers. In some places, garlic was called "food for lovers."
+
+People had even more uses for garlic. They added it to other foods because it tasted good. In China, people also used garlic to keep meat fresh. The Chinese were probably the first people to write about the uses of garlic. They wrote about *it* 4,000 years ago.
+
+People in many cultures ate garlic when they got sick. It was thought to make a cold or fever go away. It was also supposed to help with different kinds of pain — for example, when someone's head, ear, or muscles hurt.
+
+Is eating garlic actually good for you, or should we just laugh at these old ideas? The truth is, doctors today are telling *their* patients, "eat garlic!" Recent *research* shows that garlic is good for your heart. It turns out that garlic helps people stay healthy.
+
+However, we can't *accept* every idea about garlic from the past. In many cultures, people *trusted* garlic to protect *them* from all kinds of bad luck. Garlic is great, but it can't do that! Also, don't tie garlic around your neck. It won't keep vampires away, as people used to think. It would probably just keep your friends away.
+
+# HEADINGS
+LABEL: Part A
+INSTRUCTIONS: Match the paragraphs with the main ideas. There is ONE EXTRA main idea.
+A: Eating garlic to become physically better
+B: Results of current scientific studies on benefits of garlic
+C: Old ideas about using garlic to stop misfortune
+D: Different feelings of people about garlic
+E: The harms of eating too much garlic
+F: Eating garlic to become healthy again
+G: Origins of garlic
+H: Using garlic while cooking
+ANSWERS: 1=D, 2=G, 3=A, 4=H, 5=F, 6=B, 7=C
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Answer the following questions according to the text.
+1. We can understand from paragraph 1 that __________.
+   a) most people love garlic but only a few people hate it
+   b) there are many types of garlic
+   c) Chester Aeron wrote a book to tell people why he hates garlic
+   d) some people hate garlic because it makes them sick
+   ANSWER: b
+2. Which one is FALSE according to paragraph 2?
+   a) The history of garlic goes back to a very long time ago.
+   b) People in Russia first discovered garlic.
+   c) Some people on journey took garlic from Russia to many different countries.
+   d) People used garlic only to eat it after they started planting it.
+   ANSWER: d
+3. Which one is FALSE according to paragraph 3?
+   a) Slaves ate garlic because people thought garlic made them stronger.
+   b) Athletes ate garlic because they thought garlic made them faster.
+   c) Soldiers ate garlic because they thought garlic made them a better soldier.
+   d) Lovers ate garlic because they thought garlic made them smell better.
+   ANSWER: d
+4. We can understand from paragraph 4 that the Chinese __________.
+   a) first started eating garlic 5,000 years ago
+   b) never used garlic when they cooked their meals
+   c) first mentioned the uses of garlic on paper
+   d) ate meat with garlic because it tasted good
+   ANSWER: c
+5. We can understand from paragraphs 5 and 6 that garlic is good for your __________.
+   a) psychology
+   b) body
+   c) budget
+   d) diet
+   ANSWER: b
+6. According to paragraph 7, people __________.
+   a) should be careful of the old beliefs about the magical powers of garlic
+   b) believed in the past that garlic brought bad luck, so they never used it in their meals
+   c) should put garlic on their neck because it smells very good
+   d) can use garlic to fight against vampires because vampires hate the smell of garlic
+   ANSWER: a
+7. The purpose of the text is __________.
+   a) to warn people about the dangers of garlic
+   b) to persuade people to use garlic in their food
+   c) to inform people about the history of garlic and its different uses for food and health
+   d) to educate people about the best ways of using garlic in the kitchen
+   ANSWER: c
+
+# SHORTANSWER
+LABEL: Part C (vocabulary)
+INSTRUCTIONS: Find the words in the passage that match the meanings.
+1. Find the word in paragraph 1 which means "to tolerate, to bear":
+   ANSWER: stand
+2. Find the word in paragraph 2 which means "possibly, perhaps":
+   ANSWER: probably
+3. Find the word in paragraph 6 which means "study, inquiry, experiment":
+   ANSWER: research
+4. Find the word in paragraph 7 which means "to agree, to approve":
+   ANSWER: accept
+5. Find the word in paragraph 7 which means "to believe, to depend on":
+   ANSWER: trusted / trust
+
+# MCQ
+LABEL: Part D (reference)
+INSTRUCTIONS: Circle the best option for what the words refer to.
+1. The word "them" (paragraph 2) refers to:
+   a) farmers
+   b) travelers
+   c) Russian people
+   d) Chinese people
+   ANSWER: b
+2. The word "They" (paragraph 3) refers to:
+   a) slaves
+   b) athletes
+   c) lovers
+   d) soldiers
+   ANSWER: b
+3. The word "it" (paragraph 4) refers to:
+   a) garlic
+   b) meat
+   c) use
+   d) food
+   ANSWER: a
+4. The word "their" (paragraph 6) refers to:
+   a) people's
+   b) doctors'
+   c) doctors
+   d) people
+   ANSWER: b
+5. The word "them" (paragraph 7) refers to:
+   a) people
+   b) vampires
+   c) cultures
+   d) friends
+   ANSWER: a

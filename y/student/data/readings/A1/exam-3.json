@@ -1,0 +1,312 @@
+{
+  "id": "a1-r3",
+  "level": "A1",
+  "title": "A1 Reading 3 — Life Above Ground",
+  "subtitle": "One passage · Gaps, MCQ, headings, vocabulary",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Life Above Ground",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Welcome to the home of Julia Hill! Julia is a young woman. <strong>She</strong> is from Seattle. <strong>She</strong> is 25 years old, and she has two brothers, aged 12 and 16. <strong>They</strong> live in Seattle with their parents but she lives in a large redwood tree in California. <span class=\"rd-gap\" data-gap=\"1\"></span> <strong>Her</strong> <strong>home</strong> is over 600 years old.</p><p class=\"rd-para\" data-para=\"2\">Julia is a member of Greenpeace and she wants to save trees and forests in the world because trees <strong>produce</strong> oxygen and they clean the air. They are very important for the future of Earth. <span class=\"rd-gap\" data-gap=\"2\"></span> However, a company called Axe Inc. wants to cut them down but the company can't cut down this tree because Julia lives in it!</p><p class=\"rd-para\" data-para=\"3\">What does Julia do every day? She gets up early. The mornings are cold, so she gets dressed fast. She combs her hair and washes her face. Then she eats her breakfast. After breakfast, Julia <strong>checks</strong> her mailbox and reads her mails. She <strong>receives</strong> a lot of letters every day. <span class=\"rd-gap\" data-gap=\"3\"></span> In the afternoon, she exercises. She goes jogging and climbs around in the tall tree. After that, she takes a shower and talks to many people on her cell phone. Sometimes people come and visit her and they bring fresh water, food, and clothes. Julia goes to sleep at 9:00 p.m. Julia lives in the tree for 738 days. Life in the tree is difficult. In winter, it snows, and it's very windy. Sometimes Julia is <strong>scared</strong>, because she lives alone in the tree but she doesn't want to give up her fight and come down.</p><p class=\"rd-para\" data-para=\"4\">Finally, the company says, \"we aren't going to cut down the trees.\" Julia is ready to come down from the tree. <span class=\"rd-gap\" data-gap=\"4\"></span> She has a message for every man, woman, and child: Love the trees. Care for our earth.</p>",
+      "sections": [
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part A",
+          "instructions": "Match the sentences (a-f) with the gaps (1-4). There are two extra sentences.",
+          "options": [
+            {
+              "id": "a",
+              "text": "Mostly, they are from people who are passionate about nature."
+            },
+            {
+              "id": "b",
+              "text": "However, it is not one of those tree houses you can see around the neighbourhood."
+            },
+            {
+              "id": "c",
+              "text": "Some news reporters try to visit her in this interesting house."
+            },
+            {
+              "id": "d",
+              "text": "Julia's house is one of those trees that give us a clean air to breathe in."
+            },
+            {
+              "id": "e",
+              "text": "She is proud to accomplish such a big success on her own."
+            },
+            {
+              "id": "f",
+              "text": "She stays in the tree all day to protest the company."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "b"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "d"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "a"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "e"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Skim through the text and circle the best answer. Which option summarises the text the best?",
+          "items": [
+            {
+              "id": "m1",
+              "question": "The text is best summarised as:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Julia is a very sensitive person."
+                },
+                {
+                  "id": "b",
+                  "text": "Julia calls people to protect the trees and forests."
+                },
+                {
+                  "id": "c",
+                  "text": "Julia likes to live in nature."
+                },
+                {
+                  "id": "d",
+                  "text": "Julia doesn't like winter days."
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part C",
+          "instructions": "Match the paragraphs with the headings. There is one extra.",
+          "options": [
+            {
+              "id": "A",
+              "text": "Julia's message for the world"
+            },
+            {
+              "id": "B",
+              "text": "Julia's daily routine"
+            },
+            {
+              "id": "C",
+              "text": "Julia's work life"
+            },
+            {
+              "id": "D",
+              "text": "Julia & her family"
+            },
+            {
+              "id": "E",
+              "text": "Julia, the environmentalist"
+            }
+          ],
+          "items": [
+            {
+              "id": "p1",
+              "label": "Paragraph 1",
+              "answer": "D"
+            },
+            {
+              "id": "p2",
+              "label": "Paragraph 2",
+              "answer": "E"
+            },
+            {
+              "id": "p3",
+              "label": "Paragraph 3",
+              "answer": "B"
+            },
+            {
+              "id": "p4",
+              "label": "Paragraph 4",
+              "answer": "A"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part D (vocabulary in context)",
+          "instructions": "Choose the best option for the bolded words.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "\"produce\" (paragraph 2) is a:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "noun"
+                },
+                {
+                  "id": "b",
+                  "text": "verb"
+                },
+                {
+                  "id": "c",
+                  "text": "adjective"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "\"produce\" (paragraph 2) means:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "work"
+                },
+                {
+                  "id": "b",
+                  "text": "eat"
+                },
+                {
+                  "id": "c",
+                  "text": "make"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "\"check\" (paragraph 3) is a:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "noun"
+                },
+                {
+                  "id": "b",
+                  "text": "verb"
+                },
+                {
+                  "id": "c",
+                  "text": "adjective"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "\"check\" (paragraph 3) means:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "look at"
+                },
+                {
+                  "id": "b",
+                  "text": "wake up"
+                },
+                {
+                  "id": "c",
+                  "text": "go out"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "\"receive\" (paragraph 3) is a:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "noun"
+                },
+                {
+                  "id": "b",
+                  "text": "verb"
+                },
+                {
+                  "id": "c",
+                  "text": "adjective"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m6",
+              "question": "\"receive\" (paragraph 3) means:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "do"
+                },
+                {
+                  "id": "b",
+                  "text": "draw"
+                },
+                {
+                  "id": "c",
+                  "text": "get"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m7",
+              "question": "\"scared\" (paragraph 3) is a/an:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "noun"
+                },
+                {
+                  "id": "b",
+                  "text": "verb"
+                },
+                {
+                  "id": "c",
+                  "text": "adjective"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m8",
+              "question": "\"scared\" (paragraph 3) means:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "afraid"
+                },
+                {
+                  "id": "b",
+                  "text": "happy"
+                },
+                {
+                  "id": "c",
+                  "text": "hungry"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

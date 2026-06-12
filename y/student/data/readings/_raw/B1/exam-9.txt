@@ -1,0 +1,130 @@
+ID: b1-r9
+LEVEL: B1
+TITLE: B1 Reading 9 — What is the Story Behind the Bed?
+SUBTITLE: One passage · Sentence-insert, MCQ, vocabulary, reference
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: What is the Story Behind the Bed?
+
+PASSAGE:
+People spend about one third of their lives asleep. We can survive longer without food than without sleep. Sleeping is very important, so the bed is important. Scientists say that the first bed was probably some leaves. {gap:1} An average bed today lasts about fifteen years, and most people change beds about five times in their life. Even with all the beds in the world, people still invent new ones. And some people are still searching for the perfect bed.
+
+For most of human history, people slept on layers of cloth, palm leaves, or furs. *They* laid these on the floor. In ancient Egypt, over three thousand years ago, the pharaohs were the first to raise *their* beds off the floor. {gap:2} You could fold the bed and carry it. Archaeologists found beds like this in Tutankhamen's tomb. People back then did not think soft pillows were *necessary*. The Egyptians put their heads on headrests made of wood and the Chinese had ceramic headrests.
+
+After the year 100, only the rich had beds. Poor people still slept on the floor. {gap:3} emperor of Rome had a silver bed. Beds were also a person's most valuable *possession*. When Shakespeare died, he gave his second best bed to his wife. Beds were so special that in England, when a rich person travelled to another person's home, *he* took his bed with him. When a person stayed at a hotel for the night, he had to share a bed with strangers. If a rich person came to the hotel, the manager threw a poor traveller out of a bed to make room. All this sharing meant that beds were not clean, and insects lived in them. Some people, especially rich women, slept on a chair when they travelled.
+
+After 1750, beds became beautiful pieces of furniture. *They* were made of carved wood. A beautiful bed at that time could cost $1 million in today's money. The beds had four posts, one on each corner. People used these to hang curtains around the bed. The curtains helped to keep the bed warm. Also, because you passed through one room to get to another, the curtains were good for privacy.
+
+Beds also became higher and higher. Queen Victoria slept on a bed with seven mattresses on top of each other. She had steps beside the bed to reach the top. {gap:4} After 1820, people slept on cotton mattresses with metal springs inside them. Beds made of metal became popular, too. The best beds were made of a yellow metal called brass. Metal beds were better for your health than the beds made of wood, because they had fewer insects in them. That's why hospital beds are metal today.
+
+In ancient Rome people slept in their everyday clothes. In England, people didn't wear clothes in the bed. They wore a cap to keep their head and ears warm. Later, men wore nightshirts and women wore long nightdresses and hats. It was only after 1890 that men started to wear pyjamas.
+
+{gap:5} Many families shared one big bed. Some people had a small dog in bed to keep their feet warm. Sometimes, people warmed the bed before they got into it. They warmed stones, wrapped them in cloth, and put them in the bed. Later, they used bottles with hot water inside. One English Prime Minister, William Gladstone, filled his bottle with tea in case he was thirsty at night.
+
+Some people in Asian cultures prefer to sleep on the floor. They sleep on a thick mattress of cloth layers called a futon. They can roll up the futon and put it away during the day. Some people put their futon on a low frame rather than on the floor. Then it looks a lot like a Western-style bed.
+
+Beds today come in every size and shape. We have found beds, king size beds, bunk beds, adjustable beds, waterbeds, airbeds, and futons. Are you feeling sleepy yet? Sweet dreams.
+
+# GAPS
+LABEL: Part A
+INSTRUCTIONS: Put the sentences in the correct places in the text. There are TWO extra sentences.
+a: People had interesting ways to keep warm in bed.
+b: The bed became a symbol of wealth. One
+c: It was probably the most expensive bed of all time.
+d: They slept on light beds made of wood.
+e: Rich people were not worried about where to sleep.
+f: Mattresses usually had straw on the inside (for poor people) or feathers (for the rich).
+g: Now, of course beds are much better than that, and we have lots of *choices*.
+ANSWERS: 1=g, 2=d, 3=b, 4=f, 5=a
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Choose the best option.
+1. What is the purpose of the writer?
+   a) to give information about sleep and dreams
+   b) to give information about the history of the bed and people's sleeping habits
+   c) to explain why beds are important
+   ANSWER: b
+2. Who is the target audience?
+   a) Dream researchers
+   b) English teachers
+   c) People interested in the history of the bed
+   ANSWER: c
+3. After the year 100, the bed was __________.
+   a) made of leaves
+   b) a symbol of wealth
+   c) only found in hotels
+   ANSWER: b
+4. Beds made of metal were __________.
+   a) better for health
+   b) higher than the others
+   c) more expensive
+   ANSWER: a
+5. To keep warm, people __________.
+   a) warmed themselves before they go to bed
+   b) wrapped their feet in cloth
+   c) put warm stones in the bed
+   ANSWER: c
+6. People in some Asian cultures sleep __________.
+   a) on metal beds
+   b) on mattresses
+   c) on the floor
+   ANSWER: c
+7. Which of the following is true about the text?
+   a) Egyptians put their heads on ceramic headrests.
+   b) Rich women had to share their beds with strangers.
+   c) A beautiful bed was very expensive in the 18th century.
+   ANSWER: c
+8. Which of the following is NOT true about the text?
+   a) Shakespeare gave his second best bed to a stranger.
+   b) Queen Victoria had seven mattresses on her bed to make it higher.
+   c) Some people in England slept without clothes in the past.
+   ANSWER: a
+
+# MCQ
+LABEL: Part C (vocabulary)
+INSTRUCTIONS: Find a word in the passage that matches each meaning.
+1. Find a word in paragraph 1 which means "options":
+   a) choices
+   b) lives
+   c) years
+   ANSWER: a
+2. Find a word in paragraph 2 which means "needed":
+   a) pillows
+   b) layers
+   c) necessary
+   ANSWER: c
+3. Find a word in paragraph 3 which means "richness":
+   a) emperor
+   b) wealth
+   c) silver
+   ANSWER: b
+4. Find a word in paragraph 3 which means "property":
+   a) stranger
+   b) possession
+   c) insect
+   ANSWER: b
+
+# MCQ
+LABEL: Part D (reference)
+INSTRUCTIONS: What do these words refer to?
+1. "they" (paragraph 2, "They laid these on the floor"):
+   a) people
+   b) layers
+   c) years
+   ANSWER: a
+2. "their" (paragraph 2, "raise their beds off the floor"):
+   a) Egyptians
+   b) Egyptians'
+   c) Archaeologists'
+   ANSWER: b
+3. "he" (paragraph 3, "he took his bed with him"):
+   a) a stranger
+   b) Shakespeare
+   c) a rich person
+   ANSWER: c
+4. "they" (paragraph 4, "They were made of carved wood"):
+   a) pieces
+   b) beds
+   c) posts
+   ANSWER: b

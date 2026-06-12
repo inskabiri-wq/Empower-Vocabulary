@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "firebase-all",
+      "runtimeExecutable": "firebase",
+      "runtimeArgs": ["emulators:start"],
+      "port": 5000
+    },
+    {
+      "name": "firebase-hosting",
+      "runtimeExecutable": "firebase",
+      "runtimeArgs": ["emulators:start", "--only", "hosting"],
+      "port": 5000
+    },
+    {
+      "name": "firebase-functions",
+      "runtimeExecutable": "firebase",
+      "runtimeArgs": ["emulators:start", "--only", "functions"],
+      "port": 5001
+    },
+    {
+      "name": "static-y",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5173", "--directory", "E:/vocab-trainer/y", "--bind", "127.0.0.1"],
+      "port": 5173
+    }
+  ]
+}

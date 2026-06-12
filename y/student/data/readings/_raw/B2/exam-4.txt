@@ -1,0 +1,163 @@
+## Top-level metadata
+ID: b2-r4
+LEVEL: B2
+TITLE: B2 Reading 4 — Homeschooling: A Better Way to Learn?
+SUBTITLE: One passage · Gaps, MCQ, vocabulary, reference, writing
+TIME_LIMIT_MIN: 20
+
+## Pre-reading discussion (renders as introHtml, ungraded)
+INTRO:
+Discuss the following questions with a partner.
+1. Did you enjoy attending school when you were younger? Why?
+2. What do you understand by the term *homeschooling*?
+3. What do you think the benefits of homeschooling are? What are the drawbacks? Make a list for each.
+
+## The passage. Markup conventions:
+##   • Blank line  → new paragraph (auto-numbered, gets data-para="N")
+##   • *word*      → bold (rendered as <strong>; used by vocab/reference questions)
+##   • {gap:N}     → a gap (rendered as <span class="rd-gap" data-gap="N"></span>)
+PASSAGE_TITLE: Homeschooling – A Better Way to Learn?
+
+PASSAGE:
+Increasing numbers of parents in the U.S. are choosing to teach their kids at home. In fact, the U.S. Department of Education estimated that, in 1999, around 850,000 children were being homeschooled. Some educational experts say the real figure is about double this estimate, and the ranks of homeschooled children appear to be growing at a rate of about 11 percent annually.
+
+At one time, homeschooling had a negative reputation; it was traditionally used for students who could not attend school because of behavioral or learning difficulties. Today, however, more parents are *taking on* the responsibility of educating their children at home due to dissatisfaction with the educational system. {gap:1} Teacher shortages and lack of funding mean that, in many schools, one teacher is responsible for thirty or forty pupils. The result is often that children are deprived of the attention *they* need. *Escalating* classroom violence has also motivated some parents to remove their children from school.
+
+Supporters of homeschooling believe that children learn better when they are in a secure, loving environment. {gap:2} In fact, originally the home was the classroom, long before schools were established. Parents who homeschool argue that they can monitor their children's education and give them the attention that is lacking in a traditional school setting. Students can also pick and choose what to study and when to study, thus enabling *them* to learn at their own pace.
+
+In contrast, critics of homeschooling say that children who are not in the classroom *miss out on* learning important social skills because they have little interaction with their peers. Several studies, though, have shown that the home-educated appear to do just as well in terms of social and emotional development as other students, having spent more time in the comfort and security of their home, with guidance from parents who care about their welfare. {gap:3} Many parents who homeschool have no teacher training and are not *competent* educators of all the subjects taught in schools. In terms of academic achievement, however, homeschooled children do just as well as those who have been in the classroom and many walk the campuses of Harvard and Stanford alongside the conventionally educated.
+
+With an increasing number of *disgruntled* parents taking their children out of class, schools are receiving less funding from the government because they have fewer students. Some see *this* as a threat to the system and argue that schools will never be able to improve their situation and restore parents' confidence in the educational system. {gap:4} They can also take part in extracurricular activities such as playing football or taking ballet lessons. While parents will not completely put their confidence back into the system, many of them have reached a compromise that allows their children the extra benefits of peer interaction and access to a wider choice of activities.
+
+Although there are arguments for and against *it*, homeschooling in the U.S. has become a multi-million-dollar industry, and it is growing. {gap:5} Though once the last resort for troubled children, homeschooling today is an accepted alternative to an educational system that some believe is failing.
+
+## Section: gap-fill (match-gaps)
+# GAPS
+LABEL: Part B
+INSTRUCTIONS: Match the sentences (a-g) with the gaps (1-5). There are two extra sentences.
+a: There are now websites, support groups, and conventions that help parents to assert their rights and enable them to learn more about educating their children.
+b: Many psychologists see the home as the most natural learning environment.
+c: Many schools have opened their doors to homeschoolers on a part-time basis, allowing these children to attend classes once or twice a week.
+d: There is no doubt that parents are capable of educating their children at home, but they may not have the time.
+e: Many parents are unhappy about class size, as well as problems inside the classroom.
+f: In spite of this, many critics of homeschooling have raised concerns about the ability of parents to teach their kids effectively.
+g: More and more parents are now seeing homeschooling as an opportunity to spend more time with their children.
+ANSWERS: 1=e, 2=b, 3=f, 4=c, 5=a
+
+## Section: comprehension MCQ
+# MCQ
+LABEL: Part D
+INSTRUCTIONS: Read the text and circle the correct answer.
+1. In 1999, approximately 850,000 children in the USA were homeschooled, but that number is probably closer to ______.
+   a) 900,000
+   b) 1,000,000
+   c) 1,500,000
+   d) 1,700,000
+   ANSWER: d
+2. According to paragraph 2, ______.
+   a) homeschooling has always been considered to be a better alternative to traditional schooling
+   b) homeschooling is only preferred by parents whose children have behavioral and learning difficulties
+   c) more parents have turned to homeschooling recently because of problems with the educational system
+   d) parents, as well as school teachers, find it extremely hard to give enough attention to children
+   ANSWER: c
+3. Which of the following is NOT an advantage of homeschooling?
+   a) It enables children to learn more than their peers in traditional school settings.
+   b) Students can arrange their own study schedules and study at their own pace.
+   c) Parents can monitor their children's educational progress closely.
+   d) It provides children with the most natural learning environment.
+   ANSWER: a
+4. Critics of homeschooling argue that _________.
+   a) children who are homeschooled may not improve their social skills as well as the other kids
+   b) homeschooled children do just as well as those who have been in the classroom
+   c) despite not having any teacher training, parents can teach many subjects as effectively as teachers
+   d) homeschooled children have no interaction with their peers
+   ANSWER: a
+5. In paragraph 4, why does the author say "many walk the campuses of Harvard and Stanford alongside the conventionally educated"?
+   a) To raise concerns about the ability of parents to teach their kids effectively.
+   b) To show that mostly the top universities accept homeschooled children.
+   c) To point out that parents who homeschool their children don't need teacher training.
+   d) To show that homeschooled children do just as well as the traditionally educated children.
+   ANSWER: d
+6. According to paragraph 5, the rise of homeschooling in the US ______.
+   a) is posing a threat to the improvement of the current educational system
+   b) is helping parents restore confidence in the educational system
+   c) creates new extracurricular activities that children can take part in
+   d) enables parents to spend less money on their children's education
+   ANSWER: a
+7. The purpose of the text is to show that ______.
+   a) there are also some disadvantages of homeschooling
+   b) the quality of education in traditional schools is not good
+   c) homeschooling has become an accepted alternative to traditional schooling
+   d) traditionally educated students are likely to have better social and academic skills
+   ANSWER: c
+
+## Section: vocabulary MCQ
+# VOCAB
+LABEL: Part E
+INSTRUCTIONS: Guess the meaning of the words or phrases from the text and circle the correct answer.
+1. "take on" in paragraph 2 is closest in meaning to:
+   a) avoid
+   b) assign
+   c) give
+   d) accept
+   ANSWER: d
+2. "escalating" in paragraph 2 is closest in meaning to:
+   a) becoming worse
+   b) becoming less serious
+   c) becoming more urgent
+   d) losing importance
+   ANSWER: a
+3. "miss out on" in paragraph 4 is closest in meaning to:
+   a) miss someone
+   b) be able to do something
+   c) lose a chance of doing something
+   d) be afraid of something
+   ANSWER: c
+4. "competent" in paragraph 4 is closest in meaning to:
+   a) lacking the necessary skills
+   b) disciplined
+   c) capable of doing something effectively
+   d) famous
+   ANSWER: c
+5. "disgruntled" in paragraph 5 is closest in meaning to:
+   a) dishonest
+   b) dissatisfied
+   c) disobedient
+   d) disabled
+   ANSWER: b
+
+## Section: reference questions (pronouns / referring expressions)
+# REFERENCE
+LABEL: Part F
+INSTRUCTIONS: What do the following words refer to in the text?
+1. "they" in paragraph 2:
+   a) parents
+   b) children
+   c) schools
+   d) shortages
+   ANSWER: b
+2. "them" in paragraph 3:
+   a) parents
+   b) many psychologists
+   c) supporters of homeschooling
+   d) students
+   ANSWER: d
+3. "this" in paragraph 5:
+   a) schools receiving less money in per-pupil funding
+   b) schools improving their situation
+   c) restoring parents' confidence in the educational system
+   d) increasing number of disgruntled parents
+   ANSWER: a
+4. "it" in paragraph 6:
+   a) homeschooling
+   b) argument
+   c) multi-million dollar industry
+   d) alternative
+   ANSWER: a
+
+## Section: open-ended writing prompt
+# WRITING
+LABEL: Part G
+INSTRUCTIONS: Answer the question in your own words (min. 50 words).
+PROMPT: "Are you in favour of or against homeschooling?" Why? Explain.
+MIN_WORDS: 50

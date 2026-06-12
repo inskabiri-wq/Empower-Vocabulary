@@ -1,0 +1,435 @@
+{
+  "id": "b1-r4",
+  "level": "B1",
+  "title": "B1 Reading 4 — 100 Places to Visit Before You Die",
+  "subtitle": "One passage · MCQ, sentence-insert, reference, vocabulary",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "100 Places to Visit Before You Die",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Natural wonder: The Grand Canyon, USA</p><p class=\"rd-para\" data-para=\"2\">Native Americans call the Grand Canyon 'mountain lying down'. It is 443 kilometres long and the Colorado River flows there. The canyon is a baby by geological standards — only five or six million years old. But the rocks at the bottom of it are almost two billion years old. <span class=\"rd-gap\" data-gap=\"1\"></span> The incredible colours of these rocks <strong>fascinate</strong> visitors — over five million of <strong>them</strong> every year. The Grand Canyon is divided into the North Rim and the South Rim. The South Rim is open all year and receives 90 percent of the park's visitors. The South Rim has an airport and rail service. One popular attraction is the Grand Canyon Skywalk. It is a glass walkway that is 4,000 feet (1,220 meters) above the canyon floor in the Grand Canyon West area of the main canyon. Surprisingly, after making the long journey there, the average visitor spends only fifteen minutes looking at the Canyon. Even so, visitors should still be careful: every year an average of five people fall over the edge. Since opening in March 2007, about 300,000 visitors have walked the Grand Canyon Skywalk each year.</p><p class=\"rd-para\" data-para=\"3\">Ancient wonder: Petra, Jordan</p><p class=\"rd-para\" data-para=\"4\">The city of Petra is more than 2,000 years old, and was once an important commercial city. Temples, palaces, and a huge amphitheatre were all cut out of the cliffs. Their amazing colours give the city its rose-red appearance. <span class=\"rd-gap\" data-gap=\"2\"></span> It supported around 30,000 people. Historians believe that the citizens of Petra had to leave it around 551 AD and people in the West forgot about this incredible archaeological site, until a Swiss traveller rediscovered <strong>it</strong> in 1812. Even today, Petra <strong>remains</strong> Jordan's top tourist attraction. It has also been the location for a number of Hollywood films, including Indiana Jones and The Last Crusade.</p><p class=\"rd-para\" data-para=\"5\">Romantic city: Venice, Italy</p><p class=\"rd-para\" data-para=\"6\">What could be more romantic than going down a Venetian canal in a gondola? No wonder Venice is the favourite of lovers all over the world. Gondolas are traditional and symbolic boats which have been used as transport for more than 10 centuries. This amazing city is located on 118 flat islands, and has over 200 canals and 400 bridges. <span class=\"rd-gap\" data-gap=\"3\"></span> Tourists can visit the Piazza San Marco. It is one of the most beautiful squares in the world with its 500-year-old buildings. <strong>They</strong> can also see the Basilica of St Mark, which is Venice's most famous church. It is the subject of a million photographs and the architectural star of the Piazza San Marco. Lastly, they can enter the Doge's Palace, the home of many of Venice's most famous paintings.</p><p class=\"rd-para\" data-para=\"7\">Modern city: Las Vegas, USA</p><p class=\"rd-para\" data-para=\"8\">Las Vegas is one of the most exciting cities in the world. Nevada legalized gambling (money games) in 1931, and Vegas became a home to the biggest casinos. This made the nightlife of the city very popular. <span class=\"rd-gap\" data-gap=\"4\"></span> The business grew so well that Las Vegas became the gambling capital of the world in less than ten years. The 'strip', in the centre of town, is a five-kilometre long main street with the most expensive hotels, including the <strong>replicas</strong> of the Eiffel Tower, the Egyptian Pyramids and ancient Roman Palaces. <strong>It</strong> uses almost 24,000 kilometres of neon lights! Las Vegas is famous for its 'quickie' weddings (both Elvis Presley and Richard Gere were married here). <span class=\"rd-gap\" data-gap=\"5\"></span> You can even arrange a 'drive-through wedding' and be back in the casinos in an hour!</p><p class=\"rd-para\" data-para=\"9\">Beach: Koh Samui, Thailand</p><p class=\"rd-para\" data-para=\"10\">Koh Samui is a tropical paradise located in the warm blue waters to the southeast of Thailand. Although <strong>it</strong> is the kingdom's second largest island after Phuket, tourists didn't know about it until a few years ago. For many years this island has been used for fishing, agriculture and coconut farming. Those three supported the local economy. <span class=\"rd-gap\" data-gap=\"6\"></span> But since the 1980's Samui has relied on tourism for <strong>income</strong>. In Samui, there are hundreds of coconut trees and brightly-coloured flowers. It is surrounded by white sandy beaches and blue seas. Koh Samui has it all: remote beaches, great shopping, first-class restaurants and an exciting night life.</p>",
+      "sections": [
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part A",
+          "instructions": "Read the text and answer the questions.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Why does the author say Grand Canyon is \"a baby\"?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Because it is geologically young"
+                },
+                {
+                  "id": "b",
+                  "text": "Because native Americans called it that way"
+                },
+                {
+                  "id": "c",
+                  "text": "Because it is known as the Mountain lying down"
+                },
+                {
+                  "id": "d",
+                  "text": "Because it is two billion years old"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m2",
+              "question": "What made Petra popular again?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Indiana Jones and the Last Crusade"
+                },
+                {
+                  "id": "b",
+                  "text": "Amazing colours and temples"
+                },
+                {
+                  "id": "c",
+                  "text": "A traveller from Switzerland"
+                },
+                {
+                  "id": "d",
+                  "text": "Historians from the West"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "Where can tourists see famous art in Venice?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "In the Piazza San Marco"
+                },
+                {
+                  "id": "b",
+                  "text": "In 500-year-old buildings"
+                },
+                {
+                  "id": "c",
+                  "text": "At the Basilica of St Mark"
+                },
+                {
+                  "id": "d",
+                  "text": "At the Doge's Palace"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m4",
+              "question": "What is \"The Strip\" in Las Vegas?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "The place of expensive hotels"
+                },
+                {
+                  "id": "b",
+                  "text": "A hotel that looks like the Eiffel Tower"
+                },
+                {
+                  "id": "c",
+                  "text": "The place where ancient Romans lived"
+                },
+                {
+                  "id": "d",
+                  "text": "A casino that has 24,000 neon lights"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "What helps the local economy in Koh Samui today?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Agriculture"
+                },
+                {
+                  "id": "b",
+                  "text": "Tourism"
+                },
+                {
+                  "id": "c",
+                  "text": "Shopping"
+                },
+                {
+                  "id": "d",
+                  "text": "Fishing"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part B",
+          "instructions": "Match the sentences with the gaps. There are TWO extra sentences.",
+          "options": [
+            {
+              "id": "a",
+              "text": "The colorful rock formations of the Grand Canyon are one of the main attractions of the canyon."
+            },
+            {
+              "id": "b",
+              "text": "It is popular among couples who want to get married quickly and easily, often with a minimal amount of planning or paperwork."
+            },
+            {
+              "id": "c",
+              "text": "The city's rapid growth in the 1930s and 1940s was driven by tourists and investors, who were attracted by the abundance of entertainment options."
+            },
+            {
+              "id": "d",
+              "text": "Additionally, it has a small fishing industry, and offers a variety of recreational activities such as diving, snorkeling, and boating."
+            },
+            {
+              "id": "e",
+              "text": "Unfortunately, it has grown significantly, and become the main economic driver for the island."
+            },
+            {
+              "id": "f",
+              "text": "The different layers of rock are composed of various minerals, each of which gives off a unique look."
+            },
+            {
+              "id": "g",
+              "text": "The water system was a key factor in that city's ability to thrive as a major center of trade and culture in the ancient world."
+            },
+            {
+              "id": "h",
+              "text": "The city's architecture, art and culture are also something to be appreciated."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "f"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "g"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "h"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "c"
+            },
+            {
+              "id": "5",
+              "label": "Gap 5",
+              "answer": "b"
+            },
+            {
+              "id": "6",
+              "label": "Gap 6",
+              "answer": "d"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part C (reference)",
+          "instructions": "What do the underlined words in the text refer to?",
+          "items": [
+            {
+              "id": "m1",
+              "question": "\"them\" (paragraph 1):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "colours"
+                },
+                {
+                  "id": "b",
+                  "text": "rocks"
+                },
+                {
+                  "id": "c",
+                  "text": "visitors"
+                },
+                {
+                  "id": "d",
+                  "text": "canyons"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "\"it\" (paragraph 2):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "west"
+                },
+                {
+                  "id": "b",
+                  "text": "traveller"
+                },
+                {
+                  "id": "c",
+                  "text": "system"
+                },
+                {
+                  "id": "d",
+                  "text": "archaeological site Petra"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m3",
+              "question": "\"they\" (paragraph 3):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "buildings"
+                },
+                {
+                  "id": "b",
+                  "text": "photographs"
+                },
+                {
+                  "id": "c",
+                  "text": "tourists"
+                },
+                {
+                  "id": "d",
+                  "text": "paintings"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m4",
+              "question": "\"It\" (paragraph 4):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Expensive hotel"
+                },
+                {
+                  "id": "b",
+                  "text": "The Strip"
+                },
+                {
+                  "id": "c",
+                  "text": "Eiffel Tower"
+                },
+                {
+                  "id": "d",
+                  "text": "Roman Palace"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m5",
+              "question": "\"it\" (paragraph 5):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Koh Samui"
+                },
+                {
+                  "id": "b",
+                  "text": "Thailand"
+                },
+                {
+                  "id": "c",
+                  "text": "paradise"
+                },
+                {
+                  "id": "d",
+                  "text": "Phuket"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq3",
+          "type": "mcq",
+          "label": "Part D (vocabulary)",
+          "instructions": "Choose the word that has a similar meaning to the one from the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "The word \"fascinate\" (paragraph 1) is closest in meaning to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "attract"
+                },
+                {
+                  "id": "b",
+                  "text": "reject"
+                },
+                {
+                  "id": "c",
+                  "text": "include"
+                },
+                {
+                  "id": "d",
+                  "text": "inform"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m2",
+              "question": "The word \"remains\" (paragraph 2) is closest in meaning to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "stops"
+                },
+                {
+                  "id": "b",
+                  "text": "stays"
+                },
+                {
+                  "id": "c",
+                  "text": "influences"
+                },
+                {
+                  "id": "d",
+                  "text": "excludes"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m3",
+              "question": "The word \"replicas\" (paragraph 4) is closest in meaning to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "pictures"
+                },
+                {
+                  "id": "b",
+                  "text": "products"
+                },
+                {
+                  "id": "c",
+                  "text": "copies"
+                },
+                {
+                  "id": "d",
+                  "text": "attractions"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m4",
+              "question": "The word \"income\" (paragraph 5) is closest in meaning to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "money"
+                },
+                {
+                  "id": "b",
+                  "text": "entertainment"
+                },
+                {
+                  "id": "c",
+                  "text": "environment"
+                },
+                {
+                  "id": "d",
+                  "text": "transport"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

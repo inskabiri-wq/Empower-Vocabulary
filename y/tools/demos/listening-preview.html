@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Listening skill — preview</title>
+<link rel="stylesheet" href="../../student/css/styles.css" />
+<link rel="stylesheet" href="../../student/css/extra.css" />
+<link rel="stylesheet" href="../../student/css/hub.css" />
+<link rel="stylesheet" href="../../student/css/skills.css" />
+<style>
+  /* Override styles.css body flex so the preview doesn't shrink-wrap the screen */
+  body { background: #0b1220 !important; margin: 0 !important; display: block !important; }
+  .screen { display: none; }
+  .screen.active { display: block; width: 100%; }
+  .preview-note {
+    max-width: 1100px;
+    margin: 16px auto;
+    padding: 10px 14px;
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    color: #fcd34d;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="preview-note">🧪 Preview of #listeningScreen with real styles. Auth-free.</div>
+
+<div id="listeningScreen" class="screen active">
+  <div class="skill-screen">
+    <div class="skill-header">
+      <div class="skill-header-left">
+        <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to hub">
+          <span class="chev" aria-hidden="true">←</span>
+          <span>Hub</span>
+        </button>
+        <div class="skill-title">
+          <div class="icon" aria-hidden="true">🎧</div>
+          <div>
+            <h2>Listening</h2>
+            <div class="skill-sub">Exams & practice</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-header-right">
+        <span class="skill-progress-pill" id="listeningProgressPill">0%</span>
+      </div>
+    </div>
+
+    <div class="skill-section-lbl">Activities</div>
+    <div class="skill-activity-grid" id="listeningActivityGrid"><!-- listening.js --></div>
+  </div>
+</div>
+
+<script>
+  function backToHub() { console.log('[preview] backToHub called'); }
+  function startListeningExam() { console.log('[preview] startListeningExam called'); }
+</script>
+<script src="../../student/js/skills/listening.js"></script>
+</body>
+</html>

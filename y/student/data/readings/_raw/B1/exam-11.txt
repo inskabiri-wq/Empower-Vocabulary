@@ -1,0 +1,172 @@
+ID: b1-r11
+LEVEL: B1
+TITLE: B1 Reading 11 — How to Be Successful in an Interview
+SUBTITLE: One passage · Vocabulary, sentence-insert, MCQ, fill-in
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: How to Be Successful in an Interview
+
+PASSAGE:
+{gap:1} Almost everyone has an interview at some point in his or her adult life. Today, because many people change their jobs more often, people usually interview several times during their lives. Interviews make everyone nervous. Some people feel so nervous during an interview that they forget answers to even simple questions. This can be very frustrating — especially if you don't get the job. So what can you do to reduce *stress* during this very important time?
+
+The first part of the answer is preparation. {gap:2} In fact, it is *human nature* to fear the unknown. So, it makes sense that if you find out more information before the interview, you will be less nervous. Find out as much as you can about the job you are applying for. One way to do this is to go online. Use the title of the job as a key word for a search. You can also go to a career adviser and ask for more information. Next, you should find out about the company. How large is it? What does the company make or do? Again, going online to the company website will help you.
+
+The next step is to prepare your answers. You don't know exactly which questions the interviewers will ask you, but there are several very *common* questions. The interviewers will probably ask you why you want the job. Most important, they will want to know why they should hire you and not somebody else. {gap:3} You should also use the same information to write down three questions you have about the job or the company on a note card. You should bring these questions with you to the interview.
+
+The interviewers have to choose one *applicant* for the job. They have to try to get to know each applicant during the interview. So they will ask some difficult questions to see which applicant gives the best answers. A common difficult question is "What are your strengths?" This is your chance to "sell yourself". The interviewer expects you to talk about all the things you are good at doing. First of all, you need to think about this question before the interview. Think of a few things you are good at doing. Perhaps you are good at working with people, and you are good at solving problems, for example. Be ready with your answer. {gap:4}
+
+Another difficult question is "What are your weaknesses?" This is not your time to talk about how you find difficult to get out of the bed early on Monday mornings. Instead, you can say something like "I sometimes feel shy. I need to practice talking to a lot of people." Some applicants give an example of a mistake they made at another company. {gap:5} For example, an applicant might say, "I like to do things quickly. In my last job, I worked with a person who was slow. One day I told her to hurry up, and this *hurt her feelings*. It was difficult to work with her for a while. Of course, I said I was sorry. I showed her how to work more quickly. I learned that you must choose your words carefully." Employers like to hear that you know you make mistakes but that you can learn from these mistakes.
+
+The interview day arrives. You know about the job and the company. You have practiced answering the questions. You should always arrive early, so make sure you know exactly where the interview is. Dress sensibly. Avoid wearing heavy *perfume* or *cologne* since a lot of people today dislike strong smells. Some people are even allergic to heavy perfume. When you walk into the building, smile at the *receptionist*. This is usually the first person you see as you enter a company. Greet him or her nicely. Interviewers often ask their receptionist about the applicants. When you meet the interviewer, smile again. Managers often report that they hire people who smile rather than people who look nervous. Make sure your handshake is not too strong and not too weak. Sit down, take a deep breath, smile again, and you are ready.
+
+Hopefully, the interviewer will ask you questions you have already practiced. If you don't understand a question, however, make sure you ask the interviewer to repeat it. You could say, "Excuse me, I didn't quite understand the question. Could you say it again?"
+
+The last question of the interview is often "Do you have any questions?" Again, you are ready for this question. Take out your note card with your questions. {gap:6} Always ask at least one question or the interviewer will think you are not interested in the job. You can ask a specific question about the job. You can also ask a general question like "What do your employees like best about this company?" or "Do you think this company is going to continue to grow in the future?" Finally, you should end by saying that you have enjoyed talking to the person and are very interested in the job. Ask, "When will you make a decision?" and then shake hand again, smile, and say good-bye.
+
+If you prepared well, you should feel good when you leave the interview. You should know more about the company and the job, and the interviewer should know more about you. Remember to smile and talk to the receptionist as you leave the building. Later the same day, think about the questions and your answers. Think of how you could give better answers next time. Keep practicing because most people have several interviews before they get a job. Finally, when a manager calls you and offers you a job, let the manager know you are excited to work for him or her. "That's great!" you can say. "When can I start?"
+
+# MCQ
+LABEL: Part A (vocabulary)
+INSTRUCTIONS: Match the words with the correct definitions.
+1. stress:
+   a) a liquid with a strong, pleasant smell
+   b) a person who is trying to get a new job
+   c) a person who works at the front desk in a company
+   d) feelings of worry about work or personal life
+   e) happening often
+   f) make someone feel upset or unhappy
+   g) good and bad traits that all people have
+   ANSWER: d
+2. human nature:
+   a) a liquid with a strong, pleasant smell
+   b) a person who is trying to get a new job
+   c) a person who works at the front desk in a company
+   d) feelings of worry about work or personal life
+   e) happening often
+   f) make someone feel upset or unhappy
+   g) good and bad traits that all people have
+   ANSWER: g
+3. common:
+   a) a liquid with a strong, pleasant smell
+   b) a person who is trying to get a new job
+   c) a person who works at the front desk in a company
+   d) feelings of worry about work or personal life
+   e) happening often
+   f) make someone feel upset or unhappy
+   g) good and bad traits that all people have
+   ANSWER: e
+4. applicant:
+   a) a liquid with a strong, pleasant smell
+   b) a person who is trying to get a new job
+   c) a person who works at the front desk in a company
+   d) feelings of worry about work or personal life
+   e) happening often
+   f) make someone feel upset or unhappy
+   g) good and bad traits that all people have
+   ANSWER: b
+5. hurt someone's feelings:
+   a) a liquid with a strong, pleasant smell
+   b) a person who is trying to get a new job
+   c) a person who works at the front desk in a company
+   d) feelings of worry about work or personal life
+   e) happening often
+   f) make someone feel upset or unhappy
+   g) good and bad traits that all people have
+   ANSWER: f
+6. perfume/cologne:
+   a) a liquid with a strong, pleasant smell
+   b) a person who is trying to get a new job
+   c) a person who works at the front desk in a company
+   d) feelings of worry about work or personal life
+   e) happening often
+   f) make someone feel upset or unhappy
+   g) good and bad traits that all people have
+   ANSWER: a
+7. receptionist:
+   a) a liquid with a strong, pleasant smell
+   b) a person who is trying to get a new job
+   c) a person who works at the front desk in a company
+   d) feelings of worry about work or personal life
+   e) happening often
+   f) make someone feel upset or unhappy
+   g) good and bad traits that all people have
+   ANSWER: c
+
+# GAPS
+LABEL: Part B
+INSTRUCTIONS: Put the sentences in the correct places in the text. There are TWO extra sentences.
+a: If you feel comfortable talking about yourself, practice first in front of a mirror!
+b: This shows the interviewer you are organized.
+c: They admit that they have made many mistakes in their professional life.
+d: You must prepare answers to these questions by using the information you have found online or in a library.
+e: One reason people get nervous is because they don't know what to expect.
+f: If an application is the door to a new job, the interview is the key to opening that door.
+g: You should always be prepared to ask meaningful questions.
+h: They explain what they learned from this mistake.
+ANSWERS: 1=f, 2=e, 3=d, 4=a, 5=h, 6=b
+
+# MCQ
+LABEL: Part C
+INSTRUCTIONS: Circle the best option to answer the questions.
+1. Which of the following statements is TRUE according to the text?
+   a) The first person an applicant usually sees in a company is the receptionist.
+   b) When you answer the question "What are your weaknesses?" you should tell them the truth.
+   c) If an applicant finds out more information about the interview, he or she will be more nervous.
+   d) You should let the manager know that you are nervous in the interview.
+   ANSWER: a
+2. Some applicants feel frustrated before an interview because __________.
+   a) they feel that they are not ready for the job
+   b) they don't know what will happen in the interview
+   c) they have found out lots of information about the company
+   d) they always think of the negative aspects of the job
+   ANSWER: b
+3. Which of the following is FALSE?
+   a) Interviewer wants to see that the applicant is interested in the job.
+   b) Interviewer wants to know about the applicant's strengths and weaknesses.
+   c) Interviewer does not want to hear about applicant's mistakes in his/her previous job.
+   d) Interviewer wants to hire someone who has a smiling face.
+   ANSWER: c
+4. What does the expression "sell yourself" mean?
+   a) working with people
+   b) getting more money than you deserve
+   c) showing that you are not lying
+   d) show what you are good at
+   ANSWER: d
+5. What should we talk about the mistakes that we made in our previous jobs?
+   a) How bad the mistake was.
+   b) What you learned from the mistake.
+   c) How you felt after you made the mistake.
+   d) How it happened.
+   ANSWER: b
+6. Which of the following is NOT an example of things you should do to make a good first impression?
+   a) Wear a dark suit and carry a bag
+   b) Arrive early
+   c) Know where the interview will be
+   d) Avoid wearing heavy perfume
+   ANSWER: a
+7. You should always ask at least one question at the end of the interview because __________.
+   a) this shows that you are excited
+   b) this shows that you are organized
+   c) this shows that you are not interested in the job
+   d) this shows that you are not nervous
+   ANSWER: b
+
+# SHORTANSWER
+LABEL: Part D (fill in the blank)
+INSTRUCTIONS: Choose the best word to complete each sentence. [Words: relatively, promoted, human nature, stressed, honest, perfume, disappointed, applicants]
+1. Please don't wear __________ in this class. I am allergic to strong smells.
+   ANSWER: perfume
+2. If you feel __________, you should take a hot bath. This will relax you and make you feel better.
+   ANSWER: stressed
+3. I was __________ because my husband forgot my birthday. Next year, I will make sure I tell him the week before!
+   ANSWER: disappointed
+4. I think this math class is __________ easy. However, my friends say the next class is really difficult.
+   ANSWER: relatively
+5. Good news! My manager __________ me. I have a better job, and I'm earning more money!
+   ANSWER: promoted
+6. When the manager of the bookstore advertised for a new salesperson, more than twenty __________ called her to ask about the job.
+   ANSWER: applicants
+7. When you complete an application, you must be __________. Don't exaggerate your experience or your education.
+   ANSWER: honest
+8. It is __________ to be afraid of things we don't understand. All people feel this way.
+   ANSWER: human nature

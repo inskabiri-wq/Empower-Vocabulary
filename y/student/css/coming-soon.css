@@ -1,0 +1,77 @@
+/* Coming Soon - Activity Card Styling */
+
+.activity-card.coming-soon {
+  position: relative;
+  cursor: not-allowed !important;
+  overflow: hidden;
+}
+
+/* Grayscale overlay effect */
+.activity-card.coming-soon::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255, 255, 255, 0.02) 10px,
+      rgba(255, 255, 255, 0.02) 20px
+    ),
+    linear-gradient(135deg, rgba(30, 30, 50, 0.7), rgba(20, 20, 40, 0.8));
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Coming Soon badge */
+.activity-card.coming-soon::before {
+  content: '🚧 COMING SOON';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-5deg);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  font-size: 0.75em;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 8px;
+  z-index: 3;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+  white-space: nowrap;
+  animation: comingSoonPulse 2s ease-in-out infinite;
+}
+
+/* Pulse animation for badge */
+@keyframes comingSoonPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) rotate(-5deg) scale(1);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotate(-5deg) scale(1.05);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+  }
+}
+
+/* Dim the icon and text */
+.activity-card.coming-soon .icon,
+.activity-card.coming-soon h3,
+.activity-card.coming-soon p {
+  opacity: 0.4;
+  position: relative;
+  z-index: 0;
+}
+
+/* Disable hover effects */
+.activity-card.coming-soon:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  border-color: var(--border-color) !important;
+}

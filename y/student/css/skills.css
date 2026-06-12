@@ -1,0 +1,166 @@
+/* ============================================================
+   SKILLS — shared shell for every skill-home screen
+   Used by #listeningScreen, #grammarScreen, #readingScreen,
+   #writingScreen, #speakingScreen. Scoped via .skill-screen.
+
+   These dashboard tokens mirror the ones declared on #menuScreen
+   in extra.css, so each skill page renders on the same dark
+   palette regardless of OS color-scheme preference.
+   ============================================================ */
+
+.skill-screen {
+  /* Shared dashboard tokens */
+  --dash-surface:     #1e293b;
+  --dash-elevated:    #334155;
+  --dash-primary:     #0d9488;
+  --dash-primary-lt:  #2dd4bf;
+  --dash-primary-dk:  #0f766e;
+  --dash-border:      rgba(255,255,255,0.07);
+  --dash-border-md:   rgba(255,255,255,0.13);
+  --text-primary:     #f1f5f9;
+  --text-secondary:   #94a3b8;
+  --text-tertiary:    #64748b;
+  /* Default skill accent — pages can override via --skill-accent */
+  --skill-accent:     var(--dash-primary-lt);
+
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 16px 48px;
+}
+
+/* Per-skill accents on skill-home screens. The id-based selectors
+   let each page pick up the matching hub-card color without JS. */
+#listeningScreen.skill-screen { --skill-accent: #38bdf8; }
+#grammarScreen.skill-screen   { --skill-accent: #f59e0b; }
+#readingScreen.skill-screen   { --skill-accent: #fb7185; }
+#writingScreen.skill-screen   { --skill-accent: #a78bfa; }
+#speakingScreen.skill-screen  { --skill-accent: #fbbf24; }
+
+/* ---------- Header ---------- */
+.skill-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  background: var(--dash-surface, rgba(15, 23, 42, 0.7));
+  border: 1px solid var(--dash-border-md, rgba(255, 255, 255, 0.06));
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
+}
+
+.skill-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.skill-back-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--dash-border-md, rgba(255, 255, 255, 0.08));
+  color: var(--text-primary, #f1f5f9);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+.skill-back-btn:hover {
+  border-color: var(--dash-primary, #0d9488);
+  background: rgba(13, 148, 136, 0.08);
+}
+.skill-back-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.35);
+}
+.skill-back-btn:active {
+  transform: translateY(1px);
+}
+.skill-back-btn .chev {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.skill-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.skill-title .icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  font-size: 20px;
+  background: color-mix(in srgb, var(--skill-accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--skill-accent) 35%, transparent);
+}
+.skill-title h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary, #f1f5f9);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.skill-title .skill-sub {
+  font-size: 12px;
+  color: var(--text-secondary, #94a3b8);
+  margin-top: 1px;
+}
+
+.skill-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Progress badge (top-right of skill header) */
+.skill-progress-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--skill-accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--skill-accent) 40%, transparent);
+  color: var(--skill-accent, var(--dash-primary-lt));
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Section labels ---------- */
+.skill-section-lbl {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-tertiary, #64748b);
+  font-weight: 700;
+  margin: 24px 4px 12px;
+}
+
+/* ---------- Empty state (for shells with no content yet) ---------- */
+.skill-empty {
+  min-height: 320px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--dash-border-md, rgba(255, 255, 255, 0.08));
+  border-radius: 16px;
+  color: var(--text-tertiary, #64748b);
+  font-size: 13px;
+}
+
+/* ---------- Activity grid (matches existing .activity-card look) ---------- */
+.skill-activity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}

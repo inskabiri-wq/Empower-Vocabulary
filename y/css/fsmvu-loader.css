@@ -1,0 +1,202 @@
+/* ============================================================
+   FSMVÜ SEAL — Loader Animations
+   ------------------------------------------------------------
+   Recreated 1:1 from the Claude Design hand-off "FSMVU Loaders.html".
+   Six stately, academic loading directions built from the Fatih Sultan
+   Mehmet Vakıf Üniversitesi crimson seal. Crimson is kept EXACT (#ee3342),
+   per the design brief ("keep original crimson exactly").
+
+   Everything is scoped under .fsmvu-* and every @keyframes is fsmvu-*
+   prefixed, so this can never collide with the app's existing
+   `@keyframes spin` / `breathe` rules (which run at different speeds).
+
+   USAGE
+     Default (Breathe) — a 1:1 drop-in for <div class="spinner">:
+        <div class="fsmvu-loader" role="status" aria-label="Loading"></div>
+
+     Other single-element variants:
+        <div class="fsmvu-loader fsmvu-loader--splash"></div>
+        <div class="fsmvu-loader fsmvu-loader--draw"></div>
+
+     Variants that need child markup:
+        Shimmer:  <div class="fsmvu-loader fsmvu-loader--shimmer"><span class="fsmvu-gloss"></span></div>
+        Rotate:   <div class="fsmvu-loader fsmvu-loader--rotate"><span class="fsmvu-seal fsmvu-ring"></span><span class="fsmvu-seal fsmvu-emblem"></span></div>
+        Progress: <div class="fsmvu-loader fsmvu-loader--progress"><div class="fsmvu-ring-wrap"><span class="fsmvu-track"></span><span class="fsmvu-arc"></span><span class="fsmvu-seal"></span></div></div>
+
+     Full-screen page loader (or use window.FSMVULoader.show()):
+        <div class="fsmvu-overlay"><div class="fsmvu-loader fsmvu-loader--progress">…</div><div class="fsmvu-cap">Loading</div></div>
+   ============================================================ */
+
+.fsmvu-loader,
+.fsmvu-overlay{
+  --fsmvu-crimson:#ee3342;
+  --fsmvu-crimson-deep:#c01f2d;
+  --fsmvu-seal:url('/fsmvu-seal.png');
+  --fsmvu-size:128px;
+}
+
+/* ---------- base seal block ---------- */
+.fsmvu-seal{
+  width:var(--fsmvu-size); height:var(--fsmvu-size);
+  background:var(--fsmvu-seal) center/contain no-repeat;
+  will-change:transform,opacity,filter;
+}
+
+/* The bare .fsmvu-loader IS a breathing seal — a drop-in for the old
+   <div class="spinner"></div> with no markup restructuring. */
+.fsmvu-loader{
+  width:var(--fsmvu-size); height:var(--fsmvu-size);
+  background:var(--fsmvu-seal) center/contain no-repeat;
+  will-change:transform,opacity,filter;
+  animation:fsmvu-breathe 3.6s ease-in-out infinite;
+}
+
+/* ============ 01 · RING ROTATION ============ */
+/* Splits the seal into emblem core + outer text ring; the ring slowly
+   rotates. Keeps the original 152px geometry so the radial split lands
+   exactly on the ring/emblem boundary. */
+.fsmvu-loader--rotate{
+  width:152px; height:152px; position:relative;
+  background:none; animation:none;
+}
+.fsmvu-loader--rotate .fsmvu-seal{ position:absolute; inset:0; width:152px; height:152px; }
+.fsmvu-emblem{
+  -webkit-mask:radial-gradient(circle 76px at 50% 50%, #000 0 49px, transparent 50px);
+          mask:radial-gradient(circle 76px at 50% 50%, #000 0 49px, transparent 50px);
+}
+.fsmvu-ring{
+  -webkit-mask:radial-gradient(circle 76px at 50% 50%, transparent 0 49px, #000 50px);
+          mask:radial-gradient(circle 76px at 50% 50%, transparent 0 49px, #000 50px);
+}
+.fsmvu-loader--rotate .fsmvu-ring{ animation:fsmvu-spin 9s linear infinite; }
+@keyframes fsmvu-spin{ to{ transform:rotate(360deg); } }
+
+/* White-seal treatment — renders the crimson seal solid WHITE (keeps all of
+   its shape/letters), for high contrast on the dark loading screens. Stacks on
+   any variant, e.g. `fsmvu-loader fsmvu-loader--rotate fsmvu-loader--white`. */
+.fsmvu-loader--white .fsmvu-seal{ filter:brightness(0) invert(1); }
+/* NB: only .fsmvu-seal is whitened — so Progress Ring keeps its CRIMSON arc
+   while its centre seal goes white. */
+
+/* ============ 02 · BREATHE / PULSE (default) ============ */
+@keyframes fsmvu-breathe{
+  0%,100%{ transform:scale(1);    filter:drop-shadow(0 6px 14px rgba(238,51,66,.10)); }
+  50%    { transform:scale(1.06); filter:drop-shadow(0 12px 30px rgba(238,51,66,.32)); }
+}
+
+/* ============ 03 · SHIMMER SWEEP ============ */
+.fsmvu-loader--shimmer{ position:relative; animation:none; }
+.fsmvu-loader--shimmer .fsmvu-gloss{
+  position:absolute; inset:0; pointer-events:none;
+  -webkit-mask:var(--fsmvu-seal) center/contain no-repeat;
+          mask:var(--fsmvu-seal) center/contain no-repeat;
+  background:linear-gradient(115deg,
+    transparent 38%, rgba(255,255,255,.92) 50%, transparent 62%);
+  background-size:280% 100%;
+  animation:fsmvu-sheen 3.8s cubic-bezier(.5,0,.2,1) infinite;
+}
+@keyframes fsmvu-sheen{
+  0%{ background-position:170% 0; }
+  55%,100%{ background-position:-170% 0; }
+}
+
+/* ============ 04 · DRAW-ON (iris build-up) ============ */
+.fsmvu-loader--draw{ animation:fsmvu-draw 3.8s cubic-bezier(.5,0,.15,1) infinite; }
+@keyframes fsmvu-draw{
+  0%  { clip-path:circle(0% at 50% 50%);  opacity:1; transform:scale(.94); }
+  42% { clip-path:circle(62% at 50% 50%); opacity:1; transform:scale(1); }
+  78% { clip-path:circle(62% at 50% 50%); opacity:1; transform:scale(1); }
+  90% { clip-path:circle(62% at 50% 50%); opacity:0; transform:scale(1.02); }
+  100%{ clip-path:circle(0% at 50% 50%);  opacity:0; transform:scale(.94); }
+}
+
+/* ============ 05 · SCALE + FADE (splash) ============ */
+.fsmvu-loader--splash{ animation:fsmvu-splash 4s ease-in-out infinite; }
+@keyframes fsmvu-splash{
+  0%  { opacity:0; transform:scale(.82);  filter:blur(7px); }
+  16% { opacity:1; transform:scale(1.035);filter:blur(0); }
+  24% { transform:scale(1); }
+  72% { opacity:1; transform:scale(1);    filter:blur(0); }
+  88% { opacity:0; transform:scale(1.05); filter:blur(5px); }
+  100%{ opacity:0; }
+}
+
+/* ============ 06 · PROGRESS RING ============ */
+.fsmvu-loader--progress{ background:none; animation:none; width:auto; height:auto; }
+.fsmvu-ring-wrap{ position:relative; width:184px; height:184px; display:grid; place-items:center; }
+.fsmvu-track,
+.fsmvu-arc{
+  position:absolute; inset:0; border-radius:50%;
+  -webkit-mask:radial-gradient(circle at 50% 50%, transparent 0 86px, #000 87px 91px, transparent 92px);
+          mask:radial-gradient(circle at 50% 50%, transparent 0 86px, #000 87px 91px, transparent 92px);
+}
+.fsmvu-track{ background:conic-gradient(rgba(238,51,66,.16) 0 100%); }
+.fsmvu-arc{
+  background:conic-gradient(from 0deg, transparent 0 62%, var(--fsmvu-crimson) 78%, var(--fsmvu-crimson) 100%);
+  animation:fsmvu-spin 1.35s cubic-bezier(.6,.05,.4,.95) infinite;
+}
+.fsmvu-ring-wrap .fsmvu-seal{ width:120px; height:120px; animation:fsmvu-breathe-soft 3.2s ease-in-out infinite; }
+@keyframes fsmvu-breathe-soft{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+
+/* bouncing dots (used under the progress ring / as a caption) */
+.fsmvu-dots{ display:flex; gap:7px; }
+.fsmvu-dots i{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--fsmvu-crimson); display:block;
+  animation:fsmvu-dot 1.4s ease-in-out infinite;
+}
+.fsmvu-dots i:nth-child(2){ animation-delay:.18s; }
+.fsmvu-dots i:nth-child(3){ animation-delay:.36s; }
+@keyframes fsmvu-dot{ 0%,100%{opacity:.2;transform:translateY(0)} 50%{opacity:1;transform:translateY(-4px)} }
+
+/* ---------- full-screen overlay (JS-driven page loader) ---------- */
+.fsmvu-overlay{
+  position:fixed; inset:0; z-index:99999;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:22px; background:rgba(10,14,31,.94);
+  -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+  animation:fsmvu-fade .25s ease both;
+}
+.fsmvu-overlay .fsmvu-cap{
+  font-family:Georgia,'Times New Roman',serif; font-style:italic;
+  font-size:13px; letter-spacing:.32em; text-transform:uppercase;
+  color:rgba(255,255,255,.6);
+}
+@keyframes fsmvu-fade{ from{opacity:0} to{opacity:1} }
+
+/* ---------- launch splash (one-shot entrance → fades to reveal the page) ----------
+   Plays the instant index.html loads, continuing the PWA OS-splash "icon grows"
+   motion with the live seal, then fades into the login. One-shot (not looping). */
+.fsmvu-splash{
+  position:fixed; inset:0; z-index:100000;
+  display:flex; align-items:center; justify-content:center;
+  background:#0f172a;                 /* == manifest background_color → seamless hand-off from the OS splash */
+  animation:fsmvu-splash-out .55s ease 1.4s forwards;
+}
+/* splash uses the white Ring-Rotation mark: scale the whole mark in, and spin
+   the ring faster than the 9s in-app rate so it clearly turns in the short
+   splash window. (White comes from .fsmvu-loader--white in the markup.) */
+.fsmvu-splash .fsmvu-loader--rotate{
+  animation:fsmvu-splash-in .75s cubic-bezier(.2,.72,.2,1) both;
+}
+.fsmvu-splash .fsmvu-loader--rotate .fsmvu-ring{
+  animation:fsmvu-spin 3s linear infinite;
+}
+@keyframes fsmvu-splash-in{
+  0%  { transform:scale(.55); opacity:0; filter:blur(9px); }
+  55% { transform:scale(1.07); opacity:1; filter:blur(0); }
+  100%{ transform:scale(1);    opacity:1; }
+}
+@keyframes fsmvu-splash-out{ to{ opacity:0; visibility:hidden; } }
+.fsmvu-splash.is-done{ display:none !important; }
+/* reduced motion: no splash at all (JS also removes it immediately) */
+@media (prefers-reduced-motion: reduce){ .fsmvu-splash{ display:none !important; } }
+
+/* ---------- accessibility: respect reduced motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  .fsmvu-loader,
+  .fsmvu-loader *,
+  .fsmvu-overlay *{ animation:none !important; }
+  /* draw-on freezes invisible without its keyframes — keep it visible */
+  .fsmvu-loader--draw{ clip-path:none !important; opacity:1 !important; }
+}

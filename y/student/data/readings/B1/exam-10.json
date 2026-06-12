@@ -1,0 +1,428 @@
+{
+  "id": "b1-r10",
+  "level": "B1",
+  "title": "B1 Reading 10 — I Just Cannot Sleep",
+  "subtitle": "One passage · True/False, MCQ, vocab, reference",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "I Just Cannot Sleep",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Emma talks about how her stressful life has made getting a good night's sleep impossible.</p><p class=\"rd-para\" data-para=\"2\">Last night I was fast asleep by 11 p.m. but I woke up again at 1 A.M. Even though I was <strong>exhausted</strong> when I went to bed, I was suddenly wide awake and it was impossible to get back to sleep again. So I just lay there watching the clock change from three to four to five without sleeping a wink — it was very frustrating. Finally, I got up at 6:15 and went off to work feeling terrible. That's a typical night for me. I've had insomnia for so long. I'm amazed that anyone else actually sleeps through the night. And when <strong>this</strong> goes on for too many nights, I feel really shattered.</p><p class=\"rd-para\" data-para=\"3\">I'm a sales manager, and I work really long hours and have to do a lot of travelling. I worry about work all the time, which makes it incredibly difficult to get sleep. Sometimes I get home from work extremely late and when I go to bed, everything is still going round my head. Money's also a huge worry for me. I borrowed a lot when I was a student and I still owe 15,000 $. I only get a full night's sleep once a month — but when I do, I feel absolutely fantastic the next day.</p><p class=\"rd-para\" data-para=\"4\">I've tried nearly everything to cure my insomnia — herbal teas, yoga, meditation — you name it, I've tried it. I've also started going to the gym three times a week, but <strong>it</strong> hasn't made any difference. I have a fairly healthy diet and I don't smoke or drink coffee. I haven't tried hypnosis because it's very expensive and that would just add money to my money worries. I don't want to start taking sleeping pills because I'm <strong>terrified</strong> of becoming addicted to <strong>them</strong>. Although I know it's an <strong>awful</strong> way to live, I've learned to accept that insomnia is a part of my life.</p>",
+      "sections": [
+        {
+          "id": "truefalse",
+          "type": "mcq",
+          "label": "Part A",
+          "instructions": "Choose True or False for each statement.",
+          "items": [
+            {
+              "id": "tf1",
+              "question": "Emma couldn't fall back asleep last night because she was frustrated.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf2",
+              "question": "She feels surprised when someone else doesn't suffer from the same problem she does.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf3",
+              "question": "She's had insomnia for a long time only because she feels anxious about work.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf4",
+              "question": "Emma thinks she could overcome her sleep problem if she ate healthier and did more exercise.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf5",
+              "question": "Becoming dependent on some drugs is something that Emma worries about.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Choose the correct answer for each question.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Choose the best title.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "I just can't sleep"
+                },
+                {
+                  "id": "b",
+                  "text": "Reasons for insomnia"
+                },
+                {
+                  "id": "c",
+                  "text": "Advantages of sleeping less"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m2",
+              "question": "What is the purpose of the passage?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "to explain why people can't sleep"
+                },
+                {
+                  "id": "b",
+                  "text": "to give information about dreams"
+                },
+                {
+                  "id": "c",
+                  "text": "to give information about Emma's reasons for suffering from insomnia"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "Who is the target audience?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "People who are suffering from sleeping problems"
+                },
+                {
+                  "id": "b",
+                  "text": "Doctors who are interested in dreams"
+                },
+                {
+                  "id": "c",
+                  "text": "Psychologists"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m4",
+              "question": "How much sleep did Emma get last night?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "2 hours"
+                },
+                {
+                  "id": "b",
+                  "text": "3 hours and 15 minutes"
+                },
+                {
+                  "id": "c",
+                  "text": "4 hours"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "What happens to Emma on a typical night?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "She sleeps too much because she drinks too much coffee."
+                },
+                {
+                  "id": "b",
+                  "text": "She watches people while they are sleeping."
+                },
+                {
+                  "id": "c",
+                  "text": "She wakes up in the middle of the night and waits until she feels sleepy again."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m6",
+              "question": "Why is her job very tiring?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "She works long hours, travels a lot and comes home late."
+                },
+                {
+                  "id": "b",
+                  "text": "She has to do too much physical activity."
+                },
+                {
+                  "id": "c",
+                  "text": "She has to deal with children."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m7",
+              "question": "Why does she have financial problems?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "She can not earn enough money."
+                },
+                {
+                  "id": "b",
+                  "text": "She has a debt."
+                },
+                {
+                  "id": "c",
+                  "text": "She spends too much money on clothes."
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m8",
+              "question": "Which cures for insomnia hasn't she tried?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "herbal tea"
+                },
+                {
+                  "id": "b",
+                  "text": "hypnosis"
+                },
+                {
+                  "id": "c",
+                  "text": "yoga"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m9",
+              "question": "Which of the following is NOT true about Emma?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "She is afraid of being addicted to medicine."
+                },
+                {
+                  "id": "b",
+                  "text": "She thinks about many issues when she goes to bed."
+                },
+                {
+                  "id": "c",
+                  "text": "She never gets a good night's sleep."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m10",
+              "question": "Which of the following is true about the text?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "When she sees somebody sleeping through the night, she feels surprised."
+                },
+                {
+                  "id": "b",
+                  "text": "She is a smoker."
+                },
+                {
+                  "id": "c",
+                  "text": "She enjoys being an insomniac."
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part C (vocabulary)",
+          "instructions": "Find the synonyms in the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Find the synonym of \"tired\" in paragraph 1.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "impossible"
+                },
+                {
+                  "id": "b",
+                  "text": "exhausted"
+                },
+                {
+                  "id": "c",
+                  "text": "wink"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "Find the synonym of \"frightened\" in paragraph 1.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "wide"
+                },
+                {
+                  "id": "b",
+                  "text": "fast"
+                },
+                {
+                  "id": "c",
+                  "text": "terrified"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "Find the synonym of \"terrible\" in paragraph 3.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "awful"
+                },
+                {
+                  "id": "b",
+                  "text": "addicted"
+                },
+                {
+                  "id": "c",
+                  "text": "accept"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq3",
+          "type": "mcq",
+          "label": "Part D (reference)",
+          "instructions": "What do these words refer to?",
+          "items": [
+            {
+              "id": "m1",
+              "question": "What does \"this\" refer to in paragraph 1?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "typical night"
+                },
+                {
+                  "id": "b",
+                  "text": "sleeplessness"
+                },
+                {
+                  "id": "c",
+                  "text": "work"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "What does \"it\" refer to in paragraph 3?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "yoga"
+                },
+                {
+                  "id": "b",
+                  "text": "the gym"
+                },
+                {
+                  "id": "c",
+                  "text": "going to the gym"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "What does \"them\" refer to in paragraph 3?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "meditation and going to the gym"
+                },
+                {
+                  "id": "b",
+                  "text": "sleeping pills"
+                },
+                {
+                  "id": "c",
+                  "text": "bad habits"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

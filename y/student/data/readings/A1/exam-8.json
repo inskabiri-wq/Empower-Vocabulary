@@ -1,0 +1,720 @@
+{
+  "id": "a1-r8",
+  "level": "A1",
+  "title": "A1 Reading 8 — Are You a Good Liar?",
+  "subtitle": "One passage · Synonyms, headings, MCQ, vocab, reference, sentence-insert, T/F",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Are You a Good Liar?",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Most people don't <strong>admit</strong> it, but people often tell lies. These are nine lies people often tell.</p><p class=\"rd-para\" data-para=\"2\">Lie 1: A woman asks her husband, \"Does my hair look OK?\" The husband doesn't like <strong>it</strong>, but he says something nice. He says, \"You look great!\" Why? He wants his wife to be happy. He doesn't want to hurt <strong>her</strong> feelings.</p><p class=\"rd-para\" data-para=\"3\"><span class=\"rd-gap\" data-gap=\"2\"></span> A boy breaks a cup. His mother asks, \"Who broke the cup?\" The boy says, \"I didn't do it.\" Why? The boy did something wrong. He is afraid of the <strong>punishment</strong>. He tells a lie so he doesn't get in <strong>trouble</strong>.</p><p class=\"rd-para\" data-para=\"4\"><span class=\"rd-gap\" data-gap=\"3\"></span> Lina works in an office. Another worker in her office, Pete, has trouble with his car. Pete often arrives late to work. The <strong>boss</strong> is not happy with <strong>him</strong>. The boss asks Lina, \"Did Pete come to work on time today?\" He didn't, but Lina says, \"Yes.\" <strong>She</strong> lies to <strong>protect</strong> him.</p><p class=\"rd-para\" data-para=\"5\"><span class=\"rd-gap\" data-gap=\"4\"></span> The family cat dies. \"It went to a farm to play with other cats,\" say the parents. <strong>They</strong> don't say the cat died. Why not? They lie to protect their children from the truth. They think it will hurt her too much.</p><p class=\"rd-para\" data-para=\"6\"><span class=\"rd-gap\" data-gap=\"5\"></span> A boy hits his little sister at his birthday party. The parents say, \"Stop! You won't get your gifts if you hit <strong>her</strong> again!\" This is not true. They plan to give their son his gifts even if <strong>he</strong> <strong>continues</strong> to <strong>behave</strong> badly. Why do they tell a lie? They lie to <strong>control</strong> their son.</p><p class=\"rd-para\" data-para=\"7\"><span class=\"rd-gap\" data-gap=\"6\"></span> Joe is telling a story about his fishing trip. He says a fish he caught was three feet long, but it wasn't really very big. Why? He lies in order to tell a more interesting story.</p><p class=\"rd-para\" data-para=\"8\"><span class=\"rd-gap\" data-gap=\"7\"></span> Pamela tells her classmates, \"I can speak three languages.\" She can really speak only two languages. Why does she lie? She wants to make a good <strong>impression</strong> on her new classmates. Pamela wants <strong>them</strong> to think she is very intelligent.</p><p class=\"rd-para\" data-para=\"9\"><span class=\"rd-gap\" data-gap=\"8\"></span> A store ad says <strong>it</strong> has special prices on furniture for today only. The truth is that the price is the same every day. Why does the store lie? It lies in order to make more money. Customers buy more furniture when they believe the prices are special for one day only.</p><p class=\"rd-para\" data-para=\"10\"><span class=\"rd-gap\" data-gap=\"9\"></span> A man tells people at work that a new worker's boss <strong>fired</strong> her from her last job. <strong>This</strong> is not true. The man tells the lie to hurt the other worker's <strong>reputation</strong>.</p>",
+      "sections": [
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part A",
+          "instructions": "Match the words with their synonyms (write the letter).",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "trouble:",
+              "answer": "c"
+            },
+            {
+              "id": "sa2",
+              "definition": "boss:",
+              "answer": "d"
+            },
+            {
+              "id": "sa3",
+              "definition": "reputation:",
+              "answer": "b"
+            },
+            {
+              "id": "sa4",
+              "definition": "continue:",
+              "answer": "f"
+            },
+            {
+              "id": "sa5",
+              "definition": "punishment:",
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer2",
+          "type": "find-word",
+          "label": "Part B",
+          "instructions": "Write the correct form of the words in parentheses.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "Many people think the death penalty is a severe __________ for any crime. (PUNISH)",
+              "answer": "punishment"
+            },
+            {
+              "id": "sa2",
+              "definition": "Sunscreen provides a __________ layer against the sun's harmful rays. (PROTECT)",
+              "answer": "protective"
+            },
+            {
+              "id": "sa3",
+              "definition": "After a while, her __________ started to make me angry. (BEHAVE)",
+              "answer": "behaviour"
+            }
+          ]
+        },
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part C",
+          "instructions": "Match the paragraph numbers (the \"Lie N\" gaps) with the headings on the right. There is ONE extra heading.",
+          "options": [
+            {
+              "id": "a",
+              "text": "I can speak three languages"
+            },
+            {
+              "id": "b",
+              "text": "Her boss fired her from her last job"
+            },
+            {
+              "id": "c",
+              "text": "I didn't do it!"
+            },
+            {
+              "id": "d",
+              "text": "The fish was three feet long!"
+            },
+            {
+              "id": "e",
+              "text": "You look great!"
+            },
+            {
+              "id": "f",
+              "text": "He came to work on time"
+            },
+            {
+              "id": "g",
+              "text": "You won't get any gifts!"
+            },
+            {
+              "id": "h",
+              "text": "This special price is for today only"
+            },
+            {
+              "id": "i",
+              "text": "The cat went to a farm"
+            }
+          ],
+          "items": [
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "c"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "f"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "i"
+            },
+            {
+              "id": "5",
+              "label": "Gap 5",
+              "answer": "g"
+            },
+            {
+              "id": "6",
+              "label": "Gap 6",
+              "answer": "d"
+            },
+            {
+              "id": "7",
+              "label": "Gap 7",
+              "answer": "a"
+            },
+            {
+              "id": "8",
+              "label": "Gap 8",
+              "answer": "h"
+            },
+            {
+              "id": "9",
+              "label": "Gap 9",
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part D",
+          "instructions": "Circle the correct answer.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Why do people lie according to Paragraph 2 (Lie 2)?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "to protect other people"
+                },
+                {
+                  "id": "b",
+                  "text": "not to hurt someone"
+                },
+                {
+                  "id": "c",
+                  "text": "to control other people"
+                },
+                {
+                  "id": "d",
+                  "text": "not to have problems"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m2",
+              "question": "Which one is NOT TRUE according to Paragraph 3 (Lie 3)?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "People might tell lies to protect their friends"
+                },
+                {
+                  "id": "b",
+                  "text": "Lina tells a lie in order to protect herself"
+                },
+                {
+                  "id": "c",
+                  "text": "Lina and Peter work in the same office"
+                },
+                {
+                  "id": "d",
+                  "text": "Lina and Peter are good friends"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m3",
+              "question": "Which one is TRUE according to Paragraph 4 (Lie 4)?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Parents want to hurt their children"
+                },
+                {
+                  "id": "b",
+                  "text": "Parents don't want to tell the truth not to hurt their children"
+                },
+                {
+                  "id": "c",
+                  "text": "Parents want to control their children"
+                },
+                {
+                  "id": "d",
+                  "text": "Parents want their children to get into trouble"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "Which one is FALSE according to Paragraph 7 (Lie 7)?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Pamela wants to show herself as a clever girl"
+                },
+                {
+                  "id": "b",
+                  "text": "Pamela thinks other people's opinions about her are important"
+                },
+                {
+                  "id": "c",
+                  "text": "Pamela prefers telling the truth to her classmates"
+                },
+                {
+                  "id": "d",
+                  "text": "Pamela tells a lie to her classmates about the languages she speaks"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m5",
+              "question": "What is the main idea of Paragraph 8 (Lie 8)?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "The store always tells the truth to its customers"
+                },
+                {
+                  "id": "b",
+                  "text": "The store tells a lie to its customers in order to earn more money"
+                },
+                {
+                  "id": "c",
+                  "text": "The store always offers special prices to its customers"
+                },
+                {
+                  "id": "d",
+                  "text": "Customers don't always believe what they see on the ads"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m6",
+              "question": "According to Paragraph 9 (Lie 9) __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "a colleague might tell a lie to damage another worker's self-respect"
+                },
+                {
+                  "id": "b",
+                  "text": "the new workers may cause some problems in the office"
+                },
+                {
+                  "id": "c",
+                  "text": "the boss fired the new worker because he told a lie"
+                },
+                {
+                  "id": "d",
+                  "text": "the boss told a lie to his workers about the new worker"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part E (vocabulary in context)",
+          "instructions": "Circle the best option.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "\"manager or director\" (paragraph 3) = __________",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "worker"
+                },
+                {
+                  "id": "b",
+                  "text": "boss"
+                },
+                {
+                  "id": "c",
+                  "text": "work"
+                },
+                {
+                  "id": "d",
+                  "text": "office"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "\"things such as chairs, tables etc.\" (paragraph 8) = __________",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "price"
+                },
+                {
+                  "id": "b",
+                  "text": "store"
+                },
+                {
+                  "id": "c",
+                  "text": "furniture"
+                },
+                {
+                  "id": "d",
+                  "text": "customers"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "\"to keep doing something\" (paragraph 5) = __________",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "control"
+                },
+                {
+                  "id": "b",
+                  "text": "behave"
+                },
+                {
+                  "id": "c",
+                  "text": "plan"
+                },
+                {
+                  "id": "d",
+                  "text": "continue"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m4",
+              "question": "\"to keep someone safe from damage\" (paragraph 3) = __________",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "trouble"
+                },
+                {
+                  "id": "b",
+                  "text": "protect"
+                },
+                {
+                  "id": "c",
+                  "text": "arrive"
+                },
+                {
+                  "id": "d",
+                  "text": "lies"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m5",
+              "question": "\"problems or difficulties\" (paragraph 2) = __________",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "punishment"
+                },
+                {
+                  "id": "b",
+                  "text": "wrong"
+                },
+                {
+                  "id": "c",
+                  "text": "trouble"
+                },
+                {
+                  "id": "d",
+                  "text": "afraid of"
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer3",
+          "type": "find-word",
+          "label": "Part E (continued — find the word)",
+          "instructions": "Find the words in the text that mean the following.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"to remove someone from their job\" (paragraph 9):",
+              "answer": "fire"
+            },
+            {
+              "id": "sa2",
+              "definition": "\"bad treatment towards someone\" (paragraph 2):",
+              "answer": "punishment"
+            },
+            {
+              "id": "sa3",
+              "definition": "\"fame\" (paragraph 9):",
+              "answer": "reputation"
+            },
+            {
+              "id": "sa4",
+              "definition": "\"to order or rule something or someone's actions\" (paragraph 5):",
+              "answer": "control"
+            },
+            {
+              "id": "sa5",
+              "definition": "\"to accept that something is true\" (paragraph 1):",
+              "answer": "admit"
+            }
+          ]
+        },
+        {
+          "id": "mcq3",
+          "type": "mcq",
+          "label": "Part F (reference)",
+          "instructions": "Circle the best option for what the words refer to.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "\"it\" (paragraph 1) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "feeling"
+                },
+                {
+                  "id": "b",
+                  "text": "hair"
+                },
+                {
+                  "id": "c",
+                  "text": "something"
+                },
+                {
+                  "id": "d",
+                  "text": "lie"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "\"her\" (paragraph 1) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "people's"
+                },
+                {
+                  "id": "b",
+                  "text": "woman"
+                },
+                {
+                  "id": "c",
+                  "text": "woman's"
+                },
+                {
+                  "id": "d",
+                  "text": "people"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "\"him\" (paragraph 3) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Lina's"
+                },
+                {
+                  "id": "b",
+                  "text": "Pete"
+                },
+                {
+                  "id": "c",
+                  "text": "Pete's"
+                },
+                {
+                  "id": "d",
+                  "text": "Lina"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "\"she\" (paragraph 3) refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Pete"
+                },
+                {
+                  "id": "b",
+                  "text": "The boss"
+                },
+                {
+                  "id": "c",
+                  "text": "Lina"
+                },
+                {
+                  "id": "d",
+                  "text": "another worker"
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer4",
+          "type": "find-word",
+          "label": "Part F (continued)",
+          "instructions": "Find what these words refer to.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"they\" (paragraph 4):",
+              "answer": "The parents"
+            },
+            {
+              "id": "sa2",
+              "definition": "\"her\" (paragraph 5):",
+              "answer": "The little sister"
+            },
+            {
+              "id": "sa3",
+              "definition": "\"he\" (paragraph 5):",
+              "answer": "The son"
+            },
+            {
+              "id": "sa4",
+              "definition": "\"them\" (paragraph 7):",
+              "answer": "Pamela's classmates"
+            },
+            {
+              "id": "sa5",
+              "definition": "\"it\" (paragraph 8):",
+              "answer": "The store"
+            },
+            {
+              "id": "sa6",
+              "definition": "\"this\" (paragraph 9):",
+              "answer": "the firing of the new worker from her last job"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer5",
+          "type": "find-word",
+          "label": "Part G",
+          "instructions": "For each conclusion sentence below, write the number of the lie it belongs to (1–9).",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "In the end, the parents told a little white lie, hoping to protect their child's feelings.",
+              "answer": "4"
+            },
+            {
+              "id": "sa2",
+              "definition": "He cares a lot about her happiness.",
+              "answer": "1"
+            },
+            {
+              "id": "sa3",
+              "definition": "They want to make extra money by making customers think they're getting a really good deal.",
+              "answer": "8"
+            },
+            {
+              "id": "sa4",
+              "definition": "Sometimes people tell stories that are a little bit stretched to make them more interesting.",
+              "answer": "6"
+            },
+            {
+              "id": "sa5",
+              "definition": "She cares about her coworker and doesn't want him to get into trouble with the boss.",
+              "answer": "3"
+            },
+            {
+              "id": "sa6",
+              "definition": "It is common that children sometimes tell lies because they're afraid of getting punished for what they did wrong.",
+              "answer": "2"
+            },
+            {
+              "id": "sa7",
+              "definition": "They lie to make sure he behaves better.",
+              "answer": "5"
+            },
+            {
+              "id": "sa8",
+              "definition": "Sometimes people tell little lies to make themselves look good to others.",
+              "answer": "7"
+            },
+            {
+              "id": "sa9",
+              "definition": "People sometimes tell lies to damage someone else's image to create problems.",
+              "answer": "9"
+            }
+          ]
+        },
+        {
+          "id": "truefalse",
+          "type": "mcq",
+          "label": "Part H",
+          "instructions": "Choose True or False.",
+          "items": [
+            {
+              "id": "tf1",
+              "question": "In lie 2, the boy lies because he doesn't want to hurt his parents' feelings.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf2",
+              "question": "In lie 3, Lina lies because she doesn't like Pete.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf3",
+              "question": "In lie 7, Pamela lies because she wants to make a good impression.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf4",
+              "question": "In lie 9, the man tells a lie because he is afraid of the punishment.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

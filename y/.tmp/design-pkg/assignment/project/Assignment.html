@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Your Assignments</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy-deep: #080e1f;
+    --navy-mid: #0d1630;
+    --navy-card: #101c38;
+    --navy-border: #1a2d52;
+    --navy-hover: #162240;
+
+    --crystal-blue: oklch(72% 0.18 220);
+    --crystal-cyan: oklch(78% 0.20 195);
+    --crystal-purple: oklch(68% 0.22 280);
+    --crystal-green: oklch(72% 0.19 155);
+    --crystal-orange: oklch(72% 0.22 55);
+    --crystal-amber: oklch(80% 0.20 75);
+    --crystal-pink: oklch(70% 0.22 340);
+
+    --text-primary: #e8f0ff;
+    --text-secondary: #8098c4;
+    --text-muted: #4a6090;
+  }
+
+  html, body {
+    min-height: 100vh;
+    background: var(--navy-deep);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    background-image:
+      radial-gradient(ellipse 60% 50% at 20% 10%, oklch(40% 0.15 240 / 0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 80%, oklch(38% 0.18 280 / 0.15) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 35% at 60% 20%, oklch(45% 0.12 180 / 0.10) 0%, transparent 50%);
+  }
+
+  #root {
+    width: 100%;
+    max-width: 640px;
+  }
+
+  /* ---- Crystal Panel ---- */
+  .crystal-panel {
+    background: linear-gradient(135deg,
+      oklch(18% 0.08 230 / 0.85) 0%,
+      oklch(14% 0.06 240 / 0.90) 100%);
+    border: 1px solid oklch(45% 0.12 220 / 0.35);
+    border-radius: 20px;
+    padding: 22px;
+    backdrop-filter: blur(20px);
+    box-shadow:
+      0 0 0 1px oklch(70% 0.15 220 / 0.08) inset,
+      0 30px 80px oklch(5% 0.05 240 / 0.6),
+      0 4px 20px oklch(40% 0.15 240 / 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  .crystal-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, oklch(80% 0.15 220 / 0.5), transparent);
+  }
+
+  /* ---- Header ---- */
+  .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .panel-icon {
+    font-size: 18px;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: oklch(30% 0.12 240 / 0.5);
+    border-radius: 10px;
+    border: 1px solid oklch(50% 0.15 220 / 0.3);
+  }
+  .panel-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    flex: 1;
+  }
+  .badge-count {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 22px; height: 22px;
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 12px oklch(55% 0.25 25 / 0.5);
+  }
+
+  /* ---- Stats Bar ---- */
+  .stats-bar {
+    background: oklch(15% 0.07 230 / 0.6);
+    border: 1px solid oklch(40% 0.10 220 / 0.25);
+    border-radius: 12px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    margin-bottom: 14px;
+    color: var(--text-secondary);
+  }
+  .stat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text-muted); }
+  .stat-val { font-weight: 600; color: var(--text-primary); }
+  .stat-pending { color: var(--crystal-amber); }
+  .stat-done { color: var(--crystal-green); }
+
+  /* ---- Filter Tabs ---- */
+  .filter-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .filter-tab {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'Outfit', sans-serif;
+  }
+  .filter-tab:hover {
+    color: var(--text-secondary);
+    background: oklch(25% 0.08 230 / 0.4);
+  }
+  .filter-tab.active {
+    background: oklch(28% 0.14 220 / 0.6);
+    border-color: oklch(55% 0.18 220 / 0.45);
+    color: var(--crystal-cyan);
+  }
+
+  /* ---- Assignment Card ---- */
+  .assignment-card {
+    background: linear-gradient(145deg,
+      oklch(16% 0.09 235 / 0.8) 0%,
+      oklch(13% 0.07 240 / 0.85) 100%);
+    border: 1px solid oklch(40% 0.12 220 / 0.28);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  }
+  .assignment-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, oklch(80% 0.15 220 / 0.25), transparent);
+  }
+  .assignment-card:hover {
+    transform: translateY(-2px);
+    border-color: oklch(55% 0.16 220 / 0.45);
+    box-shadow: 0 12px 40px oklch(10% 0.08 240 / 0.5);
+  }
+  .assignment-card.urgent {
+    border-color: oklch(55% 0.20 55 / 0.4);
+  }
+  .assignment-card.urgent::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, oklch(55% 0.20 55 / 0.04) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* crystal accent line on left */
+  .card-accent {
+    position: absolute;
+    left: 0; top: 16px; bottom: 16px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .card-icon-wrap {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .card-info { flex: 1; }
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .level-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.02em;
+  }
+  .meta-dot { color: var(--text-muted); }
+
+  /* Due date row */
+  .card-date-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .card-date {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .date-icon { font-size: 14px; opacity: 0.7; }
+
+  .due-badge {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .due-urgent {
+    background: oklch(45% 0.22 55 / 0.25);
+    border: 1px solid oklch(65% 0.22 55 / 0.5);
+    color: var(--crystal-amber);
+    box-shadow: 0 0 12px oklch(65% 0.22 55 / 0.2);
+  }
+  .due-normal {
+    background: oklch(30% 0.12 220 / 0.4);
+    border: 1px solid oklch(50% 0.12 220 / 0.35);
+    color: var(--crystal-blue);
+  }
+
+  /* Goal bar */
+  .goal-bar {
+    background: oklch(13% 0.06 240 / 0.7);
+    border: 1px solid oklch(35% 0.10 220 / 0.22);
+    border-radius: 10px;
+    padding: 9px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .goal-icon { font-size: 14px; }
+
+  /* Progress */
+  .progress-section { margin-bottom: 14px; }
+  .progress-label {
+    display: flex; justify-content: space-between;
+    font-size: 11.5px; color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .progress-track {
+    height: 6px;
+    border-radius: 99px;
+    background: oklch(20% 0.08 230 / 0.6);
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    position: relative;
+    transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: inherit;
+    box-shadow: 0 0 8px currentColor;
+  }
+
+  /* CTA Button */
+  .cta-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.01em;
+  }
+  .cta-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, oklch(100% 0 0 / 0.12) 0%, transparent 100%);
+    pointer-events: none;
+  }
+  .cta-btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
+  .cta-btn:active { transform: translateY(0); }
+
+  .btn-urgent {
+    background: linear-gradient(135deg, oklch(72% 0.22 55) 0%, oklch(65% 0.24 45) 100%);
+    color: #1a0a00;
+    box-shadow: 0 4px 24px oklch(65% 0.24 45 / 0.45), 0 0 40px oklch(65% 0.24 45 / 0.2);
+  }
+  .btn-practice {
+    background: linear-gradient(135deg, oklch(62% 0.22 210) 0%, oklch(55% 0.25 200) 100%);
+    color: white;
+    box-shadow: 0 4px 24px oklch(58% 0.22 210 / 0.45), 0 0 40px oklch(58% 0.22 210 / 0.2);
+  }
+  .btn-completed {
+    background: linear-gradient(135deg, oklch(55% 0.18 155) 0%, oklch(48% 0.20 150) 100%);
+    color: white;
+    box-shadow: 0 4px 24px oklch(52% 0.18 155 / 0.4);
+  }
+
+  /* XP / Streak bar */
+  .xp-streak-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .xp-chip, .streak-chip {
+    flex: 1;
+    background: oklch(15% 0.07 230 / 0.6);
+    border: 1px solid oklch(38% 0.10 220 / 0.28);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chip-icon { font-size: 18px; }
+  .chip-label { font-size: 10.5px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1; }
+  .chip-value { font-size: 16px; font-weight: 800; line-height: 1; margin-top: 2px; }
+  .xp-val { color: var(--crystal-purple); }
+  .streak-val { color: var(--crystal-orange); }
+
+  /* Section divider */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 4px 0 14px;
+  }
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, oklch(35% 0.10 220 / 0.3), transparent);
+  }
+
+  /* Completion check */
+  .check-circle {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    border: 2px solid oklch(45% 0.12 220 / 0.4);
+    color: var(--text-muted);
+    transition: all 0.2s;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .check-circle.done {
+    background: oklch(55% 0.18 155 / 0.2);
+    border-color: var(--crystal-green);
+    color: var(--crystal-green);
+  }
+
+  /* Shimmer animation */
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .shimmer-wrap { overflow: hidden; }
+  .shimmer-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 20%, oklch(80% 0.10 220 / 0.06) 50%, transparent 80%);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .assignment-card { animation: fadeUp 0.4s ease both; }
+  .assignment-card:nth-child(2) { animation-delay: 0.08s; }
+  .assignment-card:nth-child(3) { animation-delay: 0.16s; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel">
+const { useState } = React;
+
+const assignments = [
+  {
+    id: 1,
+    title: 'Vocabulary',
+    icon: '🔥',
+    iconBg: 'oklch(40% 0.22 45 / 0.25)',
+    iconBorder: 'oklch(60% 0.22 45 / 0.4)',
+    accentColor: 'linear-gradient(180deg, oklch(72% 0.22 55), oklch(60% 0.24 45))',
+    level: 'B1+',
+    levelColor: '#3b82f6',
+    levelBg: 'oklch(30% 0.18 230 / 0.4)',
+    unit: 'Unit 6',
+    type: 'Fill in Blank',
+    dueDate: 'Apr 26',
+    dueLabel: 'Due Tomorrow!',
+    dueType: 'urgent',
+    goal: 'Score 100% to complete',
+    progress: 0,
+    btnLabel: 'Start Now',
+    btnIcon: '🚀',
+    btnClass: 'btn-urgent',
+    status: 'urgent',
+    xp: 120,
+  },
+  {
+    id: 2,
+    title: 'Vocabulary',
+    icon: '⏳',
+    iconBg: 'oklch(35% 0.15 200 / 0.25)',
+    iconBorder: 'oklch(58% 0.18 200 / 0.4)',
+    accentColor: 'linear-gradient(180deg, oklch(62% 0.22 210), oklch(52% 0.25 200))',
+    level: 'B1+',
+    levelColor: '#3b82f6',
+    levelBg: 'oklch(30% 0.18 230 / 0.4)',
+    unit: 'all',
+    type: 'Any Activity',
+    dueDate: 'Jun 26',
+    dueLabel: '62 days left',
+    dueType: 'normal',
+    goal: 'Score 100% to complete',
+    progress: 0,
+    btnLabel: 'Start Practice',
+    btnIcon: '▶',
+    btnClass: 'btn-practice',
+    status: 'pending',
+    xp: 80,
+  },
+  {
+    id: 3,
+    title: 'Grammar',
+    icon: '✅',
+    iconBg: 'oklch(35% 0.18 155 / 0.25)',
+    iconBorder: 'oklch(55% 0.20 155 / 0.4)',
+    accentColor: 'linear-gradient(180deg, oklch(72% 0.19 155), oklch(55% 0.22 150))',
+    level: 'B1+',
+    levelColor: '#3b82f6',
+    levelBg: 'oklch(30% 0.18 230 / 0.4)',
+    unit: 'Unit 4',
+    type: 'Multiple Choice',
+    dueDate: 'Mar 15',
+    dueLabel: 'Completed',
+    dueType: 'done',
+    goal: 'Score 100% to complete',
+    progress: 100,
+    btnLabel: 'Review',
+    btnIcon: '📋',
+    btnClass: 'btn-completed',
+    status: 'done',
+    xp: 120,
+  },
+];
+
+function ProgressBar({ value, color }) {
+  return (
+    <div className="progress-section">
+      <div className="progress-label">
+        <span>PROGRESS</span>
+        <span>{value}%</span>
+      </div>
+      <div className="progress-track">
+        <div className="progress-fill" style={{ width: `${value}%`, background: color }} />
+      </div>
+    </div>
+  );
+}
+
+function AssignmentCard({ asgn, onStart }) {
+  const isUrgent = asgn.status === 'urgent';
+  const isDone = asgn.status === 'done';
+
+  return (
+    <div className={`assignment-card ${isUrgent ? 'urgent' : ''}`} style={{ paddingLeft: 22 }}>
+      <div className="card-accent" style={{ background: asgn.accentColor }} />
+
+      <div className="card-top">
+        <div className="card-icon-wrap" style={{ background: asgn.iconBg, border: `1px solid ${asgn.iconBorder}` }}>
+          {asgn.icon}
+        </div>
+        <div className="card-info">
+          <div className="card-title">{asgn.title}</div>
+          <div className="card-meta">
+            <span className="level-chip" style={{ background: asgn.levelBg, color: asgn.levelColor, border: `1px solid ${asgn.levelColor}40` }}>
+              {asgn.level}
+            </span>
+            <span className="meta-dot">•</span>
+            <span>{asgn.unit}</span>
+            <span className="meta-dot">•</span>
+            <span>{asgn.type}</span>
+          </div>
+        </div>
+        <div className="check-circle" style={isDone ? {} : {}}>
+          {isDone ? '✓' : ''}
+        </div>
+      </div>
+
+      <div className="card-date-row">
+        <div className="card-date">
+          <span className="date-icon">📅</span>
+          <span>{asgn.dueDate}</span>
+        </div>
+        <div className={`due-badge ${asgn.dueType === 'urgent' ? 'due-urgent' : asgn.dueType === 'done' ? '' : 'due-normal'}`}
+          style={asgn.dueType === 'done' ? { background: 'oklch(30% 0.15 155 / 0.3)', border: '1px solid oklch(55% 0.18 155 / 0.45)', color: 'oklch(72% 0.19 155)' } : {}}>
+          {asgn.dueLabel}
+        </div>
+      </div>
+
+      {asgn.progress > 0 && (
+        <ProgressBar value={asgn.progress} color={asgn.accentColor} />
+      )}
+
+      <div className="goal-bar">
+        <span className="goal-icon">🎯</span>
+        <span>{asgn.goal}</span>
+        {isDone && <span style={{ marginLeft: 'auto', color: 'oklch(72% 0.19 155)', fontWeight: 700, fontSize: 12 }}>✓ Done</span>}
+      </div>
+
+      <button className={`cta-btn ${asgn.btnClass}`} onClick={() => onStart(asgn)}>
+        <span>{asgn.btnIcon}</span>
+        <span>{asgn.btnLabel}</span>
+      </button>
+    </div>
+  );
+}
+
+function App() {
+  const [filter, setFilter] = useState('all');
+  const [started, setStarted] = useState(null);
+
+  const filtered = assignments.filter(a => {
+    if (filter === 'pending') return a.status !== 'done';
+    if (filter === 'done') return a.status === 'done';
+    return true;
+  });
+
+  const pending = assignments.filter(a => a.status !== 'done').length;
+  const done = assignments.filter(a => a.status === 'done').length;
+
+  return (
+    <div className="crystal-panel">
+      {/* Header */}
+      <div className="panel-header">
+        <div className="panel-icon">📋</div>
+        <div className="panel-title">Your Assignments</div>
+        <div className="badge-count">{pending}</div>
+      </div>
+
+      {/* Stats */}
+      <div className="stats-bar">
+        <span><span className="stat-val">{assignments.length}</span> assignments</span>
+        <span className="stat-dot" />
+        <span className="stat-pending"><span className="stat-val">{pending}</span> pending</span>
+        <span className="stat-dot" />
+        <span className="stat-done"><span className="stat-val">{done}</span> done</span>
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="filter-tabs">
+        {['all','pending','done'].map(f => (
+          <button key={f} className={`filter-tab ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
+            {f === 'all' ? 'All' : f === 'pending' ? '⏳ Pending' : '✓ Completed'}
+          </button>
+        ))}
+      </div>
+
+      {/* Section label */}
+      <div className="section-divider">
+        <span>{filter === 'done' ? 'Completed' : filter === 'pending' ? 'In Progress' : 'All Assignments'}</span>
+        <div className="divider-line" />
+      </div>
+
+      {/* Cards */}
+      {filtered.map(a => (
+        <AssignmentCard key={a.id} asgn={a} onStart={setStarted} />
+      ))}
+
+      {filtered.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)', fontSize: 14 }}>
+          No assignments here yet ✨
+        </div>
+      )}
+
+      {/* Toast */}
+      {started && (
+        <div style={{
+          position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+          background: 'linear-gradient(135deg, oklch(22% 0.10 235 / 0.95), oklch(18% 0.08 240 / 0.98))',
+          border: '1px solid oklch(50% 0.15 220 / 0.4)',
+          borderRadius: 12, padding: '12px 20px',
+          backdropFilter: 'blur(20px)',
+          boxShadow: '0 8px 32px oklch(10% 0.08 240 / 0.6)',
+          display: 'flex', alignItems: 'center', gap: 10,
+          fontSize: 13.5, fontWeight: 600, color: 'var(--text-primary)',
+          zIndex: 100, whiteSpace: 'nowrap',
+          animation: 'fadeUp 0.3s ease',
+          cursor: 'pointer',
+        }} onClick={() => setStarted(null)}>
+          <span>🚀</span>
+          <span>Opening <strong>{started.title}</strong> – {started.type}</span>
+          <span style={{ marginLeft: 8, color: 'var(--text-muted)', fontSize: 11 }}>tap to dismiss</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+ID: a1-r5
+LEVEL: A1
+TITLE: A1 Reading 5 — My Day
+SUBTITLE: One passage · True/False, MCQ, writing
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: My Day
+
+PASSAGE:
+I'm a shop assistant in a big electronics shop. My day starts at half past six when I get up and take a shower. Then I have breakfast at quarter past seven and I leave home at quarter to eight. I walk to the bus stop and I wait for the bus. The shop opens at half past eight and I start work. I sell TVs, DVDs and music systems. I like my job. It's interesting and I talk to a lot of people. I have lunch at half past twelve and I leave work at half past five. I usually play football with friends for about an hour. I have dinner at seven o'clock and I watch TV or listen to CDs in the evening. I go to bed at eleven o'clock.
+
+# TRUEFALSE
+LABEL: Part A
+INSTRUCTIONS: Choose True or False for the following sentences.
+1. His day starts at half past six.
+   ANSWER: T
+2. He has a wash every morning.
+   ANSWER: T
+3. The shop opens at 8:15.
+   ANSWER: F
+4. He works in an electronics shop.
+   ANSWER: T
+5. He doesn't like his job.
+   ANSWER: F
+6. His job is interesting.
+   ANSWER: T
+7. He leaves work at 5:30.
+   ANSWER: T
+8. He visits his friends in the evening.
+   ANSWER: F
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Circle the correct answer.
+1. He has breakfast __________.
+   a) at work
+   b) at home
+   c) on the bus
+   d) in a cafe
+   ANSWER: b
+2. He goes to work __________.
+   a) on foot
+   b) by car
+   c) by bus
+   d) by subway
+   ANSWER: c
+3. He goes to bed __________.
+   a) before 10 o'clock
+   b) before 12 o'clock
+   c) at 10 o'clock
+   d) at 12 o'clock
+   ANSWER: b
+
+# WRITING
+LABEL: Part C
+INSTRUCTIONS: Tell your friend about your daily routine.
+PROMPT: What do you do every day? Write about your daily routine (at least 50 words).
+MIN_WORDS: 50

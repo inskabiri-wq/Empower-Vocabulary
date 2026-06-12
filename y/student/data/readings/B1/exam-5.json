@@ -1,0 +1,163 @@
+{
+  "id": "b1-r5",
+  "level": "B1",
+  "title": "B1 Reading 5 — Happiness is in the Shoes You Wear",
+  "subtitle": "One passage · Reading comprehension MCQ",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Happiness is in the Shoes That You Wear",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">A recent ad for shoes asks, \"When was the last time you felt this comfortable in a relationship? After all, it is easier to love a product than a person. Relationships with human beings can be difficult and unpredictable. Our shoes never ask us to wash the dishes or tell us we're getting fat.\" This ad is meant to be funny. It might look interesting, but also inappropriate. However, this ad is just one example of many ads that state or imply that products are more important than people. Ads have always promised us a better relationship via a product: buy this and you will feel loved. More recently they have gone farther and promised us a relationship with the product itself: buy this and it will love you. The product is not the means to an end — it is the end itself.</p><p class=\"rd-para\" data-para=\"2\">We are surrounded by thousands of messages every day that connect our deepest emotions to products, that turn people into objects and make our relationships unimportant. Advertisers use our emotions to sell us something. Our wish to protect our children forces us to buy an expensive car. If you have a long marriage, you should buy your partner a diamond necklace or a Rolex watch. A sad moment between a father and a daughter who live far away from each other is used to sell us a phone system. Everything in the world — nature, animals, people — is just one more thing that advertisers use to sell us something.</p><p class=\"rd-para\" data-para=\"3\">The problem with advertising isn't that it creates unnatural needs in people. The problem is that it takes advantage of our real, human needs and desires. Most of us want serious relationships that will last for a long time. We are not stupid; we know that buying a certain brand of cereal won't bring us one step closer to that goal. However, we are surrounded by advertising that connects our needs with products. Advertising promises us that objects will deliver something that people never can.</p><p class=\"rd-para\" data-para=\"4\">Most people feel that advertising is not something that we should take seriously. Although researchers have studied advertising more carefully in recent years than ever before, almost everyone feels free from its influence. Many people just say, \"Ads don't have an effect on me — I just ignore them.\" Those same people usually wear shirts with logos. In truth, we are all influenced. There is no way to ignore this much information, especially when it is designed to get our attention. An advertising critic Sut Jhally said, \"If ads don't influence you, it means you live outside of culture. No human being lives outside of culture.\" Much of advertising's power comes from this belief that it doesn't affect us. Since we think advertising is not a serious thing, we are not critical enough of it. But while we're laughing at them, the commercials achieve their goal.</p><p class=\"rd-para\" data-para=\"5\">If we look at ads individually, we can say they are sometimes silly and funny. When we think of all of them together, they can cause a loss of trust between people. Ads show our lives as dull and ordinary, and they show that we should avoid commitment to other human beings. Since this message appears everywhere, we learn from childhood that it is easier to make a commitment to a product than to a person, easier to be committed to a brand. Many people become attached to material objects, but deeply distrustful of other human beings.</p><p class=\"rd-para\" data-para=\"6\">In the world of advertising, relationships become cold, people grow old, children grow up and move away — but possessions stay with us and never change. However, possessions can't make us happy, loved, less alone, or safe. If we believe they can, then we will be disappointed. These possessions will never love us back. Advertising creates a world view that is based on distrust, dissatisfaction, and desire. Advertisers aren't bad people. They are just doing their job — they want to sell a product, but the consequences are often harmful. Advertising tells us that material objects are the key to our happiness.</p>",
+      "sections": [
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part A",
+          "instructions": "Read the text in more detail and choose the correct answer.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "What do advertisements promise us according to Paragraph 1?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Buying a product can help us love other people."
+                },
+                {
+                  "id": "b",
+                  "text": "Buying a product can help us become richer."
+                },
+                {
+                  "id": "c",
+                  "text": "Buying a product can make our relationships unpredictable."
+                },
+                {
+                  "id": "d",
+                  "text": "Buying a product creates a relationship between us and the product."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m2",
+              "question": "What is an example of using emotions to sell something according to Paragraph 2?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "The wish to protect a child makes us love our car more."
+                },
+                {
+                  "id": "b",
+                  "text": "Having a long relationship inspires people to buy expensive gifts."
+                },
+                {
+                  "id": "c",
+                  "text": "Protecting animals and nature makes people sell important things."
+                },
+                {
+                  "id": "d",
+                  "text": "Spending time with family is a good advertisement for phones."
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m3",
+              "question": "Why does the author say \"We're not stupid\" in Paragraph 3?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Because people usually don't understand advertisements."
+                },
+                {
+                  "id": "b",
+                  "text": "Because people don't let advertisers manipulate them."
+                },
+                {
+                  "id": "c",
+                  "text": "Because people understand that ads can't solve their problems."
+                },
+                {
+                  "id": "d",
+                  "text": "Because people don't need advertisements to buy something."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m4",
+              "question": "According to Paragraph 4, advertisements are powerful because __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "people believe they can ignore advertisements."
+                },
+                {
+                  "id": "b",
+                  "text": "people believe advertisements are not part of their culture."
+                },
+                {
+                  "id": "c",
+                  "text": "lots of people wear clothes with famous logos."
+                },
+                {
+                  "id": "d",
+                  "text": "people take advertisements seriously."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "What is TRUE according to Paragraph 5?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Generally, all advertisements have the goal to be funny."
+                },
+                {
+                  "id": "b",
+                  "text": "Each individual advertisement makes people distrust each other."
+                },
+                {
+                  "id": "c",
+                  "text": "Advertisements targeting children usually have a funny message."
+                },
+                {
+                  "id": "d",
+                  "text": "Ads show us that products are more reliable than our friends."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m6",
+              "question": "When will people \"be disappointed\" according to Paragraph 6?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "When they expect love from their possessions"
+                },
+                {
+                  "id": "b",
+                  "text": "When they grow old and their children move away"
+                },
+                {
+                  "id": "c",
+                  "text": "When their relationships become cold"
+                },
+                {
+                  "id": "d",
+                  "text": "When advertisements make them bad people"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

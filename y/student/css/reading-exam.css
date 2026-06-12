@@ -1,0 +1,1912 @@
+/* ============================================================
+   READING EXAM — split-pane (passage left | questions right)
+   Both panes scroll independently; mobile collapses to tabs.
+   ============================================================ */
+
+/* Hidden-attribute override.
+   Our .rd-tracker / .rd-highlight-bar / #rd-note-popover all use
+   `display: flex` (or grid). The user-agent default for `[hidden]` is
+   `display: none`, but explicit display rules in stylesheets win the
+   specificity tie — so without this override, `el.hidden = true` has
+   no visible effect. !important keeps the rule in force regardless of
+   inline styles applied by the JS positioning code. */
+#readingExamScreen [hidden],
+.rd-tracker[hidden],
+.rd-highlight-bar[hidden],
+#rd-note-popover[hidden] {
+  display: none !important;
+}
+
+/* ── Lockdown / exam-mode interaction blocking ──────────────────
+   Default state (data-lockdown unset): selection works normally on
+   passage + question text so students can drag-select for the app
+   highlighter. Native callout / tap-highlight are still suppressed
+   so the OS Define/Translate menu doesn't hijack the highlighter.
+
+   Lockdown state (data-lockdown="1" — set automatically when a TIMED
+   exam opens): all text selection, copy, drag, and right-click are
+   blocked. Form inputs (input/textarea/select) are exceptions so
+   students can type/paste their answers. The app highlighter still
+   works because it uses programmatic Range API, which user-select:
+   none doesn't gate. */
+#readingExamScreen,
+#readingExamScreen .rd-shell {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#readingExamScreen .rd-passage,
+#readingExamScreen .rd-passage *,
+#readingExamScreen .rd-section-instructions,
+#readingExamScreen .rd-q-stem,
+#readingExamScreen .rd-q-label,
+#readingExamScreen .rd-mcq-text {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: none;
+}
+#readingExamScreen .rd-shell[data-lockdown="1"],
+#readingExamScreen .rd-shell[data-lockdown="1"] * {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+#readingExamScreen .rd-shell[data-lockdown="1"] input,
+#readingExamScreen .rd-shell[data-lockdown="1"] textarea,
+#readingExamScreen .rd-shell[data-lockdown="1"] select {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Lockdown indicator pill in the header — small, calm, just visible
+   enough that the student knows they're in a locked session. */
+.rd-lockdown-pill {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: rgba(245, 158, 11, 0.16);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: var(--rd-warning);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.rd-shell[data-lockdown="1"] .rd-lockdown-pill { display: inline-flex; }
+
+#readingExamScreen {
+  /* Reuse the dashboard's dark tokens so the exam doesn't feel
+     like a different app. Falls back if not present. */
+  --rd-bg:           #0d1226;
+  --rd-surface:      #131a30;
+  --rd-surface-2:    #1a2240;
+  --rd-border:       rgba(255,255,255,0.08);
+  --rd-border-soft:  rgba(255,255,255,0.05);
+  --rd-text:         #e8edf7;
+  --rd-text-muted:   #8b96b3;
+  --rd-text-dim:     #5a6585;
+  --rd-accent:       #2dd4bf;
+  --rd-accent-2:     #38bdf8;
+  --rd-warning:      #f59e0b;
+  --rd-error:        #ef4444;
+  --rd-success:      #22c55e;
+  /* Score-low tone — replaces the previous red/coral with a warm
+     amber that matches --rd-warning. Scores never use red anywhere
+     in the UI; only the timer (which legitimately needs urgency)
+     keeps --rd-error. */
+  --rd-score-low:    #fbbf24;
+
+  /* Reading preferences — text scale and theme.
+     --rd-text-scale multiplies the base font-size of all reading
+     text (passage, question stem, MCQ options, gap labels). The
+     default 1 = "Medium". Other sizes set this on
+     #readingExamScreen[data-size="..."] below. */
+  --rd-text-scale: 1;
+
+  background: var(--rd-bg);
+  color: var(--rd-text);
+  position: fixed; inset: 0;
+  overflow: hidden;
+  z-index: 5;
+  font-family: 'Poppins', -apple-system, system-ui, sans-serif;
+}
+
+#readingExamScreen.active { display: block; }
+
+/* ── Text size presets (data-size on the exam screen) ─────────
+   Scales every "reading" font via --rd-text-scale. Picked
+   multipliers so the steps feel evenly spaced (≈ +18% per step). */
+#readingExamScreen[data-size="S"]  { --rd-text-scale: 0.86; }
+#readingExamScreen[data-size="M"]  { --rd-text-scale: 1.00; }
+#readingExamScreen[data-size="L"]  { --rd-text-scale: 1.18; }
+#readingExamScreen[data-size="XL"] { --rd-text-scale: 1.38; }
+
+/* ── Theme presets (data-theme on the exam screen) ────────────
+   Override the surface/text/border tokens. The default (no attr
+   or data-theme="dark") keeps the original values declared above.
+   Variables propagate to all descendants — header, panes, sections,
+   tracker, modals — so themes apply across the entire exam. */
+#readingExamScreen[data-theme="light"] {
+  --rd-bg:           #fdfbf6;
+  --rd-surface:      #ffffff;
+  --rd-surface-2:    #f5efe5;
+  --rd-text:         #1f2937;
+  --rd-text-muted:   #6b7280;
+  --rd-text-dim:     #9ca3af;
+  --rd-border:       rgba(0,0,0,0.10);
+  --rd-border-soft:  rgba(0,0,0,0.05);
+  --rd-accent:       #0d9488;   /* darker teal so it reads on white */
+  --rd-accent-2:     #0284c7;
+}
+#readingExamScreen[data-theme="sepia"] {
+  --rd-bg:           #f4ecd8;
+  --rd-surface:      #fbf3df;
+  --rd-surface-2:    #ebe1c6;
+  --rd-text:         #3d2e1a;
+  --rd-text-muted:   #6b563d;
+  --rd-text-dim:     #8c7a5c;
+  --rd-border:       rgba(61,46,26,0.16);
+  --rd-border-soft:  rgba(61,46,26,0.08);
+  --rd-accent:       #0e7c70;
+  --rd-accent-2:     #0369a1;
+}
+#readingExamScreen[data-theme="hc"] {
+  --rd-bg:           #000000;
+  --rd-surface:      #0a0a0a;
+  --rd-surface-2:    #181818;
+  --rd-text:         #ffffff;
+  --rd-text-muted:   #d1d5db;
+  --rd-text-dim:     #9ca3af;
+  --rd-border:       rgba(255,255,255,0.30);
+  --rd-border-soft:  rgba(255,255,255,0.18);
+  --rd-accent:       #5eead4;
+  --rd-accent-2:     #7dd3fc;
+}
+
+.rd-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.rd-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  background: var(--rd-surface);
+  border-bottom: 1px solid var(--rd-border);
+  z-index: 2;
+}
+.rd-back {
+  background: transparent;
+  border: 1px solid var(--rd-border);
+  color: var(--rd-text-muted);
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.rd-back:hover {
+  color: var(--rd-text);
+  border-color: var(--rd-text-muted);
+}
+.rd-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.rd-title strong {
+  font-size: 15px;
+  color: var(--rd-text);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rd-subtitle {
+  font-size: 11px;
+  color: var(--rd-text-muted);
+}
+.rd-timer {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: rgba(45, 212, 191, 0.12);
+  color: var(--rd-accent);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  letter-spacing: 0.06em;
+}
+.rd-timer-untimed {
+  background: rgba(139, 150, 179, 0.1);
+  color: var(--rd-text-muted);
+  border-color: var(--rd-border);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+.rd-timer-warning {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--rd-warning);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+.rd-timer-critical {
+  background: rgba(239, 68, 68, 0.18);
+  color: var(--rd-error);
+  border-color: rgba(239, 68, 68, 0.5);
+  animation: rd-timer-pulse 1.2s ease-in-out infinite;
+}
+.rd-timer-out { background: var(--rd-error); color: #fff; }
+@keyframes rd-timer-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.03); }
+}
+
+.rd-header-actions {
+  display: flex;
+  gap: 8px;
+}
+.rd-tool-btn {
+  background: transparent;
+  border: 1px solid var(--rd-border);
+  color: var(--rd-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.rd-tool-btn:hover {
+  color: var(--rd-text);
+  border-color: var(--rd-text-muted);
+  background: var(--rd-surface-2);
+}
+.rd-submit {
+  background: var(--rd-accent);
+  border: none;
+  color: #06231f;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.01em;
+  transition: filter 0.15s, transform 0.1s;
+}
+.rd-submit:hover { filter: brightness(1.08); }
+.rd-submit:active { transform: scale(0.97); }
+
+/* ── Passage tabs (Passage 1 | 2 | 3) ───────────────────────── */
+.rd-tabs {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0;
+  background: var(--rd-surface);
+  border-bottom: 1px solid var(--rd-border);
+  padding: 0 18px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.rd-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--rd-text-muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+  position: relative;
+}
+.rd-tab:hover { color: var(--rd-text); }
+.rd-tab.is-active {
+  color: var(--rd-accent);
+  border-bottom-color: var(--rd-accent);
+}
+.rd-tab-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  font-size: 11px;
+  font-weight: 700;
+}
+.rd-tab.is-active .rd-tab-num {
+  background: var(--rd-accent);
+  color: #06231f;
+}
+.rd-tab-title {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Hide the tab strip on single-passage exams (the new 20-min single-
+   reading sets). One tab is just visual noise — the title is already
+   shown in the header. The tab DOM stays so the progress-badge code
+   keeps working without conditional branching. */
+.rd-tabs.is-single { display: none; }
+.rd-tab-progress {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  color: var(--rd-text-dim);
+  background: rgba(255,255,255,0.03);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* ── Main split pane ────────────────────────────────────────── */
+.rd-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 0;          /* required so children can scroll */
+  overflow: hidden;
+}
+.rd-pane {
+  overflow-y: auto;
+  padding: 22px 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rd-border) transparent;
+}
+.rd-pane::-webkit-scrollbar { width: 8px; }
+.rd-pane::-webkit-scrollbar-thumb {
+  background: var(--rd-border);
+  border-radius: 4px;
+}
+.rd-pane-left {
+  border-right: 1px solid var(--rd-border);
+  background: var(--rd-bg);
+}
+.rd-pane-right {
+  background: var(--rd-surface);
+}
+
+/* ── Passage text (left pane) ───────────────────────────────── */
+.rd-intro {
+  background: rgba(56, 189, 248, 0.06);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.rd-intro h4 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rd-accent-2);
+  margin: 0 0 8px;
+}
+.rd-intro p, .rd-intro ol, .rd-intro ul {
+  margin: 0 0 8px;
+  color: var(--rd-text-muted);
+}
+.rd-intro ol, .rd-intro ul { padding-left: 22px; }
+.rd-intro li { margin: 4px 0; }
+
+.rd-passage-title {
+  /* Scaled by the user's reading-size preference (S / M / L / XL). */
+  font-size: calc(22px * var(--rd-text-scale, 1));
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  color: var(--rd-text);
+  margin: 0 0 4px;
+  line-height: 1.25;
+}
+.rd-passage-subtitle {
+  color: var(--rd-text-muted);
+  margin: 0 0 18px;
+  font-size: calc(14px * var(--rd-text-scale, 1));
+  line-height: 1.5;
+}
+.rd-passage {
+  font-size: calc(15.5px * var(--rd-text-scale, 1));
+  line-height: 1.75;
+  color: var(--rd-text);
+  /* Justify so every line hits the same right edge — the previous
+     ragged-right was making line endings form an uneven column.
+     hyphens:auto prevents oversized word gaps when an unbreakable
+     long word lands near the line break. */
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+/* Paragraphs in the passage. Padding-left gives room for the numbered
+   bubble (::before). The 32px keeps the bubble snug to the left edge
+   so the body text aligns with the rest of the pane content above. */
+.rd-passage .rd-para {
+  margin: 0 0 16px;
+  position: relative;
+  padding-left: 32px;
+  counter-increment: rd-paranum;
+}
+/* Paragraph numbers — show whatever's in data-para; falls back to counter */
+.rd-passage .rd-para::before {
+  content: attr(data-para);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(45, 212, 191, 0.14);
+  color: var(--rd-accent);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+.rd-passage strong {
+  color: var(--rd-text);
+  font-weight: 700;
+  background: rgba(45, 212, 191, 0.10);
+  padding: 0 3px;
+  border-radius: 3px;
+}
+.rd-passage u {
+  text-decoration-color: var(--rd-warning);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+/* Gap pills inside the passage. Empty = number only. Filled = letter. */
+.rd-passage .rd-gap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 10px;
+  margin: 0 2px;
+  background: rgba(255,255,255,0.06);
+  border: 1.5px dashed rgba(139, 150, 179, 0.4);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rd-text-muted);
+  vertical-align: baseline;
+  line-height: 1.4;
+  transition: all 0.2s;
+  cursor: help;
+}
+.rd-passage .rd-gap.is-filled {
+  background: rgba(45, 212, 191, 0.16);
+  border-style: solid;
+  border-color: var(--rd-accent);
+  color: var(--rd-accent);
+}
+.rd-passage .rd-gap-num { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+.rd-passage .rd-gap-letter {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background: var(--rd-accent);
+  color: #06231f;
+  border-radius: 50%;
+  font-size: 11px;
+  text-align: center;
+  line-height: 18px;
+  text-transform: uppercase;
+}
+
+/* User highlights */
+.rd-passage .rd-hl {
+  border-radius: 2px;
+  padding: 0 1px;
+  color: #1a1a1a;
+}
+
+/* ── Question pane (right) ──────────────────────────────────── */
+/* The first section sits flush with the top of the right pane so it
+   visually aligns with the passage title on the left. Subsequent
+   sections get a 16px gap. */
+.rd-section {
+  margin-bottom: 16px;
+  background: var(--rd-bg);
+  border: 1px solid var(--rd-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.rd-section:last-child { margin-bottom: 0; }
+.rd-section-head {
+  padding: 12px 14px;
+  background: rgba(45, 212, 191, 0.06);
+  border-bottom: 1px solid var(--rd-border);
+  /* Accordion affordance — head is now a tab-reachable button-style
+     element. cursor:pointer telegraphs the click; hover deepens the
+     tint so the surface invites interaction. transition keeps the
+     change subtle so it doesn't flicker on hover. */
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  transition: background 0.15s ease, padding 0.2s ease, border-color 0.2s ease;
+}
+.rd-section-head:hover {
+  background: rgba(45, 212, 191, 0.11);
+}
+.rd-section-head:focus-visible {
+  outline: 2px solid var(--rd-accent);
+  outline-offset: -2px;
+}
+/* When the section is collapsed, the bottom border on the head
+   becomes redundant (no body below). Soften it. */
+.rd-section.is-collapsed .rd-section-head {
+  border-bottom-color: transparent;
+}
+.rd-section-label {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rd-accent);
+  background: rgba(45, 212, 191, 0.12);
+  padding: 3px 8px;
+  border-radius: 4px;
+  /* (No margin-right — the parent's flex `gap: 10px` handles the
+     space between the label, instructions, and chevron now.) */
+  flex-shrink: 0;
+}
+.rd-section-instructions {
+  font-size: calc(13px * var(--rd-text-scale, 1));
+  color: var(--rd-text);
+  font-weight: 500;
+  line-height: 1.5;
+  flex: 1;
+}
+/* Chevron — button-shaped chip in the brand teal accent. Bigger
+   and obviously interactive, not a stray punctuation. */
+.rd-section-chevron {
+  flex-shrink: 0;
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(45, 212, 191, 0.14);
+  border: 1.5px solid rgba(45, 212, 191, 0.45);
+  color: var(--rd-accent);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1),
+              background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  align-self: center;
+}
+.rd-section-head:hover .rd-section-chevron {
+  background: rgba(45, 212, 191, 0.24);
+  border-color: var(--rd-accent);
+  box-shadow: 0 0 12px rgba(45, 212, 191, 0.45);
+}
+.rd-section.is-collapsed .rd-section-chevron { transform: rotate(-90deg); }
+
+/* Accordion body — max-height + overflow: hidden is the universally
+   supported way to guarantee a true 0-height collapse. The
+   grid-template-rows: 0fr trick we tried earlier was unreliable
+   across browser engines (some quietly fall back to 1fr leaving an
+   empty rectangle below the header). Max-height is content-blind
+   so the timing curve is fixed regardless of content size, but the
+   reliability tradeoff is worth it. */
+.rd-section-body {
+  padding: 12px 14px;
+  max-height: 4000px;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.35s ease;
+}
+.rd-section.is-collapsed .rd-section-body {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  /* Speed up the collapse a touch so the section feels snappy. */
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.22s ease;
+}
+.rd-section-body > * {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.32s ease 0.1s,
+              transform 0.38s cubic-bezier(0.34, 1.4, 0.64, 1) 0.1s;
+}
+.rd-section.is-collapsed .rd-section-body > * {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.18s ease,
+              transform 0.22s ease;
+}
+
+/* Question rows ────────────────────────────────────────────── */
+.rd-q {
+  position: relative;
+  /* Smooth border-radius for the jump pulse outline. */
+  border-radius: 8px;
+  transition: box-shadow 0.2s ease-out;
+}
+/* Brief teal pulse when the user jumps to this question from the
+   tracker. The outline + colour-fill fades out so the eye can find
+   the target instantly without lasting visual noise. */
+@keyframes rd-jump-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.55); background: rgba(45,212,191,0.10); }
+  60%  { box-shadow: 0 0 0 6px rgba(45, 212, 191, 0.0);  background: rgba(45,212,191,0.06); }
+  100% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.0);  background: transparent; }
+}
+.rd-q.is-jumped {
+  animation: rd-jump-pulse 1.6s ease-out;
+}
+.rd-q-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rd-border-soft);
+}
+.rd-q-row:last-child { border-bottom: none; }
+.rd-q-block {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rd-border-soft);
+}
+.rd-q-block:last-child { border-bottom: none; padding-bottom: 0; }
+.rd-q-block + .rd-q-block { padding-top: 12px; }
+
+.rd-q-label {
+  flex-shrink: 0;
+  width: 100px;
+  font-weight: 600;
+  color: var(--rd-text);
+  font-size: calc(13.5px * var(--rd-text-scale, 1));
+}
+.rd-q-stem {
+  font-size: calc(14px * var(--rd-text-scale, 1));
+  line-height: 1.55;
+  color: var(--rd-text);
+  margin-bottom: 8px;
+}
+.rd-q-num {
+  display: inline-block;
+  font-weight: 700;
+  color: var(--rd-accent);
+  margin-right: 4px;
+  min-width: 22px;
+}
+.rd-paragraph-hint {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--rd-text-dim);
+  margin-left: 6px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Per-question side tools (flag + note). Two layouts:
+   • Row questions (heading / gap match) — tools sit INLINE as the
+     third flex item via `order: 3`. No absolute positioning, so the
+     select can never overlap the icons regardless of viewport width.
+   • Block questions (MCQ / find-word / free-text / writing) — tools
+     are absolute at the top-right corner of the question card,
+     above the question stem. */
+.rd-q-tools {
+  display: flex;
+  gap: 4px;
+  z-index: 3;
+  flex-shrink: 0;
+}
+.rd-q-row .rd-q-tools {
+  /* Inline at the end of the flex row. */
+  order: 3;
+  margin-left: 8px;
+}
+.rd-q-row .rd-q-label   { order: 1; }
+.rd-q-row .rd-input.rd-select {
+  /* Take all remaining space between the label and the tools, but
+     stop shrinking before it pushes against the icons. */
+  order: 2;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.rd-q-block {
+  /* Block layout still uses absolute tools, so reserve right padding. */
+  position: relative;
+  padding-right: 76px;
+}
+.rd-q-block .rd-q-tools {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+/* Per-question chevron — sits in the .rd-q-tools cluster next to
+   flag + note. Branded teal, button-shaped, obviously interactive. */
+.rd-q-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(45, 212, 191, 0.12);
+  border: 1.5px solid rgba(45, 212, 191, 0.4);
+  color: var(--rd-accent);
+  font-size: 1.05em;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1),
+              background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.rd-q-toggle:hover {
+  background: rgba(45, 212, 191, 0.22);
+  border-color: var(--rd-accent);
+  box-shadow: 0 0 10px rgba(45, 212, 191, 0.4);
+}
+.rd-q-toggle:focus-visible {
+  outline: 2px solid var(--rd-accent);
+  outline-offset: 2px;
+}
+.rd-q-block.is-collapsed .rd-q-toggle { transform: rotate(-90deg); }
+
+/* Per-question accordion body — max-height-based, snappier. */
+.rd-q-body {
+  max-height: 2000px;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease;
+}
+.rd-q-block.is-collapsed .rd-q-body {
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.18s ease;
+}
+.rd-q-body > * {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.28s ease 0.08s,
+              transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1) 0.08s;
+}
+.rd-q-block.is-collapsed .rd-q-body > * {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.15s ease,
+              transform 0.2s ease;
+}
+
+.rd-flag, .rd-note {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--rd-border);
+  color: var(--rd-text-muted);
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-family: inherit;
+  line-height: 1;
+  transition: all 0.15s;
+}
+/* Inline SVG icons inside flag/note. pointer-events:none routes the
+   click target to the parent button so closest('.rd-flag') always
+   finds the right element regardless of whether the user clicked
+   on an SVG path or its empty centre. */
+.rd-flag svg, .rd-note svg {
+  pointer-events: none;
+  display: block;
+}
+.rd-flag:hover, .rd-note:hover {
+  color: var(--rd-text);
+  border-color: var(--rd-text-muted);
+}
+.rd-flag.is-on {
+  color: var(--rd-warning);
+  background: rgba(245, 158, 11, 0.12);
+  border-color: var(--rd-warning);
+}
+.rd-note.is-on {
+  color: var(--rd-accent-2);
+  background: rgba(56, 189, 248, 0.1);
+  border-color: var(--rd-accent-2);
+}
+
+/* Form inputs */
+.rd-input {
+  background: var(--rd-bg);
+  border: 1px solid var(--rd-border);
+  color: var(--rd-text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: calc(13.5px * var(--rd-text-scale, 1));
+  transition: border-color 0.15s, background 0.15s;
+  /* Native <select> elements don't honour width:100% inside a flex
+     container reliably across mobile browsers (Safari iOS in
+     particular); without these guards the dropdown overflows the
+     question card on narrow screens. */
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.rd-input:focus {
+  outline: none;
+  border-color: var(--rd-accent);
+  background: var(--rd-surface-2);
+}
+.rd-select {
+  flex: 1;
+  cursor: pointer;
+}
+.rd-text {
+  width: 100%;
+  margin-top: 4px;
+}
+.rd-textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* MCQ option rows */
+.rd-mcq {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+.rd-mcq-opt {
+  display: flex;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--rd-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.rd-mcq-opt:hover {
+  background: var(--rd-surface-2);
+  border-color: var(--rd-text-dim);
+}
+.rd-mcq-opt input[type=radio] {
+  margin: 4px 0 0 0;
+  accent-color: var(--rd-accent);
+  flex-shrink: 0;
+}
+.rd-mcq-opt:has(input:checked) {
+  background: rgba(45, 212, 191, 0.10);
+  border-color: var(--rd-accent);
+}
+.rd-mcq-letter {
+  font-weight: 700;
+  color: var(--rd-accent);
+  flex-shrink: 0;
+  width: 22px;
+}
+.rd-mcq-text {
+  color: var(--rd-text);
+  flex: 1;
+  font-size: calc(13.5px * var(--rd-text-scale, 1));
+  line-height: 1.5;
+}
+
+/* Writing section */
+.rd-section-writing { padding-top: 18px; padding-bottom: 18px; }
+.rd-writing-prompt {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--rd-text);
+  margin: 0 0 10px;
+}
+.rd-writing-note {
+  font-size: 11px;
+  color: var(--rd-text-dim);
+  margin: 6px 0 0;
+  font-style: italic;
+}
+
+/* ── Tracker drawer (bottom panel) ──────────────────────────── */
+/* Slides up from the bottom edge so it never covers the question
+   the student is currently working on. Capped at 45% viewport height
+   with internal scrolling for long passage lists. */
+.rd-tracker {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  width: 100%;
+  max-height: 45vh;
+  background: var(--rd-surface);
+  border-top: 1px solid var(--rd-border);
+  z-index: 6;
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.45);
+  display: flex;
+  flex-direction: column;
+  animation: rd-track-in 0.2s ease-out;
+  border-radius: 14px 14px 0 0;
+}
+@keyframes rd-track-in {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.rd-tracker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--rd-border);
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.rd-tracker-close {
+  background: transparent;
+  border: none;
+  color: var(--rd-text-muted);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0 4px;
+  font-family: inherit;
+  line-height: 1;
+}
+.rd-tracker-close:hover { color: var(--rd-text); }
+.rd-tracker-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 18px 18px;
+  /* On wide screens lay out the 3 passages side-by-side; on narrow
+     screens they stack. min(280px, 100%) keeps small-window behaviour
+     correct without a media query. */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+.rd-track-passage {
+  margin-bottom: 0;
+}
+.rd-track-passage-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--rd-accent);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+/* Each passage is broken into scorable parts. The part label sits in
+   a fixed-width column on the left so the question grids line up
+   across rows even when section sizes differ. */
+.rd-track-section {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.rd-track-section-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--rd-text-muted);
+  text-align: center;
+  padding: 4px 0;
+  letter-spacing: 0.04em;
+}
+.rd-track-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 28px);
+  gap: 4px;
+}
+.rd-track-cell {
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid var(--rd-border);
+  color: var(--rd-text-muted);
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  transition: all 0.15s;
+}
+.rd-track-cell:hover {
+  border-color: var(--rd-accent);
+  color: var(--rd-text);
+}
+.rd-track-cell.is-answered {
+  background: rgba(45, 212, 191, 0.18);
+  color: var(--rd-accent);
+  border-color: rgba(45, 212, 191, 0.5);
+}
+.rd-track-cell.is-flagged {
+  border-color: var(--rd-warning);
+  box-shadow: inset 0 0 0 1px var(--rd-warning);
+}
+.rd-track-cell.is-answered.is-flagged {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--rd-warning);
+}
+
+/* ── Reading preferences panel ──────────────────────────────── */
+/* Floating dropdown anchored under the gear button in the header.
+   Opens with `[hidden]` removed; the [hidden] override at the top of
+   this file enforces display:none when hidden so display:flex doesn't
+   leak through. */
+.rd-settings {
+  position: absolute;
+  top: 60px;       /* roughly below the header's row 1 */
+  right: 14px;
+  z-index: 50;
+  width: min(320px, calc(100vw - 24px));
+  background: var(--rd-surface);
+  border: 1px solid var(--rd-border);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  padding: 14px 14px 12px;
+  animation: rd-settings-pop 0.18s cubic-bezier(.2,.9,.3,1);
+}
+@keyframes rd-settings-pop {
+  from { transform: translateY(-4px) scale(0.98); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+.rd-settings-arrow {
+  position: absolute;
+  top: -6px;
+  right: 26px;
+  width: 12px; height: 12px;
+  background: var(--rd-surface);
+  border-top: 1px solid var(--rd-border);
+  border-left: 1px solid var(--rd-border);
+  transform: rotate(45deg);
+}
+.rd-settings-section {
+  padding: 6px 0;
+}
+.rd-settings-section + .rd-settings-section {
+  border-top: 1px solid var(--rd-border-soft);
+  margin-top: 6px;
+  padding-top: 12px;
+}
+.rd-settings-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rd-text-muted);
+  margin-bottom: 8px;
+}
+.rd-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.rd-pref-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border: 1px solid var(--rd-border);
+  background: var(--rd-bg);
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--rd-text-muted);
+  transition: border-color 0.15s, color 0.15s, background 0.15s, transform 0.1s;
+}
+.rd-pref-btn:hover {
+  border-color: var(--rd-text-muted);
+  color: var(--rd-text);
+}
+.rd-pref-btn:active { transform: scale(0.97); }
+.rd-pref-btn.is-active {
+  border-color: var(--rd-accent);
+  color: var(--rd-accent);
+  background: rgba(45, 212, 191, 0.08);
+}
+.rd-pref-name {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+/* Aa preview — visually shows the size step so users can pick
+   without reading the label. */
+.rd-pref-aa {
+  font-weight: 700;
+  font-family: 'Outfit', 'Poppins', sans-serif;
+  line-height: 1;
+  color: inherit;
+}
+.rd-pref-aa-s  { font-size: 11px; }
+.rd-pref-aa-m  { font-size: 14px; }
+.rd-pref-aa-l  { font-size: 17px; }
+.rd-pref-aa-xl { font-size: 20px; }
+
+/* Theme swatch — a small pill that previews the bg + text combo for
+   each theme so users can see the choice without applying it. */
+.rd-pref-theme .rd-pref-swatch {
+  width: 28px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.12);
+  position: relative;
+}
+.rd-pref-theme .rd-pref-swatch::after {
+  content: 'Aa';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.rd-pref-theme-dark  .rd-pref-swatch { background: #0d1226; }
+.rd-pref-theme-dark  .rd-pref-swatch::after { color: #e8edf7; }
+.rd-pref-theme-light .rd-pref-swatch { background: #fdfbf6; }
+.rd-pref-theme-light .rd-pref-swatch::after { color: #1f2937; }
+.rd-pref-theme-sepia .rd-pref-swatch { background: #f4ecd8; }
+.rd-pref-theme-sepia .rd-pref-swatch::after { color: #3d2e1a; }
+.rd-pref-theme-hc    .rd-pref-swatch { background: #000000; }
+.rd-pref-theme-hc    .rd-pref-swatch::after { color: #ffffff; }
+
+.rd-settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rd-border-soft);
+}
+.rd-pref-reset {
+  background: transparent;
+  border: 1px solid var(--rd-border);
+  color: var(--rd-text-muted);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.rd-pref-reset:hover {
+  color: var(--rd-text);
+  border-color: var(--rd-text-muted);
+}
+
+/* ── Highlight floating bar ─────────────────────────────────── */
+/* position: fixed lives on the rule (not just inline) so the very
+   first reveal doesn't briefly render the bar in document flow.
+   The off-screen initial top/left keeps it invisible until the JS
+   places it; without that, the first frame shows it at (0,0). */
+.rd-highlight-bar {
+  position: fixed;
+  top: -9999px;
+  left: -9999px;
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: var(--rd-surface);
+  border: 1px solid var(--rd-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
+.rd-highlight-bar button {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.25);
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.rd-highlight-bar button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.rd-highlight-bar #rd-hl-clear {
+  background: var(--rd-bg);
+  color: var(--rd-text-muted);
+  border-color: var(--rd-border);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ── Custom in-app confirm modal ────────────────────────────── */
+.rd-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 12, 26, 0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: rd-confirm-fade 0.15s ease-out;
+}
+@keyframes rd-confirm-fade { from { opacity: 0 } to { opacity: 1 } }
+.rd-confirm {
+  width: min(420px, calc(100vw - 32px));
+  background: var(--rd-surface, #131a30);
+  border: 1px solid var(--rd-border, rgba(255,255,255,0.08));
+  border-radius: 14px;
+  padding: 24px 22px 18px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+  animation: rd-confirm-pop 0.2s cubic-bezier(.2,.9,.3,1);
+}
+@keyframes rd-confirm-pop {
+  from { transform: translateY(8px) scale(0.96); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+.rd-confirm-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(45, 212, 191, 0.14);
+  color: var(--rd-accent, #2dd4bf);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.rd-confirm-icon.is-danger {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--rd-warning, #f59e0b);
+}
+.rd-confirm-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--rd-text, #e8edf7);
+  margin: 0 0 6px;
+}
+.rd-confirm-message {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--rd-text-muted, #8b96b3);
+  margin: 0 0 18px;
+}
+.rd-confirm-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.rd-confirm-cancel,
+.rd-confirm-ok {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-width: 110px;
+}
+.rd-confirm-cancel {
+  background: transparent;
+  border: 1px solid var(--rd-border, rgba(255,255,255,0.08));
+  color: var(--rd-text-muted, #8b96b3);
+}
+.rd-confirm-cancel:hover {
+  color: var(--rd-text, #e8edf7);
+  border-color: var(--rd-text-muted, #8b96b3);
+}
+.rd-confirm-ok {
+  background: var(--rd-accent, #2dd4bf);
+  border: 1px solid transparent;
+  color: #06231f;
+}
+.rd-confirm-ok:hover { filter: brightness(1.08); }
+.rd-confirm-ok.is-danger {
+  background: var(--rd-warning, #f59e0b);
+  color: #2a1a05;
+}
+
+/* ── Note popover ───────────────────────────────────────────── */
+#rd-note-popover {
+  z-index: 200;
+  width: 280px;
+  background: var(--rd-surface);
+  border: 1px solid var(--rd-border);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  padding: 12px;
+}
+#rd-note-popover textarea {
+  width: 100%;
+  min-height: 90px;
+  /* Hard-coded fallbacks alongside the variables — if the popover ever
+     ends up outside #readingExamScreen the variables are undefined and
+     the text would render black on dark. */
+  background: var(--rd-bg, #0d1226);
+  border: 1px solid var(--rd-border, rgba(255,255,255,0.08));
+  color: var(--rd-text, #e8edf7);
+  border-radius: 6px;
+  padding: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+}
+.rd-note-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 8px;
+}
+.rd-note-save, .rd-note-cancel {
+  background: transparent;
+  border: 1px solid var(--rd-border);
+  color: var(--rd-text-muted);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.rd-note-save {
+  background: var(--rd-accent);
+  color: #06231f;
+  border-color: transparent;
+}
+
+/* ── Results screen ─────────────────────────────────────────── */
+.rd-results {
+  /* Reuses rd-shell + rd-header */
+}
+.rd-results-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+.rd-result-total {
+  text-align: center;
+  padding: 32px 16px;
+  background: var(--rd-surface);
+  border: 1px solid var(--rd-border);
+  border-radius: 16px;
+  margin-bottom: 28px;
+}
+.rd-result-total-num {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+.rd-pct-good { color: var(--rd-success); }
+.rd-pct-mid  { color: var(--rd-warning); }
+.rd-pct-low  { color: var(--rd-score-low); }
+.rd-result-total-pct {
+  font-size: 18px;
+  color: var(--rd-text-muted);
+  margin-bottom: 8px;
+}
+.rd-result-meta {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--rd-text-muted);
+  letter-spacing: 0.02em;
+}
+.rd-result-meta strong {
+  color: var(--rd-warning);
+  font-weight: 800;
+}
+.rd-result-total-label {
+  font-size: 13px;
+  color: var(--rd-text-dim);
+}
+.rd-result-passages { display: flex; flex-direction: column; gap: 14px; }
+.rd-result-row {
+  background: var(--rd-surface);
+  border: 1px solid var(--rd-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.rd-result-row-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.rd-result-num {
+  background: var(--rd-accent);
+  color: #06231f;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.rd-result-title {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rd-text);
+}
+.rd-result-pct {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+}
+.rd-result-sections {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--rd-text-muted);
+  margin-bottom: 6px;
+}
+.rd-result-section strong { color: var(--rd-text); }
+.rd-result-details {
+  margin-top: 8px;
+  border-top: 1px solid var(--rd-border-soft);
+  padding-top: 8px;
+}
+.rd-result-details summary {
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--rd-accent-2);
+  font-weight: 600;
+  padding: 4px 0;
+}
+.rd-result-section-detail {
+  margin-top: 12px;
+}
+.rd-result-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rd-text);
+  margin-bottom: 6px;
+}
+.rd-result-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.rd-result-item {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 12.5px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.02);
+  flex-wrap: wrap;
+}
+.rd-result-item.is-right .rd-result-mark { color: var(--rd-success); }
+.rd-result-item.is-wrong .rd-result-mark { color: var(--rd-score-low); }
+.rd-result-mark { font-weight: 800; flex-shrink: 0; }
+.rd-result-label {
+  font-weight: 600;
+  color: var(--rd-text);
+  min-width: 100px;
+}
+.rd-result-your { color: var(--rd-text-muted); }
+.rd-result-your em { font-style: normal; color: var(--rd-text); }
+.rd-result-correct { color: var(--rd-success); margin-left: 8px; }
+
+.rd-warn { color: var(--rd-warning); font-size: 13px; }
+
+/* ── Mobile pane switcher (Reading | Questions) ───────────────
+   The switcher is rendered always but only displayed on narrow
+   screens. Desktop keeps the side-by-side split. */
+.rd-view-switch {
+  display: none;
+  flex-shrink: 0;
+  padding: 8px 12px;
+  gap: 6px;
+  background: var(--rd-surface);
+  border-bottom: 1px solid var(--rd-border);
+}
+.rd-view-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--rd-border);
+  color: var(--rd-text-muted);
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.rd-view-btn:hover { color: var(--rd-text); }
+.rd-view-btn.is-active {
+  background: rgba(45, 212, 191, 0.16);
+  border-color: var(--rd-accent);
+  color: var(--rd-accent);
+}
+
+/* ── Mobile / narrow tablet (≤ 720px) ──────────────────────────
+   The page uses a tab-style switcher between the passage and the
+   questions instead of stacking both. Two stacked panes on a phone
+   gives every section ~25vh, which is unreadable for a passage and
+   cramped for the questions; toggling lets each view fill the screen. */
+@media (max-width: 720px) {
+  .rd-view-switch { display: flex; }
+
+  .rd-shell { height: 100dvh; height: 100vh; }
+
+  /* Header — two rows on phones so the title doesn't get squashed
+     between exit + tools. */
+  .rd-header {
+    padding: 8px 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .rd-back     { padding: 8px 12px; font-size: 13.5px; }
+  .rd-title    { order: 3; flex-basis: 100%; }
+  .rd-title strong { font-size: 15px; }
+  .rd-subtitle { display: none; }
+  .rd-timer    { font-size: 15px; padding: 6px 12px; letter-spacing: 0.04em; }
+  .rd-timer-untimed { font-size: 12px; }
+  .rd-header-actions { gap: 6px; }
+  .rd-tool-btn { width: 38px; height: 38px; font-size: 16px; }
+  .rd-submit   { padding: 9px 16px; font-size: 14px; }
+  .rd-view-btn { font-size: 14px; padding: 10px 12px; }
+
+  /* Tabs — horizontal scroll with snap so one passage fills the
+     viewport at a time. */
+  .rd-tabs {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  .rd-tabs::-webkit-scrollbar { display: none; }
+  .rd-tab {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    min-width: 0;
+    padding: 8px 12px;
+  }
+  .rd-tab-title { max-width: 36vw; font-size: 13.5px; }
+  .rd-tab-num   { font-size: 12px; }
+
+  /* Pane swap. The data-view attribute on .rd-shell controls which
+     pane is shown; the inactive one is fully removed from the layout
+     so the active one fills the viewport. */
+  .rd-main {
+    display: block;
+    overflow: hidden;
+  }
+  .rd-pane {
+    height: 100%;
+    /* Phase H+ fix: bump horizontal padding from 14 → 16 so the
+       passage / question cards don't kiss the viewport edges, and
+       use a slightly tighter top so the content fits above the
+       virtual keyboard when an input is focused. */
+    padding: 14px 16px 24px;
+    border: none;
+    box-sizing: border-box;
+  }
+  .rd-pane-left  { border-right: none; }
+  .rd-shell[data-view="reading"]   .rd-pane-right { display: none; }
+  .rd-shell[data-view="questions"] .rd-pane-left  { display: none; }
+
+  /* Typography on phones — bumped up so reading at arm's length is
+     comfortable. Pure body text at 17px / 1.7 hits ~52ch on a 360px
+     viewport which is the sweet spot for sustained reading. All sizes
+     are multiplied by --rd-text-scale so the user's preset (S/M/L/XL)
+     still works on mobile.
+     overflow-wrap: anywhere prevents a single long word (e.g. a URL
+     or a CEFR-vocab compound) from spilling past the right edge. */
+  .rd-passage-title { font-size: calc(22px * var(--rd-text-scale, 1)); line-height: 1.25; word-break: break-word; }
+  .rd-passage       { font-size: calc(17px * var(--rd-text-scale, 1)); line-height: 1.7; text-align: left; hyphens: auto; overflow-wrap: anywhere; }
+  .rd-passage .rd-para { padding-left: 28px; }
+  .rd-passage .rd-para::before { width: 20px; height: 20px; font-size: 11px; top: 4px; }
+  .rd-intro         { font-size: calc(14.5px * var(--rd-text-scale, 1)); line-height: 1.55; padding: 12px 14px; }
+  .rd-passage-subtitle { font-size: calc(15px * var(--rd-text-scale, 1)); }
+
+  /* Question side-tools become inline controls on phones — keeping
+     them absolute meant they overlapped the question stem on narrow
+     widths. Both selectors below match the specificity (0,2,0) of
+     the desktop `.rd-q-block .rd-q-tools` rule, so this @media
+     override actually wins on mobile. */
+  .rd-q-row,
+  .rd-q-block { padding-right: 0; }
+  .rd-q-row .rd-q-tools,
+  .rd-q-block .rd-q-tools {
+    position: static;
+    top: auto;
+    right: auto;
+    transform: none;
+    margin: 0 0 8px auto;
+  }
+  .rd-q-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .rd-q-row .rd-q-tools { order: 3; margin-left: auto; }
+  .rd-q-label { flex-basis: 70%; }
+  /* Force the select to a full-width block on its own row so it
+     can never overflow its parent on narrow phones (iOS especially
+     ignores flex-basis on native selects). */
+  .rd-input.rd-select {
+    flex: 1 0 100%;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .rd-section { margin-bottom: 14px; }
+  .rd-section-head { padding: 12px 14px; }
+  .rd-section-body { padding: 14px 14px 16px; }
+  /* Question stems can contain long target words ("disappointed",
+     "internationally", brand names in quotes). Allow word-break so
+     they wrap inside the card instead of pushing the card wider
+     than its parent on narrow phones. */
+  .rd-q-stem,
+  .rd-q-label,
+  .rd-mcq-text { overflow-wrap: anywhere; }
+  /* MCQ option rows on phones — pin radio + letter so they don't
+     wrap to their own lines when the text is long, and let the text
+     span flex-shrink so a multi-line option stays inside its label.
+     The label is already display: flex on desktop; here we just
+     reinforce it and bump the padding so tap targets stay ≥ 40px. */
+  .rd-mcq-opt {
+    align-items: flex-start;
+    padding: 10px 12px;
+  }
+  .rd-mcq-opt input[type=radio] {
+    margin-top: 4px;
+  }
+  .rd-mcq-letter {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .rd-mcq-text {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  /* Settings panel — header is taller on mobile (title row wraps),
+     so push the panel below it. */
+  .rd-settings { top: 110px; right: 8px; }
+
+  .rd-section-label { font-size: 11.5px; }
+  .rd-section-instructions { font-size: calc(14px * var(--rd-text-scale, 1)); line-height: 1.5; }
+  .rd-q-label { font-size: calc(14.5px * var(--rd-text-scale, 1)); }
+  .rd-q-stem  { font-size: calc(15px * var(--rd-text-scale, 1)); line-height: 1.55; }
+  .rd-mcq-text { font-size: calc(14.5px * var(--rd-text-scale, 1)); }
+  .rd-mcq-letter { font-size: 13.5px; }
+  .rd-input { font-size: calc(14.5px * var(--rd-text-scale, 1)); padding: 10px 12px; }
+
+  /* Tracker — full-bleed bottom sheet that takes most of the
+     viewport, not just 45vh, so the long question lists fit. */
+  .rd-tracker {
+    max-height: 70vh;
+    border-radius: 18px 18px 0 0;
+  }
+  .rd-tracker-header { padding: 14px 16px; font-size: 15px; }
+  .rd-tracker-close  { font-size: 26px; padding: 0 8px; }
+  .rd-tracker-body {
+    /* On phones a single column is fine — passages stack. */
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 14px 16px 18px;
+  }
+  .rd-track-cell {
+    /* Bigger tap targets — Apple's HIG and Material both recommend
+       ≥ 44 px for primary tap targets. Slightly relaxed here at 36
+       so we still fit a fair number of cells per row. */
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+  }
+  .rd-track-grid { grid-template-columns: repeat(auto-fill, 36px); gap: 6px; }
+  .rd-track-section { grid-template-columns: 28px 1fr; gap: 8px; }
+
+  /* Confirm modal — takes nearly the full width on narrow screens. */
+  .rd-confirm { width: calc(100vw - 24px); padding: 22px 20px 18px; }
+  .rd-confirm-title   { font-size: 18px; }
+  .rd-confirm-message { font-size: 14.5px; line-height: 1.5; }
+  .rd-confirm-actions { flex-direction: column-reverse; }
+  .rd-confirm-cancel,
+  .rd-confirm-ok      { width: 100%; min-width: 0; padding: 13px 16px; font-size: 14.5px; }
+
+  /* Note popover */
+  #rd-note-popover {
+    width: calc(100vw - 24px);
+    max-width: 360px;
+  }
+
+  /* Highlight bar */
+  .rd-highlight-bar { padding: 8px; gap: 8px; }
+  .rd-highlight-bar button { width: 32px; height: 32px; }
+
+  /* Results screen */
+  .rd-results-main { padding: 18px 14px 28px; }
+  .rd-result-total { padding: 22px 12px; }
+  .rd-result-total-num { font-size: 28px; }
+  .rd-result-total-pct { font-size: 36px; }
+  .rd-result-row       { padding: 12px 14px; }
+  .rd-result-row-head  { flex-wrap: wrap; gap: 6px; }
+  .rd-result-sections  { flex-wrap: wrap; }
+}
+
+/* Reading skill home — exam cards already had a 600px breakpoint in
+   their dedicated section; tighten the level pill row a bit on phones. */
+@media (max-width: 720px) {
+  #readingScreen .rd-home          { padding: 14px 14px 32px; }
+  #readingScreen .rd-home-levels   { gap: 6px; margin-bottom: 16px; }
+  #readingScreen .rd-level-tab     { padding: 7px 14px; font-size: 12px; }
+  #readingScreen .rd-exam-icon     { width: 44px; height: 44px; font-size: 22px; }
+  #readingScreen .rd-exam-title    { font-size: 14px; }
+  #readingScreen .rd-exam-sub      { font-size: 12px; }
+  #readingScreen .rd-exam-mode-btn { padding: 9px 12px; font-size: 12px; }
+}
+
+/* ============================================================
+   READING SKILL HOME (level cards + exam list + mode picker)
+   ============================================================ */
+#readingScreen .rd-home {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px 20px 40px;
+}
+#readingScreen .rd-home-levels {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+#readingScreen .rd-level-tab {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(232, 237, 247, 0.65);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: all 0.15s;
+}
+#readingScreen .rd-level-tab:hover {
+  color: #e8edf7;
+  border-color: #2dd4bf;
+}
+#readingScreen .rd-level-tab.is-active {
+  background: rgba(45, 212, 191, 0.16);
+  border-color: #2dd4bf;
+  color: #2dd4bf;
+}
+#readingScreen .rd-exam-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+#readingScreen .rd-exam-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(45,212,191,0.08), rgba(56,189,248,0.04));
+  border: 1px solid rgba(45,212,191,0.22);
+  border-radius: 14px;
+  padding: 18px 20px;
+  text-decoration: none;
+  color: inherit;
+  cursor: default;
+}
+#readingScreen .rd-exam-icon {
+  font-size: 28px;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(45,212,191,0.15);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+#readingScreen .rd-exam-meta { flex: 1; min-width: 0; }
+#readingScreen .rd-exam-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e8edf7;
+  margin: 0 0 4px;
+}
+#readingScreen .rd-exam-sub {
+  font-size: 12.5px;
+  color: rgba(232, 237, 247, 0.55);
+}
+#readingScreen .rd-exam-modes {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+#readingScreen .rd-exam-mode-btn {
+  background: transparent;
+  border: 1px solid rgba(45,212,191,0.45);
+  color: #2dd4bf;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+#readingScreen .rd-exam-mode-btn:hover {
+  background: rgba(45,212,191,0.18);
+}
+#readingScreen .rd-exam-mode-btn.timed {
+  background: #2dd4bf;
+  color: #06231f;
+  border-color: transparent;
+}
+#readingScreen .rd-exam-mode-btn.timed:hover { filter: brightness(1.08); }
+#readingScreen .rd-exam-empty {
+  padding: 28px 20px;
+  border: 1px dashed rgba(255,255,255,0.12);
+  border-radius: 14px;
+  text-align: center;
+  color: rgba(232, 237, 247, 0.55);
+  font-size: 13.5px;
+}
+@media (max-width: 600px) {
+  #readingScreen .rd-exam-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #readingScreen .rd-exam-modes { width: 100%; }
+  #readingScreen .rd-exam-mode-btn { flex: 1; }
+}

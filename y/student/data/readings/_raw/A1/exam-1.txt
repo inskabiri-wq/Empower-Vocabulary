@@ -1,0 +1,61 @@
+ID: a1-r1
+LEVEL: A1
+TITLE: A1 Reading 1 — A Television Presenter
+SUBTITLE: One passage · Gaps, short-answer
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: A Television Presenter
+
+PASSAGE:
+Raina Ali is a successful TV presenter at Dubai TV. She prepares and presents "24 Hours in a City". She lives with her son Ryan, aged 7. {gap:1} *They* live in a flat in Al Satwa, Dubai.
+
+Her working day starts very early. From Monday to Friday she gets up at half past three. After she has a shower, she drinks a cup of coffee. She usually leaves home at ten past four because the service bus always arrives a few minutes early. {gap:2} She gets to the studio at about five o'clock and starts work. Then she leaves the studio at a quarter past ten. After that, she gets home at two o'clock. She comes home very tired, so a woman helps *her* with the housework and the ironing.
+
+At 5.30 she goes to pick up Ryan from school. They go shopping. {gap:3} In the evening, she cooks dinner and helps Ryan with his homework. After dinner, she reads the newspaper or answers e-mails until 9.00. She goes to bed at ten o'clock because she feels very tired. At weekends she doesn't get up until ten o'clock. On Saturday she tries to spare some time for her son because she's very busy during the weekdays. {gap:4} They usually spend time shopping or going to the cinema. On Sunday she stays at home and watches TV with Ryan. "My life is difficult but I love *it*," she says.
+
+# GAPS
+LABEL: Part A
+INSTRUCTIONS: Match the sentences (a-f) with the gaps (1-4). There are two extra sentences.
+a: Ryan likes playing at the playground while his mom is buying grocery.
+b: She doesn't drive to work because this way it is much cheaper.
+c: Raina prefers to surprise Ryan with gifts after school.
+d: Ryan is a 4th grade student this year.
+e: She makes fun plans for every Saturday and Sunday.
+f: Raina's favourite activity is doing pilates with her best friends.
+ANSWERS: 1=d, 2=b, 3=a, 4=e
+
+# SHORTANSWER
+LABEL: Part B
+INSTRUCTIONS: Complete these sentences using so and because using the information in the text.
+1. The service bus arrives a few minutes early, so __________.
+   ANSWER: she leaves home at 4.10
+2. A woman helps her with the housework and the ironing because __________.
+   ANSWER: she comes home very tired
+3. She feels very tired at night, so __________.
+   ANSWER: she goes to bed at 10 o'clock
+4. She spares some time for Ryan at the weekend because __________.
+   ANSWER: she's very busy during the weekdays
+
+# SHORTANSWER
+LABEL: Part C
+INSTRUCTIONS: Answer the following questions according to the information given in the text.
+1. What time does she leave the studio?
+   ANSWER: at a quarter past ten
+2. When does she help Ryan with his homework?
+   ANSWER: in the evening
+3. What does she do before she goes to bed?
+   ANSWER: reads the newspaper and answers e-mails
+4. What do they usually do on Saturday?
+   ANSWER: go shopping or go to the cinema
+5. What does she think about her life?
+   ANSWER: It is difficult, but she loves it.
+
+# SHORTANSWER
+LABEL: Part D
+INSTRUCTIONS: Write what the following words in the text refer to.
+1. "they" in paragraph 1 refers to __________
+   ANSWER: Raina and her son
+2. "her" in paragraph 2 refers to __________
+   ANSWER: Raina
+3. "it" in paragraph 3 refers to __________
+   ANSWER: my life / her life

@@ -1,0 +1,122 @@
+ID: b1-r10
+LEVEL: B1
+TITLE: B1 Reading 10 — I Just Cannot Sleep
+SUBTITLE: One passage · True/False, MCQ, vocab, reference
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: I Just Cannot Sleep
+
+PASSAGE:
+Emma talks about how her stressful life has made getting a good night's sleep impossible.
+
+Last night I was fast asleep by 11 p.m. but I woke up again at 1 A.M. Even though I was *exhausted* when I went to bed, I was suddenly wide awake and it was impossible to get back to sleep again. So I just lay there watching the clock change from three to four to five without sleeping a wink — it was very frustrating. Finally, I got up at 6:15 and went off to work feeling terrible. That's a typical night for me. I've had insomnia for so long. I'm amazed that anyone else actually sleeps through the night. And when *this* goes on for too many nights, I feel really shattered.
+
+I'm a sales manager, and I work really long hours and have to do a lot of travelling. I worry about work all the time, which makes it incredibly difficult to get sleep. Sometimes I get home from work extremely late and when I go to bed, everything is still going round my head. Money's also a huge worry for me. I borrowed a lot when I was a student and I still owe 15,000 $. I only get a full night's sleep once a month — but when I do, I feel absolutely fantastic the next day.
+
+I've tried nearly everything to cure my insomnia — herbal teas, yoga, meditation — you name it, I've tried it. I've also started going to the gym three times a week, but *it* hasn't made any difference. I have a fairly healthy diet and I don't smoke or drink coffee. I haven't tried hypnosis because it's very expensive and that would just add money to my money worries. I don't want to start taking sleeping pills because I'm *terrified* of becoming addicted to *them*. Although I know it's an *awful* way to live, I've learned to accept that insomnia is a part of my life.
+
+# TRUEFALSE
+LABEL: Part A
+INSTRUCTIONS: Choose True or False for each statement.
+1. Emma couldn't fall back asleep last night because she was frustrated.
+   ANSWER: F
+2. She feels surprised when someone else doesn't suffer from the same problem she does.
+   ANSWER: T
+3. She's had insomnia for a long time only because she feels anxious about work.
+   ANSWER: F
+4. Emma thinks she could overcome her sleep problem if she ate healthier and did more exercise.
+   ANSWER: F
+5. Becoming dependent on some drugs is something that Emma worries about.
+   ANSWER: T
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Choose the correct answer for each question.
+1. Choose the best title.
+   a) I just can't sleep
+   b) Reasons for insomnia
+   c) Advantages of sleeping less
+   ANSWER: a
+2. What is the purpose of the passage?
+   a) to explain why people can't sleep
+   b) to give information about dreams
+   c) to give information about Emma's reasons for suffering from insomnia
+   ANSWER: c
+3. Who is the target audience?
+   a) People who are suffering from sleeping problems
+   b) Doctors who are interested in dreams
+   c) Psychologists
+   ANSWER: a
+4. How much sleep did Emma get last night?
+   a) 2 hours
+   b) 3 hours and 15 minutes
+   c) 4 hours
+   ANSWER: a
+5. What happens to Emma on a typical night?
+   a) She sleeps too much because she drinks too much coffee.
+   b) She watches people while they are sleeping.
+   c) She wakes up in the middle of the night and waits until she feels sleepy again.
+   ANSWER: c
+6. Why is her job very tiring?
+   a) She works long hours, travels a lot and comes home late.
+   b) She has to do too much physical activity.
+   c) She has to deal with children.
+   ANSWER: a
+7. Why does she have financial problems?
+   a) She can not earn enough money.
+   b) She has a debt.
+   c) She spends too much money on clothes.
+   ANSWER: b
+8. Which cures for insomnia hasn't she tried?
+   a) herbal tea
+   b) hypnosis
+   c) yoga
+   ANSWER: b
+9. Which of the following is NOT true about Emma?
+   a) She is afraid of being addicted to medicine.
+   b) She thinks about many issues when she goes to bed.
+   c) She never gets a good night's sleep.
+   ANSWER: c
+10. Which of the following is true about the text?
+    a) When she sees somebody sleeping through the night, she feels surprised.
+    b) She is a smoker.
+    c) She enjoys being an insomniac.
+    ANSWER: a
+
+# MCQ
+LABEL: Part C (vocabulary)
+INSTRUCTIONS: Find the synonyms in the text.
+1. Find the synonym of "tired" in paragraph 1.
+   a) impossible
+   b) exhausted
+   c) wink
+   ANSWER: b
+2. Find the synonym of "frightened" in paragraph 1.
+   a) wide
+   b) fast
+   c) terrified
+   ANSWER: c
+3. Find the synonym of "terrible" in paragraph 3.
+   a) awful
+   b) addicted
+   c) accept
+   ANSWER: a
+
+# MCQ
+LABEL: Part D (reference)
+INSTRUCTIONS: What do these words refer to?
+1. What does "this" refer to in paragraph 1?
+   a) typical night
+   b) sleeplessness
+   c) work
+   ANSWER: b
+2. What does "it" refer to in paragraph 3?
+   a) yoga
+   b) the gym
+   c) going to the gym
+   ANSWER: c
+3. What does "them" refer to in paragraph 3?
+   a) meditation and going to the gym
+   b) sleeping pills
+   c) bad habits
+   ANSWER: b

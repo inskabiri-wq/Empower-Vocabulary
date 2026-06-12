@@ -1,0 +1,355 @@
+/* ============================================================
+   HUB SCREEN — multi-skill landing
+   Scoped to #hubScreen so nothing leaks into existing screens.
+   Dashboard tokens are defined on #menuScreen in extra.css; we
+   re-declare them here so the hub has the same teal palette
+   without depending on any other screen's scope.
+   ============================================================ */
+
+#hubScreen {
+  /* Shared dashboard tokens (match #menuScreen in extra.css) */
+  --dash-surface:     #1e293b;
+  --dash-elevated:    #334155;
+  --dash-primary:     #0d9488;
+  --dash-primary-lt:  #2dd4bf;
+  --dash-primary-dk:  #0f766e;
+  --dash-border:      rgba(255,255,255,0.07);
+  --dash-border-md:   rgba(255,255,255,0.13);
+  --text-primary:     #f1f5f9;
+  --text-secondary:   #94a3b8;
+  --text-tertiary:    #64748b;
+  /* Default skill accent (overridden per card via inline style) */
+  --skill-accent:     var(--dash-primary-lt);
+}
+
+#hubScreen .hub-greeting {
+  max-width: 900px;
+  margin: 24px auto 18px;
+  padding: 0 4px;
+}
+#hubScreen .hub-greeting h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary, #f1f5f9);
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+#hubScreen .hub-greeting p {
+  font-size: 13px;
+  color: var(--text-secondary, #94a3b8);
+  margin: 0;
+}
+
+#hubScreen .hub-section-lbl {
+  max-width: 900px;
+  margin: 8px auto 10px;
+  padding: 0 4px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-tertiary, #64748b);
+  font-weight: 700;
+}
+
+/* ---------- Grid ---------- */
+#hubScreen .hub-grid {
+  max-width: 940px;
+  margin: 0 auto 40px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+/* Tablet: drop to 3 columns. 7 tiles would orphan the Classroom card
+   on its own row — span it across all 3 columns so it reads as a
+   "featured" wide tile instead of looking forgotten. */
+@media (max-width: 920px) {
+  #hubScreen .hub-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #hubScreen .hub-card.is-classroom { grid-column: 1 / -1; }
+}
+/* Phone: 2 columns; same featured-banner treatment for Classroom. */
+@media (max-width: 720px) {
+  #hubScreen .hub-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+  #hubScreen .hub-card.is-classroom { grid-column: 1 / -1; }
+}
+
+/* ---------- Two-column landing: skills (left) + rail (right) ----------
+   The hub was a stack of ~900px centred blocks → big empty margins on wide
+   screens. Lay the skills grid and a right rail (stats + assignments) side
+   by side, widened to ~1340px. Collapses to one column ≤1024px (rail below). */
+#hubScreen .hub-two-col {
+  max-width: none;
+  margin: 0 auto 40px;
+  padding: 0 4px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 22px;
+  align-items: start;
+}
+/* Inside the two-col, inner blocks must not re-centre / re-cap themselves. */
+#hubScreen .hub-two-col .hub-section-lbl { max-width: none; margin: 4px 0 10px; }
+#hubScreen .hub-main .hub-grid { max-width: none; margin: 0 0 8px; }
+#hubScreen .hub-rail .hub-assignments-box { max-width: none; margin: 0; }
+
+#hubScreen .hub-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 16px;
+}
+/* (rail stats card removed — assignments summary is the rail's top now) */
+
+/* Student-info chips (class / level / module / year) inside the Your-Assignments
+   box. Set apart from the assignments below by a little spacing + a hairline. */
+#hubScreen .student-info-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 2px 0 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+#hubScreen .student-info-chips .info-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: var(--text-secondary, #94a3b8);
+  white-space: nowrap;
+}
+
+/* Below 1200px → single column, rail drops under the skills (and un-sticks),
+   so the left column never gets too tight for 4 tiles + the 360px rail. Below
+   this the grid's own 920/720 breakpoints take over (full-width, 4→3→2). */
+@media (max-width: 1200px) {
+  #hubScreen .hub-two-col { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  #hubScreen .hub-rail { position: static; }
+  /* Both columns must be allowed to shrink to the single-column width, and the
+     hub must NEVER show horizontal overflow (which is what breaks the right
+     margin on phones / the installed PWA). The rail is static at this width, so
+     overflow-x: clip does not break any sticky positioning. */
+  #hubScreen .hub-main,
+  #hubScreen .hub-rail { min-width: 0; }
+  #hubScreen { overflow-x: clip; }
+}
+
+/* Let the hub card use (almost) the full page. The base .container caps at
+   1200px (styles.css) — that's the leftover side margin. Scope the widening to
+   when the HUB is the active screen so the vocabulary screen is untouched, and
+   cap at 1900 so it doesn't stretch absurdly on ultrawide monitors. Uses :has()
+   (modern browsers); if unsupported it simply stays at 1200 — no breakage. */
+.container:has(#hubScreen.active) { max-width: 1900px; }
+
+/* Fill that width with sensibly-sized skill tiles instead of 4 giant ones:
+   add columns as the viewport widens. Additive — the default 4-col and the
+   ≤920/≤720 (3/2 + classroom-span) breakpoints below all still apply. */
+@media (min-width: 1450px) { #hubScreen .hub-main .hub-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 1750px) { #hubScreen .hub-main .hub-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+/* ---------- Card ---------- */
+#hubScreen .hub-card {
+  background: var(--dash-surface, #0f172a);
+  border: 1px solid var(--dash-border-md, rgba(255,255,255,0.06));
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  min-width: 0;
+}
+#hubScreen .hub-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--skill-accent, var(--dash-primary));
+  box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--skill-accent) 55%, transparent);
+}
+#hubScreen .hub-card:focus-visible {
+  outline: none;
+  border-color: var(--skill-accent, var(--dash-primary));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--skill-accent) 40%, transparent);
+}
+#hubScreen .hub-card:active {
+  transform: translateY(0);
+}
+
+/* ---------- Progress ring ---------- */
+#hubScreen .hub-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--skill-accent, var(--dash-primary)) calc(var(--pct, 0) * 1%),
+    rgba(255, 255, 255, 0.08) 0
+  );
+  display: grid;
+  place-items: center;
+  position: relative;
+  flex-shrink: 0;
+}
+#hubScreen .hub-ring::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: var(--dash-surface, #0f172a);
+}
+#hubScreen .hub-ring .hub-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* ---------- Card text ---------- */
+#hubScreen .hub-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+#hubScreen .hub-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary, #f1f5f9);
+  letter-spacing: -0.005em;
+}
+#hubScreen .hub-sub {
+  font-size: 12px;
+  color: var(--text-secondary, #94a3b8);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#hubScreen .hub-pct {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--skill-accent, var(--dash-primary-lt));
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Empty / Coming-soon state (no label, just muted) ---------- */
+#hubScreen .hub-card.is-empty {
+  opacity: 0.72;
+}
+#hubScreen .hub-card.is-empty:hover {
+  opacity: 1;
+}
+#hubScreen .hub-card.is-empty .hub-pct {
+  color: var(--text-tertiary, #64748b);
+}
+
+/* Left accent bar — pulls the skill's hue into the card body */
+#hubScreen .hub-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 14px; bottom: 14px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--skill-accent, var(--dash-primary));
+  opacity: 0.9;
+}
+#hubScreen .hub-card.is-empty::before {
+  opacity: 0.35;
+}
+
+/* ---------- Classroom Mode tile (live activity, no progress) ---------- */
+/* Subtle gradient + glow so it reads as a different KIND of card than
+   the skill tiles (it's a delivery mode, not a personal progress
+   measure). Keeps the same shape so it still feels "alongside" them. */
+#hubScreen .hub-card.is-classroom {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--skill-accent) 18%, var(--dash-surface, #0f172a)),
+    var(--dash-surface, #0f172a));
+  border-color: color-mix(in srgb, var(--skill-accent) 45%, var(--dash-border-md, rgba(255,255,255,0.06)));
+}
+#hubScreen .hub-card.is-classroom:hover {
+  box-shadow: 0 12px 32px -10px color-mix(in srgb, var(--skill-accent) 60%, transparent);
+}
+/* Wide-banner orientation: when Classroom spans the full row at the
+   tablet/phone breakpoints, give it a bit more breathing room and a
+   row layout that takes advantage of the extra horizontal space. */
+@media (max-width: 920px) {
+  #hubScreen .hub-card.is-classroom { padding: 22px 24px; }
+}
+
+/* LIVE pill — replaces the percentage label on the Classroom card. */
+#hubScreen .hub-live-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--skill-accent) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--skill-accent) 55%, transparent);
+  color: var(--skill-accent);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  position: relative;
+}
+/* Tiny pulsing dot to evoke "live broadcasting" */
+#hubScreen .hub-live-pill::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--skill-accent);
+  margin-right: 5px;
+  vertical-align: middle;
+  animation: hubLivePulse 1.6s ease-in-out infinite;
+  box-shadow: 0 0 8px var(--skill-accent);
+}
+@keyframes hubLivePulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* Org-deactivated tile (settings/featureToggles): stays visible but
+   grayed with an OFF pill - never removed from the grid. */
+#hubScreen .hub-card.is-off {
+  opacity: 0.45;
+  filter: grayscale(0.7);
+  cursor: not-allowed;
+}
+#hubScreen .hub-card.is-off:hover { transform: none; }
+#hubScreen .hub-off-pill {
+  background: rgba(148, 163, 184, 0.18);
+  border-color: rgba(148, 163, 184, 0.45);
+  color: #94a3b8;
+}
+#hubScreen .hub-off-pill::before { animation: none; background: #94a3b8; box-shadow: none; }
+
+/* ============================================================
+   ASSIGNMENTS BOX (always-visible, under the skill grid)
+   Wraps the existing .assignments-card so it has the right
+   max-width and spacing on the hub. The card's internal styles
+   live in assignments/css/assignments.css and already match the
+   dark theme — we just need to position it.
+   ============================================================ */
+#hubScreen .hub-assignments-box {
+  max-width: 900px;
+  margin: 8px auto 40px;
+  padding: 0 4px;
+}
+#hubScreen .hub-assignments-box .assignments-card {
+  /* Override the sidebar's top margin (which made sense in a
+     stack of cards) — on the hub it sits flush under the grid. */
+  margin-top: 0;
+}

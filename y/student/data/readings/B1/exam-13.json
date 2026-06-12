@@ -1,0 +1,339 @@
+{
+  "id": "b1-r13",
+  "level": "B1",
+  "title": "B1 Reading 13 — Changing Life Styles",
+  "subtitle": "One passage · Main idea, sentence-insert, MCQ, vocab, reference",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Changing Life Styles",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Americans today have different eating habits than they had in the past. There is a wide selection of food available. They have a broader knowledge of nutrition, so they buy more fresh fruit and vegetables than ever before. At the same time, Americans purchase increasing quantities of sweets, snacks, and sodas.</p><p class=\"rd-para\" data-para=\"2\">Statistics show that the way people live <strong>determines</strong> the way they eat. American lifestyles have changed. <span class=\"rd-gap\" data-gap=\"1\"></span> These changing lifestyles are responsible for the increasing number of people who must rush meals or sometimes <strong>skip</strong> <strong>them</strong> altogether. Many Americans have less time than ever before to spend preparing food. Partly as a consequence of this limited time, 60% of all American homes now have microwave ovens. Moreover, Americans eat out nearly four times a week on the average.</p><p class=\"rd-para\" data-para=\"3\">It is easy to study the amounts and kinds of food that people consume. The United States Department of Agriculture (USDA) and the food industry — growers, processors, marketers, and restaurateurs — <strong>compile</strong> sales statistics and keep accurate records. <span class=\"rd-gap\" data-gap=\"2\"></span> Red meat which used to be the most popular choice for dinner is no longer an American favorite. Instead, chicken, turkey, and fish have become more popular. Sales of these foods have greatly increased in recent years. <strong>This</strong> is probably a result of cholesterol, or animal fat. Doctors believe that cholesterol is a threat to human health.</p><p class=\"rd-para\" data-para=\"4\"><span class=\"rd-gap\" data-gap=\"3\"></span> They have certain ideas about which foods will increase their athletic ability, help <strong>them</strong> lose weight, make them alert for business meetings, or put them in the mood for romance. For example, Americans chose pasta, fruit, and vegetables, which <strong>supply</strong> them with carbohydrates, to give them strength for physical activity, such as sports. Adults choose foods rich in fiber, such as bread and cereal, for breakfast, and salads for lunch to prepare them for business appointments. <span class=\"rd-gap\" data-gap=\"4\"></span> While many of these ideas are based on nutritional facts, some are not.</p><p class=\"rd-para\" data-para=\"5\">Americans' awareness of nutrition, along with their changing tastes and needs, leads them to consume a wide variety of foods — foods for health, for fun, and simply for good taste.</p>",
+      "sections": [
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part A",
+          "instructions": "Skim through the text and choose the main idea.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "The main idea of the text is:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Americans' culture affects their lives."
+                },
+                {
+                  "id": "b",
+                  "text": "Americans have unhealthy lives."
+                },
+                {
+                  "id": "c",
+                  "text": "Americans' lifestyles and eating habits are changing."
+                },
+                {
+                  "id": "d",
+                  "text": "Americans' food industry is developing day by day."
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part B",
+          "instructions": "Put the sentences in the correct places in the text. There are TWO extra sentences.",
+          "options": [
+            {
+              "id": "a",
+              "text": "For romantic dinners, however, Americans choose shrimp and lobster."
+            },
+            {
+              "id": "b",
+              "text": "They now include growing numbers of people who live alone, single parents and children, and double-income families."
+            },
+            {
+              "id": "c",
+              "text": "The only food most Americans don't eat is seafood."
+            },
+            {
+              "id": "d",
+              "text": "According to a recent survey, Americans also change their eating patterns to meet the needs of different situations."
+            },
+            {
+              "id": "e",
+              "text": "Their taste in food has changed a lot since then."
+            },
+            {
+              "id": "f",
+              "text": "This information not only tells us what people are eating, but also tells us about the changes in attitudes and tastes."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "b"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "f"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "d"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part C",
+          "instructions": "Answer the following questions according to the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Which of the following statements is TRUE?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Americans do not have a variety of foods."
+                },
+                {
+                  "id": "b",
+                  "text": "Today Americans purchase less fresh fruit and vegetables."
+                },
+                {
+                  "id": "c",
+                  "text": "What Americans eat today and in the past is the same."
+                },
+                {
+                  "id": "d",
+                  "text": "Americans have a broader knowledge of nutrition."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m2",
+              "question": "It is clear from paragraph 2 that __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "there is a link between the way people live and the way they eat."
+                },
+                {
+                  "id": "b",
+                  "text": "today, Americans allocate more time to prepare their food."
+                },
+                {
+                  "id": "c",
+                  "text": "people who live alone cook at home more than married couples with children do."
+                },
+                {
+                  "id": "d",
+                  "text": "Americans have a traditional eating habit."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m3",
+              "question": "According to paragraph 3, __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "USDA keeps only the record of what people are eating today."
+                },
+                {
+                  "id": "b",
+                  "text": "the information that the food industry compiles is not reliable."
+                },
+                {
+                  "id": "c",
+                  "text": "Americans' favorite meal for dinner isn't red meat today."
+                },
+                {
+                  "id": "d",
+                  "text": "chicken, turkey, and fish are more popular foods today because they are cheaper."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m4",
+              "question": "Which of the following statements is FALSE?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Americans want to meet the needs of different situations with their new eating habits."
+                },
+                {
+                  "id": "b",
+                  "text": "Americans believe that different foods have different effects on them."
+                },
+                {
+                  "id": "c",
+                  "text": "Americans eat pasta, fruit, and vegetables to increase their athletic ability."
+                },
+                {
+                  "id": "d",
+                  "text": "Their ideas about foods are all based on nutritional facts."
+                }
+              ],
+              "answer": "d"
+            }
+          ]
+        },
+        {
+          "id": "mcq3",
+          "type": "mcq",
+          "label": "Part D (vocabulary)",
+          "instructions": "Guess the meaning of the words from the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "The word \"determine\" in paragraph 2 means __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "to affect"
+                },
+                {
+                  "id": "b",
+                  "text": "to prefer"
+                },
+                {
+                  "id": "c",
+                  "text": "to decide"
+                },
+                {
+                  "id": "d",
+                  "text": "to avoid"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "The word \"skip\" in paragraph 2 means __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "not preferring something"
+                },
+                {
+                  "id": "b",
+                  "text": "not doing something"
+                },
+                {
+                  "id": "c",
+                  "text": "not finishing something"
+                },
+                {
+                  "id": "d",
+                  "text": "not keeping something"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m3",
+              "question": "The word \"compile\" in paragraph 3 means __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "making a list, record from different sources"
+                },
+                {
+                  "id": "b",
+                  "text": "comparing 2 things"
+                },
+                {
+                  "id": "c",
+                  "text": "changing the existing knowledge"
+                },
+                {
+                  "id": "d",
+                  "text": "making something from scratch"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m4",
+              "question": "The word \"supply\" in paragraph 4 means __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "to need"
+                },
+                {
+                  "id": "b",
+                  "text": "to provide"
+                },
+                {
+                  "id": "c",
+                  "text": "to complete"
+                },
+                {
+                  "id": "d",
+                  "text": "to promise"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part E (reference)",
+          "instructions": "What do these words in the text refer to?",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"they\" (paragraph 2):",
+              "answer": "people",
+              "acceptable": [
+                "people",
+                "Americans"
+              ]
+            },
+            {
+              "id": "sa2",
+              "definition": "\"them\" (paragraph 2, \"rush meals or sometimes skip them\"):",
+              "answer": "meals"
+            },
+            {
+              "id": "sa3",
+              "definition": "\"This\" (paragraph 3):",
+              "answer": "the increase in the sales of chicken, fish, turkey in recent years",
+              "acceptable": [
+                "the increase in the sales of chicken, fish, turkey in recent years",
+                "the popularity of chicken, turkey, and fish",
+                "increased sales of chicken, turkey, and fish"
+              ]
+            },
+            {
+              "id": "sa4",
+              "definition": "\"them\" (paragraph 4):",
+              "answer": "Americans"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

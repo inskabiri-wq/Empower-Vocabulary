@@ -1,0 +1,668 @@
+/* Teacher Dashboard Styles - Extracted from teacher-dashboard.html
+   ============================================================
+   PALETTE RULE — read this before adding new colors anywhere.
+
+   The app uses TWO accent families on purpose:
+
+     BLUE family (--accent-primary / --accent-secondary / --t2-blue)
+       = brand & UI chrome. Login, dashboards (teacher + student
+       shell), classroom, assignments, primary buttons, focus
+       rings, navigation chrome.
+
+     TEAL family (--dash-primary in y/student/css/hub.css)
+       = learning context. Hub cards, skill landing screens,
+       reading exam, listening exam UI.
+
+   Inside a screen, pick the family that matches the screen's
+   PURPOSE — chrome → blue, learning → teal. Do NOT mix them
+   inside a single component. For dashboard variants (cyan,
+   purple, etc.) extend --t2-* in dashboard-v2.css; do not
+   inline new hex literals.
+   ============================================================ */
+:root {
+  --bg-primary: #0a0f1a;
+  --bg-secondary: #0f1729;
+  --bg-card: #152035;
+  --bg-item: #1c2a42;
+  --accent-primary: #3b82f6;
+  --accent-secondary: #0ea5e9;
+  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 50%, #06b6d4 100%);
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-color: rgba(59, 130, 246, 0.2);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+body {
+  background: 
+    radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.08), transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(14, 165, 233, 0.06), transparent 50%),
+    linear-gradient(135deg, #0a0f17 0%, #0c1425 50%, #0f1729 100%);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-left h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.8em;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+
+.header-left p {
+  color: var(--text-secondary);
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.more-menu-wrap {
+  position: relative;
+}
+
+.more-menu-btn {
+  font-size: 1.3em;
+  padding: 10px 14px;
+  line-height: 1;
+}
+
+.more-menu-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  min-width: 180px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.more-menu-dropdown.open {
+  display: block;
+}
+
+.more-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.more-menu-item:hover {
+  background: var(--bg-secondary);
+  color: var(--accent-primary);
+}
+
+.btn {
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.9em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--accent-gradient);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.stat-card .icon {
+  font-size: 2em;
+  margin-bottom: 12px;
+}
+
+.stat-card .value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.2em;
+  font-weight: 700;
+  color: var(--accent-primary);
+  margin-bottom: 4px;
+}
+
+.stat-card .label {
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
+
+/* Sections */
+.section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  overflow-x: auto;
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.section-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.3em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  padding: 10px 16px;
+  background: var(--bg-item);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.search-input {
+  padding: 10px 16px;
+  background: var(--bg-item);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9em;
+  width: 200px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+/* Students Table */
+.students-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.students-table th,
+.students-table td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* First column holds the student name + email stack — let those
+   wrap to multiple lines so full names and full emails are readable.
+   The rest of the columns keep the nowrap+ellipsis behaviour. */
+.students-table td:first-child,
+.students-table th:first-child {
+  white-space: normal;
+  text-overflow: clip;
+  overflow: visible;
+  min-width: 200px;
+  max-width: 280px;
+}
+.students-table td:first-child .student-name {
+  word-break: break-word;
+  line-height: 1.3;
+}
+.students-table td:first-child .student-email {
+  word-break: break-all;
+  line-height: 1.25;
+  margin-top: 2px;
+}
+
+.students-table th {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.students-table tr:hover td {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.student-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-avatar {
+  width: 40px;
+  height: 40px;
+  background: var(--accent-gradient);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1em;
+}
+
+.student-name {
+  font-weight: 600;
+}
+
+.student-email {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
+.progress-mini {
+  width: 100px;
+  height: 8px;
+  background: var(--bg-item);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-mini .fill {
+  height: 100%;
+  background: var(--accent-gradient);
+  border-radius: 4px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+.badge-active {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+}
+
+.badge-inactive {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--error);
+}
+
+/* Recent Activity */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--bg-item);
+  border-radius: 12px;
+}
+
+.activity-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+}
+
+.activity-details h4 {
+  font-weight: 600;
+  font-size: 0.95em;
+  margin-bottom: 2px;
+}
+
+.activity-details p {
+  font-size: 0.8em;
+  color: var(--text-muted);
+}
+
+.activity-score {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.1em;
+  color: var(--success);
+}
+
+.activity-score.medium { color: var(--warning); }
+.activity-score.low { color: var(--error); }
+
+/* Charts placeholder */
+.chart-container {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-item);
+  border-radius: 12px;
+  color: var(--text-muted);
+}
+
+/* Export button */
+.export-btn {
+  padding: 8px 16px;
+  background: var(--bg-item);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.export-btn:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--bg-item);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+}
+
+/* Access denied */
+.access-denied {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.access-denied .icon {
+  font-size: 4em;
+  margin-bottom: 20px;
+}
+
+.access-denied h2 {
+  margin-bottom: 12px;
+}
+
+.access-denied p {
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+/* Responsive */
+@media (max-width: 1000px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .students-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filters {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
+}
+.alert-box {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.alert-box h4 {
+  font-size: 0.95em;
+  font-weight: 600;
+}
+
+.alert-student {
+  display: inline-block;
+  background: var(--bg-item);
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin: 4px;
+  font-size: 0.85em;
+}
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 28px;
+  max-width: 500px;
+  width: 90%;
+}
+
+.modal-box h3 {
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.modal-box label {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  margin-bottom: 6px;
+  margin-top: 12px;
+}
+
+.modal-box select,
+.modal-box input {
+  width: 100%;
+  padding: 10px;
+  background: var(--bg-item);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 0.95em;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+.modal-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.modal-btn-cancel {
+  background: var(--bg-item);
+  color: var(--text-secondary);
+}
+
+.modal-btn-save {
+  background: var(--accent-gradient);
+  color: white;
+}
+
+.modal-btn-delete {
+  background: var(--error);
+  color: white;
+}
+
+/* Student-row action icons (View / Edit / Promote / Delete). They had no CSS
+   rule of their own, so the cursor stayed the default arrow on hover. Give them
+   the hand pointer + a subtle hover lift so they clearly read as clickable. */
+.action-btn-small {
+  cursor: pointer;
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+.action-btn-small:hover  { filter: brightness(1.18); transform: translateY(-1px); }
+.action-btn-small:active { transform: translateY(0); }
+
+#editModal,
+#deleteModal,
+#logoutModal {
+  display: none;
+}
+
+#editModal.active,
+#deleteModal.active,
+#logoutModal.active,
+#confirmModal.active {
+  display: flex;
+}
+

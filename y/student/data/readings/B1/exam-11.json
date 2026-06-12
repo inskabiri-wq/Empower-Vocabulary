@@ -1,0 +1,559 @@
+{
+  "id": "b1-r11",
+  "level": "B1",
+  "title": "B1 Reading 11 — How to Be Successful in an Interview",
+  "subtitle": "One passage · Vocabulary, sentence-insert, MCQ, fill-in",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "How to Be Successful in an Interview",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\"><span class=\"rd-gap\" data-gap=\"1\"></span> Almost everyone has an interview at some point in his or her adult life. Today, because many people change their jobs more often, people usually interview several times during their lives. Interviews make everyone nervous. Some people feel so nervous during an interview that they forget answers to even simple questions. This can be very frustrating — especially if you don't get the job. So what can you do to reduce <strong>stress</strong> during this very important time?</p><p class=\"rd-para\" data-para=\"2\">The first part of the answer is preparation. <span class=\"rd-gap\" data-gap=\"2\"></span> In fact, it is <strong>human nature</strong> to fear the unknown. So, it makes sense that if you find out more information before the interview, you will be less nervous. Find out as much as you can about the job you are applying for. One way to do this is to go online. Use the title of the job as a key word for a search. You can also go to a career adviser and ask for more information. Next, you should find out about the company. How large is it? What does the company make or do? Again, going online to the company website will help you.</p><p class=\"rd-para\" data-para=\"3\">The next step is to prepare your answers. You don't know exactly which questions the interviewers will ask you, but there are several very <strong>common</strong> questions. The interviewers will probably ask you why you want the job. Most important, they will want to know why they should hire you and not somebody else. <span class=\"rd-gap\" data-gap=\"3\"></span> You should also use the same information to write down three questions you have about the job or the company on a note card. You should bring these questions with you to the interview.</p><p class=\"rd-para\" data-para=\"4\">The interviewers have to choose one <strong>applicant</strong> for the job. They have to try to get to know each applicant during the interview. So they will ask some difficult questions to see which applicant gives the best answers. A common difficult question is \"What are your strengths?\" This is your chance to \"sell yourself\". The interviewer expects you to talk about all the things you are good at doing. First of all, you need to think about this question before the interview. Think of a few things you are good at doing. Perhaps you are good at working with people, and you are good at solving problems, for example. Be ready with your answer. <span class=\"rd-gap\" data-gap=\"4\"></span></p><p class=\"rd-para\" data-para=\"5\">Another difficult question is \"What are your weaknesses?\" This is not your time to talk about how you find difficult to get out of the bed early on Monday mornings. Instead, you can say something like \"I sometimes feel shy. I need to practice talking to a lot of people.\" Some applicants give an example of a mistake they made at another company. <span class=\"rd-gap\" data-gap=\"5\"></span> For example, an applicant might say, \"I like to do things quickly. In my last job, I worked with a person who was slow. One day I told her to hurry up, and this <strong>hurt her feelings</strong>. It was difficult to work with her for a while. Of course, I said I was sorry. I showed her how to work more quickly. I learned that you must choose your words carefully.\" Employers like to hear that you know you make mistakes but that you can learn from these mistakes.</p><p class=\"rd-para\" data-para=\"6\">The interview day arrives. You know about the job and the company. You have practiced answering the questions. You should always arrive early, so make sure you know exactly where the interview is. Dress sensibly. Avoid wearing heavy <strong>perfume</strong> or <strong>cologne</strong> since a lot of people today dislike strong smells. Some people are even allergic to heavy perfume. When you walk into the building, smile at the <strong>receptionist</strong>. This is usually the first person you see as you enter a company. Greet him or her nicely. Interviewers often ask their receptionist about the applicants. When you meet the interviewer, smile again. Managers often report that they hire people who smile rather than people who look nervous. Make sure your handshake is not too strong and not too weak. Sit down, take a deep breath, smile again, and you are ready.</p><p class=\"rd-para\" data-para=\"7\">Hopefully, the interviewer will ask you questions you have already practiced. If you don't understand a question, however, make sure you ask the interviewer to repeat it. You could say, \"Excuse me, I didn't quite understand the question. Could you say it again?\"</p><p class=\"rd-para\" data-para=\"8\">The last question of the interview is often \"Do you have any questions?\" Again, you are ready for this question. Take out your note card with your questions. <span class=\"rd-gap\" data-gap=\"6\"></span> Always ask at least one question or the interviewer will think you are not interested in the job. You can ask a specific question about the job. You can also ask a general question like \"What do your employees like best about this company?\" or \"Do you think this company is going to continue to grow in the future?\" Finally, you should end by saying that you have enjoyed talking to the person and are very interested in the job. Ask, \"When will you make a decision?\" and then shake hand again, smile, and say good-bye.</p><p class=\"rd-para\" data-para=\"9\">If you prepared well, you should feel good when you leave the interview. You should know more about the company and the job, and the interviewer should know more about you. Remember to smile and talk to the receptionist as you leave the building. Later the same day, think about the questions and your answers. Think of how you could give better answers next time. Keep practicing because most people have several interviews before they get a job. Finally, when a manager calls you and offers you a job, let the manager know you are excited to work for him or her. \"That's great!\" you can say. \"When can I start?\"</p>",
+      "sections": [
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part A (vocabulary)",
+          "instructions": "Match the words with the correct definitions.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "stress:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "a liquid with a strong, pleasant smell"
+                },
+                {
+                  "id": "b",
+                  "text": "a person who is trying to get a new job"
+                },
+                {
+                  "id": "c",
+                  "text": "a person who works at the front desk in a company"
+                },
+                {
+                  "id": "d",
+                  "text": "feelings of worry about work or personal life"
+                },
+                {
+                  "id": "e",
+                  "text": "happening often"
+                },
+                {
+                  "id": "f",
+                  "text": "make someone feel upset or unhappy"
+                },
+                {
+                  "id": "g",
+                  "text": "good and bad traits that all people have"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m2",
+              "question": "human nature:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "a liquid with a strong, pleasant smell"
+                },
+                {
+                  "id": "b",
+                  "text": "a person who is trying to get a new job"
+                },
+                {
+                  "id": "c",
+                  "text": "a person who works at the front desk in a company"
+                },
+                {
+                  "id": "d",
+                  "text": "feelings of worry about work or personal life"
+                },
+                {
+                  "id": "e",
+                  "text": "happening often"
+                },
+                {
+                  "id": "f",
+                  "text": "make someone feel upset or unhappy"
+                },
+                {
+                  "id": "g",
+                  "text": "good and bad traits that all people have"
+                }
+              ],
+              "answer": "g"
+            },
+            {
+              "id": "m3",
+              "question": "common:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "a liquid with a strong, pleasant smell"
+                },
+                {
+                  "id": "b",
+                  "text": "a person who is trying to get a new job"
+                },
+                {
+                  "id": "c",
+                  "text": "a person who works at the front desk in a company"
+                },
+                {
+                  "id": "d",
+                  "text": "feelings of worry about work or personal life"
+                },
+                {
+                  "id": "e",
+                  "text": "happening often"
+                },
+                {
+                  "id": "f",
+                  "text": "make someone feel upset or unhappy"
+                },
+                {
+                  "id": "g",
+                  "text": "good and bad traits that all people have"
+                }
+              ],
+              "answer": "e"
+            },
+            {
+              "id": "m4",
+              "question": "applicant:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "a liquid with a strong, pleasant smell"
+                },
+                {
+                  "id": "b",
+                  "text": "a person who is trying to get a new job"
+                },
+                {
+                  "id": "c",
+                  "text": "a person who works at the front desk in a company"
+                },
+                {
+                  "id": "d",
+                  "text": "feelings of worry about work or personal life"
+                },
+                {
+                  "id": "e",
+                  "text": "happening often"
+                },
+                {
+                  "id": "f",
+                  "text": "make someone feel upset or unhappy"
+                },
+                {
+                  "id": "g",
+                  "text": "good and bad traits that all people have"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m5",
+              "question": "hurt someone's feelings:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "a liquid with a strong, pleasant smell"
+                },
+                {
+                  "id": "b",
+                  "text": "a person who is trying to get a new job"
+                },
+                {
+                  "id": "c",
+                  "text": "a person who works at the front desk in a company"
+                },
+                {
+                  "id": "d",
+                  "text": "feelings of worry about work or personal life"
+                },
+                {
+                  "id": "e",
+                  "text": "happening often"
+                },
+                {
+                  "id": "f",
+                  "text": "make someone feel upset or unhappy"
+                },
+                {
+                  "id": "g",
+                  "text": "good and bad traits that all people have"
+                }
+              ],
+              "answer": "f"
+            },
+            {
+              "id": "m6",
+              "question": "perfume/cologne:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "a liquid with a strong, pleasant smell"
+                },
+                {
+                  "id": "b",
+                  "text": "a person who is trying to get a new job"
+                },
+                {
+                  "id": "c",
+                  "text": "a person who works at the front desk in a company"
+                },
+                {
+                  "id": "d",
+                  "text": "feelings of worry about work or personal life"
+                },
+                {
+                  "id": "e",
+                  "text": "happening often"
+                },
+                {
+                  "id": "f",
+                  "text": "make someone feel upset or unhappy"
+                },
+                {
+                  "id": "g",
+                  "text": "good and bad traits that all people have"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m7",
+              "question": "receptionist:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "a liquid with a strong, pleasant smell"
+                },
+                {
+                  "id": "b",
+                  "text": "a person who is trying to get a new job"
+                },
+                {
+                  "id": "c",
+                  "text": "a person who works at the front desk in a company"
+                },
+                {
+                  "id": "d",
+                  "text": "feelings of worry about work or personal life"
+                },
+                {
+                  "id": "e",
+                  "text": "happening often"
+                },
+                {
+                  "id": "f",
+                  "text": "make someone feel upset or unhappy"
+                },
+                {
+                  "id": "g",
+                  "text": "good and bad traits that all people have"
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part B",
+          "instructions": "Put the sentences in the correct places in the text. There are TWO extra sentences.",
+          "options": [
+            {
+              "id": "a",
+              "text": "If you feel comfortable talking about yourself, practice first in front of a mirror!"
+            },
+            {
+              "id": "b",
+              "text": "This shows the interviewer you are organized."
+            },
+            {
+              "id": "c",
+              "text": "They admit that they have made many mistakes in their professional life."
+            },
+            {
+              "id": "d",
+              "text": "You must prepare answers to these questions by using the information you have found online or in a library."
+            },
+            {
+              "id": "e",
+              "text": "One reason people get nervous is because they don't know what to expect."
+            },
+            {
+              "id": "f",
+              "text": "If an application is the door to a new job, the interview is the key to opening that door."
+            },
+            {
+              "id": "g",
+              "text": "You should always be prepared to ask meaningful questions."
+            },
+            {
+              "id": "h",
+              "text": "They explain what they learned from this mistake."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "f"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "e"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "d"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "a"
+            },
+            {
+              "id": "5",
+              "label": "Gap 5",
+              "answer": "h"
+            },
+            {
+              "id": "6",
+              "label": "Gap 6",
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part C",
+          "instructions": "Circle the best option to answer the questions.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Which of the following statements is TRUE according to the text?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "The first person an applicant usually sees in a company is the receptionist."
+                },
+                {
+                  "id": "b",
+                  "text": "When you answer the question \"What are your weaknesses?\" you should tell them the truth."
+                },
+                {
+                  "id": "c",
+                  "text": "If an applicant finds out more information about the interview, he or she will be more nervous."
+                },
+                {
+                  "id": "d",
+                  "text": "You should let the manager know that you are nervous in the interview."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m2",
+              "question": "Some applicants feel frustrated before an interview because __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "they feel that they are not ready for the job"
+                },
+                {
+                  "id": "b",
+                  "text": "they don't know what will happen in the interview"
+                },
+                {
+                  "id": "c",
+                  "text": "they have found out lots of information about the company"
+                },
+                {
+                  "id": "d",
+                  "text": "they always think of the negative aspects of the job"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m3",
+              "question": "Which of the following is FALSE?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Interviewer wants to see that the applicant is interested in the job."
+                },
+                {
+                  "id": "b",
+                  "text": "Interviewer wants to know about the applicant's strengths and weaknesses."
+                },
+                {
+                  "id": "c",
+                  "text": "Interviewer does not want to hear about applicant's mistakes in his/her previous job."
+                },
+                {
+                  "id": "d",
+                  "text": "Interviewer wants to hire someone who has a smiling face."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m4",
+              "question": "What does the expression \"sell yourself\" mean?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "working with people"
+                },
+                {
+                  "id": "b",
+                  "text": "getting more money than you deserve"
+                },
+                {
+                  "id": "c",
+                  "text": "showing that you are not lying"
+                },
+                {
+                  "id": "d",
+                  "text": "show what you are good at"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m5",
+              "question": "What should we talk about the mistakes that we made in our previous jobs?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "How bad the mistake was."
+                },
+                {
+                  "id": "b",
+                  "text": "What you learned from the mistake."
+                },
+                {
+                  "id": "c",
+                  "text": "How you felt after you made the mistake."
+                },
+                {
+                  "id": "d",
+                  "text": "How it happened."
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m6",
+              "question": "Which of the following is NOT an example of things you should do to make a good first impression?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Wear a dark suit and carry a bag"
+                },
+                {
+                  "id": "b",
+                  "text": "Arrive early"
+                },
+                {
+                  "id": "c",
+                  "text": "Know where the interview will be"
+                },
+                {
+                  "id": "d",
+                  "text": "Avoid wearing heavy perfume"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m7",
+              "question": "You should always ask at least one question at the end of the interview because __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "this shows that you are excited"
+                },
+                {
+                  "id": "b",
+                  "text": "this shows that you are organized"
+                },
+                {
+                  "id": "c",
+                  "text": "this shows that you are not interested in the job"
+                },
+                {
+                  "id": "d",
+                  "text": "this shows that you are not nervous"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part D (fill in the blank)",
+          "instructions": "Choose the best word to complete each sentence. [Words: relatively, promoted, human nature, stressed, honest, perfume, disappointed, applicants]",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "Please don't wear __________ in this class. I am allergic to strong smells.",
+              "answer": "perfume"
+            },
+            {
+              "id": "sa2",
+              "definition": "If you feel __________, you should take a hot bath. This will relax you and make you feel better.",
+              "answer": "stressed"
+            },
+            {
+              "id": "sa3",
+              "definition": "I was __________ because my husband forgot my birthday. Next year, I will make sure I tell him the week before!",
+              "answer": "disappointed"
+            },
+            {
+              "id": "sa4",
+              "definition": "I think this math class is __________ easy. However, my friends say the next class is really difficult.",
+              "answer": "relatively"
+            },
+            {
+              "id": "sa5",
+              "definition": "Good news! My manager __________ me. I have a better job, and I'm earning more money!",
+              "answer": "promoted"
+            },
+            {
+              "id": "sa6",
+              "definition": "When the manager of the bookstore advertised for a new salesperson, more than twenty __________ called her to ask about the job.",
+              "answer": "applicants"
+            },
+            {
+              "id": "sa7",
+              "definition": "When you complete an application, you must be __________. Don't exaggerate your experience or your education.",
+              "answer": "honest"
+            },
+            {
+              "id": "sa8",
+              "definition": "It is __________ to be afraid of things we don't understand. All people feel this way.",
+              "answer": "human nature"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

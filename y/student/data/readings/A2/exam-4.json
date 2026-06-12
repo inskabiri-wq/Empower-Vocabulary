@@ -1,0 +1,480 @@
+{
+  "id": "a2-r4",
+  "level": "A2",
+  "title": "A2 Reading 4 — Types of Families",
+  "subtitle": "One passage · Sentence-insert, matching, MCQ",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Types of Families",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">A family is a group of people that have a common ancestor. They usually live together in the same house. Although it is a fact that not all families are the same, we can categorize them into different types.</p><p class=\"rd-para\" data-para=\"2\"><span class=\"rd-gap\" data-gap=\"1\"></span> It consists of parents and their children living together. It can be a positive environment to raise children if there is love, emotional support, low stress, and a stable economic environment. There are three types of nuclear families. In the first type the father works and the mother cares for the children. <span class=\"rd-gap\" data-gap=\"2\"></span> In the third type of family, both parents work. This last type of family is the most common in the USA and Canada.</p><p class=\"rd-para\" data-para=\"3\">In an extended family, different family members such as grandparents, aunts, uncles and cousins live together. <span class=\"rd-gap\" data-gap=\"3\"></span> The extended family may live together for financial reasons. When more adults live together, they can all contribute to the household budget. Also, when people get old or sick, they sometimes live with their adult children or relatives. <span class=\"rd-gap\" data-gap=\"4\"></span> Some people return to their parents' home after they break up because they need emotional support and help with child care.</p><p class=\"rd-para\" data-para=\"4\">Recently, many people are having children later in life. They only have one child because they don't have enough time to have another one. These types of families are called single child families. <span class=\"rd-gap\" data-gap=\"5\"></span> But research doesn't support this. Some families have no children at all. The couples that are in these families choose not to have children because they want to have more free time. Other couples choose not to have children for financial reasons.</p><p class=\"rd-para\" data-para=\"5\">Families with only one parent are called single parent families. There are several causes of these types of families. The first reason is divorce. <span class=\"rd-gap\" data-gap=\"6\"></span> Additionally, some parents never get married in the first place.</p><p class=\"rd-para\" data-para=\"6\">When the husband or wife in a marriage brings children with them from a past marriage, this is called a blended or reconstituted family. This type of family is now more common because of the increase in divorces. For some children this kind of family can be good because there are two parents, instead of just one. <span class=\"rd-gap\" data-gap=\"7\"></span></p><p class=\"rd-para\" data-para=\"7\">As the basis of all societies, families of all types are very important. This is true now and will be true in the future as well.</p>",
+      "sections": [
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part A",
+          "instructions": "Read the article and complete the gaps with the correct sentence below. There is ONE extra sentence.",
+          "options": [
+            {
+              "id": "a",
+              "text": "In many countries in Europe and North America, a nuclear family is the most common form of family."
+            },
+            {
+              "id": "b",
+              "text": "In the second type, the mother works and the father stays at home with the children."
+            },
+            {
+              "id": "c",
+              "text": "In many areas of the world, such as Asia, the Middle East, Africa, Latin America, and Southern Europe, this type of family is common."
+            },
+            {
+              "id": "d",
+              "text": "Another reason is divorce."
+            },
+            {
+              "id": "e",
+              "text": "Some people believe that children raised in these kinds of families are spoiled, selfish and lonely."
+            },
+            {
+              "id": "f",
+              "text": "Another reason is that one of the parents dies, and the surviving parent becomes a widow."
+            },
+            {
+              "id": "g",
+              "text": "But there can also be some difficulties as the two new families try to become one."
+            },
+            {
+              "id": "h",
+              "text": "It is not always easy to categorize families due to certain reasons."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "a"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "b"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "c"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "d"
+            },
+            {
+              "id": "5",
+              "label": "Gap 5",
+              "answer": "e"
+            },
+            {
+              "id": "6",
+              "label": "Gap 6",
+              "answer": "f"
+            },
+            {
+              "id": "7",
+              "label": "Gap 7",
+              "answer": "g"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Match each description of a family with a type of family.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Nuclear family:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Two years ago, Darrel and Tanya got married. Before they got married Darrel had three sons and Tanya had a daughter. Now they all live together."
+                },
+                {
+                  "id": "b",
+                  "text": "Hiroshi's wife died several years ago of cancer. He now raises his two sons Tomo and Taiki by himself."
+                },
+                {
+                  "id": "c",
+                  "text": "Jose and Maria live with their 3 children. They also live with their parents, an uncle and an aunt."
+                },
+                {
+                  "id": "d",
+                  "text": "Harry and his wife Jane have been married for six years. They have one daughter named Melissa."
+                },
+                {
+                  "id": "e",
+                  "text": "Husband and wife Dalee and Meegung have been married for two years. They are both very successful business people and don't have any children."
+                },
+                {
+                  "id": "f",
+                  "text": "Jack and Betty, who have been married for over 15 years, have two children named Daniel and Christine."
+                }
+              ],
+              "answer": "f"
+            },
+            {
+              "id": "m2",
+              "question": "Extended family:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Two years ago, Darrel and Tanya got married. Before they got married Darrel had three sons and Tanya had a daughter. Now they all live together."
+                },
+                {
+                  "id": "b",
+                  "text": "Hiroshi's wife died several years ago of cancer. He now raises his two sons Tomo and Taiki by himself."
+                },
+                {
+                  "id": "c",
+                  "text": "Jose and Maria live with their 3 children. They also live with their parents, an uncle and an aunt."
+                },
+                {
+                  "id": "d",
+                  "text": "Harry and his wife Jane have been married for six years. They have one daughter named Melissa."
+                },
+                {
+                  "id": "e",
+                  "text": "Husband and wife Dalee and Meegung have been married for two years. They are both very successful business people and don't have any children."
+                },
+                {
+                  "id": "f",
+                  "text": "Jack and Betty, who have been married for over 15 years, have two children named Daniel and Christine."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "Single child family:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Two years ago, Darrel and Tanya got married. Before they got married Darrel had three sons and Tanya had a daughter. Now they all live together."
+                },
+                {
+                  "id": "b",
+                  "text": "Hiroshi's wife died several years ago of cancer. He now raises his two sons Tomo and Taiki by himself."
+                },
+                {
+                  "id": "c",
+                  "text": "Jose and Maria live with their 3 children. They also live with their parents, an uncle and an aunt."
+                },
+                {
+                  "id": "d",
+                  "text": "Harry and his wife Jane have been married for six years. They have one daughter named Melissa."
+                },
+                {
+                  "id": "e",
+                  "text": "Husband and wife Dalee and Meegung have been married for two years. They are both very successful business people and don't have any children."
+                },
+                {
+                  "id": "f",
+                  "text": "Jack and Betty, who have been married for over 15 years, have two children named Daniel and Christine."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m4",
+              "question": "Childless family:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Two years ago, Darrel and Tanya got married. Before they got married Darrel had three sons and Tanya had a daughter. Now they all live together."
+                },
+                {
+                  "id": "b",
+                  "text": "Hiroshi's wife died several years ago of cancer. He now raises his two sons Tomo and Taiki by himself."
+                },
+                {
+                  "id": "c",
+                  "text": "Jose and Maria live with their 3 children. They also live with their parents, an uncle and an aunt."
+                },
+                {
+                  "id": "d",
+                  "text": "Harry and his wife Jane have been married for six years. They have one daughter named Melissa."
+                },
+                {
+                  "id": "e",
+                  "text": "Husband and wife Dalee and Meegung have been married for two years. They are both very successful business people and don't have any children."
+                },
+                {
+                  "id": "f",
+                  "text": "Jack and Betty, who have been married for over 15 years, have two children named Daniel and Christine."
+                }
+              ],
+              "answer": "e"
+            },
+            {
+              "id": "m5",
+              "question": "Single parent family:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Two years ago, Darrel and Tanya got married. Before they got married Darrel had three sons and Tanya had a daughter. Now they all live together."
+                },
+                {
+                  "id": "b",
+                  "text": "Hiroshi's wife died several years ago of cancer. He now raises his two sons Tomo and Taiki by himself."
+                },
+                {
+                  "id": "c",
+                  "text": "Jose and Maria live with their 3 children. They also live with their parents, an uncle and an aunt."
+                },
+                {
+                  "id": "d",
+                  "text": "Harry and his wife Jane have been married for six years. They have one daughter named Melissa."
+                },
+                {
+                  "id": "e",
+                  "text": "Husband and wife Dalee and Meegung have been married for two years. They are both very successful business people and don't have any children."
+                },
+                {
+                  "id": "f",
+                  "text": "Jack and Betty, who have been married for over 15 years, have two children named Daniel and Christine."
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m6",
+              "question": "Blended family:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Two years ago, Darrel and Tanya got married. Before they got married Darrel had three sons and Tanya had a daughter. Now they all live together."
+                },
+                {
+                  "id": "b",
+                  "text": "Hiroshi's wife died several years ago of cancer. He now raises his two sons Tomo and Taiki by himself."
+                },
+                {
+                  "id": "c",
+                  "text": "Jose and Maria live with their 3 children. They also live with their parents, an uncle and an aunt."
+                },
+                {
+                  "id": "d",
+                  "text": "Harry and his wife Jane have been married for six years. They have one daughter named Melissa."
+                },
+                {
+                  "id": "e",
+                  "text": "Husband and wife Dalee and Meegung have been married for two years. They are both very successful business people and don't have any children."
+                },
+                {
+                  "id": "f",
+                  "text": "Jack and Betty, who have been married for over 15 years, have two children named Daniel and Christine."
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part C",
+          "instructions": "Circle the correct option according to the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "A family is called nuclear when __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "both the man and the woman work"
+                },
+                {
+                  "id": "b",
+                  "text": "the woman looks after the children"
+                },
+                {
+                  "id": "c",
+                  "text": "two parents live with their children"
+                },
+                {
+                  "id": "d",
+                  "text": "there is love and support in the family"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "In paragraph 2, the word \"stable\" is closest in meaning to __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "safe"
+                },
+                {
+                  "id": "b",
+                  "text": "weak"
+                },
+                {
+                  "id": "c",
+                  "text": "quiet"
+                },
+                {
+                  "id": "d",
+                  "text": "serious"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m3",
+              "question": "According to paragraph 3, people live in extended families __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "to support an ill family member"
+                },
+                {
+                  "id": "b",
+                  "text": "to continue family traditions"
+                },
+                {
+                  "id": "c",
+                  "text": "to have happy marriages"
+                },
+                {
+                  "id": "d",
+                  "text": "to avoid health problems"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m4",
+              "question": "According to paragraph 4, many people are having only one child __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "to have more free time"
+                },
+                {
+                  "id": "b",
+                  "text": "for financial reasons"
+                },
+                {
+                  "id": "c",
+                  "text": "because of their age"
+                },
+                {
+                  "id": "d",
+                  "text": "because they are selfish"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m5",
+              "question": "Which one is NOT MENTIONED as a reason for having a single parent family?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Parents are not living together anymore."
+                },
+                {
+                  "id": "b",
+                  "text": "There was never a relationship between the parents."
+                },
+                {
+                  "id": "c",
+                  "text": "One parent is not alive anymore."
+                },
+                {
+                  "id": "d",
+                  "text": "Parents have never loved each other."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m6",
+              "question": "In paragraph 5, the word \"surviving\" is closest in meaning to __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "lonely"
+                },
+                {
+                  "id": "b",
+                  "text": "strong"
+                },
+                {
+                  "id": "c",
+                  "text": "waiting"
+                },
+                {
+                  "id": "d",
+                  "text": "living"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m7",
+              "question": "In paragraph 6, the word \"increase\" is closest in meaning to __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "go up"
+                },
+                {
+                  "id": "b",
+                  "text": "go down"
+                },
+                {
+                  "id": "c",
+                  "text": "go up and down"
+                },
+                {
+                  "id": "d",
+                  "text": "stay the same"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m8",
+              "question": "Which of the following is FALSE about blended families?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Divorce is more common in blended families."
+                },
+                {
+                  "id": "b",
+                  "text": "Having a blended family is not always easy."
+                },
+                {
+                  "id": "c",
+                  "text": "Children can benefit from being in a blended family."
+                },
+                {
+                  "id": "d",
+                  "text": "In a blended family one of the parents is not the biological parent."
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

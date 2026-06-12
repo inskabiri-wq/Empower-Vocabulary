@@ -1,0 +1,137 @@
+ID: b1-r4
+LEVEL: B1
+TITLE: B1 Reading 4 — 100 Places to Visit Before You Die
+SUBTITLE: One passage · MCQ, sentence-insert, reference, vocabulary
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: 100 Places to Visit Before You Die
+
+PASSAGE:
+Natural wonder: The Grand Canyon, USA
+
+Native Americans call the Grand Canyon 'mountain lying down'. It is 443 kilometres long and the Colorado River flows there. The canyon is a baby by geological standards — only five or six million years old. But the rocks at the bottom of it are almost two billion years old. {gap:1} The incredible colours of these rocks *fascinate* visitors — over five million of *them* every year. The Grand Canyon is divided into the North Rim and the South Rim. The South Rim is open all year and receives 90 percent of the park's visitors. The South Rim has an airport and rail service. One popular attraction is the Grand Canyon Skywalk. It is a glass walkway that is 4,000 feet (1,220 meters) above the canyon floor in the Grand Canyon West area of the main canyon. Surprisingly, after making the long journey there, the average visitor spends only fifteen minutes looking at the Canyon. Even so, visitors should still be careful: every year an average of five people fall over the edge. Since opening in March 2007, about 300,000 visitors have walked the Grand Canyon Skywalk each year.
+
+Ancient wonder: Petra, Jordan
+
+The city of Petra is more than 2,000 years old, and was once an important commercial city. Temples, palaces, and a huge amphitheatre were all cut out of the cliffs. Their amazing colours give the city its rose-red appearance. {gap:2} It supported around 30,000 people. Historians believe that the citizens of Petra had to leave it around 551 AD and people in the West forgot about this incredible archaeological site, until a Swiss traveller rediscovered *it* in 1812. Even today, Petra *remains* Jordan's top tourist attraction. It has also been the location for a number of Hollywood films, including Indiana Jones and The Last Crusade.
+
+Romantic city: Venice, Italy
+
+What could be more romantic than going down a Venetian canal in a gondola? No wonder Venice is the favourite of lovers all over the world. Gondolas are traditional and symbolic boats which have been used as transport for more than 10 centuries. This amazing city is located on 118 flat islands, and has over 200 canals and 400 bridges. {gap:3} Tourists can visit the Piazza San Marco. It is one of the most beautiful squares in the world with its 500-year-old buildings. *They* can also see the Basilica of St Mark, which is Venice's most famous church. It is the subject of a million photographs and the architectural star of the Piazza San Marco. Lastly, they can enter the Doge's Palace, the home of many of Venice's most famous paintings.
+
+Modern city: Las Vegas, USA
+
+Las Vegas is one of the most exciting cities in the world. Nevada legalized gambling (money games) in 1931, and Vegas became a home to the biggest casinos. This made the nightlife of the city very popular. {gap:4} The business grew so well that Las Vegas became the gambling capital of the world in less than ten years. The 'strip', in the centre of town, is a five-kilometre long main street with the most expensive hotels, including the *replicas* of the Eiffel Tower, the Egyptian Pyramids and ancient Roman Palaces. *It* uses almost 24,000 kilometres of neon lights! Las Vegas is famous for its 'quickie' weddings (both Elvis Presley and Richard Gere were married here). {gap:5} You can even arrange a 'drive-through wedding' and be back in the casinos in an hour!
+
+Beach: Koh Samui, Thailand
+
+Koh Samui is a tropical paradise located in the warm blue waters to the southeast of Thailand. Although *it* is the kingdom's second largest island after Phuket, tourists didn't know about it until a few years ago. For many years this island has been used for fishing, agriculture and coconut farming. Those three supported the local economy. {gap:6} But since the 1980's Samui has relied on tourism for *income*. In Samui, there are hundreds of coconut trees and brightly-coloured flowers. It is surrounded by white sandy beaches and blue seas. Koh Samui has it all: remote beaches, great shopping, first-class restaurants and an exciting night life.
+
+# MCQ
+LABEL: Part A
+INSTRUCTIONS: Read the text and answer the questions.
+1. Why does the author say Grand Canyon is "a baby"?
+   a) Because it is geologically young
+   b) Because native Americans called it that way
+   c) Because it is known as the Mountain lying down
+   d) Because it is two billion years old
+   ANSWER: a
+2. What made Petra popular again?
+   a) Indiana Jones and the Last Crusade
+   b) Amazing colours and temples
+   c) A traveller from Switzerland
+   d) Historians from the West
+   ANSWER: c
+3. Where can tourists see famous art in Venice?
+   a) In the Piazza San Marco
+   b) In 500-year-old buildings
+   c) At the Basilica of St Mark
+   d) At the Doge's Palace
+   ANSWER: d
+4. What is "The Strip" in Las Vegas?
+   a) The place of expensive hotels
+   b) A hotel that looks like the Eiffel Tower
+   c) The place where ancient Romans lived
+   d) A casino that has 24,000 neon lights
+   ANSWER: a
+5. What helps the local economy in Koh Samui today?
+   a) Agriculture
+   b) Tourism
+   c) Shopping
+   d) Fishing
+   ANSWER: b
+
+# GAPS
+LABEL: Part B
+INSTRUCTIONS: Match the sentences with the gaps. There are TWO extra sentences.
+a: The colorful rock formations of the Grand Canyon are one of the main attractions of the canyon.
+b: It is popular among couples who want to get married quickly and easily, often with a minimal amount of planning or paperwork.
+c: The city's rapid growth in the 1930s and 1940s was driven by tourists and investors, who were attracted by the abundance of entertainment options.
+d: Additionally, it has a small fishing industry, and offers a variety of recreational activities such as diving, snorkeling, and boating.
+e: Unfortunately, it has grown significantly, and become the main economic driver for the island.
+f: The different layers of rock are composed of various minerals, each of which gives off a unique look.
+g: The water system was a key factor in that city's ability to thrive as a major center of trade and culture in the ancient world.
+h: The city's architecture, art and culture are also something to be appreciated.
+ANSWERS: 1=f, 2=g, 3=h, 4=c, 5=b, 6=d
+
+# MCQ
+LABEL: Part C (reference)
+INSTRUCTIONS: What do the underlined words in the text refer to?
+1. "them" (paragraph 1):
+   a) colours
+   b) rocks
+   c) visitors
+   d) canyons
+   ANSWER: c
+2. "it" (paragraph 2):
+   a) west
+   b) traveller
+   c) system
+   d) archaeological site Petra
+   ANSWER: d
+3. "they" (paragraph 3):
+   a) buildings
+   b) photographs
+   c) tourists
+   d) paintings
+   ANSWER: c
+4. "It" (paragraph 4):
+   a) Expensive hotel
+   b) The Strip
+   c) Eiffel Tower
+   d) Roman Palace
+   ANSWER: b
+5. "it" (paragraph 5):
+   a) Koh Samui
+   b) Thailand
+   c) paradise
+   d) Phuket
+   ANSWER: a
+
+# MCQ
+LABEL: Part D (vocabulary)
+INSTRUCTIONS: Choose the word that has a similar meaning to the one from the text.
+1. The word "fascinate" (paragraph 1) is closest in meaning to:
+   a) attract
+   b) reject
+   c) include
+   d) inform
+   ANSWER: a
+2. The word "remains" (paragraph 2) is closest in meaning to:
+   a) stops
+   b) stays
+   c) influences
+   d) excludes
+   ANSWER: b
+3. The word "replicas" (paragraph 4) is closest in meaning to:
+   a) pictures
+   b) products
+   c) copies
+   d) attractions
+   ANSWER: c
+4. The word "income" (paragraph 5) is closest in meaning to:
+   a) money
+   b) entertainment
+   c) environment
+   d) transport
+   ANSWER: a

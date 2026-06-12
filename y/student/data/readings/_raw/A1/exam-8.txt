@@ -1,0 +1,233 @@
+ID: a1-r8
+LEVEL: A1
+TITLE: A1 Reading 8 — Are You a Good Liar?
+SUBTITLE: One passage · Synonyms, headings, MCQ, vocab, reference, sentence-insert, T/F
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Are You a Good Liar?
+
+PASSAGE:
+Most people don't *admit* it, but people often tell lies. These are nine lies people often tell.
+
+Lie 1: A woman asks her husband, "Does my hair look OK?" The husband doesn't like *it*, but he says something nice. He says, "You look great!" Why? He wants his wife to be happy. He doesn't want to hurt *her* feelings.
+
+{gap:2} A boy breaks a cup. His mother asks, "Who broke the cup?" The boy says, "I didn't do it." Why? The boy did something wrong. He is afraid of the *punishment*. He tells a lie so he doesn't get in *trouble*.
+
+{gap:3} Lina works in an office. Another worker in her office, Pete, has trouble with his car. Pete often arrives late to work. The *boss* is not happy with *him*. The boss asks Lina, "Did Pete come to work on time today?" He didn't, but Lina says, "Yes." *She* lies to *protect* him.
+
+{gap:4} The family cat dies. "It went to a farm to play with other cats," say the parents. *They* don't say the cat died. Why not? They lie to protect their children from the truth. They think it will hurt her too much.
+
+{gap:5} A boy hits his little sister at his birthday party. The parents say, "Stop! You won't get your gifts if you hit *her* again!" This is not true. They plan to give their son his gifts even if *he* *continues* to *behave* badly. Why do they tell a lie? They lie to *control* their son.
+
+{gap:6} Joe is telling a story about his fishing trip. He says a fish he caught was three feet long, but it wasn't really very big. Why? He lies in order to tell a more interesting story.
+
+{gap:7} Pamela tells her classmates, "I can speak three languages." She can really speak only two languages. Why does she lie? She wants to make a good *impression* on her new classmates. Pamela wants *them* to think she is very intelligent.
+
+{gap:8} A store ad says *it* has special prices on furniture for today only. The truth is that the price is the same every day. Why does the store lie? It lies in order to make more money. Customers buy more furniture when they believe the prices are special for one day only.
+
+{gap:9} A man tells people at work that a new worker's boss *fired* her from her last job. *This* is not true. The man tells the lie to hurt the other worker's *reputation*.
+
+# SHORTANSWER
+LABEL: Part A
+INSTRUCTIONS: Match the words with their synonyms (write the letter).
+1. trouble:
+   ANSWER: c
+2. boss:
+   ANSWER: d
+3. reputation:
+   ANSWER: b
+4. continue:
+   ANSWER: f
+5. punishment:
+   ANSWER: a
+[Options: a=penalty, b=fame, c=difficulty, d=manager, e=admit, f=go on]
+
+# SHORTANSWER
+LABEL: Part B
+INSTRUCTIONS: Write the correct form of the words in parentheses.
+1. Many people think the death penalty is a severe __________ for any crime. (PUNISH)
+   ANSWER: punishment
+2. Sunscreen provides a __________ layer against the sun's harmful rays. (PROTECT)
+   ANSWER: protective
+3. After a while, her __________ started to make me angry. (BEHAVE)
+   ANSWER: behaviour
+
+# GAPS
+LABEL: Part C
+INSTRUCTIONS: Match the paragraph numbers (the "Lie N" gaps) with the headings on the right. There is ONE extra heading.
+a: I can speak three languages
+b: Her boss fired her from her last job
+c: I didn't do it!
+d: The fish was three feet long!
+e: You look great!
+f: He came to work on time
+g: You won't get any gifts!
+h: This special price is for today only
+i: The cat went to a farm
+ANSWERS: 2=c, 3=f, 4=i, 5=g, 6=d, 7=a, 8=h, 9=b
+
+# MCQ
+LABEL: Part D
+INSTRUCTIONS: Circle the correct answer.
+1. Why do people lie according to Paragraph 2 (Lie 2)?
+   a) to protect other people
+   b) not to hurt someone
+   c) to control other people
+   d) not to have problems
+   ANSWER: d
+2. Which one is NOT TRUE according to Paragraph 3 (Lie 3)?
+   a) People might tell lies to protect their friends
+   b) Lina tells a lie in order to protect herself
+   c) Lina and Peter work in the same office
+   d) Lina and Peter are good friends
+   ANSWER: b
+3. Which one is TRUE according to Paragraph 4 (Lie 4)?
+   a) Parents want to hurt their children
+   b) Parents don't want to tell the truth not to hurt their children
+   c) Parents want to control their children
+   d) Parents want their children to get into trouble
+   ANSWER: b
+4. Which one is FALSE according to Paragraph 7 (Lie 7)?
+   a) Pamela wants to show herself as a clever girl
+   b) Pamela thinks other people's opinions about her are important
+   c) Pamela prefers telling the truth to her classmates
+   d) Pamela tells a lie to her classmates about the languages she speaks
+   ANSWER: c
+5. What is the main idea of Paragraph 8 (Lie 8)?
+   a) The store always tells the truth to its customers
+   b) The store tells a lie to its customers in order to earn more money
+   c) The store always offers special prices to its customers
+   d) Customers don't always believe what they see on the ads
+   ANSWER: b
+6. According to Paragraph 9 (Lie 9) __________.
+   a) a colleague might tell a lie to damage another worker's self-respect
+   b) the new workers may cause some problems in the office
+   c) the boss fired the new worker because he told a lie
+   d) the boss told a lie to his workers about the new worker
+   ANSWER: a
+
+# MCQ
+LABEL: Part E (vocabulary in context)
+INSTRUCTIONS: Circle the best option.
+1. "manager or director" (paragraph 3) = __________
+   a) worker
+   b) boss
+   c) work
+   d) office
+   ANSWER: b
+2. "things such as chairs, tables etc." (paragraph 8) = __________
+   a) price
+   b) store
+   c) furniture
+   d) customers
+   ANSWER: c
+3. "to keep doing something" (paragraph 5) = __________
+   a) control
+   b) behave
+   c) plan
+   d) continue
+   ANSWER: d
+4. "to keep someone safe from damage" (paragraph 3) = __________
+   a) trouble
+   b) protect
+   c) arrive
+   d) lies
+   ANSWER: b
+5. "problems or difficulties" (paragraph 2) = __________
+   a) punishment
+   b) wrong
+   c) trouble
+   d) afraid of
+   ANSWER: c
+
+# SHORTANSWER
+LABEL: Part E (continued — find the word)
+INSTRUCTIONS: Find the words in the text that mean the following.
+1. "to remove someone from their job" (paragraph 9):
+   ANSWER: fire
+2. "bad treatment towards someone" (paragraph 2):
+   ANSWER: punishment
+3. "fame" (paragraph 9):
+   ANSWER: reputation
+4. "to order or rule something or someone's actions" (paragraph 5):
+   ANSWER: control
+5. "to accept that something is true" (paragraph 1):
+   ANSWER: admit
+
+# MCQ
+LABEL: Part F (reference)
+INSTRUCTIONS: Circle the best option for what the words refer to.
+1. "it" (paragraph 1) refers to:
+   a) feeling
+   b) hair
+   c) something
+   d) lie
+   ANSWER: b
+2. "her" (paragraph 1) refers to:
+   a) people's
+   b) woman
+   c) woman's
+   d) people
+   ANSWER: c
+3. "him" (paragraph 3) refers to:
+   a) Lina's
+   b) Pete
+   c) Pete's
+   d) Lina
+   ANSWER: b
+4. "she" (paragraph 3) refers to:
+   a) Pete
+   b) The boss
+   c) Lina
+   d) another worker
+   ANSWER: c
+
+# SHORTANSWER
+LABEL: Part F (continued)
+INSTRUCTIONS: Find what these words refer to.
+1. "they" (paragraph 4):
+   ANSWER: The parents
+2. "her" (paragraph 5):
+   ANSWER: The little sister
+3. "he" (paragraph 5):
+   ANSWER: The son
+4. "them" (paragraph 7):
+   ANSWER: Pamela's classmates
+5. "it" (paragraph 8):
+   ANSWER: The store
+6. "this" (paragraph 9):
+   ANSWER: the firing of the new worker from her last job
+
+# SHORTANSWER
+LABEL: Part G
+INSTRUCTIONS: For each conclusion sentence below, write the number of the lie it belongs to (1–9).
+1. In the end, the parents told a little white lie, hoping to protect their child's feelings.
+   ANSWER: 4
+2. He cares a lot about her happiness.
+   ANSWER: 1
+3. They want to make extra money by making customers think they're getting a really good deal.
+   ANSWER: 8
+4. Sometimes people tell stories that are a little bit stretched to make them more interesting.
+   ANSWER: 6
+5. She cares about her coworker and doesn't want him to get into trouble with the boss.
+   ANSWER: 3
+6. It is common that children sometimes tell lies because they're afraid of getting punished for what they did wrong.
+   ANSWER: 2
+7. They lie to make sure he behaves better.
+   ANSWER: 5
+8. Sometimes people tell little lies to make themselves look good to others.
+   ANSWER: 7
+9. People sometimes tell lies to damage someone else's image to create problems.
+   ANSWER: 9
+
+# TRUEFALSE
+LABEL: Part H
+INSTRUCTIONS: Choose True or False.
+1. In lie 2, the boy lies because he doesn't want to hurt his parents' feelings.
+   ANSWER: F
+2. In lie 3, Lina lies because she doesn't like Pete.
+   ANSWER: F
+3. In lie 7, Pamela lies because she wants to make a good impression.
+   ANSWER: T
+4. In lie 9, the man tells a lie because he is afraid of the punishment.
+   ANSWER: F

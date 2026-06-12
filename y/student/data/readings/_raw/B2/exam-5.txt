@@ -1,0 +1,98 @@
+ID: b2-r5
+LEVEL: B2
+TITLE: B2 Reading 5 — Language Development
+SUBTITLE: One passage · MCQ, reference, writing
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Language Development
+
+PASSAGE:
+Under normal circumstances, children start hearing language from the day they are born, and by the age of two, most children have learned a vocabulary of 50 words or so. By the age of five, children have generally acquired most of the sounds of their native language and a good deal of the grammar as well. Of course, each individual child is different, but there are general patterns of language acquisition. So, most children acquire the basics of their native language or languages at an early age. If for some reason a child is not exposed to language during the first years of her life, can she still learn to speak when she is older? In his 1967 book, Biological Foundations of Language, Eric Lenneberg discussed the critical period hypothesis. According to this hypothesis, there's an ideal age range for children to acquire language. Beyond this age, *it*'s much more difficult to acquire language. Lenneberg, whose field was psychology, was not the first scientist to propose the critical period hypothesis, but he brought popular attention to it. How can such a hypothesis be tested? Lenneberg based his ideas on evidence from brain damaged and isolated children. Isolated children; that is, children who have been isolated from society for one reason or another, provide a unique opportunity to study this hypothesis. These are children who were not exposed to human language during the so-called critical period of their lives. Could they acquire language at a later age?
+
+There are several well-known cases of isolated children, also called "wild children" or "feral children." They have been a subject of interest since long before linguists began studying the critical period hypothesis. One of the earliest known cases is Victor, a boy who was discovered in a small town in France around the year 1800. He had been living on his own in the woods and was about 12 years old at the time he was found. He didn't speak, or follow any of the *norms* of society such as wearing clothes or sleeping in a bed. He was brought to the attention of Jean-Marc-Gaspard Itard, a doctor and teacher of the deaf. Itard brought Victor to live in his house with a goal to civilize him. Itard's interest was in proving that Victor was as human as any other person, even though he'd been living in the woods like an animal. This may seem silly to us now, but during Itard's time this was an important point. Itard's contemporaries were interested in defining what makes humans different from animals. Itard thought that if he could teach Victor to speak, *that* would show a distinction between humans and animals. Unfortunately, although Victor learned many civilized behaviors such as wearing clothes and eating with a knife and fork, he only learned to speak three words, and Itard *eventually* left him to the care of *his* housekeeper. At this point in time, there are too many unknowns about Victor to use his case as a proof for the critical period hypothesis.
+
+A more modern case is that of Genie, a girl who had been isolated from her family for the first 13 years of her life. She lived in extremely abusive conditions, locked in a darkened bedroom with little contact with the rest of her family. When she was brought to the attention of authorities in 1970 at the age of 13, she could barely walk and didn't talk. She was given into the care of a hospital for a while and received intensive language teaching. She did acquire a large vocabulary, but what she couldn't learn was grammar. She used many words but was unable to put them together into complete, grammatically correct sentences. But because Genie was severely abused during most of her childhood, the effects of *this* on her mental development may also have contributed to her difficulties in acquiring language. So while her case does provide some support for the critical period hypothesis, *it* cannot be considered as proof.
+
+Then there is the case of a woman known as Chelsea. Hers was not a case of abuse. She was deaf from childhood, but no one realized this. It was not until she was 31 years old that her deafness was discovered and she was given hearing aids. Finally, she was able to hear spoken language. Like Genie, she acquired a significant vocabulary, but was unable to put together grammatically correct sentences. But just as there were with Genie, there are questions about Chelsea's case. Why did no one realize she was deaf as a child? Didn't she try to develop other forms of communication? Other factors which may have affected her ability to learn are unknown and cannot be controlled for.
+
+# MCQ
+LABEL: Part A
+INSTRUCTIONS: Circle the correct answer.
+1. Who was Eric Lenneberg?
+   a) A biologist
+   b) A psychologist
+   c) A teacher of the deaf
+   d) A medical doctor
+   ANSWER: b
+2. According to the critical period hypothesis _____.
+   a) the ability to learn a language is linked to age
+   b) brain damaged and isolated children cannot learn languages
+   c) children have a limited knowledge of vocabulary and grammar
+   d) the hardest time to acquire a language is during the critical period
+   ANSWER: a
+3. What does the writer imply about Itard's goal with Victor?
+   a) It was inhumane.
+   b) It took too long.
+   c) It seems uninteresting.
+   d) It was appropriate for his time.
+   ANSWER: d
+4. Itard's work with Victor _____.
+   a) illustrates the work of an early linguistics professor
+   b) is the best support for the critical period hypothesis
+   c) is one of the first known cases of work with an isolated child
+   d) shows how theories of language changed over time
+   ANSWER: c
+5. Which of the following is TRUE about Genie?
+   a) She was isolated by her family because she couldn't talk.
+   b) She made some progress with learning a language.
+   c) She was an ideal case for doctors because of her traumatic childhood.
+   d) The language training she received was totally useless.
+   ANSWER: b
+6. What can we infer about the critical period hypothesis?
+   a) There is no clear proof for it.
+   b) Most linguists agree with it.
+   c) Few people are interested in it.
+   d) It is true for some children.
+   ANSWER: a
+7. What is the text mainly about?
+   a) Causes of child abuse
+   b) How to teach children to speak
+   c) Education of handicapped children
+   d) A theory about how language is learned
+   ANSWER: d
+8. The word "norm" in Paragraph 2 is closest in meaning to _____.
+   a) type
+   b) fact
+   c) standard
+   d) level
+   ANSWER: c
+9. The word "eventually" in Paragraph 2 is closest in meaning to _____.
+   a) never
+   b) finally
+   c) already
+   d) certainly
+   ANSWER: b
+10. The word "it" in paragraph 1 refers to _____.
+    a) the field of psychology
+    b) the critical period hypothesis
+    c) acquiring a language
+    d) testing the hypothesis
+    ANSWER: b
+
+# SHORTANSWER
+LABEL: Part B
+INSTRUCTIONS: What do the following words refer to? They are bold and underlined in the passage.
+1. "that" (paragraph 2):
+   ANSWER: teaching Victor to speak
+2. "his" (paragraph 2):
+   ANSWER: Itard's
+3. "this" (paragraph 3):
+   ANSWER: being severely abused (during most of her childhood)
+4. "it" (paragraph 3):
+   ANSWER: her case
+
+# WRITING
+LABEL: Part C
+INSTRUCTIONS: Answer the question in your own words (min. 50 words).
+PROMPT: The text discusses the importance of age in learning a first language. How important do you think age is when learning a second language?
+MIN_WORDS: 50

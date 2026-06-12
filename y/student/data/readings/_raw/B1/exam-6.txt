@@ -1,0 +1,117 @@
+ID: b1-r6
+LEVEL: B1
+TITLE: B1 Reading 6 — Travel Blogs
+SUBTITLE: One passage · MCQ, vocab, reference
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Travel Blogs
+
+PASSAGE:
+For people in the UK, taking a gap year to travel around the world is not a rare and unusual thing to do. Many students take a year out to go travelling after leaving school and before starting university. Increasingly, older people are also choosing to take a year away from their work or careers in order to spend time travelling to discover new cultures, become more independent and broaden their horizons.
+
+One major difference between modern-day travelers and those in the past is the rise of technology and the increasing use of online websites or 'travel blogs' to chart a traveler's progress around the world. Blogs (a short form of 'web logs') are online diaries that open up the travelling experience to the world. Using text and pictures, travelers can communicate their adventures to anyone. Such adventurers are no longer *solitary* people who disappear from society for a year and then appear 12 months later as changed and wiser people. *They* no longer carry a diary to fill with notes and sketches. They are permanently connected to the world.
+
+Those who believe that blogging is an essential part of modern life claim that there are a number of advantages of using travel blogs. One suggested advantage is that you only need to write once for all your family and friends to inform them about where you are and what you are doing. *It* is also free. There is a whole range of sites available for you that do not require any payment and give you a generous amount of storage space for uploading photos. Finally, *it* is supposed to be a secure way to store your information. Your photos are safe when they are uploaded; and the text you have written should be there for good when you save *it*. So, there is no need to carry a heavy diary with you and the risk of dropping your valuable information on a bus you will never see again is significantly reduced.
+
+However, there is a growing feeling that the advent of such online recording of travelling is actually *detracting* from the overall experience. There is a strong argument that travelling is essentially a solitary experience. The whole point of a gap year is to *distance yourself* from your normal life. The aim is to discover new and fascinating things not only about the world but also about yourself. Furthermore, although your friends and relatives can access the information for free, it can become an *onerous* task for them to follow an almost daily diary and access hundreds of photos while being bombarded with Internet advertising. Finally, although generally secure, using an online storage system is not free from risk. If the website that you use *ceases* to exist or is taken over by another company, you could potentially lose a significant amount of time and effort.
+
+So, are online travel blogs killing the benefits of traveling? Are they destroying the mystery and the pleasure of escaping for a year to play out the fantasy of adventure? Wouldn't it be more exciting to return home full of stories to tell around a fire on a cold, frosty night?
+
+# MCQ
+LABEL: Part A
+INSTRUCTIONS: Answer the following questions according to the text.
+1. According to paragraph 1, which of the following is NOT MENTIONED as a reason to take a gap year?
+   a) To become less dependent
+   b) To get rid of stress at work
+   c) To learn about new cultures
+   d) To broaden your horizons
+   ANSWER: b
+2. According to paragraph 2, which of the following is a major difference between travelers today and in the past?
+   a) The length of their journey
+   b) Their choice of destinations
+   c) The amount of money they spend
+   d) Their connection to the world
+   ANSWER: d
+3. According to paragraph 3, which of the following is NOT an advantage of using travel blogs?
+   a) Travelers don't need to carry a map with them.
+   b) Travelers can upload their photos.
+   c) Travelers can inform their families about where and how they are.
+   d) Travelers can keep their valuable information safe.
+   ANSWER: a
+4. In paragraph 4, it is implied that __________.
+   a) there are countless advantages of travel blogs
+   b) taking a year gap becomes easier with travel blogs
+   c) travelers cannot distance themselves from their normal life
+   d) using an online storage system is always secure
+   ANSWER: c
+
+# MCQ
+LABEL: Part B (vocabulary)
+INSTRUCTIONS: Choose the best definition for the following words and phrases from the text.
+1. "solitary" (paragraph 2):
+   a) shy
+   b) sociable
+   c) alone
+   ANSWER: c
+2. "it is supposed to be a secure way" (paragraph 3):
+   a) some people claim it is a secure way
+   b) it is definitely a secure way
+   c) it is unlikely to be a secure way
+   ANSWER: a
+3. "to detract from the overall experience" (paragraph 4):
+   a) to change the overall experience
+   b) to have a negative effect on the overall experience
+   c) to make the new experience a more positive one
+   ANSWER: b
+4. "to distance yourself from something" (paragraph 4):
+   a) to change something
+   b) to forget about something
+   c) to separate yourself from something
+   ANSWER: c
+5. "onerous" (paragraph 4):
+   a) difficult
+   b) interesting
+   c) helpful
+   ANSWER: a
+6. "cease" (paragraph 4):
+   a) continue
+   b) stop
+   c) open
+   ANSWER: b
+
+# MCQ
+LABEL: Part C (reference)
+INSTRUCTIONS: What do these words refer to?
+1. "They" (paragraph 2):
+   a) wiser people
+   b) adventurers
+   c) notes and sketches
+   d) blogs
+   ANSWER: b
+2. "It" (paragraph 3):
+   a) Advantage
+   b) Family and friend
+   c) Travel blogging
+   d) Modern life
+   ANSWER: c
+3. "they" (paragraph 3, "give you a generous amount of storage space"):
+   a) your photos
+   b) sites
+   c) friends
+   d) storage spaces
+   ANSWER: b
+4. "it" (paragraph 3, "should be there for good when you save it"):
+   a) information
+   b) photo
+   c) a secure way
+   d) the text
+   ANSWER: d
+
+# MCQ
+LABEL: Part D
+INSTRUCTIONS: What is the writer's opinion about travel blogs?
+1. The writer:
+   a) The writer is neutral. He presents both sides of the argument and does not suggest an opinion.
+   b) The writer probably believes that travel blogs are a good thing.
+   c) The writer probably believes that travel blogs are not necessarily a good thing.
+   ANSWER: c

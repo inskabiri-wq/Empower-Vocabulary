@@ -67,3 +67,18 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# Firebase admin service-account key (used by tools/cleanup-demo-accounts.js).
+# NEVER commit this — it grants full database access. The trailing * catches
+# double extensions (e.g. .serviceAccount.json.json) and any other variant.
+y/tools/.serviceAccount.json*
+**/.serviceAccount.json*
+**/*serviceAccount*.json*
+
+# Portable ffmpeg used by tools/align-from-srt.js (downloaded on-demand, ~100MB)
+y/tools/bin/
+
+# Trimmed audio snippets + generated aligner output (recreate with the tool)
+y/student/audio/listening-exam-*-part*.mp3
+y/student/audio/listening-exam-*-part*.srt
+y/tools/exam-transcript.aligned.js

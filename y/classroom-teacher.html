@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classroom Mode - Teacher | Empower Lab</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css">
+<!-- Shared themed dialog (alert/confirm/prompt) — replaces native browser popups app-wide. -->
+<script src="js/app-dialog.js"></script>
+<link rel="stylesheet" href="classroom/css/styles.css">
+<link rel="stylesheet" href="css/fsmvu-loader.css">
+<style>
+  /* ===== Game-mode picker — hover/active affordances =====
+     Inline styles can't carry :hover, so the look-up rules live
+     here. Targets the picker cards by id so they don't bleed
+     into other cards on the page. */
+  #pickVocabRace:hover, #pickHeist:hover, #pickTrust:hover, #pickReading:hover, #pickListening:hover, #pickGrammar:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,0.5) !important;
+  }
+  #pickVocabRace:active, #pickHeist:active, #pickTrust:active, #pickReading:active, #pickListening:active, #pickGrammar:active { transform: translateY(0); }
+  #pickVocabRace:focus-visible, #pickHeist:focus-visible {
+    outline: 2px solid #f59e0b; outline-offset: 3px;
+  }
+  #pickGrammar:focus-visible {
+    outline: 2px solid #14b8a6; outline-offset: 3px;
+  }
+  #pickTrust:focus-visible {
+    outline: 2px solid #6366f1; outline-offset: 3px;
+  }
+  #pickReading:focus-visible {
+    outline: 2px solid #fb7185; outline-offset: 3px;
+  }
+  #pickListening:focus-visible {
+    outline: 2px solid #38bdf8; outline-offset: 3px;
+  }
+
+  /* ===== Session QR card (lobby) — minimal, just the QR + caption ===== */
+  .session-qr-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 24px;
+    padding: 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+  }
+  .session-qr-tile {
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 12px;
+    line-height: 0;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+  }
+  .session-qr-tile img { display: block; width: 220px; height: 220px; }
+  .session-qr-label {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--text-secondary, #94a3b8);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="gradient-bg"></div>
+<div class="floating-shapes">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <div class="shape shape-4"></div>
+</div>
+<canvas id="particles-bg"></canvas>
+
+<!-- Music Control -->
+<div class="music-control">
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
+  <button class="music-btn" onclick="nextTrack()" title="Next Track">🎶</button>
+  <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" onchange="setVolume(this.value)">
+</div>
+
+<!-- Confirm Modal -->
+<div class="confirm-modal" id="confirmModal">
+  <div class="confirm-modal-box">
+    <div class="confirm-modal-icon" id="confirmModalIcon">⚠️</div>
+    <h3 class="confirm-modal-title" id="confirmModalTitle">Are you sure?</h3>
+    <p class="confirm-modal-text" id="confirmModalText">This action cannot be undone.</p>
+    <div class="confirm-modal-buttons">
+      <button class="btn btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+      <button class="btn btn-danger" id="confirmModalBtn" onclick="confirmModalAction()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Audio Element -->
+<audio id="bgMusic" preload="none"></audio>
+
+<!-- Loading Screen -->
+<div id="loadingScreen" class="loading-container">
+  <div class="fsmvu-loader fsmvu-loader--progress fsmvu-loader--white" role="status" aria-label="Loading">
+    <div class="fsmvu-ring-wrap"><span class="fsmvu-track"></span><span class="fsmvu-arc"></span><span class="fsmvu-seal"></span></div>
+  </div>
+  <p style="color: var(--text-secondary);">Loading...</p>
+</div>
+
+<!-- Main Content -->
+<div id="mainContent" style="display: none;">
+  
+  <!-- Header -->
+  <header class="header">
+    <div class="header-title">
+      <span style="font-size: 1.5rem;">👨‍🏫</span>
+      <h1>Classroom Mode</h1>
+    </div>
+    <div class="header-actions">
+      <span style="color: var(--text-secondary); margin-right: 12px;">Hello, <span id="teacherName"></span></span>
+      <a href="teacher-dashboard.html" class="btn btn-secondary">← Dashboard</a>
+      <button class="btn btn-secondary" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- Game-mode picker — shown first; teacher picks which classroom
+       game to host. "Vocab Race" (the original mode) keeps the
+       existing flow inline. "The Heist" routes to its own page since
+       it has a completely different UI (vault, hint modal, etc.). -->
+  <div id="gameModePicker" class="container">
+    <div class="card">
+      <h2 class="card-title" style="margin-bottom: 8px;">🎮 Pick a game mode</h2>
+      <p style="color: var(--text-secondary, #94a3b8); margin: 0 0 22px;">
+        Two ways to run a classroom session — pick one.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+
+        <!-- Vocab Race (existing) -->
+        <button type="button" id="pickVocabRace"
+                style="text-align:left; cursor:pointer;
+                       background: linear-gradient(135deg, rgba(59,130,246,0.10), rgba(6,182,212,0.10));
+                       border: 1px solid rgba(59,130,246,0.35);
+                       border-radius: 16px; padding: 22px;
+                       color: inherit; font-family: inherit;
+                       transition: transform 0.1s, border-color 0.15s, background 0.15s;">
+          <div style="font-size: 2.4em; margin-bottom: 10px;">🏁</div>
+          <div style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">Vocab Race</div>
+          <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
+            Speed quiz. Everyone races through the same set of words;
+            fastest correct answers climb the leaderboard.
+          </div>
+        </button>
+
+        <!-- Grammar Race — same race engine as Vocab Race, but the
+             questions come from the generated grammar bank (the same
+             one the solo Grammar practice + assignments use). -->
+        <button type="button" id="pickGrammar"
+                style="text-align:left; cursor:pointer;
+                       background: linear-gradient(135deg, rgba(20,184,166,0.10), rgba(16,185,129,0.10));
+                       border: 1px solid rgba(20,184,166,0.4);
+                       border-radius: 16px; padding: 22px;
+                       color: inherit; font-family: inherit;
+                       transition: transform 0.1s, border-color 0.15s, background 0.15s;">
+          <div style="font-size: 2.4em; margin-bottom: 10px;">📝</div>
+          <div style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">
+            Grammar Race
+            <span style="font-size:0.55em; background:#14b8a6; color:#fff; padding:2px 6px; border-radius:6px; margin-left:6px; vertical-align:middle; font-weight:800;">NEW</span>
+          </div>
+          <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
+            Speed quiz with grammar questions. Pick a level and unit;
+            everyone races through the same sentences with time anchors
+            and hints, fastest correct answers win.
+          </div>
+        </button>
+
+        <!-- The Heist — now stays on THIS page; clicking the card
+             reveals the heist setup form inline. No more navigation
+             to a separate URL until the game actually starts. -->
+        <button type="button" id="pickHeist"
+                style="text-align:left; cursor:pointer;
+                       background: linear-gradient(135deg, rgba(245,158,11,0.10), rgba(239,68,68,0.10));
+                       border: 1px solid rgba(245,158,11,0.4);
+                       border-radius: 16px; padding: 22px;
+                       color: inherit; font-family: inherit;
+                       transition: transform 0.1s, border-color 0.15s, background 0.15s;">
+          <div style="font-size: 2.4em; margin-bottom: 10px;">🦹</div>
+          <div style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">
+            The Heist
+          </div>
+          <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
+            Answer questions to earn coins, then crack other players'
+            vault passwords using Taboo-style hints to steal their loot.
+          </div>
+        </button>
+
+        <!-- Reading Exam — host projects passage on the board, students
+             answer on their phones with NO leak vectors (no ✓/✗ feedback,
+             no per-question breakdown until the teacher releases). Picker
+             card reveals the inline setup form; submit hands off to
+             classroom-reading-teacher.html with ?auto=1&… params. -->
+        <button type="button" id="pickReading"
+                style="text-align:left; cursor:pointer;
+                       background: linear-gradient(135deg, rgba(251,113,133,0.10), rgba(244,63,94,0.10));
+                       border: 1px solid rgba(251,113,133,0.4);
+                       border-radius: 16px; padding: 22px;
+                       color: inherit; font-family: inherit;
+                       transition: transform 0.1s, border-color 0.15s, background 0.15s;">
+          <div style="font-size: 2.4em; margin-bottom: 10px;">📖</div>
+          <div style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">
+            Reading Exam
+            <span style="font-size:0.55em; background:#fb7185; color:#fff; padding:2px 6px; border-radius:6px; margin-left:6px; vertical-align:middle; font-weight:800;">NEW</span>
+          </div>
+          <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
+            You project the passage on the board, students answer the
+            questions on their phones — no leak, no answer key visible.
+            You control when to reveal the breakdown.
+          </div>
+        </button>
+
+        <!-- Listening Exam — host plays audio on the classroom speakers,
+             students see ONLY the questions on their phones. Same no-leak
+             posture as Reading Exam. Audio URL is never sent to students.
+             Per-pack replayPolicy (once / unlimited / teacher) determines
+             host's replay controls. -->
+        <button type="button" id="pickListening"
+                style="text-align:left; cursor:pointer;
+                       background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(14,165,233,0.10));
+                       border: 1px solid rgba(56,189,248,0.4);
+                       border-radius: 16px; padding: 22px;
+                       color: inherit; font-family: inherit;
+                       transition: transform 0.1s, border-color 0.15s, background 0.15s;">
+          <div style="font-size: 2.4em; margin-bottom: 10px;">🎧</div>
+          <div style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">
+            Listening Exam
+            <span style="font-size:0.55em; background:#38bdf8; color:#0c4a6e; padding:2px 6px; border-radius:6px; margin-left:6px; vertical-align:middle; font-weight:800;">NEW</span>
+          </div>
+          <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
+            You play the audio over the classroom speakers, students
+            answer the questions on their phones — no audio file leaked,
+            no answer key. Replay policy is yours to pick.
+          </div>
+        </button>
+
+        <!-- Trust No One — Among-Us-style social deduction. Picker
+             card reveals the inline setup form; submit hands off to
+             classroom-trust-teacher.html with ?auto=1&… params,
+             same pattern as the Heist. -->
+        <button type="button" id="pickTrust"
+                style="text-align:left; cursor:pointer;
+                       background: linear-gradient(135deg, rgba(99,102,241,0.10), rgba(6,182,212,0.10));
+                       border: 1px solid rgba(99,102,241,0.4);
+                       border-radius: 16px; padding: 22px;
+                       color: inherit; font-family: inherit;
+                       transition: transform 0.1s, border-color 0.15s, background 0.15s;">
+          <div style="font-size: 2.4em; margin-bottom: 10px;">🕵️</div>
+          <div style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">
+            Trust No One
+            <span style="font-size:0.55em; background:#6366f1; color:#fff; padding:2px 6px; border-radius:6px; margin-left:6px; vertical-align:middle; font-weight:800;">NEW</span>
+          </div>
+          <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
+            Crewmates answer questions and hunt impostors hidden in the
+            class. Impostors sabotage and lie at meetings. Vote them off
+            before they outnumber you.
+          </div>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Setup Screen -->
+  <div id="setupScreen" class="container" style="display: none;">
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <h2 class="card-title" style="margin: 0;" id="setupTitle">🏁 Vocab Race · Setup</h2>
+        <button type="button" id="backToPicker"
+                style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
+                       color: var(--text-secondary, #94a3b8); padding: 6px 12px;
+                       border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
+          ← Pick different game
+        </button>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Questions</label>
+          <!-- Options are rebuilt by openRaceSetup() to match the picker
+               card: base mode + "Both, mixed" only. -->
+          <select id="sessionQSource" class="form-select">
+            <option value="vocab">Vocabulary</option>
+            <option value="mixed">Both, mixed (vocabulary + grammar)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Level</label>
+          <select id="sessionLevel" class="form-select" required>
+            <option value="">Select level...</option>
+            <option value="A2">A2 - Elementary</option>
+            <option value="B1">B1 - Intermediate</option>
+            <option value="B1+">B1+ - Upper Intermediate</option>
+            <option value="B2">B2 - Advanced</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Unit</label>
+          <select id="sessionUnit" class="form-select">
+            <option value="all">All Units</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" id="setupCountLabel">Number of Questions</label>
+          <select id="sessionWordCount" class="form-select">
+            <option value="5">5 (Quick)</option>
+            <option value="10" selected>10 (Standard)</option>
+            <option value="15">15</option>
+            <option value="20">20 (Challenge)</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Time per Question</label>
+          <select id="sessionTimeLimit" class="form-select">
+            <option value="15">15 seconds (Hard)</option>
+            <option value="20" selected>20 seconds (Normal)</option>
+            <option value="30">30 seconds (Easy)</option>
+            <option value="45">45 seconds (Relaxed)</option>
+          </select>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary btn-large" onclick="createSession()" style="width: 100%; margin-top: 12px;">
+        🚀 Create Session
+      </button>
+    </div>
+  </div>
+
+  <!-- Heist Setup Screen — lives INSIDE classroom-teacher.html so the
+       teacher never feels like they jumped to a different app. When
+       they hit "Create the room" we navigate to classroom-heist-teacher.html
+       with the chosen parameters in the URL; that page auto-creates
+       the session and drops the teacher straight into the lobby. -->
+  <div id="heistSetupScreen" class="container" style="display: none;">
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <h2 class="card-title" style="margin: 0;">🦹 The Heist · Setup</h2>
+        <button type="button" id="backToPickerFromHeist"
+                style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
+                       color: var(--text-secondary, #94a3b8); padding: 6px 12px;
+                       border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
+          ← Pick different game
+        </button>
+      </div>
+
+      <p style="color: var(--text-secondary, #94a3b8); margin: -4px 0 18px;">
+        Students answer vocab questions to earn coins, then race to crack each other's vault passwords
+        using Taboo-style hints. Defaults are tuned for a 10-minute session with ~20 students.
+      </p>
+
+      <!-- 1) WHAT students answer to earn coins: vocab, grammar, or both.
+           This is the first decision; everything else follows from it. -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Coin questions</label>
+          <select id="heistQSource" class="form-select">
+            <option value="vocab" selected>Vocabulary (from the hint pack)</option>
+            <option value="grammar">Grammar (pick level + unit)</option>
+            <option value="mixed">Both, mixed (vocabulary + grammar)</option>
+          </select>
+        </div>
+        <div class="form-group" id="heistGrammarLevelGroup" style="display: none;">
+          <label class="form-label">Grammar level</label>
+          <select id="heistGrammarLevel" class="form-select">
+            <option value="">Select level...</option>
+          </select>
+        </div>
+        <div class="form-group" id="heistGrammarUnitGroup" style="display: none;">
+          <label class="form-label">Grammar unit</label>
+          <select id="heistGrammarUnit" class="form-select">
+            <option value="all">All Units</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 2) The pack: powers the vault passwords + Taboo hints in EVERY
+           mode (and the vocabulary questions when vocab/mixed is chosen). -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Hint pack (vault passwords + hints)</label>
+          <select id="heistPackSelect" class="form-select"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Game length (min)</label>
+          <input id="heistDuration" class="form-input" type="number" min="2" max="30" value="10">
+        </div>
+      </div>
+
+      <!-- 3) Game rules -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Reward per correct answer</label>
+          <input id="heistQuestionReward" class="form-input" type="number" min="1" max="100" value="10">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Heist attempt fee</label>
+          <input id="heistFee" class="form-input" type="number" min="1" max="200" value="30">
+        </div>
+      </div>
+
+      <button type="button" id="heistCreateBtn" class="btn btn-primary btn-large" style="width: 100%; margin-top: 12px;">
+        🦹 Create Heist Room
+      </button>
+
+      <p style="color: var(--text-muted, #6b7280); font-size: 0.82em; margin: 14px 0 0; text-align: center;">
+        After you create the room you'll move to the live host view (lobby → game → results).
+      </p>
+    </div>
+  </div>
+
+  <!-- Listening Exam Setup Screen — lives INSIDE classroom-teacher.html
+       so the teacher never feels like they jumped to a different app.
+       Submit hands off to classroom-listening-teacher.html?auto=1&… and
+       that page auto-creates the session and drops them in the lobby. -->
+  <div id="listeningSetupScreen" class="container" style="display: none;">
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <h2 class="card-title" style="margin: 0;">🎧 Listening Exam · Setup</h2>
+        <button type="button" id="backToPickerFromListening"
+                style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
+                       color: var(--text-secondary, #94a3b8); padding: 6px 12px;
+                       border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
+          ← Pick different game
+        </button>
+      </div>
+
+      <p style="color: var(--text-secondary, #94a3b8); margin: -4px 0 18px;">
+        You'll play the audio on the classroom speakers — students see only the questions on their phones (no audio file, no transcript leaked). After they submit, they see only their raw score until you press <strong>Reveal answers</strong>.
+      </p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Level</label>
+          <select id="listeningLevel" class="form-select" required>
+            <option value="">Select level...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Exam</label>
+          <select id="listeningExam" class="form-select" disabled>
+            <option value="">Pick a level first…</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Time limit (minutes) — 0 for untimed</label>
+          <input id="listeningDuration" class="form-input" type="number" min="0" max="120" value="30">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Replay policy</label>
+          <select id="listeningReplayPolicy" class="form-select">
+            <option value="teacher" selected>Teacher controls — play/pause/restart any time</option>
+            <option value="once">Once only — strict, no replays (IELTS-style)</option>
+            <option value="unlimited">Unlimited — students never lose time to a missed cue</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Discussion phase after reveal</label>
+          <select id="listeningDiscussion" class="form-select">
+            <option value="1" selected>Yes — students see the breakdown when I reveal</option>
+            <option value="0">No — score only, no breakdown ever</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Question marker broadcast</label>
+          <select id="listeningQMarker" class="form-select">
+            <option value="1" selected>Yes — highlight the current question on student phones</option>
+            <option value="0">No — students navigate the booklet freely</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" id="listeningCreateBtn" class="btn btn-primary btn-large" style="width: 100%; margin-top: 12px;">
+        🎧 Create Listening Room
+      </button>
+
+      <p style="color: var(--text-muted, #6b7280); font-size: 0.82em; margin: 14px 0 0; text-align: center;">
+        After you create the room you'll move to the live host view (lobby → audio + exam → reveal → results).
+      </p>
+    </div>
+  </div>
+
+  <!-- Reading Exam Setup Screen — lives INSIDE classroom-teacher.html
+       so the teacher never feels like they jumped to a different app.
+       Submit hands off to classroom-reading-teacher.html?auto=1&… and
+       that page auto-creates the session and drops them in the lobby. -->
+  <div id="readingSetupScreen" class="container" style="display: none;">
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <h2 class="card-title" style="margin: 0;">📖 Reading Exam · Setup</h2>
+        <button type="button" id="backToPickerFromReading"
+                style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
+                       color: var(--text-secondary, #94a3b8); padding: 6px 12px;
+                       border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
+          ← Pick different game
+        </button>
+      </div>
+
+      <p style="color: var(--text-secondary, #94a3b8); margin: -4px 0 18px;">
+        You'll see the passage + live answer key on your screen — students see only the questions on their phones. They can change answers until they tap Submit. After submitting, they see only their raw score (no breakdown) until you press <strong>Reveal answers</strong>.
+      </p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Level</label>
+          <select id="readingLevel" class="form-select" required>
+            <option value="">Select level...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Exam</label>
+          <select id="readingExam" class="form-select" disabled>
+            <option value="">Pick a level first…</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Time limit (minutes) — 0 for untimed</label>
+          <input id="readingDuration" class="form-input" type="number" min="0" max="90" value="20">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Discussion phase after reveal</label>
+          <select id="readingDiscussion" class="form-select">
+            <option value="1" selected>Yes — students see the breakdown when I reveal</option>
+            <option value="0">No — score only, no breakdown ever</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" id="readingCreateBtn" class="btn btn-primary btn-large" style="width: 100%; margin-top: 12px;">
+        📖 Create Reading Room
+      </button>
+
+      <p style="color: var(--text-muted, #6b7280); font-size: 0.82em; margin: 14px 0 0; text-align: center;">
+        After you create the room you'll move to the live host view (lobby → exam → reveal → results).
+      </p>
+    </div>
+  </div>
+
+  <!-- Trust No One Setup Screen — lives INSIDE classroom-teacher.html
+       so the teacher never feels like they jumped to a different app.
+       Submit hands off to classroom-trust-teacher.html?auto=1&… and
+       that page auto-creates the session and drops them in the lobby. -->
+  <div id="trustSetupScreen" class="container" style="display: none;">
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <h2 class="card-title" style="margin: 0;">🕵️ Trust No One · Setup</h2>
+        <button type="button" id="backToPickerFromTrust"
+                style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
+                       color: var(--text-secondary, #94a3b8); padding: 6px 12px;
+                       border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
+          ← Pick different game
+        </button>
+      </div>
+
+      <p style="color: var(--text-secondary, #94a3b8); margin: -4px 0 18px;">
+        Some students will secretly be impostors. Crewmates win by voting them off; impostors win by outnumbering crewmates. Designed for classes of 5–25.
+      </p>
+
+      <!-- 1) WHAT students answer to run investigations: vocab, grammar,
+           or both. This is the first decision; the rest follows. -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Investigation questions</label>
+          <select id="trustQSource" class="form-select">
+            <option value="vocab" selected>Vocabulary (from the hint pack)</option>
+            <option value="grammar">Grammar (pick level + unit)</option>
+            <option value="mixed">Both, mixed (vocabulary + grammar)</option>
+          </select>
+        </div>
+        <div class="form-group" id="trustGrammarLevelGroup" style="display: none;">
+          <label class="form-label">Grammar level</label>
+          <select id="trustGrammarLevel" class="form-select">
+            <option value="">Select level...</option>
+          </select>
+        </div>
+        <div class="form-group" id="trustGrammarUnitGroup" style="display: none;">
+          <label class="form-label">Grammar unit</label>
+          <select id="trustGrammarUnit" class="form-select">
+            <option value="all">All Units</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 2) The pack: vocabulary word source (questions in vocab/mixed
+           mode, and the fallback if the grammar bank fails to load). -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Hint pack (vocabulary words)</label>
+          <select id="trustPackSelect" class="form-select"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Number of impostors</label>
+          <select id="trustImpostors" class="form-select">
+            <option value="1">1 impostor</option>
+            <option value="2" selected>2 impostors</option>
+            <option value="3">3 impostors</option>
+            <option value="4">4 impostors</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 3) Game rules -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Investigations target (per crewmate)</label>
+          <input id="trustTarget" class="form-input" type="number" min="3" max="30" value="10">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Clue reliability</label>
+          <select id="trustReliability" class="form-select">
+            <option value="0.5">Loose - half the clues are false</option>
+            <option value="0.75" selected>Normal - most clues are true</option>
+            <option value="0.95">Tight - clues almost always true</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Reward per correct answer</label>
+          <input id="trustReward" class="form-input" type="number" min="1" max="100" value="10">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Game length (min)</label>
+          <input id="trustDuration" class="form-input" type="number" min="3" max="30" value="15">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Student-called meetings</label>
+          <select id="trustStudentMeetings" class="form-select">
+            <option value="1" selected>Yes - each student gets 1 emergency button</option>
+            <option value="0">No - only the teacher can call meetings</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Meeting cooldown</label>
+          <select id="trustMeetingCooldown" class="form-select">
+            <option value="20">20 seconds</option>
+            <option value="30" selected>30 seconds</option>
+            <option value="60">60 seconds</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" id="trustCreateBtn" class="btn btn-primary btn-large" style="width: 100%; margin-top: 12px;">
+        🕵️ Create Trust No One Room
+      </button>
+
+      <p style="color: var(--text-muted, #6b7280); font-size: 0.82em; margin: 14px 0 0; text-align: center;">
+        After you create the room you'll move to the live host view (lobby → liftoff → game → results).
+      </p>
+    </div>
+  </div>
+
+  <!-- Lobby Screen -->
+  <div id="lobbyScreen" class="container" style="display: none;">
+    <div class="card">
+      <div class="session-code-display">
+        <div class="session-code-label">Session Code</div>
+        <div class="session-code" id="displaySessionCode">------</div>
+        <div class="session-code-hint">Share this code with your students</div>
+        <button class="btn btn-secondary" style="margin-top: 16px;" onclick="copySessionCode(this)">📋 Copy Code</button>
+      </div>
+
+      <!-- QR code: students point their phone camera at it → join page
+           opens with the session code pre-filled. Image src set in
+           showSessionLobby() once the code is known. White tile around
+           the image keeps it high-contrast and reliably scannable. -->
+      <div class="session-qr-card" id="sessionQRCard" style="display:none;">
+        <div class="session-qr-tile">
+          <img id="sessionQRImg" alt="Scan to join this session" width="220" height="220">
+        </div>
+        <div class="session-qr-label">📱 Scan with phone camera to join</div>
+      </div>
+
+      <div id="sessionInfo" style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;"></div>
+      
+      <div id="sessionStatus" style="text-align: center; margin-bottom: 20px;">
+        <span style="color: var(--warning);">⏳ Waiting to start...</span>
+      </div>
+      
+      <div class="players-section">
+        <div class="players-header">
+          <h3 class="players-count">👥 Players: <span id="playerCount">0</span></h3>
+        </div>
+        <div class="players-grid" id="playersContainer">
+          <p style="color: var(--text-muted); text-align: center; padding: 20px; grid-column: 1/-1;">Waiting for students to join...</p>
+        </div>
+      </div>
+      
+      <!-- Live Leaderboard (shows during game) -->
+      <div id="liveLeaderboardSection" style="margin-top: 24px;">
+        <h3 style="margin-bottom: 12px;">📊 Live Scores</h3>
+        <div class="leaderboard-list" id="liveLeaderboard">
+          <p style="color: var(--text-muted); text-align: center; padding: 20px;">Scores will appear here during the game</p>
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <button class="btn btn-secondary" onclick="cancelSession()">✕ Cancel</button>
+        <button class="btn btn-success btn-large" id="startGameBtn" onclick="startGame()" disabled style="flex: 1;">
+          ▶️ Start Game
+        </button>
+        <button class="btn btn-danger btn-large" id="endGameBtn" onclick="endGame()" style="flex: 1; display: none;">
+          🏳️ End Game
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Screen -->
+  <div id="resultsScreen" class="container" style="display: none;">
+    <div class="card">
+      <h2 class="card-title" style="text-align: center; font-size: 1.5rem;">🏆 Final Results</h2>
+      
+      <div id="podiumContainer" class="podium" style="margin: 32px 0;"></div>
+      
+      <h3 style="margin-bottom: 16px;">Full Leaderboard</h3>
+      <div class="leaderboard-list" id="fullLeaderboard"></div>
+
+      <!-- Per-Question Review -->
+      <h3 style="margin: 32px 0 16px;">📋 Per-Question Review</h3>
+      <div id="perQuestionReview" style="overflow-x: auto; margin-bottom: 24px;">
+        <p style="color: var(--text-muted); text-align: center;">Loading answer data...</p>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;">
+        <button class="btn btn-secondary btn-large" onclick="downloadSessionData()" style="flex: 1;">
+          📥 Download Data
+        </button>
+        <button class="btn btn-primary btn-large" onclick="newSession()" style="flex: 1;">
+          🔄 New Session
+        </button>
+        <!-- "Back to Classroom Mode" — parity with the Heist results
+             screen, lets the teacher switch games without going all
+             the way back to the dashboard. deleteSessionOnLeave still
+             fires so the session doc is cleaned up. -->
+        <a href="classroom-teacher.html" class="btn btn-secondary btn-large" onclick="deleteSessionOnLeave(event)" style="flex: 1;">
+          ← Classroom Mode
+        </a>
+        <a href="teacher-dashboard.html" class="btn btn-secondary btn-large" onclick="deleteSessionOnLeave(event)" style="flex: 1;">
+          🏠 Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Download-or-Delete Modal -->
+<div id="downloadModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+  <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:16px; padding:32px; max-width:420px; width:90%; text-align:center;">
+    <div style="font-size:2.5em; margin-bottom:12px;">💾</div>
+    <h3 style="margin-bottom:8px;">Save Session Data?</h3>
+    <p style="color:var(--text-secondary); margin-bottom:24px;">Download the results before closing this session? If you skip, the data will be permanently deleted.</p>
+    <div style="display:flex; gap:12px; justify-content:center;">
+      <button class="btn btn-primary" id="downloadAndContinueBtn">📥 Download & Continue</button>
+      <button class="btn btn-secondary" id="skipDownloadBtn">🗑️ Delete & Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
+
+<!-- Vocabulary Data -->
+<script>
+  let vocabulary = null;
+  fetch('datasets.json')
+    .then(response => response.json())
+    .then(data => {
+      vocabulary = data;
+      console.log('Vocabulary loaded:', Object.keys(vocabulary));
+    })
+    .catch(error => {
+      // Benign on the unauthenticated path: this page redirects to
+      // login, which aborts the in-flight fetch ("Failed to fetch").
+      // Authenticated teachers stay and the fetch completes. Downgrade
+      // to a warning so an aborted-on-redirect fetch isn't logged as a
+      // hard error. Vocab Race re-checks `vocabulary` before starting.
+      console.warn('Vocabulary not loaded yet:', error && error.message ? error.message : error);
+    });
+</script>
+
+<!-- Exam registry — needed by the Reading + Listening pickers to
+     enumerate available exams per level. Loads window.EXAM_REGISTRY.
+     The picker only needs id/title metadata; the per-exam content
+     (passages, audio, questions) is loaded by the respective host
+     pages after submit. -->
+<script src="assignments/js/exam-registry.js"></script>
+<!-- Grammar question bank — powers the Grammar Race picker card. -->
+<script src="student/js/skills/grammar-content.js?v=10"></script>
+
+<!-- Teacher JS -->
+<script src="classroom/js/teacher.js"></script>
+
+<!-- Game-mode picker + Heist setup wiring. The picker shows TWO setup
+     forms inline (Vocab Race / The Heist). For Vocab Race the existing
+     teacher.js takes over once the teacher hits "Create Session". For
+     The Heist we navigate to classroom-heist-teacher.html with the
+     chosen parameters in the URL — that page auto-creates the session
+     and drops the teacher into the lobby (no second setup form). -->
+<script>
+  (function () {
+    function show(id) {
+      ['gameModePicker', 'setupScreen', 'heistSetupScreen', 'trustSetupScreen', 'readingSetupScreen', 'listeningSetupScreen', 'lobbyScreen', 'resultsScreen'].forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.style.display = (s === id) ? '' : 'none';
+      });
+    }
+
+    // Both Heist and Trust No One use the same hint packs (vocab MCQ
+    // content stays the same — only the gameplay around it changes).
+    // Cache the fetch so picking either game's card doesn't re-hit
+    // the network.
+    let packsCache = null;
+    async function loadPacks() {
+      if (packsCache) return packsCache;
+      try {
+        const r = await fetch('classroom/data/heist-packs.json', { cache: 'no-store' });
+        const j = await r.json();
+        packsCache = j.packs || [];
+      } catch (e) {
+        console.error('pack load failed', e);
+        packsCache = [];
+      }
+      return packsCache;
+    }
+    function fillPackSelect(selectEl) {
+      if (!selectEl) return;
+      selectEl.innerHTML = (packsCache || []).length
+        ? packsCache.map(p =>
+            `<option value="${p.id}">${p.name} (${(p.words || []).length} words)</option>`
+          ).join('')
+        : '<option value="">No packs available</option>';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Picker → vocab race setup (inline, existing teacher.js handles it).
+      // Vocab Race and Grammar Race SHARE the setup screen; the picker card
+      // sets window.classroomMode, which teacher.js reads in
+      // updateUnitSelector() and createSession().
+      function raceTitleFor(mode) {
+        if (mode === 'grammar') return '📝 Grammar Race · Setup';
+        if (mode === 'mixed') return '🎯 Mixed Race · Setup';
+        return '🏁 Vocab Race · Setup';
+      }
+      function openRaceSetup(mode) {
+        window.classroomMode = mode;
+        const title = document.getElementById('setupTitle');
+        if (title) title.textContent = raceTitleFor(mode);
+        // The Questions select offers ONLY the entry card's base plus
+        // "Both, mixed" - no cross-listing (a Vocab Race never offers
+        // pure Grammar and vice versa; use the other picker card for that).
+        const srcSel = document.getElementById('sessionQSource');
+        if (srcSel) {
+          const base = (mode === 'grammar')
+            ? [['grammar', 'Grammar'], ['mixed', 'Both, mixed (grammar + vocabulary)']]
+            : [['vocab', 'Vocabulary'], ['mixed', 'Both, mixed (vocabulary + grammar)']];
+          srcSel.innerHTML = base.map(o => `<option value="${o[0]}">${o[1]}</option>`).join('');
+          srcSel.value = mode;
+        }
+        // Reset level + unit so a stale unit list from the other mode
+        // can never leak into the new session.
+        const lvl = document.getElementById('sessionLevel');
+        if (lvl) lvl.value = '';
+        if (typeof updateUnitSelector === 'function') updateUnitSelector();
+        show('setupScreen');
+      }
+      const vr = document.getElementById('pickVocabRace');
+      if (vr) vr.addEventListener('click', () => openRaceSetup('vocab'));
+      const gr = document.getElementById('pickGrammar');
+      if (gr) gr.addEventListener('click', () => openRaceSetup('grammar'));
+      // The Questions select can also switch mode mid-setup (e.g. to Both).
+      const srcSel = document.getElementById('sessionQSource');
+      if (srcSel) srcSel.addEventListener('change', () => {
+        window.classroomMode = srcSel.value;
+        const title = document.getElementById('setupTitle');
+        if (title) title.textContent = raceTitleFor(srcSel.value);
+        if (typeof updateUnitSelector === 'function') updateUnitSelector();
+      });
+
+      // Picker → heist setup (inline)
+      const heistPick = document.getElementById('pickHeist');
+      if (heistPick) heistPick.addEventListener('click', async () => {
+        show('heistSetupScreen');
+        await loadPacks();
+        fillPackSelect(document.getElementById('heistPackSelect'));
+      });
+
+      // Picker → trust no one setup (inline)
+      const trustPick = document.getElementById('pickTrust');
+      if (trustPick) trustPick.addEventListener('click', async () => {
+        show('trustSetupScreen');
+        await loadPacks();
+        fillPackSelect(document.getElementById('trustPackSelect'));
+      });
+
+      // Picker → reading exam setup (inline) — populates the level
+      // dropdown from EXAM_REGISTRY. Choosing a level re-fills the
+      // exam dropdown with that level's available reading exams.
+      const readingPick = document.getElementById('pickReading');
+      if (readingPick) readingPick.addEventListener('click', () => {
+        show('readingSetupScreen');
+        fillReadingLevels();
+      });
+
+      // Picker → listening exam setup (inline) — same shape as
+      // reading, just driven off the 'listening' branch of the
+      // registry and with the extra replayPolicy dropdown.
+      const listeningPick = document.getElementById('pickListening');
+      if (listeningPick) listeningPick.addEventListener('click', () => {
+        show('listeningSetupScreen');
+        fillListeningLevels();
+      });
+
+      // Back links to the picker
+      const back1 = document.getElementById('backToPicker');
+      if (back1) back1.addEventListener('click', () => show('gameModePicker'));
+      const back2 = document.getElementById('backToPickerFromHeist');
+      if (back2) back2.addEventListener('click', () => show('gameModePicker'));
+      const back3 = document.getElementById('backToPickerFromTrust');
+      if (back3) back3.addEventListener('click', () => show('gameModePicker'));
+      const back4 = document.getElementById('backToPickerFromReading');
+      if (back4) back4.addEventListener('click', () => show('gameModePicker'));
+      const back5 = document.getElementById('backToPickerFromListening');
+      if (back5) back5.addEventListener('click', () => show('gameModePicker'));
+
+      // Heist coin-question source: grammar shows the level + unit pickers
+      // (filled from the same grammar bank the solo practice uses).
+      function fillGrammarLevelSelect(sel) {
+        if (!sel) return;
+        const GP = window.GRAMMAR_PRACTICE;
+        sel.innerHTML = '<option value="">Select level...</option>' +
+          ((GP && GP.levels) || []).map(l => `<option value="${l}">${l}</option>`).join('');
+      }
+      function fillGrammarUnitSelect(sel, level) {
+        if (!sel) return;
+        sel.innerHTML = '<option value="all">All Units</option>';
+        const GP = window.GRAMMAR_PRACTICE;
+        const topics = (GP && GP.byLevel && GP.byLevel[level]) || [];
+        const units = [...new Set(topics.map(t => {
+          const m = String(t.blurb || '').match(/Units?\s+(\d+)/i);
+          return m ? parseInt(m[1], 10) : 0;
+        }))].filter(u => u > 0).sort((a, b) => a - b);
+        units.forEach(u => { sel.innerHTML += `<option value="${u}">Unit ${u}</option>`; });
+      }
+      const hq = document.getElementById('heistQSource');
+      if (hq) hq.addEventListener('change', () => {
+        const needsGrammar = hq.value !== 'vocab'; // grammar or mixed
+        document.getElementById('heistGrammarLevelGroup').style.display = needsGrammar ? '' : 'none';
+        document.getElementById('heistGrammarUnitGroup').style.display = needsGrammar ? '' : 'none';
+        if (needsGrammar) fillGrammarLevelSelect(document.getElementById('heistGrammarLevel'));
+      });
+      const hgl = document.getElementById('heistGrammarLevel');
+      if (hgl) hgl.addEventListener('change', () => fillGrammarUnitSelect(document.getElementById('heistGrammarUnit'), hgl.value));
+
+      // Heist "Create Heist Room" — hand off to classroom-heist-teacher.html
+      const createH = document.getElementById('heistCreateBtn');
+      if (createH) createH.addEventListener('click', () => {
+        const pack = (document.getElementById('heistPackSelect') || {}).value || '';
+        const dur  = parseInt((document.getElementById('heistDuration')        || {}).value, 10) || 10;
+        const rew  = parseInt((document.getElementById('heistQuestionReward')  || {}).value, 10) || 10;
+        const fee  = parseInt((document.getElementById('heistFee')             || {}).value, 10) || 30;
+        const qsrc = (document.getElementById('heistQSource') || {}).value || 'vocab';
+        const glv  = (document.getElementById('heistGrammarLevel') || {}).value || '';
+        const gun  = (document.getElementById('heistGrammarUnit')  || {}).value || 'all';
+        if (!pack) { AppDialog.alert('Pick a hint pack first.', { title: 'Missing pack', icon: '📦' }); return; }
+        if (qsrc !== 'vocab' && !glv) { AppDialog.alert('Pick a grammar level first.', { title: 'Missing level', icon: '📊' }); return; }
+        const qs = new URLSearchParams({ pack, dur: String(dur), rew: String(rew), fee: String(fee), qsrc, glv, gun, auto: '1' });
+        window.location.href = 'classroom-heist-teacher.html?' + qs.toString();
+      });
+
+      // Trust investigation-question source: grammar shows level + unit
+      // pickers (same helpers as the heist form above).
+      const tq = document.getElementById('trustQSource');
+      if (tq) tq.addEventListener('change', () => {
+        const needsGrammar = tq.value !== 'vocab'; // grammar or mixed
+        document.getElementById('trustGrammarLevelGroup').style.display = needsGrammar ? '' : 'none';
+        document.getElementById('trustGrammarUnitGroup').style.display = needsGrammar ? '' : 'none';
+        if (needsGrammar) fillGrammarLevelSelect(document.getElementById('trustGrammarLevel'));
+      });
+      const tgl = document.getElementById('trustGrammarLevel');
+      if (tgl) tgl.addEventListener('change', () => fillGrammarUnitSelect(document.getElementById('trustGrammarUnit'), tgl.value));
+
+      // Trust "Create Trust No One Room" — hand off to classroom-trust-teacher.html
+      const createT = document.getElementById('trustCreateBtn');
+      if (createT) createT.addEventListener('click', () => {
+        const pack = (document.getElementById('trustPackSelect')   || {}).value || '';
+        const imp  = parseInt((document.getElementById('trustImpostors')        || {}).value, 10) || 2;
+        const tgt  = parseInt((document.getElementById('trustTarget')           || {}).value, 10) || 10;
+        const rel  = parseFloat((document.getElementById('trustReliability')    || {}).value)    || 0.75;
+        const rew  = parseInt((document.getElementById('trustReward')           || {}).value, 10) || 10;
+        const dur  = parseInt((document.getElementById('trustDuration')         || {}).value, 10) || 15;
+        const sm   = parseInt((document.getElementById('trustStudentMeetings') || {}).value, 10) || 0;
+        const cd   = parseInt((document.getElementById('trustMeetingCooldown') || {}).value, 10) || 30;
+        const qsrc = (document.getElementById('trustQSource') || {}).value || 'vocab';
+        const glv  = (document.getElementById('trustGrammarLevel') || {}).value || '';
+        const gun  = (document.getElementById('trustGrammarUnit')  || {}).value || 'all';
+        if (!pack) { AppDialog.alert('Pick a hint pack first.', { title: 'Missing pack', icon: '📦' }); return; }
+        if (qsrc !== 'vocab' && !glv) { AppDialog.alert('Pick a grammar level first.', { title: 'Missing level', icon: '📊' }); return; }
+        const qs = new URLSearchParams({
+          pack, imp: String(imp), tgt: String(tgt), rel: String(rel),
+          rew: String(rew), dur: String(dur), sm: String(sm), cd: String(cd),
+          qsrc, glv, gun,
+          auto: '1'
+        });
+        window.location.href = 'classroom-trust-teacher.html?' + qs.toString();
+      });
+
+      // Reading-Exam dropdown wiring + Create handoff.
+      // Level dropdown is filled from EXAM_REGISTRY.levelsFor('reading')
+      // (only levels with at least one available exam). Picking a level
+      // re-fills the exam dropdown.
+      const levelSel = document.getElementById('readingLevel');
+      const examSel  = document.getElementById('readingExam');
+      if (levelSel) levelSel.addEventListener('change', () => fillReadingExams(levelSel.value));
+
+      const createR = document.getElementById('readingCreateBtn');
+      if (createR) createR.addEventListener('click', () => {
+        const level = (document.getElementById('readingLevel') || {}).value || '';
+        const exam  = (document.getElementById('readingExam')  || {}).value || '';
+        const dur   = parseInt((document.getElementById('readingDuration') || {}).value, 10);
+        const disc  = parseInt((document.getElementById('readingDiscussion') || {}).value, 10);
+        if (!level) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '📊' }); return; }
+        if (!exam)  { AppDialog.alert('Pick an exam first.', { title: 'Missing exam', icon: '📝' }); return; }
+        const qs = new URLSearchParams({
+          level, exam,
+          dur:  String(isNaN(dur) ? 20 : dur),
+          disc: String(isNaN(disc) ? 1 : disc),
+          auto: '1'
+        });
+        window.location.href = 'classroom-reading-teacher.html?' + qs.toString();
+      });
+
+      // Listening-Exam dropdown wiring + Create handoff.
+      // Same shape as Reading, with one extra param (policy).
+      const llSel = document.getElementById('listeningLevel');
+      if (llSel) llSel.addEventListener('change', () => fillListeningExams(llSel.value));
+
+      const createL = document.getElementById('listeningCreateBtn');
+      if (createL) createL.addEventListener('click', () => {
+        const level  = (document.getElementById('listeningLevel') || {}).value || '';
+        const exam   = (document.getElementById('listeningExam')  || {}).value || '';
+        const dur    = parseInt((document.getElementById('listeningDuration')      || {}).value, 10);
+        const disc   = parseInt((document.getElementById('listeningDiscussion')   || {}).value, 10);
+        const qmark  = parseInt((document.getElementById('listeningQMarker')      || {}).value, 10);
+        const policy = (document.getElementById('listeningReplayPolicy') || {}).value || 'teacher';
+        if (!level) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '📊' }); return; }
+        if (!exam)  { AppDialog.alert('Pick an exam first.', { title: 'Missing exam', icon: '📝' }); return; }
+        const qs = new URLSearchParams({
+          level, exam,
+          dur:    String(isNaN(dur) ? 30 : dur),
+          disc:   String(isNaN(disc) ? 1 : disc),
+          qmark:  String(isNaN(qmark) ? 1 : qmark),
+          policy,
+          auto: '1'
+        });
+        window.location.href = 'classroom-listening-teacher.html?' + qs.toString();
+      });
+    });
+
+    // ── Reading-exam dropdown helpers ─────────────────────────
+    // Public so the registry-load callback (if any) can re-trigger,
+    // but they only do anything when the setup screen is visible.
+    function fillReadingLevels() {
+      const sel = document.getElementById('readingLevel');
+      if (!sel) return;
+      if (typeof window.EXAM_REGISTRY === 'undefined') {
+        sel.innerHTML = '<option value="">Registry not loaded</option>';
+        return;
+      }
+      const levels = window.EXAM_REGISTRY.levelsFor('reading') || [];
+      // Filter to only levels that actually have at least one available exam.
+      const withExams = levels.filter(lvl =>
+        (window.EXAM_REGISTRY.examsForLevel('reading', lvl) || [])
+          .some(e => e.available !== false)
+      );
+      sel.innerHTML = '<option value="">Select level...</option>' +
+        withExams.map(l => `<option value="${l}">${l}</option>`).join('');
+      // Reset exam dropdown until a level is picked.
+      const eSel = document.getElementById('readingExam');
+      if (eSel) {
+        eSel.innerHTML = '<option value="">Pick a level first…</option>';
+        eSel.disabled = true;
+      }
+    }
+    function fillReadingExams(level) {
+      const sel = document.getElementById('readingExam');
+      if (!sel) return;
+      if (!level || typeof window.EXAM_REGISTRY === 'undefined') {
+        sel.innerHTML = '<option value="">Pick a level first…</option>';
+        sel.disabled = true;
+        return;
+      }
+      const exams = (window.EXAM_REGISTRY.examsForLevel('reading', level) || [])
+        .filter(e => e.available !== false);
+      if (!exams.length) {
+        sel.innerHTML = '<option value="">No exams available at this level</option>';
+        sel.disabled = true;
+        return;
+      }
+      sel.disabled = false;
+      sel.innerHTML = '<option value="">Select exam...</option>' +
+        exams.map(e => `<option value="${e.id}">${e.title}</option>`).join('');
+    }
+
+    // ── Listening-exam dropdown helpers (mirror reading) ─────
+    function fillListeningLevels() {
+      const sel = document.getElementById('listeningLevel');
+      if (!sel) return;
+      if (typeof window.EXAM_REGISTRY === 'undefined') {
+        sel.innerHTML = '<option value="">Registry not loaded</option>';
+        return;
+      }
+      const levels = window.EXAM_REGISTRY.levelsFor('listening') || [];
+      const withExams = levels.filter(lvl =>
+        (window.EXAM_REGISTRY.examsForLevel('listening', lvl) || [])
+          .some(e => e.available !== false)
+      );
+      sel.innerHTML = '<option value="">Select level...</option>' +
+        withExams.map(l => `<option value="${l}">${l}</option>`).join('');
+      const eSel = document.getElementById('listeningExam');
+      if (eSel) {
+        eSel.innerHTML = '<option value="">Pick a level first…</option>';
+        eSel.disabled = true;
+      }
+    }
+    function fillListeningExams(level) {
+      const sel = document.getElementById('listeningExam');
+      if (!sel) return;
+      if (!level || typeof window.EXAM_REGISTRY === 'undefined') {
+        sel.innerHTML = '<option value="">Pick a level first…</option>';
+        sel.disabled = true;
+        return;
+      }
+      const exams = (window.EXAM_REGISTRY.examsForLevel('listening', level) || [])
+        .filter(e => e.available !== false);
+      if (!exams.length) {
+        sel.innerHTML = '<option value="">No exams available at this level</option>';
+        sel.disabled = true;
+        return;
+      }
+      sel.disabled = false;
+      sel.innerHTML = '<option value="">Select exam...</option>' +
+        exams.map(e => `<option value="${e.id}">${e.title}</option>`).join('');
+    }
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,127 @@
+ID: b2-r7
+LEVEL: B2
+TITLE: B2 Reading 7 — What does it take to be successful?
+SUBTITLE: One passage · Headings, MCQ, reference, fill-in, writing
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: What does it take to be successful?
+
+PASSAGE:
+Many books have been written about the secrets of success. But what special qualities do successful people have in common?
+
+*1. VISION*
+
+Successful people visualise what they want. They have a picture in their mind of what their business will be like when they achieve their goals. *This* allows them to make decisions that support their vision.
+
+Bill Gates' vision was to "put a computer on every desktop and in every home." At the time he was developing his first models, computers were very large, expensive, and mainly used in offices and factories. Most people couldn't see what Gates saw: that computers could have a value for personal uses. Today, most of us can't imagine life without a computer, and Microsoft has grown into a multi-billion-dollar company.
+
+A talented programmer, Mark Zuckerberg had a vision for connecting people online. He was so convinced of his vision he even dropped out of college to develop *it*. In just a few years, Facebook became the most popular social networking site in the world.
+
+*2. PERSISTENCE*
+
+Success doesn't come easily. Successful people are disciplined and persevere through failure. A key benefit of failure is to learn from your mistakes. You won't find one successful person who hasn't experienced any *setbacks*.
+
+Oprah Winfrey is one of the world's most successful women in television, but she was once fired from her job as a television reporter. Most people wouldn't believe that the best basketball player of all time was cut from his high school team. Michael Jordan says, "I have missed more than 9,000 shots in my career. I have lost almost 300 games. ... I have failed over and over again in my life. And that is why I succeeded."
+
+*3. CREATIVITY*
+
+Where other people see problems and limitations, successful people see possibilities and opportunities. When Akio Morita, the co-founder of Sony, developed a tape recorder he had great difficulty in selling *it* because people could not see a use for it. After observing people in their daily lives he realised people spent hours travelling and walking and so he adapted his design to become the world famous walkman.
+
+When the web took off in the mid-1990s, computer programmer Pierre Omidyar worried that big businesses would be a barrier to individual commerce. He saw the potential of the Internet to connect people around the world instantly. So Omidyar created eBay, a hugely successful online market where individuals compete with big companies.
+
+*4. PASSION*
+
+Successful people love what they do. Celebrity designer Jean-Paul Gaultier had no formal training in design, but loved creating clothing and at a young age began sending *his* drawings to famous French designers. One of these designers recognised his talent and hired him as an assistant. Later, he launched his own line of clothing, and quickly became a global success.
+
+Arguably all successful people have a mixture of vision, persistence, creativity and passion, and one particular example is the director Steven Spielberg. From the age of eight he was making movies on a home video camera and he won awards while he was still in school. However, his poor school grades made it difficult for him to get accepted to a top college, and eventually he dropped out of college altogether, sidetracked by his passion for film making. Every day he would sneak out into a Universal Studios location trying to make contacts and get known, and he was frequently thrown out. Eventually, his talents led him to becoming one of the most successful directors in movie history.
+
+Talented individuals do not necessarily make successful ones since talent alone is not enough. However, talent combined with passion, vision, persistence and creativity is a *potent* force for success.
+
+# HEADINGS
+LABEL: Part A
+INSTRUCTIONS: Match the main ideas (A-D) to the sections (1-4) of the text.
+LABELS: 1. VISION, 2. PERSISTENCE, 3. CREATIVITY, 4. PASSION
+A: Hard work and never giving up are a key to success.
+B: To be successful it's important to love what you do.
+C: Successful people can see what they want to achieve.
+D: Successful people use their imagination to see opportunities.
+ANSWERS: 1=C, 2=A, 3=D, 4=B
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Circle the best choice according to the text.
+1. Visionary people _____.
+   a) recognise the potential of an idea before others
+   b) tend to be successful in the field of technology
+   c) are able to visualise a picture before taking it
+   d) have a miraculous gift of predicting the future
+   ANSWER: a
+2. Michael Jordan refers to his failures (missing more than 9,000 shots and losing almost 300 games) to show _____.
+   a) that he learned from his failures
+   b) why he was cut from his high school team
+   c) how experienced he is in failing
+   d) that he is the best basketball player of all time
+   ANSWER: a
+3. Pierre Omidyar was concerned that _____.
+   a) individual commerce would not meet the demand
+   b) big businesses would dominate the web
+   c) competition among individuals would be huge
+   d) big businesses would lose revenue because of the competition
+   ANSWER: b
+4. Whose first invention was not widely used by people?
+   a) Bill Gates'
+   b) Mark Zuckerberg's
+   c) Akio Morita's
+   d) Pierre Omidyar's
+   ANSWER: c
+5. Which of the following is FALSE about Steven Spielberg?
+   a) He started making movies at an early age.
+   b) He was kicked out of college because of his poor grades.
+   c) His attempts to be known were rejected several times, but he did not give up.
+   d) Even with a home video camera, he was able to get prizes when he was a student.
+   ANSWER: b
+
+# VOCAB
+LABEL: Part B (vocabulary)
+INSTRUCTIONS: Choose the closest meaning.
+1. In paragraph 5, "setback" probably means:
+   a) emergency
+   b) delay
+   c) help
+   d) defeat
+   ANSWER: d
+2. In paragraph 11, "potent" probably means:
+   a) changing
+   b) suitable
+   c) persuasive
+   d) powerful
+   ANSWER: d
+
+# SHORTANSWER
+LABEL: Part C
+INSTRUCTIONS: What do the following words refer to? They are bold and underlined in the text.
+1. "This" (paragraph 2):
+   ANSWER: having a picture in their mind (of what their business will be like when they achieve their goals)
+2. "it" (paragraph 4):
+   ANSWER: his vision for connecting people online
+3. "it" (paragraph 7):
+   ANSWER: tape recorder
+4. "his" (paragraph 9):
+   ANSWER: Jean-Paul Gaultier's
+
+# WRITING
+LABEL: Part D (vocabulary in context)
+INSTRUCTIONS: Find a word or phrase in the text that means the following.
+PROMPT: 1. "to try to do or continue doing something in a determined way, despite having problems" (paragraph 5)
+2. "official" (paragraph 9)
+3. "to begin something such as a plan or introduce something new such as a product" (paragraph 9)
+4. "in the end, especially after a long time or a lot of effort, problems" (paragraph 10)
+
+[Suggested answers: persevere · formal · launch · eventually]
+MIN_WORDS: 5
+
+# WRITING
+LABEL: Part E
+INSTRUCTIONS: Answer the following question in your own words (min. 50 words).
+PROMPT: Which quality (vision, persistence, creativity or passion) is the most important factor in success? Why?
+MIN_WORDS: 50

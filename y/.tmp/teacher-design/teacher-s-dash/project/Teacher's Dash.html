@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher's Dash</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0d1117; color: #e6edf3; font-family: 'Segoe UI', system-ui, sans-serif; height: 100vh; overflow: hidden; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+select, input { outline: none; font-family: inherit; }
+button { font-family: inherit; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{"accentColor":"#3b82f6","theme":"dark","compactMode":false}/*EDITMODE-END*/;
+
+const C = {
+  bg: '#0d1117', surface: '#161b22', surface2: '#1c2128', surface3: '#21262d',
+  border: '#30363d', borderLight: '#21262d',
+  text: '#e6edf3', textMuted: '#7d8590', textDim: '#484f58',
+  blue: '#3b82f6', cyan: '#22d3ee', green: '#22c55e',
+  amber: '#f59e0b', red: '#ef4444', purple: '#a855f7',
+};
+
+// ─── Shared primitives ────────────────────────────────────
+
+function Pill({ label, active, onClick, color }) {
+  const [hov, setHov] = useState(false);
+  const bg = active ? (color || C.blue) : hov ? '#ffffff0a' : 'transparent';
+  return (
+    <button onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ background: bg, color: active ? '#fff' : C.textMuted, border: `1px solid ${active ? (color||C.blue) : C.border}`, borderRadius: 20, padding: '5px 14px', fontSize: 12, fontWeight: active ? 600 : 400, transition: 'all .15s' }}>
+      {label}
+    </button>
+  );
+}
+
+function Sel({ value, onChange, options, style }) {
+  return (
+    <select value={value} onChange={e => onChange(e.target.value)}
+      style={{ background: C.surface2, border: `1px solid ${C.border}`, color: C.textMuted, borderRadius: 8, padding: '7px 12px', fontSize: 12, ...style }}>
+      {options.map(o => <option key={o.value ?? o} value={o.value ?? o}>{o.label ?? o}</option>)}
+    </select>
+  );
+}
+
+function Btn({ children, variant = 'ghost', color, onClick, style }) {
+  const [hov, setHov] = useState(false);
+  const base = variant === 'solid'
+    ? { background: color || C.blue, color: '#fff', border: 'none' }
+    : variant === 'outline'
+    ? { background: hov ? '#ffffff08' : 'transparent', color: C.textMuted, border: `1px solid ${C.border}` }
+    : { background: hov ? '#ffffff08' : 'transparent', color: C.textMuted, border: `1px solid ${C.border}` };
+  return (
+    <button onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ ...base, borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 500, transition: 'all .15s', display: 'flex', alignItems: 'center', gap: 5, ...style }}>
+      {children}
+    </button>
+  );
+}
+
+function Badge({ label, color }) {
+  return (
+    <span style={{ background: color + '20', color, border: `1px solid ${color}40`, fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 10, whiteSpace: 'nowrap' }}>
+      {label}
+    </span>
+  );
+}
+
+function ScoreBar({ pct }) {
+  const color = pct >= 75 ? C.cyan : pct >= 50 ? C.amber : C.red;
+  return (
+    <div>
+      <div style={{ height: 4, background: C.border, borderRadius: 2, width: 80, marginBottom: 3 }}>
+        <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 2, transition: 'width .6s ease' }} />
+      </div>
+      <span style={{ fontSize: 10, color: C.textMuted }}>{pct}%</span>
+    </div>
+  );
+}
+
+function Sparkline({ data, color, width = 72, height = 28 }) {
+  const min = Math.min(...data), max = Math.max(...data), range = max - min || 1;
+  const pts = data.map((v, i) => `${(i / (data.length - 1)) * width},${height - ((v - min) / range) * (height - 4) - 2}`).join(' ');
+  const area = `M0,${height} L${pts.split(' ').join(' L')} L${width},${height} Z`;
+  const id = `sg${color.replace('#', '')}`;
+  return (
+    <svg width={width} height={height} style={{ overflow: 'visible' }}>
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#${id})`} />
+      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function RingProgress({ value, size = 52, color = C.blue }) {
+  const r = (size - 8) / 2, circ = 2 * Math.PI * r;
+  return (
+    <svg width={size} height={size}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={C.border} strokeWidth="4" />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="4"
+        strokeDasharray={circ} strokeDashoffset={circ - (value / 100) * circ}
+        strokeLinecap="round" transform={`rotate(-90 ${size/2} ${size/2})`}
+        style={{ transition: 'stroke-dashoffset .8s ease' }} />
+      <text x={size/2} y={size/2+1} textAnchor="middle" dominantBaseline="middle"
+        fill={C.text} fontSize="11" fontWeight="700">{value}%</text>
+    </svg>
+  );
+}
+
+// ─── OVERVIEW TAB ─────────────────────────────────────────
+
+function MiniBarChart({ data, colors }) {
+  const max = Math.max(...data.map(d => d.value), 1);
+  return (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 80, padding: '0 4px' }}>
+      {data.map((d, i) => (
+        <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+          <span style={{ fontSize: 11, color: C.textMuted, fontWeight: 600 }}>{d.value}</span>
+          <div style={{ width: '100%', background: C.border, borderRadius: 4, height: 48, display: 'flex', alignItems: 'flex-end' }}>
+            <div style={{ width: '100%', height: `${(d.value / max) * 100 || 6}%`, minHeight: 4, background: colors[i], borderRadius: 4, transition: 'height .6s ease' }} />
+          </div>
+          <span style={{ fontSize: 10, color: C.textDim }}>{d.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ActivityHeatmap() {
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const hours = ['8am','10am','12pm','2pm','4pm','6pm'];
+  const data = [[0,2,5,8,6,1],[1,4,9,10,7,2],[0,3,7,9,8,3],[2,5,8,11,6,1],[1,4,6,8,5,0],[0,1,2,3,2,0],[0,0,1,2,1,0]];
+  const max = Math.max(...data.flat());
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 2, marginBottom: 4 }}>
+        <div style={{ width: 28 }} />
+        {hours.map(h => <div key={h} style={{ flex: 1, fontSize: 9, color: C.textDim, textAlign: 'center' }}>{h}</div>)}
+      </div>
+      {data.map((row, di) => (
+        <div key={di} style={{ display: 'flex', gap: 2, marginBottom: 2, alignItems: 'center' }}>
+          <div style={{ width: 28, fontSize: 10, color: C.textMuted }}>{days[di]}</div>
+          {row.map((v, hi) => {
+            const t = max ? v / max : 0;
+            const bg = t === 0 ? C.borderLight : t < 0.3 ? '#1d3a5f' : t < 0.6 ? '#1e4d8c' : t < 0.85 ? '#2563eb' : '#3b82f6';
+            return <div key={hi} style={{ flex: 1, height: 14, borderRadius: 2, background: bg }} />;
+          })}
+        </div>
+      ))}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10 }}>
+        <span style={{ fontSize: 10, color: C.textDim }}>Less</span>
+        {['#21262d','#1d3a5f','#1e4d8c','#2563eb','#3b82f6'].map((c, i) => <div key={i} style={{ width: 10, height: 10, background: c, borderRadius: 2 }} />)}
+        <span style={{ fontSize: 10, color: C.textDim }}>More</span>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ icon, label, value, sub, spark, sparkColor, trend, trendUp, color = C.cyan, alert }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ background: hov ? C.surface2 : C.surface, border: `1px solid ${alert ? C.amber + '60' : C.border}`, borderRadius: 12, padding: '18px 20px 14px', display: 'flex', flexDirection: 'column', gap: 8, transition: 'all .2s', boxShadow: alert ? `0 0 0 1px ${C.amber}30` : 'none' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ fontSize: 22 }}>{icon}</div>
+        {trend && <span style={{ fontSize: 11, fontWeight: 600, color: trendUp ? C.green : C.red, background: (trendUp ? C.green : C.red) + '18', padding: '2px 7px', borderRadius: 20 }}>{trendUp ? '↑' : '↓'} {trend}</span>}
+      </div>
+      <div style={{ fontSize: 32, fontWeight: 800, color, lineHeight: 1, letterSpacing: '-1px' }}>{value}</div>
+      <div style={{ fontSize: 12, color: C.textMuted, fontWeight: 500 }}>{label}</div>
+      {spark && <Sparkline data={spark} color={sparkColor || color} />}
+      {sub && <div style={{ fontSize: 11, color: C.textDim, marginTop: -4 }}>{sub}</div>}
+    </div>
+  );
+}
+
+function OverviewTab() {
+  const levelData = [{ label:'A2', value:6 }, { label:'B1', value:14 }, { label:'B1+', value:9 }, { label:'B2', value:4 }];
+  const levelColors = [C.blue, C.cyan, C.purple, C.green];
+  const attention = [
+    { name:'Marcus Johnson', issue:'Inactive 14 days · Score dropped 22%', score:31, level:'B1' },
+    { name:'Priya Nair', issue:'Score < 40% for 3 consecutive sessions', score:38, level:'A2' },
+    { name:'Tom Eriksen', issue:'No sessions completed this month', score:55, level:'B1+' },
+    { name:'Asha Müller', issue:'Inactive 8 days · Missed 2 assignments', score:58, level:'B1' },
+    { name:'Leo Tanaka', issue:'Score < 50% · Engagement declining', score:46, level:'A2' },
+  ];
+  const feed = [
+    { who:'Sara Kim', action:'completed Session #47', time:'2 min ago', dot:C.green },
+    { who:'James Park', action:'submitted Assignment: Modal Verbs', time:'18 min ago', dot:C.blue },
+    { who:'Riya Sharma', action:'scored 94% on Reading Test', time:'41 min ago', dot:C.green },
+    { who:'Carlos Vega', action:'started new session', time:'1 hr ago', dot:C.cyan },
+    { who:'Nina Wolff', action:'dropped below 50% average', time:'2 hrs ago', dot:C.red },
+  ];
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14 }}>
+        <StatCard icon="👥" label="Total Students" value="33" spark={[12,18,15,22,20,27,25]} sparkColor={C.cyan} trend="3 this week" trendUp color={C.cyan} />
+        <StatCard icon="🎯" label="Total Sessions" value="2,075" spark={[280,310,295,330,320,350,340]} sparkColor={C.purple} trend="12%" trendUp color={C.purple} />
+        <StatCard icon="⚡" label="Active Today" value="1" sub="1 of 33 students" spark={[8,12,7,15,11,9,14]} sparkColor={C.amber} color={C.amber} alert />
+        <StatCard icon="📈" label="Avg. Score" value="66%" spark={[62,58,65,63,61,66,68]} sparkColor={C.green} trend="2pts" trendUp color={C.green} />
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:14 }}>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:'18px 20px' }}>
+          <div style={{ fontSize:13, fontWeight:700, color:C.text, marginBottom:16 }}>Level Distribution</div>
+          <MiniBarChart data={levelData} colors={levelColors} />
+          <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginTop:14 }}>
+            {levelData.map((d,i) => <div key={i} style={{ display:'flex', alignItems:'center', gap:5, fontSize:11 }}><div style={{ width:8, height:8, borderRadius:2, background:levelColors[i] }} /><span style={{ color:C.textMuted }}>{d.label}</span><span style={{ color:C.text, fontWeight:600 }}>{d.value}</span></div>)}
+          </div>
+        </div>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:'18px 20px' }}>
+          <div style={{ fontSize:13, fontWeight:700, color:C.text, marginBottom:16 }}>Score Bands</div>
+          <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+            {[{label:'90–100%',count:4,color:C.green,pct:12},{label:'70–89%',count:11,color:C.cyan,pct:33},{label:'50–69%',count:12,color:C.amber,pct:36},{label:'Below 50%',count:6,color:C.red,pct:18}].map(b => (
+              <div key={b.label}>
+                <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
+                  <span style={{ fontSize:11, color:C.textMuted }}>{b.label}</span>
+                  <span style={{ fontSize:11, fontWeight:700, color:b.color }}>{b.count} students</span>
+                </div>
+                <div style={{ height:5, background:C.borderLight, borderRadius:3 }}>
+                  <div style={{ height:'100%', width:`${b.pct}%`, background:b.color, borderRadius:3 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop:16, display:'flex', justifyContent:'center' }}><RingProgress value={66} color={C.cyan} /></div>
+        </div>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:'18px 20px' }}>
+          <div style={{ fontSize:13, fontWeight:700, color:C.text, marginBottom:14 }}>Weekly Activity</div>
+          <ActivityHeatmap />
+        </div>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:14 }}>
+        <div style={{ background:C.surface, border:`1px solid ${C.amber}40`, borderRadius:12, padding:'18px 20px' }}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+              <span>⚠️</span>
+              <span style={{ fontSize:13, fontWeight:700, color:C.text }}>Needs Attention</span>
+              <Badge label="5 students" color={C.amber} />
+            </div>
+            <Btn>View All</Btn>
+          </div>
+          {attention.map((s,i) => {
+            const sev = s.score < 40 ? 'critical' : s.score < 50 ? 'warning' : 'info';
+            const sc = sev === 'critical' ? C.red : sev === 'warning' ? C.amber : C.blue;
+            const init = s.name.split(' ').map(n=>n[0]).join('');
+            return (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:12, padding:'9px 12px', borderRadius:8, background:C.surface2, border:`1px solid ${sc}30`, marginBottom:6 }}>
+                <div style={{ width:32, height:32, borderRadius:'50%', background:sc+'20', border:`1.5px solid ${sc}50`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:sc, flexShrink:0 }}>{init}</div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:13, fontWeight:600, color:C.text }}>{s.name}</div>
+                  <div style={{ fontSize:11, color:C.textMuted, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{s.issue}</div>
+                </div>
+                <Badge label={sev.toUpperCase()} color={sc} />
+                <Btn style={{ flexShrink:0, fontSize:11, padding:'3px 10px' }}>Message</Btn>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:'18px 20px' }}>
+          <div style={{ fontSize:13, fontWeight:700, color:C.text, marginBottom:14 }}>Recent Activity</div>
+          {feed.map((a,i) => (
+            <div key={i} style={{ display:'flex', gap:10, paddingBottom:12, marginBottom:12, borderBottom:i<feed.length-1?`1px solid ${C.borderLight}`:'none' }}>
+              <div style={{ width:8, height:8, borderRadius:'50%', background:a.dot, marginTop:4, flexShrink:0 }} />
+              <div><div style={{ fontSize:12, color:C.text }}><strong style={{ fontWeight:600 }}>{a.who}</strong> {a.action}</div><div style={{ fontSize:11, color:C.textDim, marginTop:2 }}>{a.time}</div></div>
+            </div>
+          ))}
+          <Btn style={{ width:'100%', justifyContent:'center' }}>View All Activity</Btn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── STUDENTS TAB ─────────────────────────────────────────
+
+const STUDENTS = [
+  { name:'Mustafa Ca...', email:'mustafacan.id', book:'Empower', level:'B1', cls:'D315', module:'Module 4', year:'2025–26', sessions:7, words:29, score:100, last:'Apr 2', status:'Inactive' },
+  { name:'Shahin Kabi...', email:'Shahin@fsm.e', book:'–', level:'B2', cls:'B213', module:'Module 4', year:'2025–26', sessions:0, words:0, score:0, last:'Apr 1', status:'Inactive' },
+  { name:'class101 U...', email:'class101@fsm.', book:'–', level:'A2', cls:'B125', module:'Module 2', year:'2025–26', sessions:0, words:0, score:0, last:'Jan 3', status:'Inactive' },
+  { name:'Abdulrauf B...', email:'abadrjki@fsm', book:'Empower', level:'B1', cls:'B100', module:'Module 3', year:'2025–26', sessions:58, words:217, score:87, last:'Apr 10', status:'Inactive' },
+  { name:'Havva Betü...', email:'havvabetul.sa', book:'Both', level:'B1', cls:'D315', module:'Module 4', year:'2025–26', sessions:35, words:87, score:85, last:'Apr 9', status:'Inactive' },
+  { name:'shahinkab...', email:'shahinkab@fs', book:'Empower', level:'A2', cls:'B124', module:'Module 2', year:'2025–26', sessions:44, words:93, score:24, last:'Apr 7', status:'Inactive' },
+  { name:'Esra G...', email:'egerol@fsm.e', book:'–', level:'A2', cls:'B114', module:'Module 1', year:'2025–26', sessions:0, words:0, score:0, last:'Feb 12', status:'Inactive' },
+  { name:'Yeşim Aşur...', email:'yasuroglu@fsi', book:'Empower', level:'A2', cls:'B120', module:'Module 3', year:'2025–26', sessions:489, words:914, score:76, last:'Mar 30', status:'Inactive' },
+  { name:'Ceyda Ecer...', email:'ceyda@fsm.e', book:'Gateway', level:'B1', cls:'D315', module:'Module 4', year:'2025–26', sessions:7, words:20, score:97, last:'Apr 9', status:'Inactive' },
+  { name:'Alireza...', email:'akabiriaslifa', book:'Empower', level:'B1+', cls:'B125', module:'Module 2', year:'2025–26', sessions:312, words:1240, score:82, last:'Apr 25', status:'Active' },
+];
+
+function StudentsTab() {
+  const [search, setSearch] = useState('');
+  const [skill, setSkill] = useState('All Skills');
+  const [levelFilter, setLevelFilter] = useState('All Levels');
+  const skills = ['All Skills','Vocabulary','Listening','Grammar','Reading','Writing','Speaking'];
+
+  const filtered = useMemo(() => STUDENTS.filter(s =>
+    (search === '' || s.name.toLowerCase().includes(search.toLowerCase()) || s.email.toLowerCase().includes(search.toLowerCase())) &&
+    (levelFilter === 'All Levels' || s.level === levelFilter)
+  ), [search, levelFilter]);
+
+  const TH = ({ children, w }) => (
+    <th style={{ textAlign:'left', padding:'0 12px 10px', fontSize:10, fontWeight:700, letterSpacing:'0.8px', color:C.textDim, textTransform:'uppercase', whiteSpace:'nowrap', width:w }}>
+      {children}
+    </th>
+  );
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      {/* Skill pills */}
+      <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+        {skills.map(s => <Pill key={s} label={s} active={skill===s} onClick={() => setSkill(s)} color={C.green} />)}
+      </div>
+      {/* Toolbar */}
+      <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          <span style={{ fontSize:16 }}>👥</span>
+          <span style={{ fontSize:15, fontWeight:700, color:C.text }}>Students</span>
+        </div>
+        <div style={{ flex:1 }} />
+        <Sel value="All Books" onChange={()=>{}} options={['All Books','Empower','Gateway','Both']} />
+        <Sel value={levelFilter} onChange={setLevelFilter} options={['All Levels','A2','B1','B1+','B2']} />
+        <Sel value="All Classes" onChange={()=>{}} options={['All Classes','B100','B114','B120','B124','B125','B213','D315']} />
+        <Sel value="All Modules" onChange={()=>{}} options={['All Modules','Module 1','Module 2','Module 3','Module 4']} />
+        <Sel value="All Years" onChange={()=>{}} options={['All Years','2025–26','2024–25']} />
+        <div style={{ position:'relative' }}>
+          <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:C.textDim, fontSize:13 }}>🔍</span>
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name or email…"
+            style={{ background:C.surface2, border:`1px solid ${C.border}`, color:C.text, borderRadius:8, padding:'7px 12px 7px 30px', fontSize:12, width:200 }} />
+        </div>
+      </div>
+      {/* Table */}
+      <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, overflow:'hidden' }}>
+        <table style={{ width:'100%', borderCollapse:'collapse' }}>
+          <thead style={{ borderBottom:`1px solid ${C.border}` }}>
+            <tr>
+              <TH>Student</TH><TH>Book</TH><TH>Level</TH><TH>Class</TH><TH>Module</TH><TH>Year</TH>
+              <TH>Sessions</TH><TH>Words</TH><TH w="110px">Avg Score</TH><TH>Last Act.</TH><TH>Status</TH><TH>Actions</TH>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((s, i) => {
+              const [hov, setHov] = useState(false);
+              const isActive = s.status === 'Active';
+              return (
+                <tr key={i} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+                  style={{ background: hov ? C.surface2 : 'transparent', borderBottom:`1px solid ${C.borderLight}`, transition:'background .12s' }}>
+                  <td style={{ padding:'11px 12px' }}>
+                    <div style={{ fontSize:13, fontWeight:600, color:C.text }}>{s.name}</div>
+                    <div style={{ fontSize:11, color:C.textMuted }}>{s.email}</div>
+                  </td>
+                  <td style={{ padding:'11px 12px', fontSize:12, color:C.textMuted }}>{s.book}</td>
+                  <td style={{ padding:'11px 12px' }}><Badge label={s.level} color={s.level==='B2'?C.green:s.level==='B1+'?C.purple:s.level==='B1'?C.cyan:C.blue} /></td>
+                  <td style={{ padding:'11px 12px', fontSize:12, color:C.textMuted }}>{s.cls}</td>
+                  <td style={{ padding:'11px 12px', fontSize:12, color:C.textMuted }}>{s.module}</td>
+                  <td style={{ padding:'11px 12px', fontSize:12, color:C.textMuted }}>{s.year}</td>
+                  <td style={{ padding:'11px 12px', fontSize:13, fontWeight:600, color:C.text }}>{s.sessions}</td>
+                  <td style={{ padding:'11px 12px', fontSize:13, fontWeight:600, color:C.text }}>{s.words}</td>
+                  <td style={{ padding:'11px 12px' }}><ScoreBar pct={s.score} /></td>
+                  <td style={{ padding:'11px 12px', fontSize:12, color:C.textMuted }}>{s.last}</td>
+                  <td style={{ padding:'11px 12px' }}>
+                    <Badge label={s.status} color={isActive ? C.green : C.red} />
+                  </td>
+                  <td style={{ padding:'11px 12px' }}>
+                    <div style={{ display:'flex', gap:6 }}>
+                      <button style={{ background:'none', border:`1px solid ${C.border}`, borderRadius:6, padding:'4px 7px', color:C.textMuted, fontSize:13 }}>✏️</button>
+                      <button style={{ background:'none', border:`1px solid ${C.border}`, borderRadius:6, padding:'4px 7px', color:C.red+'aa', fontSize:13 }}>🗑️</button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <div style={{ padding:'12px 16px', borderTop:`1px solid ${C.border}`, fontSize:12, color:C.textMuted }}>
+          Showing {filtered.length} of {STUDENTS.length} students
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── ASSIGNMENTS TAB ──────────────────────────────────────
+
+const ASSIGNMENTS = [
+  { title:'Vocabulary', book:'Empower', level:'B1+', unit:'Unit 6', activity:'Fill in Blank', target:'Individual Students', due:'Apr 26, 2026 (Tomorrow)', students:1, completed:1, rate:100, status:'complete' },
+  { title:'Vocabulary', book:'Empower', level:'B1+', unit:'all', activity:'Any Activity', target:'Individual Students', due:'Apr 26, 2026 (Tomorrow)', students:3, completed:3, rate:100, status:'complete' },
+  { title:'Grammar Practice', book:'Gateway', level:'B2', unit:'Unit 3', activity:'Multiple Choice', target:'Class D315', due:'Apr 28, 2026', students:12, completed:7, rate:58, status:'active' },
+  { title:'Reading Comprehension', book:'Empower', level:'A2', unit:'Unit 1', activity:'True/False', target:'All Students', due:'Apr 20, 2026', students:8, completed:4, rate:50, status:'overdue' },
+];
+
+function AssignmentCard({ a }) {
+  const [open, setOpen] = useState(true);
+  const statusColor = a.status==='complete' ? C.green : a.status==='overdue' ? C.red : C.blue;
+  const statusLabel = a.status==='complete' ? 'All Complete' : a.status==='overdue' ? 'Overdue' : 'Active';
+  return (
+    <div style={{ background:C.surface2, border:`1px solid ${a.status==='overdue'?C.red+'50':C.border}`, borderRadius:12, overflow:'hidden', marginBottom:12 }}>
+      <div style={{ padding:'16px 20px', cursor:'pointer' }} onClick={() => setOpen(!open)}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+          <div>
+            <div style={{ fontSize:15, fontWeight:700, color:C.text, marginBottom:8 }}>{a.title}</div>
+            <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginBottom:6 }}>
+              {[['📘',a.book],['📊',a.level],['📂',a.unit],['🖊️',a.activity]].map(([ic,lbl],i) => (
+                <span key={i} style={{ fontSize:11, color:C.textMuted, display:'flex', alignItems:'center', gap:4 }}><span>{ic}</span>{lbl}</span>
+              ))}
+            </div>
+            <div style={{ display:'flex', gap:10 }}>
+              <span style={{ fontSize:11, color:C.textMuted, display:'flex', alignItems:'center', gap:4 }}>🎯 Target: {a.target}</span>
+              <span style={{ fontSize:11, color:C.textMuted, display:'flex', alignItems:'center', gap:4 }}>📅 Due: {a.due}</span>
+            </div>
+          </div>
+          <Badge label={statusLabel} color={statusColor} />
+        </div>
+      </div>
+      {open && (
+        <div style={{ borderTop:`1px solid ${C.border}` }}>
+          <div style={{ display:'flex', justifyContent:'center', gap:48, padding:'20px 0' }}>
+            {[['👥',a.students,'Students'],['✅',a.completed,'Completed'],['🎉',`${a.rate}%`,'Success Rate']].map(([ic,val,lbl],i) => (
+              <div key={i} style={{ textAlign:'center' }}>
+                <div style={{ fontSize:20, marginBottom:4 }}>{ic}</div>
+                <div style={{ fontSize:24, fontWeight:800, color:i===2?(a.rate>=80?C.green:a.rate>=50?C.amber:C.red):C.cyan, lineHeight:1 }}>{val}</div>
+                <div style={{ fontSize:12, color:C.textMuted, marginTop:4 }}>{lbl}</div>
+              </div>
+            ))}
+          </div>
+          {a.rate < 100 && (
+            <div style={{ margin:'0 20px 12px', background:C.borderLight, borderRadius:6, height:6 }}>
+              <div style={{ height:'100%', width:`${a.rate}%`, background:a.rate>=80?C.green:a.rate>=50?C.amber:C.red, borderRadius:6, transition:'width .6s' }} />
+            </div>
+          )}
+          <div style={{ display:'flex', gap:8, padding:'12px 20px', borderTop:`1px solid ${C.border}`, background:C.surface }}>
+            <Btn><span>👁️</span> View Details</Btn>
+            <Btn><span>✏️</span> Edit</Btn>
+            <Btn style={{ color:C.red+'cc', borderColor:C.red+'40' }}><span>🗑️</span> Delete</Btn>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AssignmentsTab() {
+  const active = ASSIGNMENTS.filter(a => a.status==='active').length;
+  const overdue = ASSIGNMENTS.filter(a => a.status==='overdue').length;
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+        <div style={{ display:'flex', gap:20 }}>
+          <div style={{ textAlign:'center' }}>
+            <div style={{ fontSize:22, fontWeight:800, color:C.cyan }}>{active + ASSIGNMENTS.filter(a=>a.status==='complete').length}</div>
+            <div style={{ fontSize:11, color:C.textMuted }}>Active</div>
+          </div>
+          <div style={{ textAlign:'center' }}>
+            <div style={{ fontSize:22, fontWeight:800, color:C.red }}>{overdue}</div>
+            <div style={{ fontSize:11, color:C.textMuted }}>Overdue</div>
+          </div>
+        </div>
+        <Btn variant="solid"><span>+</span> New Assignment</Btn>
+      </div>
+      {/* Filter pills */}
+      <div style={{ display:'flex', gap:8 }}>
+        {['All','Active','Complete','Overdue'].map(f => (
+          <Pill key={f} label={f} active={f==='All'} color={C.blue} onClick={() => {}} />
+        ))}
+      </div>
+      <div>
+        {ASSIGNMENTS.map((a, i) => <AssignmentCard key={i} a={a} />)}
+      </div>
+    </div>
+  );
+}
+
+// ─── ACTIVITY TAB ─────────────────────────────────────────
+
+const ACTIVITY_LOGS = [
+  { type:'Practice Completed', student:'Alireza', cls:'B125', activity:'fillblank', book:'empower', level:'B1+', score:100, unit:'Unit 6', words:4, time:'Just now', date:'25 Apr 2026 22:59', device:'Desktop · Chrome' },
+  { type:'Practice Completed', student:'Alireza', cls:'B125', activity:'fillblank', book:'empower', level:'B1+', score:60, unit:'Unit 5', words:3, time:'Just now', date:'25 Apr 2026 22:51', device:'Desktop · Chrome' },
+  { type:'Practice Completed', student:'Alireza', cls:'B125', activity:'fillblank', book:'empower', level:'B1+', score:0, unit:'Unit 4', words:0, time:'17 min ago', date:'25 Apr 2026 22:42', device:'Desktop · Chrome' },
+  { type:'Practice Completed', student:'Sara Kim', cls:'D315', activity:'multiplechoice', book:'gateway', level:'B1', score:100, unit:'Unit 6', words:6, time:'12 hrs ago', date:'25 Apr 2026 10:30', device:'Mobile · Safari' },
+  { type:'Assignment Submitted', student:'James Park', cls:'B213', activity:'reading', book:'empower', level:'B2', score:78, unit:'Unit 3', words:0, time:'12 hrs ago', date:'25 Apr 2026 10:15', device:'Desktop · Firefox' },
+];
+
+const RECENT_ACTS = [
+  { student:'Alireza', sub:'Fill in Blank · B1+ · Just now', score:100 },
+  { student:'Alireza', sub:'Fill in Blank · B1+ · Just now', score:60 },
+  { student:'Alireza', sub:'Fill in Blank · B1+ · 17 min ago', score:0 },
+  { student:'Alireza', sub:'Fill in Blank · B1+ · 12 hours ago', score:100 },
+  { student:'Alireza', sub:'Fill in Blank · B1+ · 12 hours ago', score:100 },
+];
+
+function ActivityTab() {
+  const [skill, setSkill] = useState('All Skills');
+  const [search, setSearch] = useState('');
+  const skills = ['All Skills','Vocabulary','Listening','Grammar','Reading','Writing','Speaking'];
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      {/* Skill pills */}
+      <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+        {skills.map(s => <Pill key={s} label={s} active={skill===s} onClick={() => setSkill(s)} color={C.green} />)}
+      </div>
+      {/* Recent Activity */}
+      <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, overflow:'hidden' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 20px', borderBottom:`1px solid ${C.border}` }}>
+          <div style={{ fontSize:14, fontWeight:700, color:C.text, display:'flex', alignItems:'center', gap:8 }}>📝 Recent Activity</div>
+          <div style={{ display:'flex', gap:8 }}>
+            <Sel value="All Books" onChange={()=>{}} options={['All Books','Empower','Gateway']} />
+            <Sel value="All Activities" onChange={()=>{}} options={['All Activities','Fill in Blank','Multiple Choice','Reading','Writing']} />
+          </div>
+        </div>
+        <div style={{ maxHeight:260, overflowY:'auto' }}>
+          {RECENT_ACTS.map((a, i) => {
+            const c = a.score === 100 ? C.green : a.score >= 60 ? C.amber : C.red;
+            return (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:14, padding:'12px 20px', borderBottom:`1px solid ${C.borderLight}`, background: i%2===0?'transparent':C.surface2+'40' }}>
+                <div style={{ width:36, height:36, borderRadius:8, background:C.surface3, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, flexShrink:0 }}>📄</div>
+                <div style={{ flex:1 }}>
+                  <span style={{ fontWeight:600, color:C.text, fontSize:13 }}>{a.student}</span>
+                  <span style={{ fontSize:11, color:C.textMuted }}> · {a.sub}</span>
+                </div>
+                <span style={{ fontSize:15, fontWeight:800, color:c }}>{a.score}%</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {/* Activity Logs */}
+      <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, overflow:'hidden' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 20px', borderBottom:`1px solid ${C.border}` }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <span style={{ fontSize:14, fontWeight:700, color:C.text }}>📋 Activity Logs</span>
+            <Badge label="Admin Only" color={C.red} />
+          </div>
+          <div style={{ display:'flex', gap:16 }}>
+            {[['68','Today'],['168','This Week'],['885','This Month']].map(([n,l]) => (
+              <div key={l} style={{ textAlign:'center' }}>
+                <div style={{ fontSize:20, fontWeight:800, color:C.cyan }}>{n}</div>
+                <div style={{ fontSize:10, color:C.textMuted }}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Filters */}
+        <div style={{ padding:'14px 20px', display:'flex', gap:10, flexWrap:'wrap', borderBottom:`1px solid ${C.border}` }}>
+          <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
+            <span style={{ fontSize:9, color:C.textDim, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.8px' }}>Role</span>
+            <Sel value="All Roles" onChange={()=>{}} options={['All Roles','Teacher','Student','Admin']} />
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
+            <span style={{ fontSize:9, color:C.textDim, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.8px' }}>Category</span>
+            <Sel value="All Categories" onChange={()=>{}} options={['All Categories','Practice','Assignment','Session']} />
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
+            <span style={{ fontSize:9, color:C.textDim, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.8px' }}>Activity Type</span>
+            <Sel value="All Activities" onChange={()=>{}} options={['All Activities','fillblank','multiplechoice','reading','writing']} style={{ minWidth:160 }} />
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
+            <span style={{ fontSize:9, color:C.textDim, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.8px' }}>From Date</span>
+            <input type="date" style={{ background:C.surface2, border:`1px solid ${C.border}`, color:C.textMuted, borderRadius:8, padding:'7px 10px', fontSize:12 }} />
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
+            <span style={{ fontSize:9, color:C.textDim, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.8px' }}>To Date</span>
+            <input type="date" style={{ background:C.surface2, border:`1px solid ${C.border}`, color:C.textMuted, borderRadius:8, padding:'7px 10px', fontSize:12 }} />
+          </div>
+          <div style={{ flex:1 }} />
+          <div style={{ display:'flex', gap:6, alignSelf:'flex-end' }}>
+            <Btn variant="solid" color={C.blue}>🔍 Filter</Btn>
+            <Btn>↺ Clear</Btn>
+            <Btn variant="solid" color={C.green}>⬇ Export Excel</Btn>
+          </div>
+        </div>
+        {/* Search */}
+        <div style={{ padding:'10px 20px', borderBottom:`1px solid ${C.border}` }}>
+          <div style={{ position:'relative' }}>
+            <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:C.textDim }}>🔍</span>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, email, or activity…"
+              style={{ background:C.surface2, border:`1px solid ${C.border}`, color:C.text, borderRadius:8, padding:'8px 12px 8px 32px', fontSize:12, width:'100%' }} />
+          </div>
+        </div>
+        {/* Log entries */}
+        <div style={{ maxHeight:340, overflowY:'auto' }}>
+          {ACTIVITY_LOGS.map((log, i) => (
+            <div key={i} style={{ padding:'14px 20px', borderBottom:`1px solid ${C.borderLight}` }}>
+              <div style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
+                <div style={{ width:28, height:28, borderRadius:6, background:C.green+'20', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, flexShrink:0 }}>✅</div>
+                <div style={{ flex:1 }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
+                    <span style={{ fontSize:13, fontWeight:700, color:C.text }}>{log.type}</span>
+                    <Badge label="Student Actions" color={C.cyan} />
+                  </div>
+                  <div style={{ fontSize:12, color:C.textMuted, marginBottom:6 }}>
+                    <strong style={{ color:C.text }}>{log.student}</strong>
+                    <span style={{ color:C.textDim }}> ({log.cls})</span>
+                  </div>
+                  <div style={{ background:C.surface3, borderRadius:6, padding:'8px 12px', fontSize:11, color:C.textMuted, display:'flex', gap:16, flexWrap:'wrap' }}>
+                    <span>wordsCount: <strong style={{ color:C.text }}>{log.words}</strong></span>
+                    <span>activity: <strong style={{ color:C.cyan }}>{log.activity}</strong></span>
+                    <span>book: <strong style={{ color:C.text }}>{log.book}</strong></span>
+                    <span>level: <strong style={{ color:C.purple }}>{log.level}</strong></span>
+                    <span>score: <strong style={{ color:log.score>=80?C.green:log.score>=50?C.amber:C.red }}>{log.score}</strong></span>
+                    <span>unit: <strong style={{ color:C.text }}>{log.unit}</strong></span>
+                  </div>
+                  <div style={{ display:'flex', gap:16, marginTop:6 }}>
+                    <span style={{ fontSize:10, color:C.textDim }}>🕐 {log.time}</span>
+                    <span style={{ fontSize:10, color:C.textDim }}>📅 {log.date}</span>
+                    <span style={{ fontSize:10, color:C.textDim }}>💻 {log.device}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── ADMIN TAB ────────────────────────────────────────────
+
+const CLASSES = ['B100','B114','B119','B120','B124','B125','B129','B213','B214','C122','D16','D310','D311','D315'];
+
+const TEACHERS_DATA = [
+  { name:'Derya ÖZDEMİR', email:'dozdemir@fsm.edu.tr', isAdmin:false, isCurrent:false, level:'', module:'', classes:[] },
+  { name:'Alireza', email:'akabiriaslifa@fsm.edu.tr', isAdmin:true, isCurrent:true, level:'B1', module:'Module 2', classes:['B100','B114','B119','B120','B124','B125','B129','B213','B214','C122','D16','D310','D311','D315'] },
+  { name:'Zeynep CAN', email:'zdemir@fsm.edu.tr', isAdmin:false, isCurrent:false, level:'', module:'', classes:[] },
+  { name:'Hicran Özaydın', email:'hozaydin@fsm.edu.tr', isAdmin:false, isCurrent:false, level:'B1', module:'Module 4', classes:['B100','B114','B119','B120','B124','B125'] },
+];
+
+function TeacherCard({ t }) {
+  const [classes, setClasses] = useState(t.classes);
+  const [level, setLevel] = useState(t.level);
+  const [module, setModule] = useState(t.module);
+  const toggle = (cls) => setClasses(prev => prev.includes(cls) ? prev.filter(c=>c!==cls) : [...prev, cls]);
+  return (
+    <div style={{ background:C.surface2, border:`1px solid ${t.isCurrent?C.blue+'60':C.border}`, borderRadius:12, padding:'18px' }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:14 }}>
+        <div>
+          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
+            <span style={{ fontSize:14, fontWeight:700, color:C.text }}>{t.name}</span>
+            {t.isAdmin && <Badge label="Admin" color={C.amber} />}
+            {t.isCurrent && <Badge label="Current User" color={C.green} />}
+          </div>
+          <div style={{ fontSize:11, color:C.textMuted, display:'flex', alignItems:'center', gap:4 }}>📧 {t.email}</div>
+        </div>
+      </div>
+      {!t.isCurrent && (
+        <button style={{ background:C.amber+'15', border:`1px solid ${C.amber}40`, color:C.amber, borderRadius:8, padding:'6px 14px', fontSize:12, fontWeight:600, marginBottom:14, width:'100%' }}>
+          👇 Demote to Student
+        </button>
+      )}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:14 }}>
+        <div>
+          <div style={{ fontSize:10, color:C.textDim, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:6, display:'flex', alignItems:'center', gap:4 }}>📊 Year / Level</div>
+          <Sel value={level || '-- Not Assigned --'} onChange={setLevel} options={['-- Not Assigned --','A2','B1','B1+','B2']} style={{ width:'100%', fontSize:11 }} />
+        </div>
+        <div>
+          <div style={{ fontSize:10, color:C.textDim, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:6, display:'flex', alignItems:'center', gap:4 }}>📂 Module</div>
+          <Sel value={module || '-- Not Assigned --'} onChange={setModule} options={['-- Not Assigned --','Module 1','Module 2','Module 3','Module 4']} style={{ width:'100%', fontSize:11 }} />
+        </div>
+      </div>
+      <div>
+        <div style={{ fontSize:10, color:C.textDim, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:8, display:'flex', alignItems:'center', gap:4 }}>👥 Assigned Classes</div>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+          {CLASSES.map(cls => {
+            const on = classes.includes(cls);
+            return (
+              <label key={cls} style={{ display:'flex', alignItems:'center', gap:5, cursor:'pointer', padding:'4px 8px', borderRadius:6, background:on?C.blue+'18':C.surface3, border:`1px solid ${on?C.blue+'50':C.border}`, fontSize:11, color:on?C.text:C.textMuted, transition:'all .15s' }}>
+                <input type="checkbox" checked={on} onChange={() => toggle(cls)} style={{ accentColor:C.blue, width:12, height:12 }} />
+                {cls}
+              </label>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AdminTab() {
+  const [email, setEmail] = useState('');
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <span style={{ fontSize:18 }}>👑</span>
+          <span style={{ fontSize:16, fontWeight:800, color:C.text }}>Teacher Management</span>
+        </div>
+        <div style={{ display:'flex', gap:24 }}>
+          <div style={{ textAlign:'center' }}>
+            <div style={{ fontSize:22, fontWeight:800, color:C.cyan }}>{TEACHERS_DATA.length}</div>
+            <div style={{ fontSize:11, color:C.textMuted }}>Total Teachers</div>
+          </div>
+          <div style={{ textAlign:'center' }}>
+            <div style={{ fontSize:22, fontWeight:800, color:C.purple }}>
+              {TEACHERS_DATA.filter(t=>t.classes.length>0).length}
+            </div>
+            <div style={{ fontSize:11, color:C.textMuted }}>Assigned Classes</div>
+          </div>
+        </div>
+      </div>
+      {/* Add teacher */}
+      <div style={{ background:C.surface, border:`2px dashed ${C.blue}40`, borderRadius:12, padding:'18px 20px' }}>
+        <div style={{ fontSize:13, fontWeight:700, color:C.blue, marginBottom:12, display:'flex', alignItems:'center', gap:6 }}>+ Add New FSM Teacher</div>
+        <div style={{ display:'flex', gap:10 }}>
+          <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Enter teacher email (e.g., teacher@fsm.edu.tr)"
+            style={{ flex:1, background:C.surface2, border:`1px solid ${C.border}`, color:C.text, borderRadius:8, padding:'10px 14px', fontSize:13 }} />
+          <Btn variant="solid">Add Teacher</Btn>
+        </div>
+        <div style={{ fontSize:11, color:C.textDim, marginTop:8 }}>✓ Only FSM domain emails (@fsm.edu.tr) are allowed</div>
+      </div>
+      {/* Teacher grid */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14 }}>
+        {TEACHERS_DATA.map((t, i) => <TeacherCard key={i} t={t} />)}
+      </div>
+    </div>
+  );
+}
+
+// ─── SIDEBAR NAV ──────────────────────────────────────────
+
+function NavItem({ icon, label, active, badge, onClick }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 12px', borderRadius:8, cursor:'pointer', background:active?'#3b82f618':hov?'#ffffff08':'transparent', color:active?C.blue:hov?C.text:C.textMuted, borderLeft:`2px solid ${active?C.blue:'transparent'}`, transition:'all .15s', marginBottom:2 }}>
+      <span style={{ fontSize:16 }}>{icon}</span>
+      <span style={{ fontSize:13, fontWeight:active?600:400, flex:1 }}>{label}</span>
+      {badge && <span style={{ background:C.red, color:'#fff', fontSize:10, fontWeight:700, padding:'1px 6px', borderRadius:10 }}>{badge}</span>}
+    </div>
+  );
+}
+
+// ─── APP ──────────────────────────────────────────────────
+
+function App() {
+  const [nav, setNav] = useState('overview');
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  const tabs = [
+    { id:'overview', icon:'⬛', label:'Overview' },
+    { id:'students', icon:'👥', label:'Students' },
+    { id:'assignments', icon:'📋', label:'Assignments' },
+    { id:'activity', icon:'📊', label:'Activity' },
+    { id:'admin', icon:'👑', label:'Admin' },
+  ];
+
+  return (
+    <div style={{ display:'flex', height:'100vh', background:C.bg, overflow:'hidden' }}>
+      {/* Sidebar */}
+      <div style={{ width:200, flexShrink:0, background:C.surface, borderRight:`1px solid ${C.border}`, display:'flex', flexDirection:'column', padding:'20px 12px', gap:2 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10, padding:'0 4px 20px' }}>
+          <div style={{ width:32, height:32, borderRadius:8, background:'linear-gradient(135deg,#3b82f6,#6366f1)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16 }}>📘</div>
+          <div>
+            <div style={{ fontSize:13, fontWeight:700, color:C.text }}>Teacher's</div>
+            <div style={{ fontSize:11, color:C.textMuted, marginTop:-2 }}>Dashboard</div>
+          </div>
+        </div>
+        <div style={{ fontSize:9, fontWeight:700, color:C.textDim, letterSpacing:'1px', padding:'0 12px 6px', textTransform:'uppercase' }}>Main</div>
+        {tabs.map(t => <NavItem key={t.id} icon={t.icon} label={t.label} active={nav===t.id} badge={t.id==='activity'?'44':null} onClick={() => setNav(t.id)} />)}
+        <div style={{ flex:1 }} />
+        <div style={{ fontSize:9, fontWeight:700, color:C.textDim, letterSpacing:'1px', padding:'0 12px 6px', textTransform:'uppercase' }}>Account</div>
+        <NavItem icon="⚙️" label="Settings" onClick={() => {}} />
+        <NavItem icon="🚪" label="Logout" onClick={() => {}} />
+        <div style={{ borderTop:`1px solid ${C.border}`, marginTop:12, paddingTop:12, display:'flex', alignItems:'center', gap:8 }}>
+          <div style={{ width:32, height:32, borderRadius:'50%', background:'linear-gradient(135deg,#6366f1,#a855f7)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700 }}>JD</div>
+          <div>
+            <div style={{ fontSize:12, fontWeight:600, color:C.text }}>Jane Doe</div>
+            <div style={{ fontSize:10, color:C.textMuted }}>Educator</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div style={{ flex:1, overflow:'auto', padding:'24px 28px', display:'flex', flexDirection:'column', gap:20 }}>
+        {/* Header */}
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexShrink:0 }}>
+          <div>
+            <h1 style={{ fontSize:20, fontWeight:800, color:C.text, letterSpacing:'-0.5px' }}>
+              {nav==='overview' && 'Good morning, Jane 👋'}
+              {nav==='students' && '👥 Students'}
+              {nav==='assignments' && '📋 Assignments'}
+              {nav==='activity' && '📊 Activity'}
+              {nav==='admin' && '👑 Admin'}
+            </h1>
+            <p style={{ fontSize:12, color:C.textMuted, marginTop:2 }}>
+              {nav==='overview' ? <span>Friday, April 25 · <span style={{ color:C.amber }}>5 students need your attention</span></span>
+               : nav==='students' ? 'Monitor and manage your student roster'
+               : nav==='assignments' ? 'Manage and track student assignments'
+               : nav==='activity' ? 'View recent session and practice activity'
+               : 'Manage teacher accounts and class assignments'}
+            </p>
+          </div>
+          <div style={{ display:'flex', gap:8 }}>
+            {nav==='overview' && (
+              <>
+                <select style={{ background:C.surface, border:`1px solid ${C.border}`, color:C.textMuted, borderRadius:8, padding:'7px 12px', fontSize:12 }}>
+                  <option>Last 7 days</option><option>Last 30 days</option><option>This semester</option>
+                </select>
+                <Btn variant="solid">+ New Assignment</Btn>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Tab content */}
+        <div style={{ flex:1 }}>
+          {nav==='overview' && <OverviewTab />}
+          {nav==='students' && <StudentsTab />}
+          {nav==='assignments' && <AssignmentsTab />}
+          {nav==='activity' && <ActivityTab />}
+          {nav==='admin' && <AdminTab />}
+        </div>
+      </div>
+
+      <TweaksPanel>
+        <TweakSection title="Accent">
+          <TweakColor id="accentColor" label="Accent Color" value={tweaks.accentColor} onChange={v => setTweak('accentColor', v)} />
+        </TweakSection>
+        <TweakSection title="Layout">
+          <TweakToggle id="compactMode" label="Compact Mode" value={tweaks.compactMode} onChange={v => setTweak('compactMode', v)} />
+        </TweakSection>
+      </TweaksPanel>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

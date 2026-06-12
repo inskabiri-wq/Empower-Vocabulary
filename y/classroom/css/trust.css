@@ -1,0 +1,874 @@
+/* ════════════════════════════════════════════════════════════════
+   TRUST NO ONE — visual layer
+   ----------------------------------------------------------------
+   Loaded AFTER classroom/css/styles.css so it overrides the lighter
+   classroom palette where needed. The lobby DOM (.session-code-display,
+   .session-qr-card, .player-card) reuses the shared classroom styles
+   so the layout is identical to Vocab Race + Heist. Trust-specific
+   bits (briefing, role badges, meeting screen, ghost view) live here.
+
+   Palette: deep-space indigo + cyan + amber. Crewmate = cyan (#06b6d4).
+   Impostor = amber (#f59e0b). Background gradient = deep space.
+   ════════════════════════════════════════════════════════════════ */
+
+:root {
+  --t-cyan: #06b6d4;
+  --t-cyan-2: #67e8f9;
+  --t-amber: #f59e0b;
+  --t-amber-2: #fcd34d;
+  --t-indigo: #6366f1;
+  --t-violet: #a78bfa;
+  --t-bg: #0a0e1f;
+  --t-surface: rgba(15, 23, 42, 0.92);
+  --t-surface-2: rgba(30, 41, 59, 0.92);
+  --t-border: rgba(99, 102, 241, 0.22);
+  --t-text: #f1f5f9;
+  --t-text-mut: #94a3b8;
+  --t-red: #ef4444;
+}
+
+body.trust {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(99, 102, 241, 0.18), transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(6, 182, 212, 0.16), transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(167, 139, 250, 0.08), transparent 60%),
+    var(--t-bg);
+  color: var(--t-text);
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  /* Subtle starfield via a tiled gradient overlay — looks like the
+     Gimkit Trust No One background but in our palette. */
+  position: relative;
+}
+body.trust::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 12% 27%, rgba(255,255,255,0.6) 0.4px, transparent 1px),
+    radial-gradient(circle at 85% 14%, rgba(255,255,255,0.5) 0.5px, transparent 1px),
+    radial-gradient(circle at 47% 73%, rgba(255,255,255,0.55) 0.4px, transparent 1px),
+    radial-gradient(circle at 64% 92%, rgba(255,255,255,0.5) 0.5px, transparent 1px),
+    radial-gradient(circle at 23% 65%, rgba(255,255,255,0.45) 0.4px, transparent 1px),
+    radial-gradient(circle at 92% 47%, rgba(255,255,255,0.5) 0.4px, transparent 1px),
+    radial-gradient(circle at 7%  88%, rgba(255,255,255,0.55) 0.4px, transparent 1px);
+  background-size: 320px 320px;
+  opacity: 0.85;
+  z-index: 0;
+}
+.trust-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px 16px 32px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Top bar (matches Heist shell so both feel like the same app) ── */
+.trust-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+}
+.trust-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.05em;
+  letter-spacing: -0.01em;
+}
+.trust-brand .logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--t-indigo), var(--t-cyan));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.35);
+}
+
+/* ── Buttons (Trust-flavoured) ────────────────────────────────── */
+.trust-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--t-border);
+  background: var(--t-surface-2);
+  color: var(--t-text);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.92em;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.trust-btn:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: var(--t-indigo);
+}
+.trust-btn:active:not(:disabled) { transform: translateY(1px); }
+.trust-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.trust-btn.primary {
+  background: linear-gradient(135deg, var(--t-indigo), var(--t-cyan));
+  border-color: transparent;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+}
+.trust-btn.primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.45);
+}
+.trust-btn.danger {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: var(--t-red);
+}
+
+/* ── Pre-paint placeholder (auto-creating) ───────────────────── */
+.trust-placeholder {
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  border-radius: 18px;
+  padding: 60px 28px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+.trust-placeholder .rocket {
+  font-size: 3.2em;
+  margin-bottom: 14px;
+  animation: trustPulse 1.4s ease-in-out infinite;
+}
+@keyframes trustPulse {
+  0%, 100% { transform: translateY(0) scale(1);    opacity: 0.85; }
+  50%      { transform: translateY(-6px) scale(1.06); opacity: 1; }
+}
+
+/* ── Liftoff briefing — full-screen role reveal ─────────────── */
+.trust-liftoff {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(10, 14, 31, 0.98));
+  border: 2px solid var(--t-border);
+  border-radius: 20px;
+  padding: 40px 30px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.trust-liftoff::before {
+  /* Animated rocket trail effect */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 100%, rgba(99, 102, 241, 0.20), transparent 60%);
+  pointer-events: none;
+}
+.trust-liftoff h1 {
+  font-size: 2.4em;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--t-cyan-2), var(--t-violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.trust-liftoff .role-card {
+  display: inline-block;
+  margin: 24px 0 18px;
+  padding: 24px 36px;
+  border-radius: 18px;
+  position: relative;
+  z-index: 1;
+  animation: roleReveal 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes roleReveal {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.role-card.crewmate {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(99, 102, 241, 0.12));
+  border: 2px solid rgba(6, 182, 212, 0.6);
+  box-shadow: 0 12px 40px rgba(6, 182, 212, 0.30);
+}
+.role-card.impostor {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(239, 68, 68, 0.14));
+  border: 2px solid rgba(245, 158, 11, 0.6);
+  box-shadow: 0 12px 40px rgba(245, 158, 11, 0.30);
+}
+.role-card .role-emoji { font-size: 3em; line-height: 1; }
+.role-card .role-name {
+  font-size: 1.5em;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+.role-card.crewmate .role-name { color: var(--t-cyan-2); }
+.role-card.impostor .role-name { color: var(--t-amber-2); }
+.trust-liftoff .role-brief {
+  max-width: 540px;
+  margin: 8px auto 0;
+  color: var(--t-text-mut);
+  line-height: 1.55;
+  font-size: 1em;
+  position: relative;
+  z-index: 1;
+}
+.trust-liftoff .impostor-buddies {
+  margin: 16px auto 0;
+  max-width: 480px;
+  padding: 10px 14px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.32);
+  border-radius: 10px;
+  font-size: 0.92em;
+  color: var(--t-amber-2);
+  position: relative;
+  z-index: 1;
+}
+.trust-liftoff .impostor-buddies strong { color: #ffffff; }
+.trust-countdown {
+  margin-top: 22px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 1.05em;
+  color: var(--t-text-mut);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Play view — two-column on desktop, stack on mobile ─────── */
+.trust-play {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 760px) {
+  .trust-play { grid-template-columns: 1fr; }
+}
+.trust-pane {
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  border-radius: 16px;
+  padding: 16px;
+  backdrop-filter: blur(10px);
+}
+.trust-pane h3 {
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85em;
+  color: var(--t-text-mut);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Role + balance + investigations badge on student play */
+.trust-status-strip {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.trust-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.82em;
+  font-weight: 700;
+  border: 1px solid var(--t-border);
+  background: rgba(99, 102, 241, 0.10);
+}
+.trust-chip.crewmate {
+  border-color: rgba(6, 182, 212, 0.45);
+  background: rgba(6, 182, 212, 0.12);
+  color: var(--t-cyan-2);
+}
+.trust-chip.impostor {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--t-amber-2);
+}
+.trust-chip.coins {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.10);
+  color: var(--t-amber-2);
+}
+
+/* Investigation question (MCQ) — mirrors Heist earn panel */
+.trust-q-stem {
+  font-size: 1.16em;
+  font-weight: 600;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+.trust-q-opts { display: flex; flex-direction: column; gap: 8px; }
+.trust-q-opt {
+  background: var(--t-surface-2);
+  border: 2px solid var(--t-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--t-text);
+  font-family: inherit;
+  font-size: 0.95em;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+.trust-q-opt:hover:not(:disabled) {
+  border-color: var(--t-cyan);
+  background: rgba(6, 182, 212, 0.10);
+}
+.trust-q-opt.correct { border-color: var(--t-cyan); background: rgba(6, 182, 212, 0.18); }
+.trust-q-opt.wrong   { border-color: var(--t-red);  background: rgba(239, 68, 68, 0.14); }
+.trust-q-feedback {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.9em;
+}
+.trust-q-feedback.ok { background: rgba(6, 182, 212, 0.10); color: var(--t-cyan-2); }
+.trust-q-feedback.no { background: rgba(239, 68, 68, 0.10); color: #fca5a5; }
+
+/* Side roster (alive players) */
+.trust-roster-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 56vh;
+  overflow-y: auto;
+}
+.trust-roster-item {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  background: var(--t-surface-2);
+  border: 1px solid var(--t-border);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+.trust-roster-item .ava {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--t-cyan), var(--t-violet));
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.trust-roster-item .name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trust-roster-item .meta { font-size: 0.78em; color: var(--t-text-mut); white-space: nowrap; }
+
+/* Host live board */
+.trust-board {
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+  backdrop-filter: blur(10px);
+}
+.trust-board table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
+.trust-board th, .trust-board td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--t-border);
+}
+.trust-board th {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--t-text-mut);
+  font-weight: 700;
+}
+.trust-board tr:last-child td { border-bottom: none; }
+.trust-board .role-cell.crewmate { color: var(--t-cyan-2); font-weight: 700; }
+.trust-board .role-cell.impostor { color: var(--t-amber-2); font-weight: 700; }
+.trust-board .ghost { opacity: 0.55; }
+
+/* Toasts (re-using brand) */
+.trust-toast {
+  position: fixed; top: 14px; right: 14px;
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  border-left: 4px solid var(--t-cyan);
+  border-radius: 12px;
+  padding: 12px 16px;
+  z-index: 200;
+  max-width: 320px;
+  animation: trustToastIn 0.28s ease;
+}
+.trust-toast.success { border-left-color: var(--t-cyan); }
+.trust-toast.fail    { border-left-color: var(--t-red); }
+@keyframes trustToastIn {
+  from { transform: translateX(20px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+/* Phase 1 footer note (placeholder until phases 2-4 fill in) */
+.trust-phase-note {
+  margin-top: 18px;
+  padding: 10px 14px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px dashed rgba(99, 102, 241, 0.35);
+  border-radius: 10px;
+  font-size: 0.85em;
+  color: var(--t-text-mut);
+  text-align: center;
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   PHASE 3 — MEETING / EJECT / GHOST views
+   ════════════════════════════════════════════════════════════════ */
+
+/* Full-screen takeover during a meeting. Same dark-glass aesthetic
+   as the rest of Trust + a pulsing red urgency bar at the top. */
+.trust-meeting {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(10, 14, 31, 0.99));
+  border: 2px solid rgba(239, 68, 68, 0.32);
+  border-radius: 20px;
+  padding: 30px 28px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 25px 80px rgba(239, 68, 68, 0.12);
+}
+.trust-meeting::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, transparent, var(--t-red), var(--t-amber), var(--t-red), transparent);
+  animation: meetingPulse 1.8s linear infinite;
+}
+@keyframes meetingPulse {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.meeting-head {
+  text-align: center;
+  margin-bottom: 14px;
+}
+.meeting-head h1 {
+  margin: 0;
+  font-size: 1.8em;
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, #fca5a5, #fcd34d);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.meeting-called-by {
+  color: var(--t-text-mut);
+  margin-top: 4px;
+  font-size: 0.95em;
+}
+.meeting-timer {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 3em;
+  font-weight: 800;
+  margin-top: 14px;
+  color: var(--t-amber-2);
+  text-shadow: 0 0 32px rgba(245, 158, 11, 0.3);
+}
+.meeting-timer.warn { color: #fca5a5; }
+.meeting-instruction {
+  text-align: center;
+  color: var(--t-text-mut);
+  margin: 8px 0 18px;
+  font-size: 0.95em;
+}
+.meeting-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+.meeting-tile {
+  position: relative;
+  background: var(--t-surface-2);
+  border: 2px solid var(--t-border);
+  border-radius: 12px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+  transition: transform 0.12s, border-color 0.15s, background 0.15s;
+}
+.meeting-tile:hover:not(:disabled):not(.voted) {
+  border-color: var(--t-indigo);
+  background: rgba(99, 102, 241, 0.10);
+  transform: translateY(-2px);
+}
+.meeting-tile .ava {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--t-cyan), var(--t-violet));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.meeting-tile .name {
+  font-weight: 700;
+  font-size: 0.92em;
+  text-align: center;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 100%;
+}
+.meeting-tile.me { border-style: dashed; opacity: 0.6; cursor: default; }
+.meeting-tile.me:hover { transform: none; background: var(--t-surface-2); border-color: var(--t-border); }
+.meeting-tile.voted {
+  border-color: var(--t-amber);
+  background: rgba(245, 158, 11, 0.12);
+}
+.meeting-tile.skip {
+  border-color: rgba(148, 163, 184, 0.45);
+}
+.meeting-tile .vote-count {
+  position: absolute;
+  top: 4px; right: 8px;
+  background: rgba(245, 158, 11, 0.18);
+  color: var(--t-amber-2);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  min-width: 18px;
+  text-align: center;
+  display: none;
+}
+.meeting-tile .vote-count.show { display: inline-block; }
+.meeting-footer {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Eject reveal — same role-card shape as the liftoff card, but with
+   an extra "was a …" subline. */
+.trust-eject {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(10, 14, 31, 0.99));
+  border: 2px solid var(--t-border);
+  border-radius: 20px;
+  padding: 50px 30px;
+  text-align: center;
+}
+.trust-eject h1 {
+  margin: 0 0 16px;
+  font-size: 2.2em;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--t-cyan-2), var(--t-violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.role-card .role-meta {
+  margin-top: 10px;
+  font-size: 0.85em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--t-text-mut);
+  text-transform: uppercase;
+}
+
+/* Ghost view */
+.trust-ghost {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(10, 14, 31, 0.99));
+  border: 2px dashed var(--t-border);
+  border-radius: 20px;
+  padding: 50px 30px;
+  text-align: center;
+}
+.trust-ghost .ghost-icon {
+  font-size: 4em;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 18px rgba(99, 102, 241, 0.4));
+  animation: ghostFloat 2.4s ease-in-out infinite;
+}
+@keyframes ghostFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.trust-ghost h1 {
+  margin: 0 0 6px;
+  font-size: 1.7em;
+  color: var(--t-text);
+}
+
+/* ═════════════════════════════════════════════════════════════
+   PHASE 4 — Ghost continue-play header + donation modal +
+   results screen banner + podium + stats grid.
+   ═════════════════════════════════════════════════════════════ */
+
+/* Ghost banner above the question pane. Slim, full-width, evokes
+   "you're sidelined but still here" — dashed border + violet accent. */
+.trust-ghost-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.10), rgba(167, 139, 250, 0.06));
+  border: 1px dashed rgba(167, 139, 250, 0.45);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  position: relative;
+}
+.trust-ghost-head::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 14px;
+  background: radial-gradient(circle at top right, rgba(167, 139, 250, 0.10), transparent 60%);
+  pointer-events: none;
+}
+.ghost-icon-mini {
+  font-size: 2em;
+  filter: drop-shadow(0 0 12px rgba(167, 139, 250, 0.5));
+  animation: ghostFloat 2.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* ── Results screen wrapper ───────────────────────────── */
+.trust-results {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(10, 14, 31, 0.99));
+  border: 2px solid var(--t-border);
+  border-radius: 20px;
+  padding: 36px 28px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+/* Winning team banner — gradient changes per team. */
+.trust-win-banner {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  border-radius: 18px;
+  padding: 26px 28px;
+  margin-bottom: 28px;
+  border: 1.5px solid var(--t-border);
+  position: relative;
+  overflow: hidden;
+}
+.trust-win-banner::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.06), transparent 70%);
+  pointer-events: none;
+}
+.trust-win-banner.win-crewmates {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(99, 102, 241, 0.10));
+  border-color: rgba(6, 182, 212, 0.55);
+  box-shadow: 0 0 40px rgba(6, 182, 212, 0.20);
+}
+.trust-win-banner.win-impostors {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.20), rgba(239, 68, 68, 0.12));
+  border-color: rgba(245, 158, 11, 0.55);
+  box-shadow: 0 0 40px rgba(245, 158, 11, 0.20);
+}
+.trust-win-banner.win-stalemate {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.16), rgba(99, 102, 241, 0.10));
+  border-color: rgba(167, 139, 250, 0.50);
+}
+.trust-win-banner.win-aborted {
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.10), rgba(71, 85, 105, 0.06));
+  border-color: rgba(148, 163, 184, 0.35);
+}
+.trust-win-banner .win-icon {
+  font-size: 3.4em;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.20));
+  flex-shrink: 0;
+}
+.trust-win-banner .win-text h1 {
+  margin: 0 0 4px;
+  font-size: 2em;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--t-cyan-2), var(--t-violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.trust-win-banner.win-impostors .win-text h1 {
+  background: linear-gradient(135deg, var(--t-amber-2), #fca5a5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.trust-win-banner .win-text p {
+  margin: 0;
+  color: var(--t-text-mut);
+  font-size: 0.95em;
+}
+
+/* ── Per-team podium ──────────────────────────────────── */
+.trust-podiums {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 720px) {
+  .trust-podiums { grid-template-columns: 1fr; }
+}
+.trust-podium {
+  background: var(--t-surface-2);
+  border: 1px solid var(--t-border);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+.trust-podium.crewmate { border-color: rgba(6, 182, 212, 0.35); }
+.trust-podium.impostor { border-color: rgba(245, 158, 11, 0.35); }
+.trust-podium h3 {
+  margin: 0 0 12px;
+  font-size: 0.85em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--t-text-mut);
+}
+.podium-list { display: flex; flex-direction: column; gap: 8px; }
+.podium-row {
+  display: grid;
+  grid-template-columns: 36px 36px 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "rank ava name"
+    "rank ava stats";
+  align-items: center;
+  gap: 4px 10px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--t-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.podium-row.place-1 { border-color: rgba(251, 191, 36, 0.5); }
+.podium-row.place-2 { border-color: rgba(148, 163, 184, 0.4); }
+.podium-row.place-3 { border-color: rgba(180, 83, 9, 0.4); }
+.podium-row.ghost { opacity: 0.65; }
+.podium-rank { grid-area: rank; font-size: 1.6em; text-align: center; }
+.podium-ava  { grid-area: ava;  font-size: 1.4em; text-align: center; }
+.podium-name { grid-area: name; font-weight: 700; }
+.podium-stats {
+  grid-area: stats;
+  display: flex;
+  gap: 12px;
+  font-size: 0.78em;
+  color: var(--t-text-mut);
+  flex-wrap: wrap;
+}
+.podium-empty {
+  color: var(--t-text-mut);
+  text-align: center;
+  padding: 18px;
+  font-size: 0.9em;
+}
+.ghost-tag {
+  font-size: 0.85em;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+
+/* ── Mission stats grid (clues / sabotages / etc.) ────── */
+.trust-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.stat-tile {
+  background: var(--t-surface-2);
+  border: 1px solid var(--t-border);
+  border-radius: 12px;
+  padding: 14px 12px;
+  text-align: center;
+}
+.stat-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.8em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--t-cyan-2), var(--t-violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+}
+.stat-num-sub {
+  font-size: 0.5em;
+  font-weight: 600;
+  color: var(--t-text-mut);
+  -webkit-text-fill-color: var(--t-text-mut);
+  background: none;
+}
+.stat-lbl {
+  margin-top: 4px;
+  font-size: 0.78em;
+  color: var(--t-text-mut);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* ── Collapsible per-player table ────────────────────── */
+.trust-results-table {
+  background: var(--t-surface-2);
+  border: 1px solid var(--t-border);
+  border-radius: 12px;
+  padding: 6px 14px;
+}
+.trust-results-table summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--t-text-mut);
+  font-size: 0.85em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 0;
+  list-style: none;
+}
+.trust-results-table summary::-webkit-details-marker { display: none; }
+.trust-results-table summary::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 0.7em;
+  transition: transform 0.2s;
+}
+.trust-results-table[open] summary::before { transform: rotate(90deg); }
+.trust-results-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92em;
+  margin-top: 8px;
+}
+.trust-results-table th,
+.trust-results-table td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid var(--t-border);
+}
+.trust-results-table tr.ghost { opacity: 0.65; }
+.trust-results-table td.role-cell.crewmate { color: var(--t-cyan-2); }
+.trust-results-table td.role-cell.impostor { color: var(--t-amber-2); }

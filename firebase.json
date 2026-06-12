@@ -1,10 +1,61 @@
 {
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "_functions_disabled_until_blaze": "When ready to enable scheduled email reminders: 1) Upgrade project to Blaze plan; 2) Restore the functions block (see functions/HOWTO-DEPLOY.md); 3) Run: cd functions && npm install && firebase deploy --only functions",
   "hosting": {
-    "public": ".",
+    "public": "y",
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "tools/**",
+      "student/audio/*.srt",
+      "student/audio/*-part*.mp3",
+      "**/*.docx",
+      "**/*.doc",
+      "student/data/readings/_raw/**"
+    ],
+    "headers": [
+      {
+        "comment": "PWA: the service worker + manifest must NEVER be cached by the browser/CDN, otherwise app updates can't reach already-installed users. Everything the SW caches is versioned inside service-worker.js itself.",
+        "source": "/service-worker.js",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        ]
+      },
+      {
+        "source": "/manifest.json",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          },
+          {
+            "key": "Permissions-Policy",
+            "value": "geolocation=(), microphone=(), camera=()"
+          },
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://*.gstatic.com https://apis.google.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://*.googleapis.com https://*.google.com https://www.gstatic.com https://*.gstatic.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebase.googleapis.com https://www.googleapis.com https://cloudresourcemanager.googleapis.com; frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://*.google.com; media-src 'self' https://www.soundhelix.com;"
+          }
+        ]
+      }
     ]
   }
 }

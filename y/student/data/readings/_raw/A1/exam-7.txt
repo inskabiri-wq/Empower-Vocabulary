@@ -1,0 +1,76 @@
+ID: a1-r7
+LEVEL: A1
+TITLE: A1 Reading 7 — Sydney
+SUBTITLE: One passage · Headings, MCQ, reference, writing
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Sydney
+
+PASSAGE:
+Sydney has everything that you want in a city. There are old and new buildings, fantastic beaches and the food is delicious.
+
+{gap:1} The best times to visit are spring and autumn. In summer, *it* is very hot. The beaches are full of people from all over the world. They enjoy swimming and sunbathing by the ocean.
+
+{gap:2} There are many hotels that you can stay in Sydney. Some of them are expensive and some of them are cheap. The cheap hotels are in King's Cross. A room is about $50 a night. There are also international hotels in the centre. Here a room is about $150 a night. *They* are very luxurious and comfortable.
+
+{gap:3} There are many activities that you can do in Sydney. There are theatres and cinemas, and of course, the Opera House. It is in Sydney Harbour. It is a white, beautiful building, and *it* is very famous. Many people go to the Opera House and watch the amazing shows there. The best shops are in Pitt Street. Especially tourists go there to shop. Sydney Harbour is worth seeing. There are beaches, parks, cafes, and the wonderful bridge. Sydney has the famous Bondi Beach. People go swimming, surfing, windsurfing, and sailing. For nightlife, there are clubs and bars in Oxford Street. You can go for a drink and have fun *there*.
+
+{gap:4} There are restaurants from every country — Italian, Turkish, Lebanese, Japanese, Thai, Chinese, and Vietnamese. Australians eat a lot of seafood — *it* is very fresh.
+
+{gap:5} There are fast trains and slow buses. The best way to see Sydney is by ferry. You should travel by ferry because it is comfortable, cheap, and it has an air conditioning system.
+
+# GAPS
+LABEL: Part A
+INSTRUCTIONS: Match the headings with the paragraphs.
+a: What to do
+b: What to eat
+c: Where to stay
+d: When to go
+e: How to travel
+ANSWERS: 1=d, 2=c, 3=a, 4=b, 5=e
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Read the text again and answer the following questions.
+1. When are the best times to go to Sydney?
+   a) winter and autumn
+   b) spring and summer
+   c) fall and spring
+   d) winter and spring
+   ANSWER: c
+2. Which of the following is FALSE according to paragraph 2?
+   a) There are cheap and luxurious hotels in Sydney.
+   b) The economical hotels are in King's Cross.
+   c) All the hotels are international in Sydney.
+   d) The room in King's Cross costs $50.
+   ANSWER: c
+3. What is the main idea of paragraph 3?
+   a) People go to Sydney for its nightlife.
+   b) Surfing and sailing are popular sports in Sydney.
+   c) The best shops, theatres, and cinemas are in Sydney.
+   d) There are several activities for people in Sydney.
+   ANSWER: d
+
+# SHORTANSWER
+LABEL: Part B (continued)
+INSTRUCTIONS: Answer the question.
+1. According to paragraph 5, the best way to see Sydney is by ferry. Why?
+   ANSWER: It is cheap, comfortable and has an air-conditioning system.
+
+# SHORTANSWER
+LABEL: Part C
+INSTRUCTIONS: What do the following words refer to? They are bold and underlined in the text.
+1. "it" (paragraph 1):
+   ANSWER: Sydney
+2. "They" (paragraph 2):
+   ANSWER: International Hotels
+3. "there" (paragraph 3):
+   ANSWER: Oxford Street
+4. "it" (paragraph 4):
+   ANSWER: seafood
+
+# WRITING
+LABEL: Part D
+INSTRUCTIONS: Write your answer (min. 50 words).
+PROMPT: Would you like to visit Sydney? Why? Why not?
+MIN_WORDS: 50

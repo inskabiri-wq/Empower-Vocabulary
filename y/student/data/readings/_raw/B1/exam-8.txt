@@ -1,0 +1,113 @@
+ID: b1-r8
+LEVEL: B1
+TITLE: B1 Reading 8 — Childhood Obesity Fueled by Marketing
+SUBTITLE: One passage · Headings, MCQ, vocabulary
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Childhood Obesity Fueled by Marketing Tactics
+
+PASSAGE:
+For the first time in modern history, American children's life expectancy could be lower than their parents'. The reason for this is the rate of obesity among American children. In the past three decades, there has been a 300 percent increase in the rate of U.S. children who are either overweight or obese, according to the National Center for Health Statistics. Although one can point to several reasons for this crisis, one reason is the commercialism to which children are exposed every day.
+
+Every day children are bombarded with advertisements — quite often for products that are harmful to them. Each year, the average child sees about 40,000 commercials on television alone. According to communications professor Dale Kunkel of the University of Arizona, the majority of ads targeted at them are for candy, sugared cereal, soda and fast food.
+
+While parents may actually be the ones paying the price for all of this advertising at the supermarket, children are paying with their health. In addition to the social stigma and psychological effects that overweight children often suffer, they are also significantly more likely to become *afflicted* with serious health problems such as asthma, diabetes, high blood pressure and sleep apnea. In fact, the U.S. Surgeon General has identified being overweight and obesity as "the fastest growing cause of disease and death in America."
+
+The role of marketing in the childhood obesity problem is significant. A 1999 study in the Journal of the American Medical Association shows that exposure to food commercials influences children's food preferences and requests. The amount of advertising aimed at children is worrying because children are more easily influenced by the persuasion techniques that advertisers use. Children under the age of 8 do not recognize the intention of ads and tend to accept them as *accurate* and unbiased. A 30-second commercial can influence brand preferences in children as young as 2, Prof Kunkel has found.
+
+Many advertisers take advantage of children's vulnerability by disguising their advertisements as online games or by using product placement in children's television shows. It is through television, computers and video games that perhaps the most dangerous attempts to *manipulate* children's eating habits occur. Food advertisers spend billions of dollars each year pushing unhealthy cereals, snacks and drinks through commercials and product placements aimed at children. Cartoon characters are used as salesmen for fast-food chains (such as Burger King's use of Teletubbies, Spider Man and SpongeBob); and advertisements for cookies and candy are disguised as arcade-style games. It is where broadcasters and advertisers put their own financial wellbeing above the health of children.
+
+The media and advertisers have a responsibility to do better by children. Some have recognized the effects their business practices have on children and are taking important steps toward acting in children's best interest. In January, Kraft Foods decided to stop advertising its low-nutrition foods during children's programs and replace them with ads for more nutritional snack products. Sesame Street recently joined with Earth's Best to launch a new line of organic and "nutrient-rich" breakfast foods and snacks for children. Nickelodeon refused to allow one of its characters, Dora the Explorer, to be used for a Burger King kids' meal unless a piece of fruit was included in the meal.
+
+These are all important steps toward improving the nutritional messages children receive from the media. Other broadcasters and advertisers need to do the same and develop business practices that will support, rather than prevent, children's healthy development. For instance, they can *dedicate* a certain percentage of advertising time to pro-nutrition public-service announcements. Also, if broadcasters are going to license their characters, these characters can sell healthy foods.
+
+Yet more must be done to protect children, especially in a rapidly changing technological era. Digital, interactive television promises to change the way companies push their marketing on children, which will lead to new problems. Imagine watching a television show that has logos for McDonald's, Pizza Hut, Snickers, and Kit Kat on the bottom of the screen. Imagine that children could click on those logos with the remote control and be instantly transported to websites for those products. A child could then purchase items from those sites directly from the TV.
+
+The Federal Communications Commission must intervene now to ensure that children are protected from interactive advertising before it ever has a chance to become a common marketing technique.
+
+# HEADINGS
+LABEL: Part A
+INSTRUCTIONS: Match the paragraphs with their headings. (Match Paragraphs 2, 3, 4, 6, and 8.)
+LABELS: ,Paragraph 2,Paragraph 3,Paragraph 4,,Paragraph 6,,Paragraph 8
+A: actions taken by companies
+B: excessive exposure to ads
+C: future of ads with technology
+D: health problems of children
+E: children: an easy target
+ANSWERS: 2=B, 3=D, 4=E, 6=A, 8=C
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Answer the questions according to the text.
+1. Which statement is FALSE according to paragraph 1?
+   a) National Center for Health Statistics expects a 300 percent increase in childhood obesity in the US.
+   b) There are other reasons why children in the US are overweight or obese besides commercialism.
+   c) Next generations in the US are expected to live shorter lives than the previous ones.
+   d) In the last 30 years, the number of obese children has risen drastically.
+   ANSWER: a
+2. According to paragraph 3, which statement is TRUE about obesity?
+   a) In the US most deaths and diseases are caused by it.
+   b) It may damage a child's self-confidence.
+   c) Parents of obese children suffer financially.
+   d) There is no treatment to the health problems caused by obesity.
+   ANSWER: b
+3. According to paragraph 4, children under the age of 8 are easy targets to influence because __________.
+   a) their persuasion skills have not yet improved
+   b) their brand preferences have not been formed
+   c) they are more exposed to advertisements on unhealthy products
+   d) they are incapable of making judgements
+   ANSWER: d
+4. Online games or product placement are used in order to __________.
+   a) place children's health above financial gain
+   b) increase the rating of children's TV shows
+   c) draw attention to the dangerous eating habits of children
+   d) advertise unhealthy products implicitly
+   ANSWER: d
+5. According to paragraph 6, which of the following is a step taken by advertisers?
+   a) Promoting low-nutrition foods during children's programs
+   b) Working with children's TV broadcasters to advertise healthy foods
+   c) Putting pressure on fast food chains to use cartoon characters
+   d) Not agreeing to work with fast food chains under any circumstances
+   ANSWER: b
+6. Which of the following is NOT MENTIONED in the text as a way to prevent the harmful effects of advertising on children?
+   a) There should also be ads to specifically promote nutritious foods.
+   b) The TV characters used in ads should market foods high in nutrition.
+   c) The ads of McDonald's, Pizza Hut, Snickers and Kit Kat should be banned.
+   d) Advertisers should not be allowed to access personal preferences of viewers.
+   ANSWER: d
+7. What is the main idea of the text?
+   a) All companies should advertise their products in order to be able to sell them otherwise they won't make any profits.
+   b) Famous brands must be careful about their target products and try to reach their target customers by advertising.
+   c) Advertising has many benefits for companies and customers, but there must be some regulations.
+   d) Advertising causes more harm to all customers than it provides benefits because of some false strategies.
+   ANSWER: c
+8. What is the writer's point of view about unhealthy advertisements targeting children?
+   a) He thinks some measures need to be taken.
+   b) He believes that they are beneficial for them.
+   c) He states that children should be exposed to some of them.
+   d) He argues that advertisers should have more ads for children.
+   ANSWER: a
+9. What does the word "unbiased" mean in Paragraph 4?
+   a) critical
+   b) beneficial
+   c) productive
+   d) objective
+   ANSWER: d
+10. What does the word "ensure" mean in Paragraph 9?
+    a) guarantee
+    b) ban
+    c) distribute
+    d) resolve
+    ANSWER: a
+
+# SHORTANSWER
+LABEL: Part C (vocabulary)
+INSTRUCTIONS: Find the words in the text that match the meanings.
+1. Find a word in paragraph 3 which means "to be badly affected":
+   ANSWER: afflicted / afflict
+2. Find a word in paragraph 4 which means "correct":
+   ANSWER: accurate
+3. Find a word in paragraph 5 which means "to influence":
+   ANSWER: manipulate
+4. Find a word in paragraph 7 which means "to devote, to commit, and to give":
+   ANSWER: dedicate

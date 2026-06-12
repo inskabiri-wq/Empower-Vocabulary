@@ -1,0 +1,363 @@
+{
+  "id": "a1-r4",
+  "level": "A1",
+  "title": "A1 Reading 4 — People in Big Cities",
+  "subtitle": "One passage · Gaps, MCQ, reference, fill-in",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "People in Big Cities",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">People in big cities often come from different places. <span class=\"rd-gap\" data-gap=\"1\"></span> People move to cities to get jobs or to find a better life, and many of them come from other countries. <strong>They</strong> often bring their culture, music and food with them. Visitors to London are often surprised to see so many Indian shops and restaurants, but over a million Indians live in the UK. <span class=\"rd-gap\" data-gap=\"2\"></span></p><p class=\"rd-para\" data-para=\"2\">Many European cities have large numbers of immigrants. There are Portuguese people in Paris and Turkish workers in Frankfurt. <strong>They</strong> are mostly there from the 1960s and 70s. But American cities have a very long tradition of new citizens from foreign countries. For example, San Francisco has more Chinese people than any city outside Asia. <span class=\"rd-gap\" data-gap=\"3\"></span> The city is famous for its Chinese restaurants. And New York, of course, is well known for its British and Irish citizens. <strong>The city</strong> has an Irish newspaper and its most important holiday is St Patrick's Day — the national day of Ireland. <span class=\"rd-gap\" data-gap=\"4\"></span> There are many Koreans from the 1980s and 90s in the US, especially in Los Angeles. In fact there is a large area in the center of Los Angeles that is called \"Korea town\".</p>",
+      "sections": [
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part A",
+          "instructions": "Match the sentences (a-f) with the gaps (1-4). There are two extra sentences.",
+          "options": [
+            {
+              "id": "a",
+              "text": "There are many reasons for such a change in their lives."
+            },
+            {
+              "id": "b",
+              "text": "Korean people are one of the late immigrants in the country, maybe even after 2000's."
+            },
+            {
+              "id": "c",
+              "text": "It is a good example to see that people from different countries can get along and celebrate things together."
+            },
+            {
+              "id": "d",
+              "text": "San Francisco is well known for the number of Japanese people that live in there."
+            },
+            {
+              "id": "e",
+              "text": "Most of the citizens are used to seeing and meeting Chinese people at work or in social events."
+            },
+            {
+              "id": "f",
+              "text": "These places are so popular that sometimes people fly overseas to taste their food."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "a"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "c"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "f"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Read the text and answer the question.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "The best title for the text is __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "London"
+                },
+                {
+                  "id": "b",
+                  "text": "Modern Cities"
+                },
+                {
+                  "id": "c",
+                  "text": "Old Cities"
+                },
+                {
+                  "id": "d",
+                  "text": "Modern Countries"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part C",
+          "instructions": "Choose the correct answer.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "People move to cities because __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "they want to find good jobs"
+                },
+                {
+                  "id": "b",
+                  "text": "the cities are big"
+                },
+                {
+                  "id": "c",
+                  "text": "they like tourism"
+                },
+                {
+                  "id": "d",
+                  "text": "big cities are crowded"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m2",
+              "question": "Immigrants to big cities bring their __________ with them.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "newspapers"
+                },
+                {
+                  "id": "b",
+                  "text": "traditional food"
+                },
+                {
+                  "id": "c",
+                  "text": "music, food and culture"
+                },
+                {
+                  "id": "d",
+                  "text": "musical instruments"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "There are a lot of Indian restaurants in London because __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "India is near London"
+                },
+                {
+                  "id": "b",
+                  "text": "London has many Indian people"
+                },
+                {
+                  "id": "c",
+                  "text": "British people like Indian food"
+                },
+                {
+                  "id": "d",
+                  "text": "Indian food is cheap"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "There are more Chinese immigrants in __________ than any country outside Asia.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Germany"
+                },
+                {
+                  "id": "b",
+                  "text": "France"
+                },
+                {
+                  "id": "c",
+                  "text": "China"
+                },
+                {
+                  "id": "d",
+                  "text": "the USA"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m5",
+              "question": "St Patrick's Day is a/an __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "British holiday"
+                },
+                {
+                  "id": "b",
+                  "text": "Turkish holiday"
+                },
+                {
+                  "id": "c",
+                  "text": "Irish holiday"
+                },
+                {
+                  "id": "d",
+                  "text": "Indian holiday"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m6",
+              "question": "1980s means __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "from 1980 to 1989"
+                },
+                {
+                  "id": "b",
+                  "text": "1980"
+                },
+                {
+                  "id": "c",
+                  "text": "1980, 1981, 1982"
+                },
+                {
+                  "id": "d",
+                  "text": "1980 and 1990"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "reference",
+          "type": "mcq",
+          "label": "Part D",
+          "instructions": "Choose the correct answer.",
+          "items": [
+            {
+              "id": "r1",
+              "question": "\"They\" in paragraph 1 refers to __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "countries"
+                },
+                {
+                  "id": "b",
+                  "text": "people"
+                },
+                {
+                  "id": "c",
+                  "text": "cities"
+                },
+                {
+                  "id": "d",
+                  "text": "jobs"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "r2",
+              "question": "\"They\" in paragraph 2 refers to __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "European cities"
+                },
+                {
+                  "id": "b",
+                  "text": "Portuguese people"
+                },
+                {
+                  "id": "c",
+                  "text": "immigrants"
+                },
+                {
+                  "id": "d",
+                  "text": "Turkish workers"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "r3",
+              "question": "\"The city\" in paragraph 2 refers to __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "San Francisco"
+                },
+                {
+                  "id": "b",
+                  "text": "New York"
+                },
+                {
+                  "id": "c",
+                  "text": "Ireland"
+                },
+                {
+                  "id": "d",
+                  "text": "Britain"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part E",
+          "instructions": "Fill in the blanks with the correct words from the box (citizens / immigrants / culture / foreign / holidays / national).",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "In France, there are a lot of French __________.",
+              "answer": "citizens"
+            },
+            {
+              "id": "sa2",
+              "definition": "__________ have a different culture and music.",
+              "answer": "Immigrants"
+            },
+            {
+              "id": "sa3",
+              "definition": "They have a different __________ and music.",
+              "answer": "culture"
+            },
+            {
+              "id": "sa4",
+              "definition": "Sometimes they speak a __________ language.",
+              "answer": "foreign"
+            },
+            {
+              "id": "sa5",
+              "definition": "Immigrants may have different __________.",
+              "answer": "holidays"
+            },
+            {
+              "id": "sa6",
+              "definition": "The __________ holiday of France is an important day for everyone.",
+              "answer": "national"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

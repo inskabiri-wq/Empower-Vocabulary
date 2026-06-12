@@ -1,0 +1,550 @@
+{
+  "id": "b1-r2",
+  "level": "B1",
+  "title": "B1 Reading 2 — I Love Me",
+  "subtitle": "One passage · Sentence-insert, MCQ, vocabulary, reference",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "I Love Me",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Narcissus was the name of a young man in Greek mythology. According to the story, he was very proud of <strong>his</strong> own good looks and this angered the gods. One day, as he was passing by a pool of water, he saw his own reflection in <strong>it</strong> and stopped to admire himself. <span class=\"rd-gap\" data-gap=\"1\"></span> The gods cursed him for his vanity, so he instantly fell in love with his own reflection in the pool. Unable to leave the pool and his own reflection, he died there, and later became a flower by the pool. Today, there is a mental illness named for Narcissus. It is called \"narcissistic personality disorder.\" People with this disorder have great love for themselves, and this coincides with a strong need to be admired by others.</p><p class=\"rd-para\" data-para=\"2\">Most people who have a narcissistic personality are very ordinary people. However, <strong>they</strong> think of themselves as being very important and special. <span class=\"rd-gap\" data-gap=\"2\"></span> They expect other people to give them constant attention and to obey their commands. In a restaurant, for example, a narcissist might expect to be seated immediately. <strong>He</strong> might demand a better table, a special salad, or a sharper knife. Narcissists demand attention from everyone, including their family, friends, colleagues, and even strangers. At the same time, narcissists can also demonstrate great charm. They smile and flirt. They gossip and tell jokes. They generate excitement with their lively chatter. They like to talk about themselves and often dominate the conversation with stories about their exploits. In these stories they tend to greatly exaggerate their talents and personal achievements.</p><p class=\"rd-para\" data-para=\"3\">In fact, when narcissists describe their achievements, they are likely to be lying. Lying is typical behavior for a narcissist, who often tries to impress people with false claims about things he owns or people he knows. <span class=\"rd-gap\" data-gap=\"3\"></span> Perhaps he will claim to be friends with the mayor and the police chief and the bank president. This kind of talk seems to reflect great self-esteem. However, psychiatrists suggest that this behavior results from a great fear of failure and the subsequent shame it would bring. Some say that narcissism results if parents do not comfort young children when they have been disappointed or have failed at something. The children view this as punishment and try to avoid future failure. As a result, <strong>they</strong> never learn to deal with disappointment or failure.</p><p class=\"rd-para\" data-para=\"4\">Other therapists have a slightly different theory. <strong>They</strong> believe that a narcissistic personality arises when parents try to protect children from disappointment and failure by satisfying all of <strong>their</strong> demands. <span class=\"rd-gap\" data-gap=\"4\"></span> Narcissists do not see other people as human beings but rather as objects that have no feelings or needs of their own. A narcissist believes that the role of other people is to satisfy his needs and to admire him. For this reason, a narcissist seldom has truly close friends. Instead he surrounds himself with people he considers worthy of his greatness.</p><p class=\"rd-para\" data-para=\"5\">Oddly, the narcissist's traits that we find so annoying in ordinary people are the same traits that attract us to many entertainers and professional athletes. A recent study found that celebrities as a group are more narcissistic than other people. It also suggests that it is not fame that makes celebrities narcissistic; it is the other way around. <strong>They</strong> were first narcissistic and were then drawn to careers that would earn them admiration from others. <span class=\"rd-gap\" data-gap=\"5\"></span> However, they may also exploit the media to get attention, and in turn, the media exploits them. For example, celebrities usually wear flashy clothes and date other gorgeous people. They may marry and divorce again and again. They often buy expensive sports cars and drive too fast. Whatever they do, the media reports it because the <strong>uninhibited</strong> behavior and dynamic personalities of celebrities makes them seem exciting, and of course the media also makes a big profit out of this situation.</p><p class=\"rd-para\" data-para=\"6\">All of us have some narcissism, and that's a good thing. <span class=\"rd-gap\" data-gap=\"6\"></span> Self-love is what motivates people to <strong>nourish</strong> and protect <strong>their</strong> bodies, to improve their minds, to learn new skills, and to discover the world in which they live. It is also what gives people the self-confidence they need to share a relationship with others and the ambition to reach for success. However, the self-love of <strong>those</strong> with a serious narcissistic behavior disorder is so excessive that it <strong>overshadows</strong> everything else in their lives, and overall can be a damaging psychological trait.</p>",
+      "sections": [
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part A",
+          "instructions": "Match the sentences with the gaps. There are TWO extra sentences.",
+          "options": [
+            {
+              "id": "a",
+              "text": "As a result, they often try to exploit others."
+            },
+            {
+              "id": "b",
+              "text": "Children who are spoiled may come to believe that they are special and should be treated differently than others."
+            },
+            {
+              "id": "c",
+              "text": "For example, a narcissist may brag that his golf clubs are identical to the ones used by Tiger Woods."
+            },
+            {
+              "id": "d",
+              "text": "Having a positive self-image and believing in one's own abilities can be important for achieving goals."
+            },
+            {
+              "id": "e",
+              "text": "Narcissus was so captivated by his own reflection that he couldn't look away."
+            },
+            {
+              "id": "f",
+              "text": "This generates in the children a lifelong pattern of expecting that they will always get what they want."
+            },
+            {
+              "id": "g",
+              "text": "They often believe they are superior to others, and may have a strong sense of entitlement."
+            },
+            {
+              "id": "h",
+              "text": "The applause of their fans is a positive message that they are loved and admired."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "e"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "a"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "c"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "f"
+            },
+            {
+              "id": "5",
+              "label": "Gap 5",
+              "answer": "h"
+            },
+            {
+              "id": "6",
+              "label": "Gap 6",
+              "answer": "d"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Choose the best answer for each, according to the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "According to paragraph 2, which of the following is FALSE about narcissists?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "They try to attract attention all the time."
+                },
+                {
+                  "id": "b",
+                  "text": "Narcissists are not generally extraordinary people."
+                },
+                {
+                  "id": "c",
+                  "text": "They want other people to do what they want."
+                },
+                {
+                  "id": "d",
+                  "text": "They accept their mental illness."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m2",
+              "question": "According to paragraph 3, why do narcissists tend to tell lies while telling about their achievements?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "They have a high opinion of themselves."
+                },
+                {
+                  "id": "b",
+                  "text": "They like gossiping."
+                },
+                {
+                  "id": "c",
+                  "text": "They try to influence people."
+                },
+                {
+                  "id": "d",
+                  "text": "They enjoy disappointing others."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "According to paragraph 3, what do psychiatrists suggest parents with young children to do?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "They should regularly give their children medicine."
+                },
+                {
+                  "id": "b",
+                  "text": "Parents should avoid arguing with young children who have the symptoms of narcissism."
+                },
+                {
+                  "id": "c",
+                  "text": "Parents should punish young children when they fail."
+                },
+                {
+                  "id": "d",
+                  "text": "Parents should try to comfort their young children when they fail at something."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m4",
+              "question": "According to paragraph 4, why do narcissists not have truly close friends?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "They think that people should always meet their needs and admire them."
+                },
+                {
+                  "id": "b",
+                  "text": "They always try to protect people around them when they fail to do something."
+                },
+                {
+                  "id": "c",
+                  "text": "They do not try to comfort people around them."
+                },
+                {
+                  "id": "d",
+                  "text": "They easily get disappointed when they cannot do something."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "According to paragraph 5, what does a recent study suggest about celebrities who are narcissists?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Narcissist celebrities are annoying people."
+                },
+                {
+                  "id": "b",
+                  "text": "Famous people's fame makes them narcissist."
+                },
+                {
+                  "id": "c",
+                  "text": "They are also narcissists as much as others."
+                },
+                {
+                  "id": "d",
+                  "text": "They were narcissists before becoming famous."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m6",
+              "question": "What does the writer think about having some self-love?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "He believes that it might damage the person."
+                },
+                {
+                  "id": "b",
+                  "text": "He thinks it's good."
+                },
+                {
+                  "id": "c",
+                  "text": "He doesn't think people need it to improve themselves."
+                },
+                {
+                  "id": "d",
+                  "text": "He states that it is amazing."
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part C (vocabulary)",
+          "instructions": "Guess the meaning of the words or phrases from the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "The word \"uninhibited\" in paragraph 5 means:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "free and relaxed"
+                },
+                {
+                  "id": "b",
+                  "text": "careful and cautious"
+                },
+                {
+                  "id": "c",
+                  "text": "shy and modest"
+                },
+                {
+                  "id": "d",
+                  "text": "formal and professional"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m2",
+              "question": "The word \"nourish\" in paragraph 6 means:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "neglect"
+                },
+                {
+                  "id": "b",
+                  "text": "take care of"
+                },
+                {
+                  "id": "c",
+                  "text": "admire"
+                },
+                {
+                  "id": "d",
+                  "text": "impress"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m3",
+              "question": "The word \"overshadows\" in paragraph 6 means:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "dominates"
+                },
+                {
+                  "id": "b",
+                  "text": "protects"
+                },
+                {
+                  "id": "c",
+                  "text": "avoids"
+                },
+                {
+                  "id": "d",
+                  "text": "discovers"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq3",
+          "type": "mcq",
+          "label": "Part D (reference)",
+          "instructions": "What do the underlined words refer to in the text?",
+          "items": [
+            {
+              "id": "m1",
+              "question": "\"his\" (paragraph 1):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "name's"
+                },
+                {
+                  "id": "b",
+                  "text": "Narcissus'"
+                },
+                {
+                  "id": "c",
+                  "text": "story's"
+                },
+                {
+                  "id": "d",
+                  "text": "Greek Mythology's"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "\"it\" (paragraph 1):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "a pool of water"
+                },
+                {
+                  "id": "b",
+                  "text": "good look"
+                },
+                {
+                  "id": "c",
+                  "text": "reflection"
+                },
+                {
+                  "id": "d",
+                  "text": "God"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m3",
+              "question": "\"they\" (paragraph 2):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "special people"
+                },
+                {
+                  "id": "b",
+                  "text": "most people who have a narcissistic personality"
+                },
+                {
+                  "id": "c",
+                  "text": "important people"
+                },
+                {
+                  "id": "d",
+                  "text": "ordinary people"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "\"He\" (paragraph 2):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "A friend"
+                },
+                {
+                  "id": "b",
+                  "text": "A colleague"
+                },
+                {
+                  "id": "c",
+                  "text": "A narcissist"
+                },
+                {
+                  "id": "d",
+                  "text": "A stranger"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m5",
+              "question": "\"they\" (paragraph 3):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "future failures"
+                },
+                {
+                  "id": "b",
+                  "text": "narcissists"
+                },
+                {
+                  "id": "c",
+                  "text": "parents"
+                },
+                {
+                  "id": "d",
+                  "text": "the children"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m6",
+              "question": "\"They\" (paragraph 4):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "children"
+                },
+                {
+                  "id": "b",
+                  "text": "parents"
+                },
+                {
+                  "id": "c",
+                  "text": "narcissists"
+                },
+                {
+                  "id": "d",
+                  "text": "(other) therapists"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m7",
+              "question": "\"their\" (paragraph 4):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "children's"
+                },
+                {
+                  "id": "b",
+                  "text": "parents'"
+                },
+                {
+                  "id": "c",
+                  "text": "therapists'"
+                },
+                {
+                  "id": "d",
+                  "text": "narcissists'"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m8",
+              "question": "\"They\" (paragraph 5):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Entertainers"
+                },
+                {
+                  "id": "b",
+                  "text": "Professional athletes"
+                },
+                {
+                  "id": "c",
+                  "text": "People"
+                },
+                {
+                  "id": "d",
+                  "text": "Celebrities"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m9",
+              "question": "\"their\" (paragraph 6):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "skills'"
+                },
+                {
+                  "id": "b",
+                  "text": "people's"
+                },
+                {
+                  "id": "c",
+                  "text": "narcissists'"
+                },
+                {
+                  "id": "d",
+                  "text": "minds'"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m10",
+              "question": "\"those\" (paragraph 6):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "minds"
+                },
+                {
+                  "id": "b",
+                  "text": "bodies"
+                },
+                {
+                  "id": "c",
+                  "text": "people"
+                },
+                {
+                  "id": "d",
+                  "text": "others"
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

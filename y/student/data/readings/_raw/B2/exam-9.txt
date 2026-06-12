@@ -1,0 +1,71 @@
+ID: b2-r9
+LEVEL: B2
+TITLE: B2 Reading 9 — The Actual Cause of Obesity
+SUBTITLE: One passage · MCQ, gap-fill, short-answer
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: The Actual Cause of Obesity
+
+PASSAGE:
+The discovery of the obesity gene in humans offered evidence that chronic weight gain is the *consequence* of a mismatch between nature and nurture.
+
+One of the reasons for obesity is that dietary fat converts to body fat more efficiently than protein or carbohydrates. However recently scientists have discovered an equally important factor. Peter Havel of the University of California, and Michael Schwarts of the University of Washington, are *investigating* the possibility that high levels of fat and fructose are mucking up our brain chemistry, and thereby preventing the signals that would normally tell us to put down the fork. {gap:2} Under normal conditions, these hormones help maintain a *stable* body weight by *adjusting* levels of the peptides that control eating. However, a diet loaded with fat and fructose prevents the regulation of *these hormones*.
+
+Other researchers are finding evidence that *constant* exposure to fat and sugar can cause some humans to crave *them* as they do an addictive drug. A Princeton University psychologist recently showed that rats which were fed a high-sugar diet went into a state of anxiety when the sugar was *removed*. {gap:3}
+
+There are many factors contributing to an explosion of obesity in the USA and the world, but the radical changes in our diet are first among *them*. While scientific work in this arena is still at its early stages, it is already clear that *varying* the *amount* of fat and other nutrients in the diet affect brain chemistry by activating certain genes, and this in turn directs our dietary preferences. {gap:4}
+
+*peptides: small proteins · leptin: a hormone, made by fat cells, that decreases your appetite · ghrelin: a hormone that increases appetite*
+
+# MCQ
+LABEL: Part A
+INSTRUCTIONS: Circle the best answer according to the text.
+1. It has been identified that…
+   a) Sugar has been a natural craving for many people since they were born.
+   b) Imbalance between the body and its surroundings causes people to put on weight habitually.
+   c) Nature is the most significant factor playing a role in obesity.
+   d) Sugar and fat are drugs that make a person unaware of their danger.
+   ANSWER: b
+2. A diet high in fat and fructose _____.
+   a) makes us continue to eat even though our body has had enough
+   b) is less harmful than a diet high in protein and carbohydrate
+   c) helps us to maintain a stable body weight
+   d) regulates insulin, leptin and ghrelin levels
+   ANSWER: a
+3. Research on animals shows that frequent exposure to fat and sugar causes _____.
+   a) anxiety
+   b) drug addiction
+   c) a desire for more sugar and fat
+   d) permanent brain damage
+   ANSWER: c
+4. Which of the following is TRUE?
+   a) Scientific research is insufficient to provide any explanation to the problem of obesity.
+   b) We are now more careful about consuming highly processed, sweet and high-fat foods.
+   c) Scientists are doing dangerous experiments to find a cure for obesity.
+   d) The genes that are activated by our changing diet are a cause of obesity.
+   ANSWER: d
+5. Which one is FALSE?
+   a) Percentage of obesity has been increasing globally.
+   b) Eating habits affect our future appetite.
+   c) All the effects of our current ways of eating are known therefore experts are worried.
+   d) The more a person consumes sugary food, the less satisfied they are unless there is more of it next time.
+   ANSWER: c
+
+# GAPS
+LABEL: Part B
+INSTRUCTIONS: Write the number of the suitable paragraph next to the sentences. One is extra.
+a: The studies on animals conducted by Sarah Leibowitz, a neurologist at Rockefeller University, revealed that frequent exposure to fatty food causes the brain to crave still more fat.
+b: By submitting ourselves to a steady dose of highly processed, sweet, high-fat foods, we have entered into a dangerous experiment, the long-term consequences of which are only now beginning to surface.
+c: These signals are produced by peptides, which are regulated mainly by three hormones: insulin, leptin and ghrelin.
+d: And this is a major health issue caused by excessive body fat, resulting in various health complications and economic burdens.
+ANSWERS: 2=c, 3=a, 4=b
+
+# SHORTANSWER
+LABEL: Part C
+INSTRUCTIONS: Find the answers from the text. Do not use more than 3 words.
+1. Which 2 elements of a diet block the effective control of hormones?
+   ANSWER: fat and fructose
+2. How can a body who is used to sugar react to absence of sugar?
+   ANSWER: by being anxious
+3. What affects our brain chemistry?
+   ANSWER: high fat / high fructose / other nutrients

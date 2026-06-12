@@ -1,0 +1,82 @@
+ID: b2-r10
+LEVEL: B2
+TITLE: B2 Reading 10 — The Cyber School
+SUBTITLE: One passage · Gaps, MCQ, short-answer
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: The Cyber School (by Jose Bukowski)
+
+PASSAGE:
+The most basic change that will take place in classrooms of the future is the actual idea we tend to have of the 'classroom' itself. For many years, the word has had much the same meaning. Rows of desks all facing the teacher and the blackboard at the front of the classroom have basically remained the same. Yes, artwork covers the walls, but not all pupils can see it due to the positioning of the desks. Small changes have been made, however. {gap:1} Even so, the classrooms of today would basically still be recognizable to a visitor from, let's say, ancient times!
+
+The thing that would really puzzle any visitors from the past would be the sight of computers in those same classrooms. They are fast becoming the main source of information as well as the main means of presentation of information during lessons. Computers are, indeed, the classrooms of the future.
+
+Without a doubt, the teacher has always been the focus in the classroom and the main source of knowledge. While that will still continue, most of the curriculum will, in fact, be followed online. This is due to various factors. As access to online materials increases and many schools face shortages of teachers, it makes sense to take advantage of the latest technology.
+
+The basic skills needed to play interactive computer games will also be used to encourage children to explore and collect educational information. Three-dimensional views of cities, for example, together with the latest software, will make it possible to walk through Paris in the company of a professional guide.
+
+The curriculum of the future will include the sharing of projects between schools both nationally and internationally, as well as online classes.
+
+Consequently, pupils will be able to work on the same project together, for example, sharing opinions and finding solutions, without the need for boards at the front of their classrooms. Teachers will also find their 'classes' growing, with lessons anywhere at any time through the use of video windows connecting them directly to children from all over the world.
+
+As parents generally prefer learning to be at school rather than at home, together with the fact that pupils enjoy company and like to share learning with their classmates, life will continue as usual for pupils as they will still need to attend school. In the future, however, it is actually the role of teachers that will change. {gap:2} Furthermore, the old system of rows of pupils facing the front of the classroom will no doubt be replaced by circles of desks and chairs to encourage face-to-face discussion.
+
+Projects and artwork will be shown on computer screens, while fellow pupils and visitors will be able to try out the multimedia programs produced by pupils. Added to the usual pens and pencils, simple video production and use of software will become part of everyday life for school children.
+
+The *latest* mobile phones will allow children to access cartoons and exchange videos with friends. {gap:3} This technology, of course, will need to stay in the playground so as to stop phones ringing in the wrong place at the wrong time!
+
+In comparison to the past, video interviews will become a normal part of project work in schools, allowing pupils to *produce* mini-documentaries. Outside the classroom pupils will be able to record information using digital cameras and video recorders for their local history projects, for example, which can then be put onto a computer the minute they return to school. Furthermore, pupils studying drama will be able to learn about lighting and cameras as they produce short plays or films.
+
+{gap:4} Children will be able to *measure* their level of *progress* throughout the training. Underwater filming of swimmers will also help children see what to do and enable teachers to give advice on particular problems.
+
+The cost of such technology is obviously high. Despite this, there is no doubt that cyber classrooms are slowly becoming a reality worldwide.
+
+# GAPS
+LABEL: Part A
+INSTRUCTIONS: Put the sentences in the appropriate paragraph gap. One is extra.
+a: Teachers might not always give the lessons, but they will still be there to encourage and supervise pupils.
+b: The blackboard, in many cases, has now been replaced by the more practical whiteboard and OHPs have started to appear at the back of some classrooms.
+c: Edtech facilitates learning, engagement, and innovation in educational environments worldwide.
+d: As well as this, talented musicians will also be able to exchange the music they produce in much the same way.
+e: As a result of the introduction of state-of-the-art training materials, even gymnastics classes will change to include on-screen programs where pupils can actually compete with each other.
+ANSWERS: 1=b, 2=a, 3=d, 4=e
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Circle the best answer according to the text.
+1. What is the purpose of the writer in writing this text?
+   a) to advise students on how to use technology for learning
+   b) to help teachers how to overcome problems related to the use of technology
+   c) to explain to teachers how to encourage and supervise pupils in the future
+   d) to inform general readers about the possible technological changes in schools
+   ANSWER: d
+2. Which of the following is TRUE about today's classrooms?
+   a) They are similar to the classrooms of the past.
+   b) The role of the teacher has changed significantly.
+   c) The furniture is arranged differently.
+   d) Whiteboards and OHPs have revolutionised them.
+   ANSWER: a
+3. Which of the following is FALSE about future classrooms?
+   a) The teacher will have a less active role.
+   b) The students will not have to go to school.
+   c) The students will not be able to use their mobile phones freely.
+   d) The teacher will be able to have more contact with the students.
+   ANSWER: b
+4. What is the main idea of this reading text?
+   a) The use of technology will enrich learning in the future classrooms.
+   b) Any visitors from the past would be influenced by the changes in today's classrooms.
+   c) It is certain that cyber classrooms will replace the classrooms of today.
+   d) Pupils will only use digital cameras and video recorders for their projects.
+   ANSWER: a
+
+# SHORTANSWER
+LABEL: Part C
+INSTRUCTIONS: Fill in the blanks with words from the text. Do not use more than three words.
+1. Educational technologies such as _______ can be motivating for students.
+   ANSWER: interactive computer games
+2. New style of seating arrangement will be in the shape of _______.
+   ANSWER: circle
+3. With the help of useful technology in training, students will be able to ________ their development.
+   ANSWER: measure
+4. It is not a dream to come across a ________ classroom anywhere around the globe.
+   ANSWER: cyber

@@ -1,0 +1,118 @@
+ID: b2-r6
+LEVEL: B2
+TITLE: B2 Reading 6 — The Sky's the Limit
+SUBTITLE: One passage · Headings, MCQ, reference, writing
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: The Sky's the Limit
+
+PASSAGE:
+For centuries some of the tallest buildings in the world were religious buildings, but few were ever more than 150 meters tall. Almost all of these buildings took decades or even hundreds of years to complete. However, the invention of steel frames in the late 1800s meant that the walls did not carry the weight of a structure. This development meant that suddenly much taller buildings were possible, and they could be built quickly. Skyscrapers were born, and they changed the face of our cities.
+
+Since 1901 the world's tallest building has always been a skyscraper and until 1974 *this* was always in New York. The most famous of *these* was the Empire State Building. *It* held the record as the world's tallest building for over 40 years, longer than any building in modern history. Only after the end of the century, the tallest building appeared outside North America. It was in Taipei and it was the first building that was more than half a kilometre tall, Taipei 101. However, the opening of Burj Khalifa in Dubai in 2010 showed an *incredible* 62% increase in height on the previous world's tallest building. Other most new record-holders had only ever shown an increase of between 5% and 20%.
+
+Countries and cities have competed with each other for centuries to hold records for the tallest structures. To many people, tall buildings are a sign of modernity, wealth, power, and success. The Eiffel Tower was completed in 1889 as part of the 1889 World's Fair to celebrate the hundredth anniversary of the French Revolution. It was the tallest structure in the world, and was built to highlight France's design and engineering skills. For centuries, the contest to build the world's tallest structure was dominated by Europe and then North America, but today the economic growth and power of countries in other regions has seen a dramatic *shift* in the location of "supertall" building construction.
+
+Tall buildings are seen as a symbol of success and status by many but they are not always popular with local residents, particularly in some historic cities. London is very old and is spread over a vast area, so there are not many tall buildings in the centre of the city. As a result, the construction of the Shard, the tallest building in London and in the entire European Union, has been highly controversial. *It* is only a few hundred metres across the River Thames from the Tower of London — one of the oldest and most famous landmarks in London. Many feel that such modern constructions should not be built near historic sites.
+
+Not surprisingly, due to the levels of debt in the U.K. at the time of construction, the Shard has largely been funded by external investment. The vast majority of funds have been provided by a Qatari investment fund. However, London residents should hope that *its* opening doesn't lead to a major downturn in their economy. The Empire State Building was finished in 1931, very soon after Wall Street crashed. The Petronas Towers in Kuala Lumpur were built in 1998, just after the Asian financial crisis. The Taipei 101 in Taiwan, constructed between 1999 and 2003, was closely linked to the dotcom bubble. The Burj Khalifa in Dubai was opened in early 2010, and shortly afterward the emirate's investment company collapsed.
+
+The Burj Khalifa might be the tallest structure in the world currently but *its* status is under threat from numerous planned buildings around the world. Two likely future *contenders* for the title are the Burj Mubarak Al Kabir in Kuwait and the Kingdom Tower in Saudi Arabia. They would be over 1000m if they were constructed as planned. One tower which will probably never be built is the 4km high X-Seed 4000 in Tokyo, which would house over a million people across 800 floors. *It* was designed in 1995 to attract publicity rather than as a serious proposal, but who knows when such fanciful ideas could become a reality? Burj Khalifa is more than double the height of the Empire State Building, and surely no one in 1931 would have imagined *that*.
+
+# HEADINGS
+LABEL: Part A
+INSTRUCTIONS: Match the paragraphs with the headings. There is ONE extra heading.
+A: Why construct tall buildings?
+B: The economic consequences of building tall structures.
+C: How buildings became taller.
+D: Tall structures of the future.
+E: Controversy over a skyscraper.
+F: Why cities change.
+G: The tallest skyscrapers of the last hundred years.
+ANSWERS: 1=C, 2=G, 3=A, 4=E, 5=B, 6=D
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Circle the best choice according to the text.
+1. According to paragraph 1, before steel frames were invented _____.
+   a) the world's tallest buildings were built
+   b) the weight of the buildings was supported by the walls
+   c) skyscrapers were born and changed the appearance of cities
+   d) many tall religious buildings were 150 metres tall
+   ANSWER: b
+2. Which of the following statements is FALSE according to paragraph 2?
+   a) No other skyscraper has been the world's tallest building as long as the Empire State.
+   b) Taipei 101 was the first skyscraper to be the world's tallest building outside the USA.
+   c) Burj Khalifa was 62% higher than the world's tallest building before it.
+   d) Other new buildings broke Burj Khalifa's record with an increase of around 25%.
+   ANSWER: d
+3. According to paragraph 3, the Eiffel Tower was built to _____.
+   a) compete with the tallest structures of the time
+   b) show France's design and engineering skill
+   c) symbolize economic growth and social power
+   d) celebrate the 1889 World's Fair
+   ANSWER: b
+4. Which of the following is FALSE about the Shard according to paragraph 4?
+   a) It is criticized for its nearness to a historic landmark.
+   b) It is the only very tall building in the area.
+   c) It is a few hundred meters taller than the Tower of London.
+   d) It is funded by foreign investors.
+   ANSWER: c
+
+# VOCAB
+LABEL: Part B (vocabulary)
+INSTRUCTIONS: Choose the closest meaning for each word.
+1. In paragraph 2, "incredible" probably means:
+   a) worrying
+   b) tall
+   c) unbelievable
+   d) maximum
+   ANSWER: c
+2. In paragraph 3, "shift" probably means:
+   a) change
+   b) activity
+   c) life
+   d) energy
+   ANSWER: a
+3. In paragraph 6, "contender" probably means:
+   a) enemy
+   b) advocate
+   c) supporter
+   d) competitor
+   ANSWER: d
+
+# REFERENCE
+LABEL: Part B (reference)
+INSTRUCTIONS: Choose what each word refers to.
+1. In paragraph 2, "these" refers to:
+   a) face of our cities
+   b) 1901 and 1974
+   c) world's tallest buildings
+   d) most new record holders
+   ANSWER: c
+2. In paragraph 2, "It" refers to:
+   a) 1974
+   b) Empire State Building
+   c) New York
+   d) 1901
+   ANSWER: b
+
+# SHORTANSWER
+LABEL: Part C
+INSTRUCTIONS: What do the following words refer to? They are bold and underlined in the text.
+1. "it" (paragraph 4):
+   ANSWER: the Shard
+2. "its" (paragraph 5):
+   ANSWER: the Shard's
+3. "its" (paragraph 6):
+   ANSWER: the Burj Khalifa's
+4. "It" (paragraph 6):
+   ANSWER: the X-Seed 4000
+5. "that" (paragraph 6):
+   ANSWER: the idea that the Burj Khalifa is more than double the height of the Empire State Building
+
+# WRITING
+LABEL: Part D
+INSTRUCTIONS: Answer the following question in your own words (min. 50 words).
+PROMPT: Why do you think some countries and cities see modern developments as positive and others see them as negative?
+MIN_WORDS: 50

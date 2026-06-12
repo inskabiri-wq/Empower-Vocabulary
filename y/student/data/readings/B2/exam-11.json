@@ -1,0 +1,332 @@
+{
+  "id": "b2-r11",
+  "level": "B2",
+  "title": "B2 Reading 11 — How Advertising Uses Psychology",
+  "subtitle": "One passage · Headings, MCQ, True/False",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "How Advertising Uses Psychology",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">If you live in Tokyo or Toronto, you need a warm coat in the winter. However, you want a coat that is short, or black, or has a designer brand. The aim of advertising is to change our ideas about things we want and need.</p><p class=\"rd-para\" data-para=\"2\">Many advertisers use people's emotions — like fear or love — to persuade them that they need a product. Think of a TV commercial that shows a woman out driving in a car on a rainy day, with her two small children. Suddenly, another car turns in front of her. The mother quickly hits the brakes, and her car comes to a stop. The children are still smiling and laughing. The message is: This car will keep you safe. Advertisements like this one use fear to sell products. Other examples are slogans that tell you to \"take vitamins to prevent heart disease,\" or \"buy insurance — protect your family.\"</p><p class=\"rd-para\" data-para=\"3\">Commercials for soft drinks often show people having a party, playing sports, or enjoying a day at the beach. Everyone in the ad is having a good time. The message is: If you buy this drink, you will have a good time, too. Many ads like this are based on people's desire for fun and enjoyment.</p><p class=\"rd-para\" data-para=\"4\">Advertising for designer products uses people's vanity to sell the product. The ads try to create a personality for each brand. For example, one brand of watches is for people who like adventure, with ads featuring an auto racer or a pilot wearing them. Another brand of watches is for elegant and fashionable people, and the ads show wealthy travellers on a cruise ship. The watches look almost the same — only their images are different. When you buy that brand of watch, you are buying the image. This is the reason that people spend much more money for a product with a famous designer brand.</p><p class=\"rd-para\" data-para=\"5\">After an ad is prepared, advertisers use psychology to make it more effective. In addition, psychologists have found that people have positive feelings about things they see more often, so the same ad is used for a long time before it is replaced with a new one. Other studies have found that people react better to an ad when it is fresh in their memory, so TV ads are repeated very often.</p><p class=\"rd-para\" data-para=\"6\">Knowing about psychology in advertising lets us make better decisions about the things we buy. It helps us understand the difference between the things we want — and the things we really need.</p>",
+      "sections": [
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part A",
+          "instructions": "Match the titles with the paragraphs. There are extra titles.",
+          "options": [
+            {
+              "id": "A",
+              "text": "Isn't this FUN!"
+            },
+            {
+              "id": "B",
+              "text": "People react better to an advertisement when it is fresh in their memory."
+            },
+            {
+              "id": "C",
+              "text": "Ads in harness with Psychology"
+            },
+            {
+              "id": "D",
+              "text": "Necessary or Craving?"
+            },
+            {
+              "id": "E",
+              "text": "Wear to Be One of Them"
+            },
+            {
+              "id": "F",
+              "text": "Fake it till you make it."
+            },
+            {
+              "id": "G",
+              "text": "Fear makes Money"
+            }
+          ],
+          "items": [
+            {
+              "id": "p1",
+              "label": "Paragraph 1",
+              "answer": "D"
+            },
+            {
+              "id": "p2",
+              "label": "Paragraph 2",
+              "answer": "G"
+            },
+            {
+              "id": "p3",
+              "label": "Paragraph 3",
+              "answer": "A"
+            },
+            {
+              "id": "p4",
+              "label": "Paragraph 4",
+              "answer": "E"
+            },
+            {
+              "id": "p5",
+              "label": "Paragraph 5",
+              "answer": "C"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Circle the correct answers according to the reading text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Which of the following feelings is not used in advertising?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "fear"
+                },
+                {
+                  "id": "b",
+                  "text": "hatred"
+                },
+                {
+                  "id": "c",
+                  "text": "love"
+                },
+                {
+                  "id": "d",
+                  "text": "desire"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "Advertisers use psychology to _________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "study people's feelings and use them to sell more products"
+                },
+                {
+                  "id": "b",
+                  "text": "shake people's beliefs about certain products"
+                },
+                {
+                  "id": "c",
+                  "text": "create a personality for each brand"
+                },
+                {
+                  "id": "d",
+                  "text": "make customers think in a positive way"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m3",
+              "question": "Which of the following slogans does not use 'fear' to sell products?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Buy this car - keep your children safe!"
+                },
+                {
+                  "id": "b",
+                  "text": "Take vitamins - prevent heart disease!"
+                },
+                {
+                  "id": "c",
+                  "text": "Buy insurance - protect your family!"
+                },
+                {
+                  "id": "d",
+                  "text": "Buy this drink - have a good time!"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m4",
+              "question": "Why do people spend a lot of money for a product with a famous designer brand?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "To be able to take part in the rich community"
+                },
+                {
+                  "id": "b",
+                  "text": "To use higher quality of goods for a longer time"
+                },
+                {
+                  "id": "c",
+                  "text": "To make sure that people they care are safe and secure"
+                },
+                {
+                  "id": "d",
+                  "text": "To be able to have an image along with the product"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m5",
+              "question": "Researchers have discovered that it's better to use ads for a _________ time and to show them _________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "short / sometimes"
+                },
+                {
+                  "id": "b",
+                  "text": "long / sometimes"
+                },
+                {
+                  "id": "c",
+                  "text": "long / often"
+                },
+                {
+                  "id": "d",
+                  "text": "short / often"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m6",
+              "question": "We can infer from the passage that __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Psychological well being is the key to effective shopping"
+                },
+                {
+                  "id": "b",
+                  "text": "Advertisements help people better understand their needs"
+                },
+                {
+                  "id": "c",
+                  "text": "Advertising manipulates people to make larger profits"
+                },
+                {
+                  "id": "d",
+                  "text": "Truthful commercials help products sell better."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m7",
+              "question": "Which of the following advertisements uses people's vanity to sell the product?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "L'Oreal — Because you're worth it."
+                },
+                {
+                  "id": "b",
+                  "text": "Food, friends, good times — with Superfresh Frozen Pizza."
+                },
+                {
+                  "id": "c",
+                  "text": "Where is your child? Buy her a Samsung cell phone, and you'll always know."
+                },
+                {
+                  "id": "d",
+                  "text": "With a Sony Stereo in your home, every day is a party!"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "truefalse",
+          "type": "mcq",
+          "label": "Part C",
+          "instructions": "According to the text, choose True or False for the following statements.",
+          "items": [
+            {
+              "id": "tf1",
+              "question": "Convincing people to purchase an item is possible when feelings are actively involved.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf2",
+              "question": "While having a good time, many customers want to buy more items.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf3",
+              "question": "Ads' slogans are mostly not realistic to make people afraid of threats.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf4",
+              "question": "Frequency of an experience affects our thoughts about certain things such as items to buy.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf5",
+              "question": "Certain advertisements aim to manipulate people to buy a brand to access an image.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

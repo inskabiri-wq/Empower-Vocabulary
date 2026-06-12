@@ -1,0 +1,265 @@
+/* ============================================================
+   POLICY MINI COURSE - page styles
+   Dark Empower Lab look (Nunito), Coursera-style module list,
+   step reader, quiz with mistake counter, printable certificate.
+   ============================================================ */
+
+body {
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  background: #0d1426;
+  background-image: radial-gradient(1100px 500px at 80% -10%, rgba(59, 130, 246, 0.14), transparent),
+                    radial-gradient(900px 480px at 10% 110%, rgba(251, 146, 60, 0.10), transparent);
+  color: #f1f5f9;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.pc-center-fill {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; padding: 20px;
+}
+.pc-inactive-card {
+  text-align: center; max-width: 460px;
+  background: rgba(21, 32, 53, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 18px; padding: 34px 30px;
+}
+.pc-inactive-card h2 { margin: 12px 0 8px; }
+.pc-inactive-card p { color: #b4c0d8; line-height: 1.6; margin: 0 0 20px; }
+
+/* ── Header ── */
+.pc-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 22px;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.18);
+  background: rgba(13, 20, 38, 0.85);
+  position: sticky; top: 0; z-index: 5; backdrop-filter: blur(8px);
+}
+.pc-back { color: #94a3b8; text-decoration: none; font-weight: 700; font-size: 0.9em; white-space: nowrap; }
+.pc-back:hover { color: #f1f5f9; }
+.pc-header-title { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 1.05em; flex: 1; min-width: 0; }
+.pc-header-title span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pc-header-right { display: flex; align-items: center; gap: 10px; }
+.pc-lang {
+  cursor: pointer; font: inherit; font-weight: 800; font-size: 0.8em;
+  color: #f1f5f9; background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 999px; padding: 6px 12px;
+}
+.pc-lang:hover { background: rgba(59, 130, 246, 0.3); }
+.pc-student-chip { font-size: 0.85em; color: #94a3b8; font-weight: 700; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Layout ── */
+.pc-wrap { max-width: 780px; margin: 0 auto; padding: 26px 18px 60px; }
+.pc-intro { color: #b4c0d8; line-height: 1.65; margin: 0 0 18px; }
+
+.pc-progressbar { height: 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+.pc-progressbar-fill { height: 100%; border-radius: 999px; width: 0; background: linear-gradient(90deg, #3b82f6, #14b8a6); transition: width 0.4s ease; }
+.pc-progress-label { font-size: 0.85em; color: #94a3b8; font-weight: 700; margin: 8px 2px 22px; }
+
+/* ── Module cards ── */
+.pc-module-list { display: flex; flex-direction: column; gap: 12px; }
+.pc-module-card {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(21, 32, 53, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  border-radius: 16px; padding: 16px 18px;
+}
+.pc-module-card.pc-locked { opacity: 0.55; }
+.pc-module-card.pc-final-card { border-color: rgba(245, 158, 11, 0.45); }
+.pc-module-card.pc-cert-card { border-color: rgba(245, 200, 66, 0.55); background: rgba(35, 30, 16, 0.6); }
+.pc-module-icon { font-size: 1.9em; width: 46px; text-align: center; }
+.pc-module-info { flex: 1; min-width: 0; }
+.pc-module-title { font-weight: 800; margin-bottom: 3px; }
+.pc-module-sub { font-size: 0.84em; font-weight: 700; }
+.pc-muted { color: #94a3b8; }
+.pc-ok { color: #34d399; }
+.pc-warn { color: #fbbf24; }
+.pc-ban { color: #f87171; }
+
+/* ── Buttons ── */
+.pc-btn {
+  cursor: pointer; font: inherit; font-weight: 800; font-size: 0.88em;
+  border-radius: 12px; padding: 10px 18px; border: 1px solid transparent;
+  white-space: nowrap; text-decoration: none; display: inline-block;
+}
+.pc-btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; }
+.pc-btn-primary:hover { filter: brightness(1.1); }
+.pc-btn-ghost { background: rgba(255, 255, 255, 0.06); color: #e2e8f0; border-color: rgba(148, 163, 184, 0.3); }
+.pc-btn-ghost:hover { border-color: rgba(148, 163, 184, 0.6); }
+.pc-btn-gold { background: linear-gradient(135deg, #f5c842, #f59e0b); color: #2a2008; }
+.pc-btn-gold:hover { filter: brightness(1.06); }
+
+/* ── Lesson reader ── */
+.pc-lesson-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.pc-step-label { font-size: 0.85em; font-weight: 800; color: #94a3b8; }
+.pc-lesson-card {
+  background: rgba(21, 32, 53, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  border-radius: 16px; padding: 26px 28px;
+}
+.pc-lesson-card h2 { margin: 0 0 14px; font-size: 1.25em; }
+.pc-lesson-body p { color: #d7dfee; line-height: 1.8; margin: 0 0 14px; font-size: 1.02em; }
+.pc-lesson-nav { display: flex; justify-content: space-between; margin-top: 18px; }
+
+/* Optional lesson media (image / embedded video / external link) */
+.pc-media { margin: 18px 0 6px; }
+.pc-media img { max-width: 100%; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.25); display: block; }
+.pc-media figcaption { font-size: 0.82em; color: #94a3b8; margin-top: 6px; }
+.pc-video { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 18px 0 6px; }
+.pc-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 12px; background: #000; }
+.pc-ext-link {
+  display: inline-block; font-weight: 800; color: #7dd3fc; text-decoration: none;
+  border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 8px 14px; margin-top: 8px;
+}
+.pc-ext-link:hover { background: rgba(56, 189, 248, 0.12); }
+
+/* ── Quiz ── */
+.pc-quiz-meta { display: flex; align-items: center; gap: 14px; }
+.pc-lives {
+  font-size: 0.82em; font-weight: 800; color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.4);
+  border-radius: 999px; padding: 4px 12px;
+}
+.pc-quiz-card {
+  background: rgba(21, 32, 53, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  border-radius: 16px; padding: 26px 28px;
+}
+.pc-quiz-title { font-size: 0.8em; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #fb923c; margin-bottom: 10px; }
+.pc-quiz-q { font-size: 1.15em; font-weight: 800; line-height: 1.55; margin-bottom: 18px; }
+.pc-quiz-opts { display: flex; flex-direction: column; gap: 10px; }
+.pc-opt {
+  cursor: pointer; font: inherit; font-size: 1em; font-weight: 600; text-align: left;
+  color: #f1f5f9; background: rgba(28, 42, 66, 0.85);
+  border: 2px solid rgba(100, 116, 150, 0.4); border-radius: 12px; padding: 13px 16px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.pc-opt:hover:not(:disabled) { border-color: #3b82f6; }
+.pc-opt:disabled { cursor: default; }
+.pc-opt.is-right { border-color: #10b981; background: rgba(16, 185, 129, 0.15); }
+.pc-opt.is-wrong { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); }
+.pc-feedback { margin-top: 14px; font-weight: 800; padding: 10px 14px; border-radius: 10px; }
+.pc-feedback.ok { color: #34d399; background: rgba(16, 185, 129, 0.1); }
+.pc-feedback.no { color: #f87171; background: rgba(239, 68, 68, 0.1); }
+
+/* ── Result ── */
+.pc-result-card {
+  text-align: center;
+  background: rgba(21, 32, 53, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  border-radius: 16px; padding: 40px 28px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.pc-result-icon { font-size: 3em; }
+.pc-result-card h2 { margin: 0; }
+.pc-result-card p { color: #b4c0d8; line-height: 1.6; margin: 0; max-width: 440px; }
+.pc-result-card .pc-btn { margin-top: 10px; }
+
+/* ── Certificate (landscape; mirrors the department's printed
+      Certificate of Participation) ── */
+.pc-cert-actions { display: flex; justify-content: space-between; margin-bottom: 18px; }
+
+.pc-cert {
+  background: #fdfdfb; color: #1d2230;
+  width: 100%; aspect-ratio: 297 / 210;     /* A4 landscape */
+  padding: 1.6%;                             /* white sheet margin */
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+/* Thick blue frame with a metallic gradient, like the foil border */
+.pc-cert-frame {
+  height: 100%; box-sizing: border-box;
+  border: 10px solid #1b3a6b;
+  border-image: linear-gradient(135deg, #0c2c5a 0%, #3a77b5 35%, #11355f 60%, #4a86c2 100%) 1;
+  padding: 1.8%;
+  background: #fdfdfb;
+}
+/* Thin double silver inner frame */
+.pc-cert-inner {
+  height: 100%; box-sizing: border-box;
+  border: 1px solid #9aa1ad;
+  outline: 1px solid #9aa1ad;
+  outline-offset: 4px;
+  padding: 2.5% 4%;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; position: relative;
+}
+
+/* Department lockup */
+.pc-cert-dept { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.pc-cert-deptlogo { height: 52px; object-fit: contain; }
+.pc-cert-dept-tr { font-size: 12px; font-weight: 800; letter-spacing: 0.12em; color: #c8102e; }
+.pc-cert-dept-en { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; color: #1b3a6b; }
+
+/* Script calligraphy heading + name */
+.pc-cert-script {
+  font-family: 'Great Vibes', cursive; font-weight: 400;
+  color: #2e5f94; font-size: clamp(30px, 5.2vw, 62px);
+  line-height: 1.1; margin: 2.2% 0 1.2%;
+}
+.pc-cert-presented {
+  font-size: 12px; font-weight: 800; letter-spacing: 0.08em;
+  color: #1d2230;
+}
+.pc-cert-name-script {
+  font-family: 'Great Vibes', cursive; font-weight: 400;
+  color: #16202e; font-size: clamp(26px, 3.6vw, 44px);
+  line-height: 1.15; margin: 1.2% 0 0.6%;
+}
+.pc-cert-statement {
+  font-family: Georgia, 'Times New Roman', serif; font-style: italic;
+  color: #3a4356; font-size: clamp(11px, 1.35vw, 15px); line-height: 1.65;
+  max-width: 580px; margin: 0.6% auto 0;
+}
+.pc-cert-statement strong {
+  font-style: normal; font-weight: 800; color: #1b3a6b;
+  letter-spacing: 0.04em;
+}
+
+/* Bottom row: signature (left) · gold seal (centre) · meta (right) */
+.pc-cert-bottom {
+  margin-top: auto; width: 100%;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 14px;
+}
+.pc-cert-sign { text-align: left; min-width: 0; }
+.pc-cert-signname { font-size: 13px; font-weight: 800; color: #16202e; letter-spacing: 0.02em; }
+.pc-cert-signtitle { font-family: Georgia, serif; font-style: italic; font-size: 11px; color: #4a5364; margin-top: 2px; }
+.pc-cert-sealwrap {
+  width: 88px; height: 88px; border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #f8e29a, #ddae3e 55%, #a8771c 100%);
+  border: 3px double #8a6210;
+  box-shadow: 0 3px 10px rgba(120, 84, 15, 0.45), inset 0 0 10px rgba(255, 245, 200, 0.7);
+  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 auto;
+}
+.pc-cert-sealimg {
+  width: 62px; height: 62px; object-fit: contain;
+  opacity: 0.65; mix-blend-mode: multiply; filter: sepia(0.7) saturate(0.7);
+}
+.pc-cert-meta { text-align: right; font-size: 9px; color: #8b93a2; line-height: 1.7; }
+.pc-cert-meta strong { color: #4a5364; font-weight: 700; }
+
+/* Print: the certificate only, full landscape page. */
+@media print {
+  @page { size: A4 landscape; margin: 0; }
+  body { background: #fff !important; }
+  .pc-header, .pc-cert-actions, #pcOverview, #pcLesson, #pcQuiz, #pcResult { display: none !important; }
+  #pcCertificate { display: block !important; }
+  .pc-wrap { max-width: none; padding: 0; }
+  .pc-cert { box-shadow: none; width: 100vw; height: 100vh; aspect-ratio: auto; }
+}
+
+@media (max-width: 560px) {
+  .pc-module-card { flex-wrap: wrap; }
+  .pc-module-card .pc-btn { width: 100%; text-align: center; }
+  .pc-student-chip { display: none; }
+  .pc-cert-inner { padding: 3% 3%; }
+  .pc-cert-sealwrap { width: 56px; height: 56px; }
+  .pc-cert-sealimg { width: 38px; height: 38px; }
+  .pc-cert-meta { font-size: 7px; }
+  .pc-cert-signname { font-size: 9px; }
+  .pc-cert-signtitle { font-size: 8px; }
+  .pc-cert-deptlogo { height: 34px; }
+}

@@ -1,0 +1,198 @@
+{
+  "id": "a1-r7",
+  "level": "A1",
+  "title": "A1 Reading 7 — Sydney",
+  "subtitle": "One passage · Headings, MCQ, reference, writing",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Sydney",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Sydney has everything that you want in a city. There are old and new buildings, fantastic beaches and the food is delicious.</p><p class=\"rd-para\" data-para=\"2\"><span class=\"rd-gap\" data-gap=\"1\"></span> The best times to visit are spring and autumn. In summer, <strong>it</strong> is very hot. The beaches are full of people from all over the world. They enjoy swimming and sunbathing by the ocean.</p><p class=\"rd-para\" data-para=\"3\"><span class=\"rd-gap\" data-gap=\"2\"></span> There are many hotels that you can stay in Sydney. Some of them are expensive and some of them are cheap. The cheap hotels are in King's Cross. A room is about $50 a night. There are also international hotels in the centre. Here a room is about $150 a night. <strong>They</strong> are very luxurious and comfortable.</p><p class=\"rd-para\" data-para=\"4\"><span class=\"rd-gap\" data-gap=\"3\"></span> There are many activities that you can do in Sydney. There are theatres and cinemas, and of course, the Opera House. It is in Sydney Harbour. It is a white, beautiful building, and <strong>it</strong> is very famous. Many people go to the Opera House and watch the amazing shows there. The best shops are in Pitt Street. Especially tourists go there to shop. Sydney Harbour is worth seeing. There are beaches, parks, cafes, and the wonderful bridge. Sydney has the famous Bondi Beach. People go swimming, surfing, windsurfing, and sailing. For nightlife, there are clubs and bars in Oxford Street. You can go for a drink and have fun <strong>there</strong>.</p><p class=\"rd-para\" data-para=\"5\"><span class=\"rd-gap\" data-gap=\"4\"></span> There are restaurants from every country — Italian, Turkish, Lebanese, Japanese, Thai, Chinese, and Vietnamese. Australians eat a lot of seafood — <strong>it</strong> is very fresh.</p><p class=\"rd-para\" data-para=\"6\"><span class=\"rd-gap\" data-gap=\"5\"></span> There are fast trains and slow buses. The best way to see Sydney is by ferry. You should travel by ferry because it is comfortable, cheap, and it has an air conditioning system.</p>",
+      "sections": [
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part A",
+          "instructions": "Match the headings with the paragraphs.",
+          "options": [
+            {
+              "id": "a",
+              "text": "What to do"
+            },
+            {
+              "id": "b",
+              "text": "What to eat"
+            },
+            {
+              "id": "c",
+              "text": "Where to stay"
+            },
+            {
+              "id": "d",
+              "text": "When to go"
+            },
+            {
+              "id": "e",
+              "text": "How to travel"
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "d"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "c"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "a"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "b"
+            },
+            {
+              "id": "5",
+              "label": "Gap 5",
+              "answer": "e"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Read the text again and answer the following questions.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "When are the best times to go to Sydney?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "winter and autumn"
+                },
+                {
+                  "id": "b",
+                  "text": "spring and summer"
+                },
+                {
+                  "id": "c",
+                  "text": "fall and spring"
+                },
+                {
+                  "id": "d",
+                  "text": "winter and spring"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "Which of the following is FALSE according to paragraph 2?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "There are cheap and luxurious hotels in Sydney."
+                },
+                {
+                  "id": "b",
+                  "text": "The economical hotels are in King's Cross."
+                },
+                {
+                  "id": "c",
+                  "text": "All the hotels are international in Sydney."
+                },
+                {
+                  "id": "d",
+                  "text": "The room in King's Cross costs $50."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "What is the main idea of paragraph 3?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "People go to Sydney for its nightlife."
+                },
+                {
+                  "id": "b",
+                  "text": "Surfing and sailing are popular sports in Sydney."
+                },
+                {
+                  "id": "c",
+                  "text": "The best shops, theatres, and cinemas are in Sydney."
+                },
+                {
+                  "id": "d",
+                  "text": "There are several activities for people in Sydney."
+                }
+              ],
+              "answer": "d"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part B (continued)",
+          "instructions": "Answer the question.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "According to paragraph 5, the best way to see Sydney is by ferry. Why?",
+              "answer": "It is cheap, comfortable and has an air-conditioning system."
+            }
+          ]
+        },
+        {
+          "id": "shortanswer2",
+          "type": "find-word",
+          "label": "Part C",
+          "instructions": "What do the following words refer to? They are bold and underlined in the text.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"it\" (paragraph 1):",
+              "answer": "Sydney"
+            },
+            {
+              "id": "sa2",
+              "definition": "\"They\" (paragraph 2):",
+              "answer": "International Hotels"
+            },
+            {
+              "id": "sa3",
+              "definition": "\"there\" (paragraph 3):",
+              "answer": "Oxford Street"
+            },
+            {
+              "id": "sa4",
+              "definition": "\"it\" (paragraph 4):",
+              "answer": "seafood"
+            }
+          ]
+        },
+        {
+          "id": "writing",
+          "type": "writing",
+          "label": "Part D",
+          "instructions": "Write your answer (min. 50 words).",
+          "prompt": "Would you like to visit Sydney? Why? Why not?",
+          "minWords": 50
+        }
+      ]
+    }
+  ]
+}

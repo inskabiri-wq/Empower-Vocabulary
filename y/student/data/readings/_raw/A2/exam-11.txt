@@ -1,0 +1,92 @@
+ID: a2-r11
+LEVEL: A2
+TITLE: A2 Reading 11 — Slow Food (Scanning)
+SUBTITLE: One passage · Short-answer scanning, T/F, vocabulary, reference
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Slow Food
+
+PASSAGE:
+Italians know and love good food. It's at the heart of their culture. They don't like to rush through meals, either. So, many of them think that fast food is a terrible idea.
+
+In 1986, something happened in Italy. An American fast food restaurant — a McDonald's — opened in Rome. Many Italians were surprised and angry. They thought, "This is an *attack* on Italian culture!" One man, Carlo Petrini, decided to fight back. "Fast food is the *enemy*," he said. In 1989, Petrini started a group called Slow Food. Today, about 70,000 people belong to the group. They live in forty-five countries around the world. More people join every day.
+
+The *members* of Slow Food have many ideas in common. There are a lot of problems with food today, *they* say. Fast food is one of them. For one thing, it's not healthy food. Also, it's the same everywhere. "That's boring," they say. They want to keep traditional cooking with all its variety.
+
+Slow Food members worry about a second problem, too. Some types of plants and animals are getting to be very rare. They include, *for instance*, a kind of tree in Morocco, a special type of Austrian cow, and wild rice in the United States. The world is in danger of losing *them* completely. Slow Food doesn't want to let them disappear, so they're working with farmers to keep them *alive*.
+
+There's a third problem. Big companies produce much of our food today. They sell their products in many places, so they want products that can travel well. Big growers want the kinds of fruit and vegetables that look good after a long trip. But how do their apples, lettuce, and tomatoes taste? That's less important to them. So now we have more trouble finding good-tasting food.
+
+Today, it's common to eat foods from far away. Food travels an average distance of 1,300 miles to reach dinner tables in the United States. In the past, people got their food from farms and factories in their local area. Slow Food members say, "People should buy more local food. It's fresh, and it's part of our culture." One American, Gary Nabhan, decided to try *this*. For one year, all his food came from plants and animals near his home in Arizona. One local animal is the rattlesnake. Nabhan ate that, too! In his book Coming Home to Eat, he says it tastes just like chicken.
+
+Fast food is reaching more and more parts of the world. But Slow Food is getting its message to more and more people, too.
+
+# SHORTANSWER
+LABEL: Part A (scanning)
+INSTRUCTIONS: Scan the reading and write short answers to the questions.
+1. How do Italians feel about good food?
+   ANSWER: it is at the heart of their culture / they love good food / they think it is at the heart of their culture
+2. What happened in Rome in 1986?
+   ANSWER: a McDonald's opened / a McDonald's opened in Rome / an American fast food restaurant opened in Rome
+3. Who is Carlo Petrini?
+   ANSWER: he started Slow Food / the man who started a group called Slow Food / he started a group called Slow Food to fight back fast food
+4. What do Slow Food members think about fast food?
+   ANSWER: they think it is unhealthy and boring / they want to keep traditional cooking / fast food is the enemy
+5. What's in danger of disappearing?
+   ANSWER: some types of plants and animals / rare plants and animals
+6. How far does food travel on average in the United States?
+   ANSWER: 1,300 miles / an average distance of 1,300 miles
+7. Who is Gary Nabhan?
+   ANSWER: an American who ate only local food for one year / a man who only ate food from near his home in Arizona for one year
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Circle True or False for each sentence.
+1. Good food is an important part of Italian culture.
+   a) True
+   b) False
+   ANSWER: a
+2. The group Slow Food started after a McDonald's opened in Rome.
+   a) True
+   b) False
+   ANSWER: a
+3. Slow Food members say fast food is boring and bad for you.
+   a) True
+   b) False
+   ANSWER: a
+4. Slow Food members want everyone to eat Italian food.
+   a) True
+   b) False
+   ANSWER: b
+5. Slow Food says there are too many types of food in the world.
+   a) True
+   b) False
+   ANSWER: b
+6. Foods from big food companies usually travel long distances.
+   a) True
+   b) False
+   ANSWER: a
+
+# SHORTANSWER
+LABEL: Part C (vocabulary)
+INSTRUCTIONS: Find the right word or phrase in the passage for each definition.
+1. (paragraph 2) a use of force to hurt someone or something:
+   ANSWER: attack
+2. (paragraph 2) someone you are fighting in a war; the opposite of friend:
+   ANSWER: enemy
+3. (paragraph 3) people who belong to a group, club, or organization:
+   ANSWER: members / member
+4. (paragraph 4) for example:
+   ANSWER: for instance
+5. (paragraph 4) living, continuing to be or exist:
+   ANSWER: alive
+
+# SHORTANSWER
+LABEL: Part D (reference)
+INSTRUCTIONS: Find what these words refer to.
+1. "they" (paragraph 2):
+   ANSWER: Slow Food members / the members of Slow Food
+2. "them" (paragraph 4):
+   ANSWER: some types of plants and animals / plants and animals / rare plants and animals
+3. "this" (paragraph 6):
+   ANSWER: buying more local food / the act of buying more local food / eating local food

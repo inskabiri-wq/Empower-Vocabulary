@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FSMVÜ Seal — Loader Animations</title>
+<style>
+  :root{
+    --crimson:#ee3342;
+    --crimson-deep:#c01f2d;
+    --seal: url('assets/seal.png');
+  }
+  html,body{margin:0;height:100%;}
+  body{background:#efece8;font-family:Georgia,'Times New Roman',serif;}
+
+  /* ---------- shared tile shell ---------- */
+  .tile{
+    width:100%;height:100%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:22px;position:relative;overflow:hidden;
+  }
+  .cap{
+    font-size:12px;letter-spacing:.32em;text-transform:uppercase;
+    font-family:Georgia,serif;font-style:italic;
+  }
+  .cap.dark{color:rgba(255,255,255,.55);}
+  .cap.light{color:rgba(40,30,28,.45);}
+
+  /* base seal block */
+  .seal{
+    width:152px;height:152px;
+    background:var(--seal) center/contain no-repeat;
+    will-change:transform,opacity,filter;
+  }
+  .stack{position:relative;width:152px;height:152px;}
+  .stack > .seal{position:absolute;inset:0;}
+
+  /* split masks: emblem core vs outer text ring (box 152 -> half 76px) */
+  .layer-emblem{
+    -webkit-mask:radial-gradient(circle 76px at 50% 50%, #000 0 49px, transparent 50px);
+            mask:radial-gradient(circle 76px at 50% 50%, #000 0 49px, transparent 50px);
+  }
+  .layer-ring{
+    -webkit-mask:radial-gradient(circle 76px at 50% 50%, transparent 0 49px, #000 50px);
+            mask:radial-gradient(circle 76px at 50% 50%, transparent 0 49px, #000 50px);
+  }
+
+  /* ============ 01 · RING ROTATION ============ */
+  .t-rotate .layer-ring{ animation:spin 9s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  /* ============ 02 · BREATHE / PULSE ============ */
+  .t-breathe .seal{ animation:breathe 3.6s ease-in-out infinite; }
+  @keyframes breathe{
+    0%,100%{ transform:scale(1);   filter:drop-shadow(0 6px 14px rgba(238,51,66,.10)); }
+    50%    { transform:scale(1.06);filter:drop-shadow(0 12px 30px rgba(238,51,66,.32)); }
+  }
+
+  /* ============ 03 · SHIMMER SWEEP ============ */
+  .t-shimmer .stack .gloss{
+    position:absolute;inset:0;pointer-events:none;
+    -webkit-mask:var(--seal) center/contain no-repeat;
+            mask:var(--seal) center/contain no-repeat;
+    background:linear-gradient(115deg,
+      transparent 38%, rgba(255,255,255,.92) 50%, transparent 62%);
+    background-size:280% 100%;
+    animation:sheen 3.8s cubic-bezier(.5,0,.2,1) infinite;
+  }
+  @keyframes sheen{
+    0%{ background-position:170% 0; }
+    55%,100%{ background-position:-170% 0; }
+  }
+
+  /* ============ 04 · DRAW-ON (iris build-up) ============ */
+  .t-draw .seal{ animation:draw 3.8s cubic-bezier(.5,0,.15,1) infinite; }
+  @keyframes draw{
+    0%  { clip-path:circle(0% at 50% 50%);  opacity:1; transform:scale(.94); }
+    42% { clip-path:circle(62% at 50% 50%); opacity:1; transform:scale(1); }
+    78% { clip-path:circle(62% at 50% 50%); opacity:1; transform:scale(1); }
+    90% { clip-path:circle(62% at 50% 50%); opacity:0; transform:scale(1.02); }
+    100%{ clip-path:circle(0% at 50% 50%);  opacity:0; transform:scale(.94); }
+  }
+
+  /* ============ 05 · SCALE + FADE (splash) ============ */
+  .t-splash .seal{ animation:splash 4s ease-in-out infinite; }
+  @keyframes splash{
+    0%  { opacity:0; transform:scale(.82); filter:blur(7px); }
+    16% { opacity:1; transform:scale(1.035);filter:blur(0); }
+    24% { transform:scale(1); }
+    72% { opacity:1; transform:scale(1); filter:blur(0); }
+    88% { opacity:0; transform:scale(1.05); filter:blur(5px); }
+    100%{ opacity:0; }
+  }
+
+  /* ============ 06 · PROGRESS RING ============ */
+  .t-prog .ring-wrap{ position:relative;width:184px;height:184px;display:grid;place-items:center; }
+  .t-prog .track,
+  .t-prog .arc{
+    position:absolute;inset:0;border-radius:50%;
+    -webkit-mask:radial-gradient(circle at 50% 50%, transparent 0 86px, #000 87px 91px, transparent 92px);
+            mask:radial-gradient(circle at 50% 50%, transparent 0 86px, #000 87px 91px, transparent 92px);
+  }
+  .t-prog .track{ background:conic-gradient(rgba(238,51,66,.16) 0 100%); }
+  .t-prog .arc{
+    background:conic-gradient(from 0deg, transparent 0 62%, var(--crimson) 78%, var(--crimson) 100%);
+    animation:spin 1.35s cubic-bezier(.6,.05,.4,.95) infinite;
+  }
+  .t-prog .seal{ width:120px;height:120px; animation:breathe-soft 3.2s ease-in-out infinite; }
+  @keyframes breathe-soft{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+
+  /* dots */
+  .dots{display:flex;gap:7px;}
+  .dots i{width:6px;height:6px;border-radius:50%;background:var(--crimson);display:block;animation:dot 1.4s ease-in-out infinite;}
+  .dots i:nth-child(2){animation-delay:.18s;}
+  .dots i:nth-child(3){animation-delay:.36s;}
+  @keyframes dot{0%,100%{opacity:.2;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;}
+  }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { DesignCanvas, DCSection, DCArtboard } = window;
+
+const LIGHT = '#f7f3ee';
+const PARCH = '#efe7da';
+const INK   = '#171318';
+const INKR  = '#1c1013';
+
+function Tile({ bg, capClass='light', cls, children, label }){
+  return (
+    <div className="tile" style={{ background:bg }}>
+      <div className={cls}>{children}</div>
+      {label && <div className={"cap "+capClass}>{label}</div>}
+    </div>
+  );
+}
+
+function App(){
+  return (
+    <DesignCanvas>
+      <DCSection id="loaders" title="FSMVÜ Seal · Loader Animations"
+                 subtitle="Six stately, crimson-true motion directions — true to the original mark. Open any in focus (⤢) to preview full-size.">
+
+        <DCArtboard id="rotate" label="01 · Ring Rotation" width={300} height={300}>
+          <Tile bg={LIGHT} cls="stack t-rotate" label="Loading">
+            <div className="seal layer-ring"></div>
+            <div className="seal layer-emblem"></div>
+          </Tile>
+        </DCArtboard>
+
+        <DCArtboard id="breathe" label="02 · Breathe" width={300} height={300}>
+          <Tile bg={PARCH} cls="t-breathe" label="Please wait">
+            <div className="seal"></div>
+          </Tile>
+        </DCArtboard>
+
+        <DCArtboard id="shimmer" label="03 · Shimmer Sweep" width={300} height={300}>
+          <Tile bg={INK} capClass="dark" cls="stack t-shimmer" label="Loading">
+            <div className="seal"></div>
+            <div className="gloss"></div>
+          </Tile>
+        </DCArtboard>
+
+        <DCArtboard id="draw" label="04 · Draw-On" width={300} height={300}>
+          <Tile bg={LIGHT} cls="t-draw" label="Preparing">
+            <div className="seal"></div>
+          </Tile>
+        </DCArtboard>
+
+        <DCArtboard id="splash" label="05 · Scale + Fade" width={300} height={300}>
+          <Tile bg={INKR} capClass="dark" cls="t-splash" label="Welcome">
+            <div className="seal"></div>
+          </Tile>
+        </DCArtboard>
+
+        <DCArtboard id="prog" label="06 · Progress Ring" width={300} height={300}>
+          <Tile bg={PARCH} cls="t-prog" label={<span className="dots"><i></i><i></i><i></i></span>}>
+            <div className="ring-wrap">
+              <div className="track"></div>
+              <div className="arc"></div>
+              <div className="seal"></div>
+            </div>
+          </Tile>
+        </DCArtboard>
+
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

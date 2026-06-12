@@ -1,0 +1,80 @@
+ID: a2-r6
+LEVEL: A2
+TITLE: A2 Reading 6 — Super Couples
+SUBTITLE: One passage · MCQ, vocab, reference
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Super Couples
+
+PASSAGE:
+Marie and Pierre Curie
+
+When Marie Sklodowska was 24, she left Poland and moved to Paris. While she was studying at the Sorbonne, she met physicist Pierre Curie. She was planning to *return* to Poland after her studies, but the two scientists fell in love and got married. While *they* were raising their daughters, they were also doing research on radioactivity. In 1903, the couple won the Nobel Prize in physics. Then, in 1906, a horse-drawn carriage hit and killed Pierre while he was walking. Marie suffered from her loss for a while. After Marie *recovered* from the shock, she continued their work. In 1911, she received her second Nobel Prize.
+
+Gloria and Emilio Estefan
+
+CONGA! In 1985, millions of people were listening to this hit song. *It* made singer Gloria Estefan and bandleader Emilio Estefan international stars. Gloria was born in Cuba and she was only 16 months old when she and her family moved to the USA. By that time, she was already showing her musical *talent*. She met Emilio when she was 17. Soon after, she joined *his* group. The couple married a few years later. *They* were enjoying their success in the music business when Gloria broke her back in a traffic accident in 1990. She recovered and went on to win many awards for her Spanish and English songs.
+
+Ekaterina Gordeeva and Sergei Grinkov
+
+She was only 11 and he was only 15 when their coaches brought *them* together as skating partners. Off the ice, Sergei wasn't paying much attention to "Katia". However, that changed in 1988 when the pair won their first Olympic gold medal for the former Soviet Union. World-famous skaters Ekaterina Gordeeva and Sergei Grinkov thrilled their fans when they married two years later. A baby girl and another Olympic gold medal followed. Their lives seemed perfect. Then, one day Sergei collapsed while *they* were practising. He died an hour later. Today Gordeeva is remarried and has a new skating partner.
+
+# MCQ
+LABEL: Part A
+INSTRUCTIONS: Answer the questions according to the text.
+1. Which of the following is TRUE about Marie and Pierre Curie?
+   a) They returned to Poland after they met.
+   b) They won two Nobel Prizes for their work.
+   c) They met when she was a student at the Sorbonne.
+   d) They took a break from work to raise their children.
+   ANSWER: c
+2. Which of the following is FALSE about Gloria and Emilio Estefan?
+   a) Gloria had a talent for music even when she was a baby.
+   b) Gloria and Emilio became famous with the song, Conga.
+   c) Gloria continued to be successful after her accident.
+   d) Gloria moved to the States at the age of 16 with her family.
+   ANSWER: d
+3. According to paragraph 3, Ekaterina __________.
+   a) fell in love with Sergei when they met
+   b) stopped her skating career after Sergei died
+   c) had a baby after winning a second gold medal
+   d) married again after the death of Sergei
+   ANSWER: d
+4. The word "thrill" is closest in meaning to __________.
+   a) invite
+   b) understand
+   c) decide
+   d) excite
+   ANSWER: d
+5. The word "seem" is closest in meaning to __________.
+   a) perform
+   b) appear
+   c) find
+   d) hope
+   ANSWER: b
+
+# SHORTANSWER
+LABEL: Part B (vocabulary)
+INSTRUCTIONS: Find a word in the passage that matches each meaning.
+1. Find a word in paragraph 1 which means "go back":
+   ANSWER: return
+2. Find a word in paragraph 1 which means "get well":
+   ANSWER: recovered / recover
+3. Find a word in paragraph 2 which means "a natural ability to do something well":
+   ANSWER: talent
+
+# SHORTANSWER
+LABEL: Part C (reference)
+INSTRUCTIONS: Find what these words refer to.
+1. "they" (paragraph 1):
+   ANSWER: Marie and Pierre
+2. "It" (paragraph 2):
+   ANSWER: the hit song Conga / Conga / hit song
+3. "his" (paragraph 2):
+   ANSWER: Emilio's
+4. "They" (paragraph 2):
+   ANSWER: Gloria and Emilio
+5. "them" (paragraph 3):
+   ANSWER: Ekaterina and Sergei
+6. "they" (paragraph 3):
+   ANSWER: Ekaterina and Sergei

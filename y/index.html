@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Empower Lab - Login</title>
+<!-- PWA: installable app + offline shell. Pure enhancement; the app
+     works identically without it. See service-worker.js / pwa-register.js. -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Empower Lab">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css">
+<!-- Shared themed dialog (alert/confirm/prompt) — replaces native browser popups app-wide. -->
+<script src="js/app-dialog.js"></script>
+<link rel="stylesheet" href="index/css/styles.css">
+<link rel="stylesheet" href="css/fsmvu-loader.css">
+</head>
+<body>
+
+<!-- Launch splash — animated FSMVÜ seal that continues the PWA OS-splash
+     "icon grows" motion, then fades into the login. One-shot, tap to skip,
+     skipped entirely under prefers-reduced-motion. -->
+<div id="fsmvuSplash" class="fsmvu-splash" role="img" aria-label="Empower Lab — Fatih Sultan Mehmet Vakıf Üniversitesi">
+  <div class="fsmvu-loader fsmvu-loader--rotate fsmvu-loader--white" aria-hidden="true">
+    <span class="fsmvu-seal fsmvu-ring"></span><span class="fsmvu-seal fsmvu-emblem"></span>
+  </div>
+</div>
+<script>
+(function(){
+  var s = document.getElementById('fsmvuSplash'); if (!s) return;
+  var done = function(){ s.classList.add('is-done'); };
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { done(); return; }
+  s.addEventListener('animationend', function(e){ if (e.animationName === 'fsmvu-splash-out') done(); });
+  s.addEventListener('click', done);   // tap to skip
+  setTimeout(done, 2400);              // safety net if animationend never fires
+})();
+</script>
+
+<canvas id="particles"></canvas>
+<div class="gradient-overlay"></div>
+
+<div class="container">
+  <div class="login-card">
+    <!-- Logo Section -->
+    <div class="logo-section">
+      <div class="logo-container">
+        <img src="fsm-logo.png" class="logo-icon" alt="FSM">
+        <span class="logo-text">Empower Lab</span>
+      </div>
+      <h1 class="welcome-text">Empower Your <span class="text-cycle-wrapper"><span class="text-cycle-word">English</span></span></h1>
+      <p class="subtitle-text">Sign in to continue your learning journey</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('login')">Sign In</button>
+      <button class="tab" onclick="showTab('register')">Register</button>
+    </div>
+
+    <!-- Message Box -->
+    <div id="messageBox" class="message"></div>
+
+    <!-- Email verification prompt (shown after register or unverified login attempt) -->
+    <div id="verifyPanel" style="display:none; margin: 12px 0; padding: 14px 16px; border-radius: 10px; background: rgba(99,102,241,0.10); border: 1px solid rgba(99,102,241,0.35); color: #cbd5e1; font-size: 0.95em; line-height: 1.5;">
+      <div style="font-weight:600; color:#f8fafc; margin-bottom:6px;">📧 Verify your email</div>
+      We sent a verification link to <strong><span id="verifyEmail">your inbox</span></strong>. Click the link, then sign in. Check the spam folder if you don't see it.
+      <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" onclick="resendVerification()" style="background:rgba(99,102,241,0.25); border:1px solid rgba(99,102,241,0.5); color:#f8fafc; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.9em;">Resend email</button>
+        <button type="button" onclick="hideVerificationPrompt()" style="background:transparent; border:1px solid rgba(148,163,184,0.35); color:#cbd5e1; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.9em;">Dismiss</button>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginForm" class="form-section active">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <div class="input-wrapper">
+          <span class="input-icon">📧</span>
+          <input type="email" id="loginEmail" class="form-input" placeholder="you@fsm.edu.tr">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password">
+        </div>
+      </div>
+      
+      <div class="options-row">
+        <a href="#" class="forgot-link" onclick="resetPassword()">Forgot password?</a>
+      </div>
+      
+      <button class="btn-submit btn-liquid" id="loginBtn" onclick="login()">Sign In →</button>
+      
+      <div class="divider">or</div>
+      
+      <button class="btn-google" onclick="signInWithGoogle()">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerForm" class="form-section">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <div class="input-wrapper">
+          <span class="input-icon">👤</span>
+          <input type="text" id="regName" class="form-input" placeholder="John Doe">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <div class="input-wrapper">
+          <span class="input-icon">📧</span>
+          <input type="email" id="regEmail" class="form-input" placeholder="you@fsm.edu.tr">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="regPassword" class="form-input" placeholder="Minimum 6 characters">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Level</label>
+        <select id="regLevel" class="form-select" required>
+          <option value="">Select your level</option>
+          <option value="A2">A2 - Elementary</option>
+          <option value="B1">B1 - Intermediate</option>
+          <option value="B1+">B1+ - Upper Intermediate</option>
+          <option value="B2">B2 - Advanced</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Class</label>
+        <div class="form-row">
+          <select id="regClassLetter" class="form-select form-select-small" required>
+            <option value="">--</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+          <input type="number" id="regClassNumber" class="form-input no-icon" placeholder="e.g. 125" min="100" max="199" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Module</label>
+        <select id="regModule" class="form-select" required>
+          <option value="">Select current module</option>
+          <option value="Module 1">Module 1</option>
+          <option value="Module 2">Module 2</option>
+          <option value="Module 3">Module 3</option>
+          <option value="Module 4">Module 4</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Academic Year</label>
+        <select id="regYear" class="form-select" required>
+          <option value="">Select academic year</option>
+          <option value="2025-2026">2025-2026</option>
+          <option value="2026-2027">2026-2027</option>
+          <option value="2027-2028">2027-2028</option>
+        </select>
+      </div>
+      
+      <button class="btn-submit btn-liquid" id="registerBtn" onclick="register()">Create Account →</button>
+    </div>
+
+    <!-- Footer -->
+    <p class="footer-text">
+      By continuing, you agree to our <a href="#" onclick="openTosModal(event)">Terms of Service</a>
+    </p>
+  </div>
+</div>
+
+<!-- TOS Modal -->
+<div id="tosModal" class="modal-overlay">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeTosModal()">&times;</button>
+    
+    <!-- Language Toggle -->
+    <div class="lang-toggle">
+      <button onclick="showLang('en')" id="langEN" class="lang-btn active">English</button>
+      <button onclick="showLang('tr')" id="langTR" class="lang-btn">Türkçe</button>
+    </div>
+
+    <!-- ENGLISH VERSION -->
+    <div id="tosEN" class="tos-content">
+      <h2>Terms of Service & Privacy Policy</h2>
+      <p class="modal-muted"><strong>Last Updated:</strong> December 2024</p>
+      
+      <p class="modal-muted">
+        By accessing or using Empower Lab ("the App"), you agree to be bound by these Terms of Service and Privacy Policy.
+      </p>
+      
+      <h3>1. Eligibility</h3>
+      <p class="modal-muted">
+        This App is exclusively for students and staff of Fatih Sultan Mehmet Vakıf University (FSMVU). Only users with valid @fsm.edu.tr or @stu.fsm.edu.tr email addresses may register and use this service.
+      </p>
+      
+      <h3>2. Acceptable Use</h3>
+      <p class="modal-muted">You agree to use the App only for its intended educational purposes. You shall not:</p>
+      <ul class="modal-muted">
+        <li>Share your account credentials with others</li>
+        <li>Attempt to access accounts belonging to other users</li>
+        <li>Use automated tools, bots, or scripts to interact with the App</li>
+        <li>Attempt to reverse-engineer, hack, or exploit vulnerabilities</li>
+        <li>Use the App for any unlawful or fraudulent purpose</li>
+      </ul>
+      
+      <h3>3. Data Collection & Privacy (KVKK Compliance)</h3>
+      <p class="modal-muted">
+        In accordance with Turkish Personal Data Protection Law No. 6698 (KVKK), we inform you that:
+      </p>
+      <ul class="modal-muted">
+        <li><strong>Data Controller:</strong> Alireza Kabiri, EdTech and AI Coordinator</li>
+        <li><strong>Data Collected:</strong> Name, email address, university affiliation, learning activity data (scores, progress, session history, time spent)</li>
+        <li><strong>Purpose:</strong> To provide educational services, track learning progress, improve teaching methods, and generate academic reports</li>
+        <li><strong>Storage:</strong> Data is stored securely on Firebase (Google Cloud) servers</li>
+        <li><strong>Retention:</strong> Data is retained for the duration of your enrollment at FSMVU plus 2 years</li>
+        <li><strong>Sharing:</strong> Data may be shared with FSMVU administration and instructors for academic purposes. Data will not be sold to third parties.</li>
+      </ul>
+      
+      <h3>4. Your Rights Under KVKK</h3>
+      <p class="modal-muted">Under Article 11 of KVKK, you have the right to:</p>
+      <ul class="modal-muted">
+        <li>Learn whether your personal data is processed</li>
+        <li>Request information about data processing</li>
+        <li>Learn the purpose of data processing</li>
+        <li>Know third parties to whom data is transferred</li>
+        <li>Request correction of incomplete or inaccurate data</li>
+        <li>Request deletion of your data under applicable conditions</li>
+        <li>Object to automated decisions made about you</li>
+      </ul>
+      
+      <h3>5. Account Responsibilities</h3>
+      <p class="modal-muted">
+        You are responsible for maintaining the confidentiality of your account. All activities under your account are your responsibility. Report any unauthorized access immediately to akabiriaslifar@fsm.edu.tr.
+      </p>
+      
+      <h3>6. Intellectual Property</h3>
+      <p class="modal-muted">
+        All content, including vocabulary data, interface design, and software code, is the property of Alireza Kabiri. This application is developed for educational use at FSMVU. Unauthorized reproduction, distribution, or commercial use is prohibited.
+      </p>
+      
+      <h3>7. Consequences of Misuse</h3>
+      <p class="modal-muted">Violations of these terms may result in:</p>
+      <ul class="modal-muted">
+        <li>Immediate account suspension or termination</li>
+        <li>Report to FSMVU disciplinary committee</li>
+        <li>Legal action under applicable Turkish law (TCK, KVKK)</li>
+      </ul>
+      
+      <h3>8. Disclaimer</h3>
+      <p class="modal-muted">
+        The App is provided "as is" for educational purposes. We do not guarantee uninterrupted access or error-free operation. FSMVU and its staff are not liable for any damages arising from use of the App.
+      </p>
+      
+      <h3>9. Changes to Terms</h3>
+      <p class="modal-muted">
+        We reserve the right to modify these terms at any time. Users will be notified of significant changes. Continued use of the App constitutes acceptance of updated terms.
+      </p>
+      
+      <h3>10. Contact & Data Requests</h3>
+      <p class="modal-muted">
+        For questions, data requests, or to report misuse:<br><br>
+        <strong>Alireza Kabiri</strong><br>
+        EdTech and AI Coordinator<br>
+        FSMVU English Preparatory Program<br>
+        Email: akabiriaslifar@fsm.edu.tr
+      </p>
+      
+      <p class="modal-muted" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); font-style: italic;">
+        By clicking "Sign In" or "Create Account", you acknowledge that you have read, understood, and agree to these Terms of Service and Privacy Policy, and consent to the processing of your personal data as described above.
+      </p>
+    </div>
+
+    <!-- TURKISH VERSION -->
+    <div id="tosTR" class="tos-content" style="display: none;">
+      <h2>Kullanım Koşulları ve Gizlilik Politikası</h2>
+      <p class="modal-muted"><strong>Son Güncelleme:</strong> Aralık 2024</p>
+      
+      <p class="modal-muted">
+        Empower Lab ("Uygulama") uygulamasına erişerek veya kullanarak, bu Kullanım Koşulları ve Gizlilik Politikası'na bağlı kalmayı kabul etmiş olursunuz.
+      </p>
+      
+      <h3>1. Uygunluk</h3>
+      <p class="modal-muted">
+        Bu Uygulama yalnızca Fatih Sultan Mehmet Vakıf Üniversitesi (FSMVÜ) öğrencileri ve personeli içindir. Yalnızca geçerli @fsm.edu.tr veya @stu.fsm.edu.tr e-posta adresine sahip kullanıcılar kayıt olabilir ve bu hizmeti kullanabilir.
+      </p>
+      
+      <h3>2. Kabul Edilebilir Kullanım</h3>
+      <p class="modal-muted">Uygulamayı yalnızca amaçlanan eğitim amaçları için kullanmayı kabul edersiniz. Aşağıdakileri yapamazsınız:</p>
+      <ul class="modal-muted">
+        <li>Hesap bilgilerinizi başkalarıyla paylaşmak</li>
+        <li>Diğer kullanıcılara ait hesaplara erişmeye çalışmak</li>
+        <li>Uygulama ile etkileşim kurmak için otomatik araçlar, botlar veya komut dosyaları kullanmak</li>
+        <li>Tersine mühendislik yapmaya, hacklemeye veya güvenlik açıklarını istismar etmeye çalışmak</li>
+        <li>Uygulamayı yasadışı veya hileli amaçlar için kullanmak</li>
+      </ul>
+      
+      <h3>3. Veri Toplama ve Gizlilik (KVKK Uyumu)</h3>
+      <p class="modal-muted">
+        6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) uyarınca sizi bilgilendiririz:
+      </p>
+      <ul class="modal-muted">
+        <li><strong>Veri Sorumlusu:</strong> Alireza Kabiri, Eğitim Teknolojileri ve Yapay Zekâ Koordinatörü</li>
+        <li><strong>Toplanan Veriler:</strong> Ad, e-posta adresi, üniversite bilgisi, öğrenme etkinlik verileri (puanlar, ilerleme, oturum geçmişi, harcanan süre)</li>
+        <li><strong>Amaç:</strong> Eğitim hizmetleri sunmak, öğrenme ilerlemesini takip etmek, öğretim yöntemlerini geliştirmek ve akademik raporlar oluşturmak</li>
+        <li><strong>Depolama:</strong> Veriler Firebase (Google Cloud) sunucularında güvenli bir şekilde saklanır</li>
+        <li><strong>Saklama Süresi:</strong> Veriler, FSMVÜ'deki kayıt süreniz artı 2 yıl boyunca saklanır</li>
+        <li><strong>Paylaşım:</strong> Veriler akademik amaçlarla FSMVÜ yönetimi ve eğitmenleriyle paylaşılabilir. Veriler üçüncü taraflara satılmayacaktır.</li>
+      </ul>
+      
+      <h3>4. KVKK Kapsamındaki Haklarınız</h3>
+      <p class="modal-muted">KVKK'nın 11. maddesi kapsamında aşağıdaki haklara sahipsiniz:</p>
+      <ul class="modal-muted">
+        <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme</li>
+        <li>Veri işleme hakkında bilgi talep etme</li>
+        <li>Veri işlemenin amacını öğrenme</li>
+        <li>Verilerin aktarıldığı üçüncü tarafları bilme</li>
+        <li>Eksik veya yanlış verilerin düzeltilmesini talep etme</li>
+        <li>Uygulanabilir koşullar altında verilerinizin silinmesini talep etme</li>
+        <li>Hakkınızda alınan otomatik kararlara itiraz etme</li>
+      </ul>
+      
+      <h3>5. Hesap Sorumlulukları</h3>
+      <p class="modal-muted">
+        Hesabınızın gizliliğini korumaktan siz sorumlusunuz. Hesabınız altındaki tüm etkinlikler sizin sorumluluğunuzdadır. Yetkisiz erişimi derhal akabiriaslifar@fsm.edu.tr adresine bildirin.
+      </p>
+      
+      <h3>6. Fikri Mülkiyet</h3>
+      <p class="modal-muted">
+        Kelime verileri, arayüz tasarımı ve yazılım kodu dahil tüm içerik Alireza Kabiri'nin mülkiyetindedir. Bu uygulama FSMVÜ'de eğitim amaçlı kullanım için geliştirilmiştir. Yetkisiz çoğaltma, dağıtım veya ticari kullanım yasaktır.
+      </p>
+      
+      <h3>7. Kötüye Kullanımın Sonuçları</h3>
+      <p class="modal-muted">Bu koşulların ihlali şunlara neden olabilir:</p>
+      <ul class="modal-muted">
+        <li>Hesabın derhal askıya alınması veya sonlandırılması</li>
+        <li>FSMVÜ disiplin kuruluna bildirim</li>
+        <li>Yürürlükteki Türk hukuku kapsamında yasal işlem (TCK, KVKK)</li>
+      </ul>
+      
+      <h3>8. Sorumluluk Reddi</h3>
+      <p class="modal-muted">
+        Uygulama eğitim amaçlı olarak "olduğu gibi" sunulmaktadır. Kesintisiz erişim veya hatasız çalışma garanti edilmemektedir. FSMVÜ ve personeli, Uygulamanın kullanımından kaynaklanan herhangi bir zarardan sorumlu değildir.
+      </p>
+      
+      <h3>9. Koşullarda Değişiklikler</h3>
+      <p class="modal-muted">
+        Bu koşulları herhangi bir zamanda değiştirme hakkımızı saklı tutarız. Önemli değişiklikler kullanıcılara bildirilecektir. Uygulamayı kullanmaya devam etmeniz, güncellenmiş koşulların kabulü anlamına gelir.
+      </p>
+      
+      <h3>10. İletişim ve Veri Talepleri</h3>
+      <p class="modal-muted">
+        Sorularınız, veri talepleriniz veya kötüye kullanımı bildirmek için:<br><br>
+        <strong>Alireza Kabiri</strong><br>
+        Eğitim Teknolojileri ve Yapay Zekâ Koordinatörü<br>
+        FSMVÜ İngilizce Hazırlık Programı<br>
+        E-posta: akabiriaslifar@fsm.edu.tr
+      </p>
+      
+      <p class="modal-muted" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); font-style: italic;">
+        "Giriş Yap" veya "Hesap Oluştur" düğmesine tıklayarak, bu Kullanım Koşulları ve Gizlilik Politikası'nı okuduğunuzu, anladığınızı ve kabul ettiğinizi ve kişisel verilerinizin yukarıda açıklandığı şekilde işlenmesine onay vermiş olursunuz.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
+
+<!-- Account-gate helper (window.AccountGate) — must load BEFORE main.js
+     so the post-login redirect paths can call it. Phase J: yearly
+     expiry + bi-monthly verification check. -->
+<script src="index/js/account-gate.js"></script>
+
+<!-- Main JS — initialises `db` (firebase.firestore()). -->
+<script src="index/js/main.js"></script>
+<!-- Phase H — dynamic email-domain authorization. Loaded AFTER
+     main.js so `db` is already defined when OrgRegistry.init() runs
+     (otherwise its first read fails and it falls back to FSM-only).
+     The registration form's domain check is dynamic via OrgRegistry
+     when present, hardcoded FSM otherwise — see main.js. -->
+<script src="index/js/org-registry.js"></script>
+<script>
+// ── Animated Text Cycle ──────────────────────────────────────────────────────
+(function () {
+  // Cycles through the six skills + aspirational words so the hero phrase
+  // "Empower Your ___" reads as a promise across every area the app covers.
+  const words    = ['English', 'Vocabulary', 'Listening', 'Grammar', 'Reading', 'Writing', 'Speaking', 'Fluency'];
+  const interval = 2800;
+  let   idx      = 0;
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const wrapper = document.querySelector('.text-cycle-wrapper');
+    if (!wrapper) return;
+
+    setInterval(function () {
+      idx = (idx + 1) % words.length;
+
+      // animate current word out
+      const current = wrapper.querySelector('.text-cycle-word:not(.exit)');
+      if (current) {
+        current.classList.add('exit');
+        setTimeout(() => current.remove(), 380);
+      }
+
+      // bring next word in
+      const next = document.createElement('span');
+      next.className   = 'text-cycle-word';
+      next.textContent = words[idx];
+      wrapper.appendChild(next);
+    }, interval);
+  });
+})();
+
+// (Old REDIRECT FIX removed: register() now sends an email-verification
+// link and shows the verification panel instead of redirecting straight
+// to the dashboard. The user must verify before they can sign in.)
+</script>
+<script src="/pwa-register.js"></script>
+</body>
+</html>
+</html>

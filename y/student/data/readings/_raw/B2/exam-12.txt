@@ -1,0 +1,48 @@
+ID: b2-r12
+LEVEL: B2
+TITLE: B2 Reading 12 — In Defense of Advertising
+SUBTITLE: One passage · Gaps, True/False
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: In Defense of Advertising
+
+PASSAGE:
+How often do we hear comments such as these: "I hate advertising," or "There's too much advertising in the world!" In the 21st century, it seems that advertising is everywhere. We see it along highways, in trains, buses, even in taxicabs, as well as on the Internet and on TV. It's hard to escape advertising. But do we really want to? Actually, when you think about it, advertising provides us with quite a few benefits.
+
+{gap:2} For instance, if you want to buy a new appliance or a new car, you can look for the best "deals" in ads that appear in newspapers, in magazines, on television or even on the radio. These ads give you details about the product and help you find out where you can get the best price for something. You don't actually have to go to lots of different stores. So, in this way, advertising provides a service for the customer.
+
+Besides providing information, advertising also supports the arts, including television and movies. It may be annoying to sit through commercials during your favorite TV show, but the advertisers have paid for its production. {gap:3} Even public broadcasting has supporters. The companies' names appear at the beginning or end of the shows. Without their support, there would be more hours of pledge drives asking you, the consumer, for more money. As for movies, we find out about them through ads, and we decide which ones we want to see based on the ads for them. Additionally, many performing arts, such as actors or musicians, get their starts from writing or appearing in commercials or print advertisements. It's a way for them to get both experience and exposure.
+
+And what about advertising and sports? There are hundreds of large banners surrounding sports stadiums, and hundreds, thousands, even millions of people notice them. Professional sports depend on advertising to pay for the fields, the equipment, and yes, even salaries of professional athletes. {gap:4} Everyone looks forward to this annual event, even those who do not like football, because the commercials are known to be the best of the year. Companies pay as much as a million dollars for 60 seconds of advertising time during this event, so a lot of effort goes into these commercials. As a result, viewers want to watch the commercials almost as much as the sports.
+
+When we're not out shopping or being entertained, many of us enjoy "surfing" the Web. Whenever you open a page in Google or go on a social networking site, such as Facebook, there are dozens of ads. These ads help pay for the services that the websites provide. {gap:5} They would not have the money to continue.
+
+There has always been a "good" side to advertising in the form of public service announcements (PSAs). These are advertisements that provide people with information about issues like diseases or medical problems, as well as public health and safety. The commercials are often very creative and informative. They provide viewers with the information they need in a memorable way. Various companies pay for the PSAs. {gap:6}
+
+It would be a much duller, certainly less colorful world without advertising. Think of all the ways that advertising improves our world. {gap:7} From clothing designers, photographers, models and artists, to paper company workers and store employees — thousands of people worked to help produce that catalog. And when you watch your favorite TV show, remember that the commercials were partly responsible for what you've just watched and enjoyed. We may wish that commercials and advertisements weren't necessary at all, but, for the most part, we are all content to have them as part of our lives.
+
+# GAPS
+LABEL: Part A
+INSTRUCTIONS: Match the paragraphs in column A with a sentence that completes the paragraph from column B. There is ONE EXTRA sentence.
+a: This, in turn, pays the actors for their work.
+b: Professional sports do not actually depend on advertising.
+c: Also, advertising agencies make donations of their time and expertise to produce them.
+d: The next time you look at that clothing catalog, think of all the creativity and work that went into making it.
+e: First, advertising gives us information that we need.
+f: Think about the Super Bowl in the United States.
+g: Without the advertising, the websites could not provide those services.
+ANSWERS: 2=e, 3=a, 4=f, 5=g, 6=c, 7=d
+
+# TRUEFALSE
+LABEL: Part B
+INSTRUCTIONS: Choose True or False for each statement.
+1. Websites would still be able to provide services even without advertising.
+   ANSWER: F
+2. Public service announcements (PSAs) are sponsored by a single company.
+   ANSWER: F
+3. Advertisers pay for the production of television shows and movies.
+   ANSWER: T
+4. Advertising provides a service for the customer when they want to purchase new tools or technology.
+   ANSWER: T
+5. Advertising improves our world mostly emotionally rather than economically.
+   ANSWER: F

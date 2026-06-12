@@ -1,0 +1,402 @@
+{
+  "usually": [
+    "almost never",
+    "only once a year",
+    "very suddenly and unexpectedly"
+  ],
+  "permanent": [
+    "temporary and short-term",
+    "part-time and flexible",
+    "stressful and demanding"
+  ],
+  "instead": [
+    "because of something; as a result",
+    "in addition to something; also",
+    "at the same time as something else"
+  ],
+  "nervous": [
+    "feeling very relaxed and calm",
+    "feeling extremely happy and excited",
+    "feeling bored and not interested"
+  ],
+  "rarely": [
+    "from time to time",
+    "on a regular basis",
+    "more than usual"
+  ],
+  "goal": [
+    "a problem you need to solve",
+    "a task you do every day",
+    "something that happens by chance"
+  ],
+  "lazy": [
+    "feeling shy around other people",
+    "able to understand things quickly",
+    "very talented and impressive"
+  ],
+  "yin": [
+    "a type of bank account",
+    "a method of travelling to a place",
+    "a period of complete silence"
+  ],
+  "regular": [
+    "someone who works in the shop",
+    "someone who spends a lot of money",
+    "someone who complains frequently"
+  ],
+  "swim a long way": [
+    "to travel to another country by plane",
+    "to practise a sport every day",
+    "to stay under water without breathing"
+  ],
+  "advantage": [
+    "a responsibility you must accept",
+    "a difficult part of a situation",
+    "a rule you have to follow"
+  ],
+  "idea": [
+    "a decision made by a manager",
+    "a problem that needs solving",
+    "a reason for doing something"
+  ],
+  "outdoor": [
+    "expensive or cheap",
+    "safe or dangerous",
+    "noisy or quiet"
+  ],
+  "local": [
+    "quiet and calm",
+    "simple and easy to understand",
+    "happening before something else"
+  ],
+  "full": [
+    "having a natural ability or talent",
+    "very good or impressive",
+    "very bad or unpleasant"
+  ],
+  "important": [
+    "having a natural ability or skill",
+    "with no empty space",
+    "giving a lot of light"
+  ],
+  "possession": [
+    "something used for work",
+    "information about recent events",
+    "a way of doing something"
+  ],
+  "proud": [
+    "slightly angry about something",
+    "having a pleasant taste",
+    "able to create new ideas"
+  ],
+  "volunteer": [
+    "a person who works in a hospital",
+    "a person who gets paid for helping",
+    "a student who works to get experience"
+  ],
+  "donation": [
+    "an organisation that helps people in need",
+    "money you borrow from a bank",
+    "a payment you make for something"
+  ],
+  "the sales": [
+    "a product with a special price",
+    "money a shop makes in one day",
+    "people who work in a shop"
+  ],
+  "create": [
+    "to improve something that already exists",
+    "to repair something",
+    "to copy something"
+  ],
+  "creativity": [
+    "the ability to solve difficult maths problems",
+    "the skill of working very quickly",
+    "the talent for remembering information"
+  ],
+  "attention": [
+    "to pay money for something",
+    "to speak loudly in class",
+    "to finish your work quickly"
+  ],
+  "confident": [
+    "the ability to speak very fast",
+    "the skill of using difficult words",
+    "the experience of speaking in public"
+  ],
+  "borrow": [
+    "to give something to someone permanently",
+    "to buy something from someone",
+    "to lend something to someone"
+  ],
+  "quit": [
+    "to change your job",
+    "to lose your job",
+    "to take a short break from work"
+  ],
+  "ability": [
+    "a natural talent for art or music",
+    "knowledge you learn at school",
+    "experience from working many years"
+  ],
+  "tend to": [
+    "to decide to do something",
+    "to try to do something",
+    "to plan to do something"
+  ],
+  "get a new outfit": [
+    "to try on different clothes",
+    "to design your own clothes",
+    "to change your clothes quickly"
+  ],
+  "scarf": [
+    "a thick winter coat",
+    "gloves worn on the hands",
+    "a small hat"
+  ],
+  "suit": [
+    "a casual sports outfit",
+    "a long winter coat",
+    "a uniform worn at school"
+  ],
+  "save up": [
+    "to spend money on something",
+    "to borrow money from a friend",
+    "to keep money for a short time"
+  ],
+  "go to the hairdresser": [
+    "to buy new clothes from a shop",
+    "to go to a doctor for a check-up",
+    "to visit a friend who cuts hair"
+  ],
+  "looking around": [
+    "to examine a place quickly",
+    "to search for something you lost",
+    "to wait for someone to arrive"
+  ],
+  "parents": [
+    "close friends who live in your area",
+    "teachers who help you at school",
+    "neighbours who live in the same building"
+  ],
+  "melons": [
+    "small root vegetables grown in soil",
+    "thin dry pieces of bread",
+    "flat green leaves eaten in salads"
+  ],
+  "cut down on": [
+    "to stop doing something completely",
+    "to use something in a careful or limited way",
+    "to reduce the amount of time spent"
+  ],
+  "scuba diver": [
+    "someone whose job is to fix water pipes and bathrooms",
+    "someone whose job is to design or build machines, roads, or bridges",
+    "someone who works on a ship"
+  ],
+  "musician": [
+    "someone whose job is writing news stories for newspapers or TV",
+    "someone who works in a bank",
+    "someone who builds houses or other buildings"
+  ],
+  "extreme": [
+    "difficult to understand",
+    "quiet and calm",
+    "feeling calm and not worried"
+  ],
+  "have a nice working environment": [
+    "to do something exciting, often in a new or dangerous place",
+    "to remove hair from the face or body",
+    "to work many hours in a day"
+  ],
+  "carer": [
+    "someone who designs clothes, buildings, or products",
+    "someone whose job is writing news stories for newspapers or TV",
+    "a student or trainee who works to get experience"
+  ],
+  "banker": [
+    "someone who helps with office work, emails, and phone calls",
+    "a person who works without pay to help others",
+    "someone who drives a taxi for a job"
+  ],
+  "increase": [
+    "to damage something so badly that it cannot be used",
+    "to give someone a job",
+    "to make something smaller or less"
+  ],
+  "suspects": [
+    "people who defend others in court",
+    "police officers who investigate crimes",
+    "people who saw the crime happen"
+  ],
+  "come to the conclusion": [
+    "to refuse to listen to other people",
+    "to argue with someone about a problem",
+    "to solve a problem by accident"
+  ],
+  "pass out": [
+    "to succeed in a difficult task",
+    "to give something to someone else",
+    "to arrive at a place on time"
+  ],
+  "realise": [
+    "to forget something you learned before",
+    "to pretend that you know the answer",
+    "to explain something to other people"
+  ],
+  "come down with": [
+    "to recover from a bad cold",
+    "to refuse to take any medicine",
+    "to visit a doctor for a check-up"
+  ],
+  "came true": [
+    "ended in great disappointment",
+    "became very complicated to deal with",
+    "was forgotten by everyone over time"
+  ],
+  "faint": [
+    "to feel suddenly very happy",
+    "to shout loudly at somebody",
+    "to cry without being able to stop"
+  ],
+  "come up": [
+    "to be solved completely",
+    "to be ignored by everyone",
+    "to disappear slowly over time"
+  ],
+  "bump your head": [
+    "to wash your hair in the morning",
+    "to hide your face in embarrassment",
+    "to remember something very suddenly"
+  ],
+  "come across": [
+    "to search very carefully for something",
+    "to receive something as a gift",
+    "to hide something from everyone"
+  ],
+  "refuse": [
+    "to agree enthusiastically to do something",
+    "to try very hard to achieve a goal",
+    "to ask someone politely for help"
+  ],
+  "take pleasure in": [
+    "to feel nervous about doing something",
+    "to be unwilling to do something",
+    "to forget about doing something important"
+  ],
+  "broke into": [
+    "left a place very quickly",
+    "repaired a broken door",
+    "visited a friend briefly"
+  ],
+  "burgle": [
+    "to decorate a new house nicely",
+    "to sell property at a cheap price",
+    "to build a new house from scratch"
+  ],
+  "make a living": [
+    "to spend all of your savings quickly",
+    "to retire after a long career",
+    "to study full time at a university"
+  ],
+  "pay off": [
+    "to borrow more money from a bank",
+    "to increase the amount you spend",
+    "to give a gift to someone special"
+  ],
+  "lie": [
+    "to tell the complete truth about something",
+    "to keep an important secret safely",
+    "to apologise very sincerely to someone"
+  ],
+  "be arrested": [
+    "to be forgiven by a judge completely",
+    "to be rewarded for honest behaviour",
+    "to be released from prison after serving time"
+  ],
+  "develop a disease": [
+    "to recover fully from a bad illness",
+    "to prevent yourself from getting sick",
+    "to heal from an injury very quickly"
+  ],
+  "work on": [
+    "to stop thinking about something",
+    "to finish a task immediately",
+    "to forget that a task exists"
+  ],
+  "mention": [
+    "to describe something in great detail",
+    "to argue strongly against an idea",
+    "to hide information from someone"
+  ],
+  "tackle": [
+    "to ignore a problem completely",
+    "to create a new problem for others",
+    "to give up on a challenge easily"
+  ],
+  "overcome": [
+    "to give up easily on a challenge",
+    "to be defeated by a problem",
+    "to refuse to try anything new"
+  ],
+  "murderer": [
+    "a person who witnesses a crime",
+    "a police officer who arrests people",
+    "a lawyer who defends criminals"
+  ],
+  "accuse": [
+    "to apologise to someone politely",
+    "to forgive someone for a mistake",
+    "to thank someone for their help"
+  ],
+  "break into": [
+    "to leave a place very quickly",
+    "to repair a broken door carefully",
+    "to visit a friend for a short time"
+  ],
+  "put aside": [
+    "to spend all of it immediately",
+    "to lose something by accident",
+    "to throw something in the rubbish"
+  ],
+  "witness": [
+    "a person who commits the crime",
+    "a lawyer who defends the accused",
+    "a judge who passes the verdict"
+  ],
+  "viewer": [
+    "a person who writes film reviews",
+    "a person who directs the film",
+    "a person who presents the programme"
+  ],
+  "semi-detached house": [
+    "a small apartment above a shop",
+    "a large country house with land",
+    "a flat in a tall modern building"
+  ],
+  "slow down": [
+    "to move much faster than before",
+    "to stop moving completely",
+    "to change direction very suddenly"
+  ],
+  "stuck with": [
+    "able to give something away freely",
+    "happy to have chosen something",
+    "able to remove something easily"
+  ],
+  "terrible": [
+    "very tasty and enjoyable",
+    "very exciting and memorable",
+    "extremely calm and relaxing"
+  ],
+  "murder": [
+    "to help someone in great danger",
+    "to save a person's life carefully",
+    "to protect someone from any harm"
+  ],
+  "amazing": [
+    "very ordinary and boring",
+    "slightly annoying and loud",
+    "a little expensive to afford"
+  ]
+}

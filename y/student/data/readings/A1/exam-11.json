@@ -1,0 +1,245 @@
+{
+  "id": "a1-r11",
+  "level": "A1",
+  "title": "A1 Reading 11 — Elle MacPherson",
+  "subtitle": "One passage · Short-answer, ordering, MCQ, vocab, T/F",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Elle MacPherson",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Eleanor Gow was born in March in 1964. She was the eldest of four children from a wealthy family in Sydney, Australia. Her parents divorced when she was fourteen, and her mother later married Neil MacPherson.</p><p class=\"rd-para\" data-para=\"2\">An agent for a modeling company discovered her at the age of sixteen while she was on holiday in Aspen, Colorado, U.S.A. She began modeling part-time, but two years later she left the law course at the University of Sydney to work full-time for the Click modeling agency.</p><p class=\"rd-para\" data-para=\"3\">At twenty-one, she married Gilles Bensimon, a French photographer and creative manager of the top fashion magazine \"Elle.\" She modeled for the magazine for six years and she became a supermodel. \"Time\" magazine called her \"The Body.\"</p><p class=\"rd-para\" data-para=\"4\">Elle then moved into movies. However, unlike many other models, Elle was a talented actor. Her first movie was \"Alice\" (1990). She appeared in many more movies, such as \"Sirens,\" \"If Lucy Fell,\" \"The Mirror Has Two Faces,\" and \"Batman and Robin.\" Elle also starred in several television programs and appeared many times in the popular comedy show \"Friends.\"</p><p class=\"rd-para\" data-para=\"5\">Yet Elle is not only a model, actor, and media personality — she is also a successful businesswoman. She has her own company called Elle MacPherson, Inc. The company sells \"Elle MacPherson Intimates\", women's underwear. She also models for her company. There is also underwear for men. Its name is \"Elle MacPherson's Men.\" The company is the biggest of its kind in Australia and a huge multimillion-dollar success.</p><p class=\"rd-para\" data-para=\"6\">Elle also began a restaurant called The Fashion Café with supermodels Claudia Schiffer, Naomi Campbell, and Christy Turlington. She produces her own calendar and has her own fitness video called \"The Body Workout.\"</p><p class=\"rd-para\" data-para=\"7\">Her personal life is not quite so successful. She and Gilles Bensimon divorced, and since then, she has had several relationships. Her partner is now a Swiss businessman, Arpade Busson, and the couple has a son called Flynn.</p>",
+      "sections": [
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part A",
+          "instructions": "Answer the following questions according to the text.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "What was Elle MacPherson's original surname?",
+              "answer": "Gow"
+            },
+            {
+              "id": "sa2",
+              "definition": "What happened when she was on holiday in Aspen?",
+              "answer": "An agent for a modeling company discovered her"
+            },
+            {
+              "id": "sa3",
+              "definition": "What is her nationality?",
+              "answer": "Australian"
+            },
+            {
+              "id": "sa4",
+              "definition": "Who gave her the nickname \"the body\"?",
+              "answer": "Time magazine"
+            },
+            {
+              "id": "sa5",
+              "definition": "In which films did she act?",
+              "answer": "Alice",
+              "acceptable": [
+                "Alice",
+                "Sirens",
+                "If Lucy Fell",
+                "The Mirror Has Two Faces",
+                "Batman and Robin"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shortanswer2",
+          "type": "find-word",
+          "label": "Part B",
+          "instructions": "Put these events in Elle MacPherson's early life in order (write 1–6).",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "She left university.",
+              "answer": "3"
+            },
+            {
+              "id": "sa2",
+              "definition": "Her parents got divorced.",
+              "answer": "1"
+            },
+            {
+              "id": "sa3",
+              "definition": "She started modeling.",
+              "answer": "2"
+            },
+            {
+              "id": "sa4",
+              "definition": "She began modeling full-time.",
+              "answer": "4"
+            },
+            {
+              "id": "sa5",
+              "definition": "She married the creative manager of \"Elle\" magazine.",
+              "answer": "5"
+            },
+            {
+              "id": "sa6",
+              "definition": "She became known as \"the body\".",
+              "answer": "6"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part C",
+          "instructions": "Circle the correct option.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Which of the following is TRUE according to the text?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Ella left the university when she was 18."
+                },
+                {
+                  "id": "b",
+                  "text": "Ella is the youngest in the family."
+                },
+                {
+                  "id": "c",
+                  "text": "At twenty-one Ella became a supermodel."
+                },
+                {
+                  "id": "d",
+                  "text": "Ella was talented like other models."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m2",
+              "question": "Which of the following sentences about Ella is NOT TRUE?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "She owns a restaurant."
+                },
+                {
+                  "id": "b",
+                  "text": "She has an underwear company."
+                },
+                {
+                  "id": "c",
+                  "text": "She is the manager of Elle magazine."
+                },
+                {
+                  "id": "d",
+                  "text": "She acts in movies and appears in TV shows."
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer3",
+          "type": "find-word",
+          "label": "Part D (guess the meaning)",
+          "instructions": "Find a word in the passage that matches each meaning.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "Find a word in paragraph 1 which means \"rich\":",
+              "answer": "wealthy"
+            },
+            {
+              "id": "sa2",
+              "definition": "Find a word in paragraph 2 which means \"company\":",
+              "answer": "agency"
+            },
+            {
+              "id": "sa3",
+              "definition": "Find a word in paragraph 4 which means \"some, a few\":",
+              "answer": "several"
+            },
+            {
+              "id": "sa4",
+              "definition": "Find a word in paragraph 5 which means \"very big\":",
+              "answer": "huge"
+            }
+          ]
+        },
+        {
+          "id": "truefalse",
+          "type": "mcq",
+          "label": "Part G",
+          "instructions": "Choose True or False for each statement.",
+          "items": [
+            {
+              "id": "tf1",
+              "question": "She immediately quit school to become a full-time model with the Click modeling agency.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf2",
+              "question": "She was successful in several fields in media.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf3",
+              "question": "Her company works with famous models for men's underwear.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf4",
+              "question": "She has her own app for fitness practice.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

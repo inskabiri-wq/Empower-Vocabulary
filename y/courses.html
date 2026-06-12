@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Courses | Empower Lab</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/brand.css">
+<link rel="stylesheet" href="css/fsmvu-loader.css">
+<link rel="stylesheet" href="student/css/policy-course.css?v=3">
+<script src="js/app-dialog.js"></script>
+<style>
+  /* Catalog-only additions on top of policy-course.css */
+  .crs-card { align-items: flex-start; }
+  .crs-desc { font-size: 0.88em; color: #94a3b8; line-height: 1.55; margin-top: 4px; }
+  .crs-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; min-width: 150px; }
+  .crs-state { font-size: 0.8em; font-weight: 800; padding: 4px 12px; border-radius: 999px; }
+  .crs-state.on  { color: #34d399; background: rgba(16,185,129,0.12); }
+  .crs-state.off { color: #94a3b8; background: rgba(148,163,184,0.12); }
+  .crs-state.done { color: #f5c842; background: rgba(245,200,66,0.12); }
+  @media (max-width: 560px) {
+    .crs-card { flex-wrap: wrap; }
+    .crs-right { width: 100%; align-items: stretch; text-align: center; }
+    .crs-right .pc-btn { display: block; width: 100%; text-align: center; box-sizing: border-box; }
+    .crs-state { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div id="crsLoading" class="pc-center-fill">
+  <div class="fsmvu-loader fsmvu-loader--progress fsmvu-loader--white" role="status" aria-label="Loading">
+    <div class="fsmvu-ring-wrap"><span class="fsmvu-track"></span><span class="fsmvu-arc"></span><span class="fsmvu-seal"></span></div>
+  </div>
+</div>
+
+<div id="crsApp" style="display:none;">
+  <header class="pc-header">
+    <a class="pc-back" href="student-dashboard.html">&#8592; Dashboard</a>
+    <div class="pc-header-title">
+      <span class="pc-header-icon">🎓</span>
+      <span>Courses</span>
+    </div>
+    <div class="pc-header-right">
+      <span class="pc-student-chip" id="crsStudentChip"></span>
+    </div>
+  </header>
+
+  <main class="pc-wrap">
+    <p class="pc-intro">Mini courses from your programme. Study the modules, pass the quizzes and the final exam, and earn a printable certificate. Courses open here when your teacher activates them.</p>
+    <div id="crsList" class="pc-module-list"></div>
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="student/js/policy-course-content.js?v=4"></script>
+<script src="student/js/course-target.js?v=2"></script>
+<script>
+(function () {
+  'use strict';
+  const firebaseConfig = {
+    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
+    authDomain: "empower-vocabulary-practice.firebaseapp.com",
+    projectId: "empower-vocabulary-practice",
+    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
+    messagingSenderId: "136270199832",
+    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  // ── Course registry ─────────────────────────────────────────
+  // Add future courses here: one settings doc + one page each.
+  const CATALOG = [
+    {
+      id: 'ai-guidelines',
+      icon: '🎓',
+      title: 'AI Use Guidelines',
+      desc: 'How artificial intelligence may and may not be used in the English Preparatory Program. 4 modules, a final exam and a certificate.',
+      href: 'policy-course.html',
+      settingsDoc: 'policyCourse',
+      progressCol: 'courseProgress',
+      moduleCount: (window.POLICY_COURSE && window.POLICY_COURSE.modules.length) || 4
+    }
+  ];
+
+  async function boot(user) {
+    let userDoc = {};
+    try {
+      const uSnap = await db.collection('users').doc(user.uid).get();
+      userDoc = uSnap.exists ? uSnap.data() : {};
+    } catch (_) {}
+    document.getElementById('crsStudentChip').textContent = userDoc.name || user.displayName || '';
+    const isStaff = userDoc.role === 'teacher' || userDoc.role === 'admin';
+
+    const rows = await Promise.all(CATALOG.map(async c => {
+      let cfg = null, prog = null;
+      try {
+        const s = await db.collection('settings').doc(c.settingsDoc).get();
+        cfg = s.exists ? s.data() : null;
+      } catch (_) {}
+      const active = (typeof window.courseActiveFor === 'function')
+        ? window.courseActiveFor(cfg, userDoc) : !!(cfg && cfg.active);
+      if (active || isStaff) {
+        try {
+          const p = await db.collection(c.progressCol).doc(user.uid).get();
+          prog = p.exists ? p.data() : null;
+        } catch (_) {}
+      }
+      return { c, active: active || isStaff, prog };
+    }));
+
+    const list = document.getElementById('crsList');
+    list.innerHTML = rows.map(({ c, active, prog }) => {
+      let state, stateCls, action = '';
+      if (!active) {
+        state = '🔒 Not activated yet'; stateCls = 'off';
+      } else if (prog && prog.certificate && prog.certificate.certId) {
+        state = '🎓 Certified'; stateCls = 'done';
+        action = `<a class="pc-btn pc-btn-gold" href="${c.href}">View certificate</a>`;
+      } else if (prog) {
+        const done = Object.keys(prog.modules || {}).filter(k => (prog.modules[k] || {}).passed).length;
+        state = done + ' / ' + c.moduleCount + ' modules'; stateCls = 'on';
+        action = `<a class="pc-btn pc-btn-primary" href="${c.href}">Continue</a>`;
+      } else {
+        state = 'Open'; stateCls = 'on';
+        action = `<a class="pc-btn pc-btn-primary" href="${c.href}">Start</a>`;
+      }
+      return `<div class="pc-module-card crs-card${active ? '' : ' pc-locked'}">
+        <div class="pc-module-icon">${c.icon}</div>
+        <div class="pc-module-info">
+          <div class="pc-module-title">${esc(c.title)}</div>
+          <div class="crs-desc">${esc(c.desc)}</div>
+        </div>
+        <div class="crs-right">
+          <span class="crs-state ${stateCls}">${state}</span>
+          ${action}
+        </div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('crsLoading').style.display = 'none';
+    document.getElementById('crsApp').style.display = '';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    auth.onAuthStateChanged(u => {
+      if (!u) { window.location.href = 'index.html'; return; }
+      boot(u);
+    });
+  });
+})();
+</script>
+</body>
+</html>

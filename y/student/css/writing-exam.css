@@ -1,0 +1,399 @@
+/* ============================================================
+   WRITING EXAM — Phase 3 (student side)
+   Two-pane secure exam layout:
+     LEFT  → editor (writing area)
+     RIGHT → prompt / instructions
+   Top bar: word count + countdown + submit.
+
+   Theme tokens mirror reading-exam.css so the existing reading
+   settings panel (dark / light / sepia / high-contrast) maps
+   1:1 onto this page. The data-theme attribute on <body>
+   controls which palette is active.
+   ============================================================ */
+
+/* ── Default palette (dark) ────────────────────────────────── */
+:root,
+body[data-theme="dark"] {
+  --wr-bg:           #0d1226;
+  --wr-surface:      #131a30;
+  --wr-surface2:     #1a2240;
+  --wr-border:       rgba(255,255,255,0.08);
+  --wr-border-soft:  rgba(255,255,255,0.05);
+  --wr-text:         #e8edf7;
+  --wr-text-muted:   #8b96b3;
+  --wr-text-dim:     #5a6585;
+  --wr-accent:       #a78bfa;             /* violet — writing skill accent */
+  --wr-accent-soft:  rgba(167,139,250,0.15);
+  --wr-warning:      #f59e0b;
+  --wr-danger:       #ef4444;
+  --wr-success:      #22c55e;
+}
+body[data-theme="light"] {
+  --wr-bg:           #fdfbf6;
+  --wr-surface:      #ffffff;
+  --wr-surface2:     #f5f1e8;
+  --wr-border:       rgba(0,0,0,0.10);
+  --wr-border-soft:  rgba(0,0,0,0.05);
+  --wr-text:         #1f2937;
+  --wr-text-muted:   #6b7280;
+  --wr-text-dim:     #9ca3af;
+  --wr-accent:       #7c3aed;
+  --wr-accent-soft:  rgba(124,58,237,0.10);
+}
+body[data-theme="sepia"] {
+  --wr-bg:           #f4ecd8;
+  --wr-surface:      #fbf3df;
+  --wr-surface2:     #efe4c8;
+  --wr-border:       rgba(61,46,26,0.16);
+  --wr-border-soft:  rgba(61,46,26,0.08);
+  --wr-text:         #3d2e1a;
+  --wr-text-muted:   #6b563d;
+  --wr-text-dim:     #8c7a5c;
+  --wr-accent:       #7c3aed;
+  --wr-accent-soft:  rgba(124,58,237,0.12);
+}
+body[data-theme="contrast"] {
+  --wr-bg:           #000000;
+  --wr-surface:      #0a0a0a;
+  --wr-surface2:     #181818;
+  --wr-border:       rgba(255,255,255,0.30);
+  --wr-border-soft:  rgba(255,255,255,0.18);
+  --wr-text:         #ffffff;
+  --wr-text-muted:   #d1d5db;
+  --wr-text-dim:     #9ca3af;
+  --wr-accent:       #c4b5fd;
+  --wr-accent-soft:  rgba(196,181,253,0.20);
+}
+
+/* Scaling token controlled by the +/- font buttons. 1 = default. */
+:root { --wr-scale: 1; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  background: var(--wr-bg);
+  color: var(--wr-text);
+  /* Block global text selection on chrome (NOT inside the editor —
+     the editor explicitly re-enables selection for the cursor). */
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Top bar ─────────────────────────────────────────────── */
+.wr-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 18px;
+  background: var(--wr-surface);
+  border-bottom: 1px solid var(--wr-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-height: 56px;
+}
+.wr-topbar-left  { display: flex; align-items: center; gap: 14px; }
+.wr-topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.wr-title {
+  font-weight: 700;
+  font-size: 1.02em;
+  color: var(--wr-text);
+}
+.wr-subtitle {
+  font-size: 0.82em;
+  color: var(--wr-text-muted);
+}
+
+.wr-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: var(--wr-surface2);
+  border: 1px solid var(--wr-border);
+  border-radius: 8px;
+  font-size: 0.9em;
+  color: var(--wr-text);
+}
+.wr-stat .lbl { color: var(--wr-text-muted); font-size: 0.85em; }
+.wr-stat strong { color: var(--wr-accent); font-weight: 700; }
+
+.wr-timer {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1.1em;
+}
+.wr-timer.warning { color: var(--wr-warning); }
+.wr-timer.danger  { color: var(--wr-danger); animation: pulse 0.8s ease-in-out infinite; }
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50%     { opacity: 0.55; }
+}
+
+.wr-btn {
+  background: var(--wr-accent);
+  color: #fff;
+  border: 0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95em;
+  transition: filter 0.2s, transform 0.1s;
+}
+.wr-btn:hover:not(:disabled) { filter: brightness(1.1); }
+.wr-btn:active:not(:disabled) { transform: scale(0.98); }
+.wr-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.wr-btn-secondary {
+  background: var(--wr-surface2);
+  color: var(--wr-text);
+  border: 1px solid var(--wr-border);
+}
+.wr-icon-btn {
+  background: transparent;
+  border: 1px solid var(--wr-border);
+  color: var(--wr-text-muted);
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.1em;
+}
+.wr-icon-btn:hover { color: var(--wr-text); border-color: var(--wr-accent); }
+
+/* ── Main two-pane layout ─────────────────────────────────── */
+.wr-stage {
+  display: grid;
+  /* Editor LEFT, prompt RIGHT — per the spec. */
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1px;                                 /* hairline divider */
+  background: var(--wr-border);
+  height: calc(100vh - 56px);                /* fill viewport minus topbar */
+}
+.wr-editor-pane, .wr-prompt-pane {
+  background: var(--wr-surface);
+  overflow-y: auto;
+  padding: 22px 26px;
+}
+
+/* ── Editor ───────────────────────────────────────────────── */
+.wr-editor {
+  width: 100%;
+  min-height: calc(100% - 8px);
+  outline: none;
+  background: transparent;
+  color: var(--wr-text);
+  font-family: 'Georgia', 'Iowan Old Style', 'Times New Roman', serif;
+  font-size: calc(1.05em * var(--wr-scale));
+  line-height: calc(1.7 * var(--wr-scale));
+  letter-spacing: 0.005em;
+  /* Re-enable selection only inside the editor so cursor / typing work.
+     User selection is purged programmatically on each selectionchange
+     event from writing-exam.js. */
+  user-select: text;
+  -webkit-user-select: text;
+  caret-color: var(--wr-accent);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.wr-editor:empty::before {
+  content: attr(data-placeholder);
+  color: var(--wr-text-dim);
+  pointer-events: none;
+}
+
+/* ── Prompt pane ──────────────────────────────────────────── */
+.wr-prompt-pane h2 {
+  color: var(--wr-accent);
+  font-size: 1.05em;
+  margin-bottom: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.wr-prompt-body {
+  font-size: calc(1.02em * var(--wr-scale));
+  line-height: calc(1.65 * var(--wr-scale));
+  color: var(--wr-text);
+  white-space: pre-wrap;
+}
+.wr-prompt-meta {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--wr-border-soft);
+  font-size: 0.88em;
+  color: var(--wr-text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.wr-prompt-meta strong { color: var(--wr-text); font-weight: 600; }
+
+/* ── Settings panel (slide-in from the right) ─────────────── */
+.wr-settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 50;
+  display: none;
+}
+.wr-settings-overlay.open { display: block; }
+.wr-settings-panel {
+  position: fixed;
+  top: 0; right: 0;
+  width: min(360px, 90vw);
+  height: 100vh;
+  background: var(--wr-surface);
+  border-left: 1px solid var(--wr-border);
+  padding: 22px;
+  z-index: 60;
+  transform: translateX(100%);
+  transition: transform 0.25s ease-out;
+  overflow-y: auto;
+}
+.wr-settings-panel.open { transform: translateX(0); }
+.wr-settings-panel h3 {
+  font-size: 1.05em;
+  font-weight: 700;
+  color: var(--wr-text);
+  margin-bottom: 6px;
+}
+.wr-settings-panel .wr-set-section {
+  margin: 18px 0;
+}
+.wr-settings-panel .wr-set-label {
+  font-size: 0.78em;
+  font-weight: 600;
+  color: var(--wr-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.wr-set-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.wr-set-row button {
+  background: var(--wr-surface2);
+  color: var(--wr-text);
+  border: 1px solid var(--wr-border);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.92em;
+  flex: 1;
+  min-width: 70px;
+}
+.wr-set-row button.active {
+  background: var(--wr-accent-soft);
+  border-color: var(--wr-accent);
+  color: var(--wr-accent);
+  font-weight: 600;
+}
+
+/* ── Submit confirmation ──────────────────────────────────── */
+.wr-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.wr-modal-overlay.open { display: flex; }
+.wr-modal {
+  background: var(--wr-surface);
+  border: 1px solid var(--wr-border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  max-width: 460px;
+  width: 92%;
+  text-align: center;
+}
+.wr-modal h3 { margin-bottom: 10px; color: var(--wr-text); }
+.wr-modal p  { color: var(--wr-text-muted); margin-bottom: 18px; line-height: 1.5; }
+.wr-modal .wr-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ── Responsive: stack vertically on narrow screens ───────── */
+@media (max-width: 900px) {
+  .wr-stage {
+    grid-template-columns: 1fr;
+    grid-template-rows: 50% 50%;
+    height: calc(100vh - 56px);
+  }
+  .wr-topbar { flex-wrap: wrap; padding: 8px 12px; }
+  .wr-topbar .wr-subtitle { display: none; }
+}
+
+/* ── Disable all browser editing/spelling assists ─────────── */
+.wr-editor {
+  /* These three are also set as HTML attributes for redundancy.
+     CSS variants are necessary for some mobile keyboards. */
+  -webkit-user-modify: read-write-plaintext-only;
+  -ms-ime-mode: disabled;
+}
+.wr-editor::selection,
+.wr-editor::-moz-selection {
+  /* Selection visible only for half a frame before JS clears it.
+     Make it deliberately invisible to discourage. */
+  background: transparent;
+  color: inherit;
+}
+
+/* Loading splash before assignment data resolves. */
+.wr-loading {
+  position: fixed;
+  inset: 0;
+  background: var(--wr-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 5;
+}
+.wr-loading.hidden { display: none; }
+.wr-loading .spinner {
+  width: 42px; height: 42px;
+  border: 3px solid var(--wr-border);
+  border-top-color: var(--wr-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.wr-loading .msg { color: var(--wr-text-muted); font-size: 0.95em; }
+
+/* Final score screen */
+.wr-done {
+  display: none;
+  height: calc(100vh - 56px);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--wr-bg);
+}
+.wr-done.open { display: flex; }
+.wr-done .icon { font-size: 3.6em; }
+.wr-done h2   { font-size: 1.6em; color: var(--wr-text); }
+.wr-done p    { color: var(--wr-text-muted); }
+.wr-done .recap {
+  background: var(--wr-surface);
+  border: 1px solid var(--wr-border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 0.95em;
+  color: var(--wr-text);
+}

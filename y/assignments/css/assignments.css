@@ -1,0 +1,1457 @@
+/* ============================================
+   ASSIGNMENTS STYLES - Premium Edition
+   ============================================ */
+
+/* Native widgets (open select dropdown panels, date pickers, scrollbars)
+   render DARK instead of the OS default white, matching the app theme. */
+:root { color-scheme: dark; }
+
+/* ============================================
+   STUDENT ROW (writing + exam assignment modals)
+   Three-column grid: checkbox · name · class chip.
+   ============================================ */
+.wr-student-row {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.wr-student-row:hover {
+  background: rgba(167, 139, 250, 0.08);
+}
+.wr-student-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  margin: 0;
+}
+.wr-student-name {
+  color: var(--text-primary);
+  font-size: 0.95em;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wr-student-class {
+  color: var(--text-muted);
+  font-size: 0.8em;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================
+   CUSTOM CHECKBOX STYLING
+   ============================================ */
+
+.student-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.student-checkbox-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+/* Hide default checkbox (every picker: vocab / grammar / writing / exam) */
+.student-checkbox-item input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Custom checkbox */
+.student-checkbox-item::before {
+  content: '';
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border: 2px solid rgba(59, 130, 246, 0.4);
+  border-radius: 6px;
+  background: rgba(15, 15, 25, 0.6);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Checkbox hover */
+.student-checkbox-item:hover::before {
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+/* Checkbox checked state */
+.student-checkbox-item:has(input[type="checkbox"]:checked)::before {
+  background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+  border-color: transparent;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+/* Checkmark */
+.student-checkbox-item::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+}
+
+.student-checkbox-item:has(input[type="checkbox"]:checked)::after {
+  transform: rotate(45deg) scale(1);
+  opacity: 1;
+}
+
+.student-checkbox-name {
+  flex: 1;
+  font-size: 0.9em;
+  color: var(--text-primary);
+  margin-left: 8px;
+}
+
+.student-checkbox-class {
+  font-size: 0.8em;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 4px;
+}
+
+/* ============================================
+   BUTTON ANIMATIONS & STYLES
+   ============================================ */
+
+/* Ripple effect */
+.assignment-btn,
+.create-assignment-btn,
+.assignment-start-btn,
+.select-action-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.assignment-btn::after,
+.create-assignment-btn::after,
+.assignment-start-btn::after,
+.select-action-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.assignment-btn:active::after,
+.create-assignment-btn:active::after,
+.assignment-start-btn:active::after,
+.select-action-btn:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Assignment action buttons */
+.assignment-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, rgba(30, 30, 50, 0.8), rgba(20, 20, 40, 0.9));
+  color: var(--text-secondary);
+  backdrop-filter: blur(10px);
+}
+
+.assignment-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+  box-shadow: 0 5px 20px rgba(59, 130, 246, 0.25);
+}
+
+.assignment-btn:active {
+  transform: translateY(0);
+}
+
+.assignment-btn.view:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 5px 20px rgba(59, 130, 246, 0.3);
+}
+
+.assignment-btn.edit:hover {
+  border-color: #f59e0b;
+  color: #fcd34d;
+  box-shadow: 0 5px 20px rgba(245, 158, 11, 0.25);
+}
+
+.assignment-btn.delete:hover {
+  border-color: #ef4444;
+  color: #fca5a5;
+  box-shadow: 0 5px 20px rgba(239, 68, 68, 0.25);
+}
+
+/* Create Assignment Button */
+.create-assignment-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 50%, #06b6d4 100%);
+  background-size: 200% 200%;
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-weight: 700;
+  font-size: 0.95em;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.35);
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.create-assignment-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
+}
+
+.create-assignment-btn:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+/* Select action buttons */
+.select-action-btn {
+  padding: 8px 14px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(14, 165, 233, 0.1));
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  color: #7dd3fc;
+  font-size: 0.8em;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.select-action-btn:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(14, 165, 233, 0.15));
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+}
+
+/* ============================================
+   TEACHER DASHBOARD - ASSIGNMENTS TAB
+   ============================================ */
+
+/* Assignment Stats */
+.assignment-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.assignment-stat {
+  text-align: center;
+}
+
+.assignment-stat-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2em;
+  font-weight: 700;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.assignment-stat-label {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
+/* Assignment Card */
+.assignment-card {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 22, 38, 0.95));
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.assignment-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.assignment-card.overdue {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.assignment-card.overdue:hover {
+  box-shadow: 0 12px 40px rgba(239, 68, 68, 0.15);
+}
+
+.assignment-card.urgent {
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.assignment-card.fully-completed {
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.assignment-card.fully-completed:hover {
+  box-shadow: 0 12px 40px rgba(16, 185, 129, 0.15);
+}
+
+.assignment-card-header {
+  padding: 22px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(14, 165, 233, 0.06));
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.assignment-card.fully-completed .assignment-card-header {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+}
+
+.assignment-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.assignment-title {
+  font-size: 1.2em;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.assignment-status {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.assignment-status.active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+  color: #7dd3fc;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.assignment-status.urgent {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.assignment-status.overdue {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.assignment-status.completed {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.assignment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.assignment-target {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
+.assignment-card-body {
+  padding: 22px;
+}
+
+/* Completed body style */
+.assignment-card-body.completed-body {
+  padding: 28px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), transparent);
+}
+
+.completed-summary {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+}
+
+.completed-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.completed-stat-icon {
+  font-size: 1.6em;
+}
+
+.completed-stat-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2em;
+  font-weight: 700;
+  background: linear-gradient(135deg, #10b981, #34d399);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.completed-stat-label {
+  font-size: 0.8em;
+  color: var(--text-muted);
+}
+
+.assignment-remaining-info {
+  margin-bottom: 18px;
+}
+
+.remaining-count {
+  font-size: 0.9em;
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+  border-radius: 8px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.assignment-progress-section {
+  margin-bottom: 18px;
+}
+
+.assignment-progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.assignment-progress-text {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+.assignment-progress-bar {
+  height: 10px;
+  background: rgba(30, 30, 50, 0.8);
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.assignment-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #0ea5e9, #06b6d4);
+  background-size: 200% 100%;
+  border-radius: 5px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: progressShimmer 2s ease infinite;
+}
+
+@keyframes progressShimmer {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+.assignment-students-summary {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, rgba(30, 30, 50, 0.8), rgba(25, 25, 45, 0.9));
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  transition: all 0.3s ease;
+}
+
+.summary-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.summary-icon {
+  font-size: 1.1em;
+}
+
+.summary-count {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.2em;
+}
+
+.summary-item.completed .summary-count { color: var(--success); }
+.summary-item.pending .summary-count { color: var(--warning); }
+.summary-item.not-started .summary-count { color: var(--text-muted); }
+
+.summary-label {
+  font-size: 0.8em;
+  color: var(--text-muted);
+}
+
+.assignment-card-footer {
+  display: flex;
+  gap: 12px;
+  padding: 18px 22px;
+  background: linear-gradient(135deg, rgba(20, 20, 35, 0.9), rgba(15, 15, 28, 0.95));
+  border-top: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+/* Student Search Box */
+.student-search-box {
+  margin-bottom: 14px;
+}
+
+.student-search-input {
+  width: 100%;
+  padding: 12px 16px 12px 40px;
+  background: linear-gradient(135deg, rgba(20, 20, 35, 0.9), rgba(15, 15, 28, 0.95));
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236366f1'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 12px center;
+  background-size: 18px;
+}
+
+.student-search-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+.student-select-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.selected-count {
+  margin-left: auto;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.selected-count.has-selection {
+  color: #7dd3fc;
+  background: rgba(59, 130, 246, 0.2);
+  font-weight: 600;
+}
+
+.student-checkbox-items {
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 5px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 6px;
+  align-content: start;
+}
+
+.student-checkbox-items::-webkit-scrollbar {
+  width: 6px;
+}
+
+.student-checkbox-items::-webkit-scrollbar-track {
+  background: rgba(30, 30, 50, 0.5);
+  border-radius: 3px;
+}
+
+.student-checkbox-items::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+  border-radius: 3px;
+}
+
+/* Save Button Animation */
+.modal-btn-save {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #3b82f6, #0ea5e9) !important;
+  border: none !important;
+  padding: 12px 24px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.modal-btn-save.saving {
+  pointer-events: none;
+}
+
+.modal-btn-save.success {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.modal-btn-save.error {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: btnSpin 0.8s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes btnSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Modal Cancel Button */
+.modal-btn-cancel {
+  background: linear-gradient(135deg, rgba(30, 30, 50, 0.9), rgba(25, 25, 45, 0.95)) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  padding: 12px 24px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-btn-cancel:hover {
+  border-color: var(--text-secondary) !important;
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+/* Assignment Modal */
+.assignment-modal-content {
+  max-width: 600px;
+}
+
+.assignment-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.assignment-form-group {
+  margin-bottom: 18px;
+}
+
+.assignment-form-group label {
+  display: block;
+  font-size: 0.9em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.assignment-form-group input,
+.assignment-form-group select {
+  width: 100%;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(20, 20, 35, 0.9), rgba(15, 15, 28, 0.95));
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+  /* Tells the browser to render native form-control popups (the
+     <select> dropdown list, the date-picker calendar) in dark mode.
+     Without this, Chrome/Edge fall back to the OS light theme — which
+     is why the option list was showing white-on-grey. */
+  color-scheme: dark;
+}
+
+/* Explicit option styling for browsers that don't fully honor
+   color-scheme on <select> popups (older Firefox, some Linux GTK).
+   The selected/highlighted option still uses the browser's accent
+   so users can tell which one their cursor is on. */
+.assignment-form-group select option {
+  background: #152035;
+  color: #f8fafc;
+}
+.assignment-form-group select option:checked,
+.assignment-form-group select option:hover {
+  background: #1e293b;
+}
+
+.assignment-form-group input:focus,
+.assignment-form-group select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.student-checkbox-list {
+  max-height: 280px;
+  overflow-y: auto;
+  background: linear-gradient(135deg, rgba(20, 20, 35, 0.8), rgba(15, 15, 28, 0.9));
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+/* Assignment Detail Modal */
+.detail-header {
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.detail-header h3 {
+  margin-bottom: 14px;
+  font-size: 1.4em;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.detail-students-section h4 {
+  margin-bottom: 18px;
+  color: var(--text-secondary);
+}
+
+.detail-students-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.detail-student-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(30, 30, 50, 0.8), rgba(25, 25, 45, 0.9));
+  border-radius: 12px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  transition: all 0.3s ease;
+}
+
+.detail-student-row:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateX(4px);
+}
+
+.detail-student-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detail-student-name {
+  font-weight: 600;
+}
+
+.detail-student-class {
+  font-size: 0.8em;
+  color: var(--text-muted);
+}
+
+.detail-student-stats {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.detail-attempts,
+.detail-best-score {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+}
+
+.detail-status {
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 0.8em;
+  font-weight: 700;
+}
+
+.detail-status.completed {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.detail-status.in-progress {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.detail-status.not-started {
+  background: linear-gradient(135deg, rgba(100, 116, 139, 0.2), rgba(100, 116, 139, 0.1));
+  color: #94a3b8;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+
+/* ============================================================
+   STUDENT DASHBOARD — MY ASSIGNMENTS  (Crystal UI)
+   Sourced from the Claude Design "Crystal UI" handoff bundle.
+   Glassmorphism panel + per-status accent colors (orange=urgent,
+   blue/cyan=practice, green=done) + animated progress + filter
+   tabs. The user's drawing edit removed the XP/Streak/Rank row,
+   so it's intentionally not present here.
+   Uses oklch() for richer blues that hold up under the dark
+   navy background; falls back to hex on browsers that don't
+   support it (Safari ≤15.3 — graceful degradation, not styled).
+   ============================================================ */
+
+/* Crystal palette — scoped to the assignments card so we don't
+   pollute the rest of the dashboard's variable space. */
+.assignments-card {
+  --crystal-text-primary:   #e8f0ff;
+  --crystal-text-secondary: #8098c4;
+  --crystal-text-muted:     #4a6090;
+  --crystal-blue:   oklch(72% 0.18 220);
+  --crystal-cyan:   oklch(78% 0.20 195);
+  --crystal-green:  oklch(72% 0.19 155);
+  --crystal-orange: oklch(72% 0.22 55);
+  --crystal-amber:  oklch(80% 0.20 75);
+
+  /* The outer shell — replaces the old translucent blue card */
+  background: linear-gradient(135deg,
+    oklch(18% 0.08 230 / 0.85) 0%,
+    oklch(14% 0.06 240 / 0.90) 100%);
+  border: 1px solid oklch(45% 0.12 220 / 0.35);
+  border-radius: 20px;
+  padding: 22px;
+  margin-top: 0;             /* hub box wrapper handles outer spacing */
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 0 1px oklch(70% 0.15 220 / 0.08) inset,
+    0 30px 80px oklch(5% 0.05 240 / 0.6),
+    0 4px 20px oklch(40% 0.15 240 / 0.15);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Outfit', 'Poppins', sans-serif;
+  color: var(--crystal-text-primary);
+}
+/* Top shimmer line on the panel itself */
+.assignments-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent, oklch(80% 0.15 220 / 0.5), transparent);
+}
+
+/* ---- Panel Header ---- */
+.assignments-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  justify-content: flex-start;
+}
+.assignments-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--crystal-text-primary);
+  flex: 1;
+}
+.assignments-card-title > span:first-child {
+  /* The 📋 icon — wrap it in a tinted rounded square for the Crystal look */
+  font-size: 18px;
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: oklch(30% 0.12 240 / 0.5);
+  border-radius: 10px;
+  border: 1px solid oklch(50% 0.15 220 / 0.3);
+}
+
+/* Open-count badge (uses existing #assignmentBadge id, restyled) */
+.assignment-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 11px;
+  box-shadow: 0 0 12px oklch(55% 0.25 25 / 0.5);
+  margin-left: auto;
+}
+
+/* ---- Stats Bar (replaces old .assignments-summary) ---- */
+.assignments-summary {
+  background: oklch(15% 0.07 230 / 0.6);
+  border: 1px solid oklch(40% 0.10 220 / 0.25);
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  color: var(--crystal-text-secondary);
+}
+.summary-total   { color: var(--crystal-text-primary); font-weight: 600; }
+.summary-divider {
+  display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--crystal-text-muted);
+  font-size: 0; /* hide bullet char if present */
+}
+.summary-pending { color: var(--crystal-amber); font-weight: 600; }
+.summary-pending strong, .summary-pending .stat-val,
+.summary-done strong,    .summary-done .stat-val {
+  color: var(--crystal-text-primary);
+  font-weight: 600;
+}
+.summary-done    { color: var(--crystal-green); font-weight: 600; }
+
+/* ---- Filter Tabs (NEW — All / Pending / Completed) ---- */
+.assignments-filters {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.assignment-filter-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  background: transparent;
+  color: var(--crystal-text-muted);
+  font-family: 'Outfit', 'Poppins', sans-serif;
+}
+.assignment-filter-tab:hover {
+  color: var(--crystal-text-secondary);
+  background: oklch(25% 0.08 230 / 0.4);
+}
+.assignment-filter-tab.active {
+  background: oklch(28% 0.14 220 / 0.6);
+  border-color: oklch(55% 0.18 220 / 0.45);
+  color: var(--crystal-cyan);
+}
+
+/* ---- Section Divider (NEW) ---- */
+.assignments-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--crystal-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 4px 0 14px;
+}
+.assignments-section-divider .divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg,
+    oklch(35% 0.10 220 / 0.3), transparent);
+}
+
+/* ---- Empty state ---- */
+.no-assignments {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px 16px;
+  background: oklch(15% 0.07 230 / 0.4);
+  border: 1px dashed oklch(40% 0.10 220 / 0.3);
+  border-radius: 14px;
+  color: var(--crystal-text-secondary);
+}
+.no-assignments-icon { font-size: 18px; opacity: 0.85; }
+.no-assignments-text { font-size: 13.5px; font-weight: 500; }
+
+/* ============================================================
+   Crystal Assignment Card
+   ============================================================ */
+.my-assignment-card {
+  background: linear-gradient(145deg,
+    oklch(16% 0.09 235 / 0.8) 0%,
+    oklch(13% 0.07 240 / 0.85) 100%);
+  border: 1px solid oklch(40% 0.12 220 / 0.28);
+  border-radius: 16px;
+  padding: 18px 18px 18px 22px;   /* extra left padding for accent bar */
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  animation: assignmentFadeUp 0.4s ease both;
+}
+.my-assignment-card:last-child { margin-bottom: 0; }
+.my-assignment-card:nth-child(2) { animation-delay: 0.06s; }
+.my-assignment-card:nth-child(3) { animation-delay: 0.12s; }
+.my-assignment-card:nth-child(4) { animation-delay: 0.18s; }
+
+/* Top shimmer line per-card */
+.my-assignment-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent, oklch(80% 0.15 220 / 0.25), transparent);
+}
+.my-assignment-card:hover {
+  transform: translateY(-2px);
+  border-color: oklch(55% 0.16 220 / 0.45);
+  box-shadow: 0 12px 40px oklch(10% 0.08 240 / 0.5);
+}
+.my-assignment-card.urgent {
+  border-color: oklch(55% 0.20 55 / 0.4);
+}
+.my-assignment-card.urgent::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+    oklch(55% 0.20 55 / 0.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+.my-assignment-card.completed {
+  border-color: oklch(55% 0.18 155 / 0.4);
+}
+.my-assignment-card.overdue {
+  border-color: oklch(40% 0.05 240 / 0.5);
+  opacity: 0.78;
+}
+
+/* Left accent bar — colored per state, set inline by JS */
+.my-assignment-card .card-accent {
+  position: absolute;
+  left: 0; top: 16px; bottom: 16px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+}
+
+/* ---- Card top: status icon + info + completion check ---- */
+.my-assignment-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+  background: transparent;
+  padding: 0;
+}
+.my-assignment-status-icon {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.my-assignment-info { flex: 1; min-width: 0; }
+.my-assignment-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--crystal-text-primary);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.my-assignment-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--crystal-text-secondary);
+  font-weight: 500;
+  flex-wrap: wrap;
+  margin: 0;
+}
+.my-assignment-meta .meta-dot { color: var(--crystal-text-muted); }
+
+/* Level chip — small mono pill */
+.my-assignment-meta .level-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: 0.02em;
+  background: oklch(30% 0.18 230 / 0.4);
+  color: oklch(72% 0.18 220);
+  border: 1px solid oklch(60% 0.18 220 / 0.4);
+}
+
+/* Completion check (inline circle, top-right of card) */
+.my-assignment-check {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  border: 2px solid oklch(45% 0.12 220 / 0.4);
+  color: var(--crystal-text-muted);
+  flex-shrink: 0;
+}
+.my-assignment-card.completed .my-assignment-check {
+  background: oklch(55% 0.18 155 / 0.2);
+  border-color: var(--crystal-green);
+  color: var(--crystal-green);
+}
+
+/* ---- Card body ---- */
+.my-assignment-body {
+  padding: 0;
+}
+
+/* Assignment-card accordion. Header (icon + title + meta) and the deadline row
+   stay visible; .asg-acc-detail (progress / grade / goal / CTA) collapses on
+   click. .asg-acc-detail has no padding, so max-height:0 collapses cleanly. */
+.my-assignment-card.asg-acc .my-assignment-header { cursor: pointer; }
+.my-assignment-card.asg-acc .asg-acc-detail {
+  overflow: hidden;
+  max-height: 1200px;
+  transition: max-height .3s ease, opacity .25s ease;
+}
+.my-assignment-card.asg-collapsed .asg-acc-detail { max-height: 0; opacity: 0; }
+.my-assignment-card.asg-collapsed .my-assignment-deadline { margin-bottom: 0; }
+.asg-acc-chevron {
+  flex: none;
+  align-self: center;
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(59,130,246,0.16);
+  border: 1.5px solid rgba(59,130,246,0.5);
+  color: #93c5fd;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1;
+  transition: transform .3s cubic-bezier(.34,1.4,.64,1), background .15s, border-color .15s, box-shadow .15s;
+}
+.my-assignment-card.asg-acc .my-assignment-header:hover .asg-acc-chevron {
+  background: rgba(59,130,246,0.26);
+  border-color: #3b82f6;
+  box-shadow: 0 0 12px rgba(59,130,246,0.45);
+}
+.my-assignment-card.asg-collapsed .asg-acc-chevron { transform: rotate(-90deg); }
+
+/* Due date row — 📅 date on the left, badge on the right */
+.my-assignment-deadline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.deadline-icon { font-size: 14px; opacity: 0.7; }
+.deadline-date {
+  font-weight: 500;
+  color: var(--crystal-text-secondary);
+}
+.deadline-status {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-left: auto;
+}
+.deadline-status.urgent,
+.deadline-status.soon {
+  background: oklch(45% 0.22 55 / 0.25);
+  border: 1px solid oklch(65% 0.22 55 / 0.5);
+  color: var(--crystal-amber);
+  box-shadow: 0 0 12px oklch(65% 0.22 55 / 0.2);
+}
+.deadline-status.pending {
+  background: oklch(30% 0.12 220 / 0.4);
+  border: 1px solid oklch(50% 0.12 220 / 0.35);
+  color: var(--crystal-blue);
+}
+.deadline-status.overdue {
+  background: oklch(20% 0.04 240 / 0.6);
+  border: 1px solid oklch(40% 0.05 240 / 0.45);
+  color: oklch(60% 0.04 240);
+}
+.deadline-status.done {
+  background: oklch(30% 0.15 155 / 0.3);
+  border: 1px solid oklch(55% 0.18 155 / 0.45);
+  color: var(--crystal-green);
+}
+
+/* ---- Progress bar ---- */
+.my-assignment-progress-section { margin-bottom: 14px; }
+.progress-info {
+  display: flex; justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--crystal-text-muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: 0.04em;
+}
+.progress-info .progress-label,
+.progress-info .progress-best { color: var(--crystal-text-muted); }
+.assignment-progress-bar {
+  height: 6px;
+  border-radius: 99px;
+  background: oklch(20% 0.08 230 / 0.6);
+  overflow: hidden;
+  position: relative;
+}
+.assignment-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  position: relative;
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+/* Glowing dot at the end of the fill */
+.assignment-progress-fill::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: inherit;
+  box-shadow: 0 0 8px currentColor;
+}
+.progress-hint {
+  font-size: 11px;
+  color: var(--crystal-text-muted);
+  margin-top: 6px;
+}
+
+/* ---- Goal row ---- */
+.my-assignment-requirement {
+  background: oklch(13% 0.06 240 / 0.7);
+  border: 1px solid oklch(35% 0.10 220 / 0.22);
+  border-radius: 10px;
+  padding: 9px 14px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--crystal-text-secondary);
+  font-weight: 500;
+  text-align: left;
+}
+.my-assignment-requirement .goal-icon { font-size: 14px; }
+
+/* ---- CTA Button ---- */
+.my-assignment-footer {
+  padding: 0;
+  background: transparent;
+  border-top: none;
+}
+.assignment-start-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-family: 'Outfit', 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.01em;
+  background: linear-gradient(135deg,
+    oklch(62% 0.22 210) 0%, oklch(55% 0.25 200) 100%);
+  color: white;
+  box-shadow:
+    0 4px 24px oklch(58% 0.22 210 / 0.45),
+    0 0 40px oklch(58% 0.22 210 / 0.2);
+  animation: none; /* no infinite gradientShift — keeps it calm */
+}
+.assignment-start-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    oklch(100% 0 0 / 0.12) 0%, transparent 100%);
+  pointer-events: none;
+}
+.assignment-start-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+.assignment-start-btn:active { transform: translateY(0); }
+
+/* Urgent CTA — orange/amber */
+.assignment-start-btn.urgent {
+  background: linear-gradient(135deg,
+    oklch(72% 0.22 55) 0%, oklch(65% 0.24 45) 100%);
+  color: #1a0a00;
+  box-shadow:
+    0 4px 24px oklch(65% 0.24 45 / 0.45),
+    0 0 40px oklch(65% 0.24 45 / 0.2);
+}
+
+/* Overdue CTA — muted "Try Again" */
+.assignment-start-btn.overdue {
+  background: linear-gradient(135deg,
+    oklch(35% 0.04 240) 0%, oklch(25% 0.04 240) 100%);
+  color: var(--crystal-text-secondary);
+  box-shadow: 0 4px 14px oklch(15% 0.04 240 / 0.5);
+}
+
+/* Completed CTA — green "Review" */
+.assignment-start-btn.completed,
+.assignment-start-btn.review {
+  background: linear-gradient(135deg,
+    oklch(55% 0.18 155) 0%, oklch(48% 0.20 150) 100%);
+  color: white;
+  box-shadow: 0 4px 24px oklch(52% 0.18 155 / 0.4);
+}
+
+/* ============================================================
+   Animation
+   ============================================================ */
+@keyframes assignmentFadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .assignment-form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .assignment-students-summary {
+    flex-direction: column;
+  }
+  
+  .detail-student-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .detail-student-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .completed-summary {
+    gap: 25px;
+  }
+  
+  .completed-stat-value {
+    font-size: 1.6em;
+  }
+  
+  .assignment-card-footer {
+    flex-wrap: wrap;
+  }
+  
+  .assignment-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,366 @@
+{
+  "id": "b1-r6",
+  "level": "B1",
+  "title": "B1 Reading 6 — Travel Blogs",
+  "subtitle": "One passage · MCQ, vocab, reference",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Travel Blogs",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">For people in the UK, taking a gap year to travel around the world is not a rare and unusual thing to do. Many students take a year out to go travelling after leaving school and before starting university. Increasingly, older people are also choosing to take a year away from their work or careers in order to spend time travelling to discover new cultures, become more independent and broaden their horizons.</p><p class=\"rd-para\" data-para=\"2\">One major difference between modern-day travelers and those in the past is the rise of technology and the increasing use of online websites or 'travel blogs' to chart a traveler's progress around the world. Blogs (a short form of 'web logs') are online diaries that open up the travelling experience to the world. Using text and pictures, travelers can communicate their adventures to anyone. Such adventurers are no longer <strong>solitary</strong> people who disappear from society for a year and then appear 12 months later as changed and wiser people. <strong>They</strong> no longer carry a diary to fill with notes and sketches. They are permanently connected to the world.</p><p class=\"rd-para\" data-para=\"3\">Those who believe that blogging is an essential part of modern life claim that there are a number of advantages of using travel blogs. One suggested advantage is that you only need to write once for all your family and friends to inform them about where you are and what you are doing. <strong>It</strong> is also free. There is a whole range of sites available for you that do not require any payment and give you a generous amount of storage space for uploading photos. Finally, <strong>it</strong> is supposed to be a secure way to store your information. Your photos are safe when they are uploaded; and the text you have written should be there for good when you save <strong>it</strong>. So, there is no need to carry a heavy diary with you and the risk of dropping your valuable information on a bus you will never see again is significantly reduced.</p><p class=\"rd-para\" data-para=\"4\">However, there is a growing feeling that the advent of such online recording of travelling is actually <strong>detracting</strong> from the overall experience. There is a strong argument that travelling is essentially a solitary experience. The whole point of a gap year is to <strong>distance yourself</strong> from your normal life. The aim is to discover new and fascinating things not only about the world but also about yourself. Furthermore, although your friends and relatives can access the information for free, it can become an <strong>onerous</strong> task for them to follow an almost daily diary and access hundreds of photos while being bombarded with Internet advertising. Finally, although generally secure, using an online storage system is not free from risk. If the website that you use <strong>ceases</strong> to exist or is taken over by another company, you could potentially lose a significant amount of time and effort.</p><p class=\"rd-para\" data-para=\"5\">So, are online travel blogs killing the benefits of traveling? Are they destroying the mystery and the pleasure of escaping for a year to play out the fantasy of adventure? Wouldn't it be more exciting to return home full of stories to tell around a fire on a cold, frosty night?</p>",
+      "sections": [
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part A",
+          "instructions": "Answer the following questions according to the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "According to paragraph 1, which of the following is NOT MENTIONED as a reason to take a gap year?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "To become less dependent"
+                },
+                {
+                  "id": "b",
+                  "text": "To get rid of stress at work"
+                },
+                {
+                  "id": "c",
+                  "text": "To learn about new cultures"
+                },
+                {
+                  "id": "d",
+                  "text": "To broaden your horizons"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "According to paragraph 2, which of the following is a major difference between travelers today and in the past?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "The length of their journey"
+                },
+                {
+                  "id": "b",
+                  "text": "Their choice of destinations"
+                },
+                {
+                  "id": "c",
+                  "text": "The amount of money they spend"
+                },
+                {
+                  "id": "d",
+                  "text": "Their connection to the world"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m3",
+              "question": "According to paragraph 3, which of the following is NOT an advantage of using travel blogs?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Travelers don't need to carry a map with them."
+                },
+                {
+                  "id": "b",
+                  "text": "Travelers can upload their photos."
+                },
+                {
+                  "id": "c",
+                  "text": "Travelers can inform their families about where and how they are."
+                },
+                {
+                  "id": "d",
+                  "text": "Travelers can keep their valuable information safe."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m4",
+              "question": "In paragraph 4, it is implied that __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "there are countless advantages of travel blogs"
+                },
+                {
+                  "id": "b",
+                  "text": "taking a year gap becomes easier with travel blogs"
+                },
+                {
+                  "id": "c",
+                  "text": "travelers cannot distance themselves from their normal life"
+                },
+                {
+                  "id": "d",
+                  "text": "using an online storage system is always secure"
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part B (vocabulary)",
+          "instructions": "Choose the best definition for the following words and phrases from the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "\"solitary\" (paragraph 2):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "shy"
+                },
+                {
+                  "id": "b",
+                  "text": "sociable"
+                },
+                {
+                  "id": "c",
+                  "text": "alone"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "\"it is supposed to be a secure way\" (paragraph 3):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "some people claim it is a secure way"
+                },
+                {
+                  "id": "b",
+                  "text": "it is definitely a secure way"
+                },
+                {
+                  "id": "c",
+                  "text": "it is unlikely to be a secure way"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m3",
+              "question": "\"to detract from the overall experience\" (paragraph 4):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "to change the overall experience"
+                },
+                {
+                  "id": "b",
+                  "text": "to have a negative effect on the overall experience"
+                },
+                {
+                  "id": "c",
+                  "text": "to make the new experience a more positive one"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "\"to distance yourself from something\" (paragraph 4):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "to change something"
+                },
+                {
+                  "id": "b",
+                  "text": "to forget about something"
+                },
+                {
+                  "id": "c",
+                  "text": "to separate yourself from something"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m5",
+              "question": "\"onerous\" (paragraph 4):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "difficult"
+                },
+                {
+                  "id": "b",
+                  "text": "interesting"
+                },
+                {
+                  "id": "c",
+                  "text": "helpful"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m6",
+              "question": "\"cease\" (paragraph 4):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "continue"
+                },
+                {
+                  "id": "b",
+                  "text": "stop"
+                },
+                {
+                  "id": "c",
+                  "text": "open"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "mcq3",
+          "type": "mcq",
+          "label": "Part C (reference)",
+          "instructions": "What do these words refer to?",
+          "items": [
+            {
+              "id": "m1",
+              "question": "\"They\" (paragraph 2):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "wiser people"
+                },
+                {
+                  "id": "b",
+                  "text": "adventurers"
+                },
+                {
+                  "id": "c",
+                  "text": "notes and sketches"
+                },
+                {
+                  "id": "d",
+                  "text": "blogs"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "\"It\" (paragraph 3):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Advantage"
+                },
+                {
+                  "id": "b",
+                  "text": "Family and friend"
+                },
+                {
+                  "id": "c",
+                  "text": "Travel blogging"
+                },
+                {
+                  "id": "d",
+                  "text": "Modern life"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "\"they\" (paragraph 3, \"give you a generous amount of storage space\"):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "your photos"
+                },
+                {
+                  "id": "b",
+                  "text": "sites"
+                },
+                {
+                  "id": "c",
+                  "text": "friends"
+                },
+                {
+                  "id": "d",
+                  "text": "storage spaces"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "\"it\" (paragraph 3, \"should be there for good when you save it\"):",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "information"
+                },
+                {
+                  "id": "b",
+                  "text": "photo"
+                },
+                {
+                  "id": "c",
+                  "text": "a secure way"
+                },
+                {
+                  "id": "d",
+                  "text": "the text"
+                }
+              ],
+              "answer": "d"
+            }
+          ]
+        },
+        {
+          "id": "mcq4",
+          "type": "mcq",
+          "label": "Part D",
+          "instructions": "What is the writer's opinion about travel blogs?",
+          "items": [
+            {
+              "id": "m1",
+              "question": "The writer:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "The writer is neutral. He presents both sides of the argument and does not suggest an opinion."
+                },
+                {
+                  "id": "b",
+                  "text": "The writer probably believes that travel blogs are a good thing."
+                },
+                {
+                  "id": "c",
+                  "text": "The writer probably believes that travel blogs are not necessarily a good thing."
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

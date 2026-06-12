@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hub home — 3 variants</title>
+<link rel="stylesheet" href="../../student/css/styles.css" />
+<link rel="stylesheet" href="../../student/css/extra.css" />
+<style>
+  :root {
+    --bg: #0b1220;
+    --surface: #0f172a;
+    --surface-2: #111c33;
+    --border: rgba(255,255,255,0.06);
+    --border-hover: rgba(13,148,136,0.4);
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    --accent: #0d9488;
+    --accent-lt: #2dd4bf;
+    --track: rgba(255,255,255,0.08);
+  }
+
+  body {
+    margin: 0;
+    background: #06101f;
+    padding: 32px 16px 64px;
+    font-family: 'Nunito', sans-serif;
+    color: var(--text);
+  }
+
+  .lab {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  @media (max-width: 1080px) { .lab { grid-template-columns: 1fr; } }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .variant-title {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .variant-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .variant-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 340px;
+    margin-bottom: 8px;
+    line-height: 1.45;
+  }
+
+  .phone {
+    width: 360px;
+    min-height: 640px;
+    background: var(--bg);
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 24px 20px;
+    box-shadow: 0 20px 60px -10px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* --- shared header --- */
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+  }
+  .brand-logo {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-lt));
+    display: grid; place-items: center;
+    color: #041f1c; font-weight: 900; font-size: 13px;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #1e293b;
+    display: grid; place-items: center;
+    font-size: 14px; color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .greeting { padding: 0 2px; }
+  .greeting h1 {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0 0 2px;
+    line-height: 1.2;
+  }
+  .greeting p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .section-lbl {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 4px 2px 0;
+  }
+
+  /* ============================================================
+     VARIANT 1 — Grid-heavy
+     ============================================================ */
+  .v1-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .v1-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .v1-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+  }
+  .v1-ring {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent) calc(var(--pct) * 1%), var(--track) 0);
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+  .v1-ring::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--surface);
+  }
+  .v1-ring span {
+    position: relative;
+    font-size: 22px;
+    z-index: 1;
+  }
+  .v1-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .v1-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .v1-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.3;
+  }
+  .v1-pct {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-lt);
+  }
+
+  /* ============================================================
+     VARIANT 2 — Resume-first (hero + grid)
+     ============================================================ */
+  .v2-hero {
+    background: linear-gradient(135deg, rgba(13,148,136,0.18), rgba(45,212,191,0.06));
+    border: 1px solid rgba(13,148,136,0.35);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .v2-hero::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(45,212,191,0.22), transparent 70%);
+    pointer-events: none;
+  }
+  .v2-hero-lbl {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-lt);
+    font-weight: 700;
+  }
+  .v2-hero-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .v2-hero-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .v2-hero-sub .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-dim); }
+  .v2-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .v2-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-lt));
+    border-radius: 2px;
+  }
+  .v2-cta {
+    align-self: flex-start;
+    background: var(--accent);
+    color: #041f1c;
+    font-weight: 800;
+    font-size: 12px;
+    border: 0;
+    border-radius: 999px;
+    padding: 8px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px -2px rgba(13,148,136,0.45);
+  }
+  .v2-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .v2-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .v2-card:hover {
+    border-color: var(--border-hover);
+  }
+  .v2-icon {
+    font-size: 22px;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    display: grid; place-items: center;
+  }
+  .v2-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+  }
+  .v2-mini-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--track);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .v2-mini-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  /* ============================================================
+     VARIANT 3 — Minimal list
+     ============================================================ */
+  .v3-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 4px;
+  }
+  .v3-row {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .v3-row + .v3-row { border-top: 1px solid var(--border); }
+  .v3-row:hover { background: rgba(255,255,255,0.03); }
+  .v3-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(13,148,136,0.1);
+    display: grid; place-items: center;
+    font-size: 18px;
+  }
+  .v3-mid { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .v3-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .v3-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .v3-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .v3-bar {
+    height: 3px;
+    background: var(--track);
+    border-radius: 2px;
+    overflow: hidden;
+    width: 100%;
+  }
+  .v3-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .v3-pct {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent-lt);
+    font-variant-numeric: tabular-nums;
+  }
+  .v3-chev {
+    color: var(--text-dim);
+    font-size: 18px;
+    margin-left: 4px;
+  }
+
+  /* streak chip shared */
+  .streak {
+    background: rgba(251,146,60,0.1);
+    border: 1px solid rgba(251,146,60,0.25);
+    color: #fdba74;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="lab">
+  <!-- ============================================================
+       COLUMN 1 — Variant 1: Grid-heavy
+       ============================================================ -->
+  <div class="column">
+    <div class="variant-title">Variant 1</div>
+    <div class="variant-name">Skill Grid</div>
+    <div class="variant-desc">Six equal skill cards, each with a progress ring. No hero — every skill has equal weight on the home screen.</div>
+
+    <div class="phone">
+      <div class="top">
+        <div class="brand"><div class="brand-logo">Y</div> VOCAB TRAINER</div>
+        <div class="avatar">K</div>
+      </div>
+      <div class="greeting">
+        <h1>Hello, Kabir</h1>
+        <p>Keep the streak going — 12 days strong <span class="streak">🔥 12</span></p>
+      </div>
+
+      <div class="section-lbl">Skills</div>
+      <div class="v1-grid">
+        <div class="v1-card">
+          <div class="v1-ring" style="--pct: 62"><span>📚</span></div>
+          <div class="v1-meta"><div class="v1-name">Vocabulary</div><div class="v1-sub">Empower B1 · U4</div></div>
+          <div class="v1-pct">62%</div>
+        </div>
+        <div class="v1-card">
+          <div class="v1-ring" style="--pct: 34"><span>🎧</span></div>
+          <div class="v1-meta"><div class="v1-name">Listening</div><div class="v1-sub">Exam 1 · Part 2</div></div>
+          <div class="v1-pct">34%</div>
+        </div>
+        <div class="v1-card">
+          <div class="v1-ring" style="--pct: 18"><span>✏️</span></div>
+          <div class="v1-meta"><div class="v1-name">Grammar</div><div class="v1-sub">Conditionals</div></div>
+          <div class="v1-pct">18%</div>
+        </div>
+        <div class="v1-card">
+          <div class="v1-ring" style="--pct: 45"><span>📖</span></div>
+          <div class="v1-meta"><div class="v1-name">Reading</div><div class="v1-sub">Short texts · L3</div></div>
+          <div class="v1-pct">45%</div>
+        </div>
+        <div class="v1-card">
+          <div class="v1-ring" style="--pct: 8"><span>✍️</span></div>
+          <div class="v1-meta"><div class="v1-name">Writing</div><div class="v1-sub">Not started</div></div>
+          <div class="v1-pct">8%</div>
+        </div>
+        <div class="v1-card">
+          <div class="v1-ring" style="--pct: 0"><span>🎤</span></div>
+          <div class="v1-meta"><div class="v1-name">Speaking</div><div class="v1-sub">Coming soon</div></div>
+          <div class="v1-pct">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       COLUMN 2 — Variant 2: Resume-first hero + compact grid
+       ============================================================ -->
+  <div class="column">
+    <div class="variant-title">Variant 2</div>
+    <div class="variant-name">Resume First</div>
+    <div class="variant-desc">Hero card pushes you straight back into the last session. Six compact icons below for switching skills.</div>
+
+    <div class="phone">
+      <div class="top">
+        <div class="brand"><div class="brand-logo">Y</div> VOCAB TRAINER</div>
+        <div class="avatar">K</div>
+      </div>
+      <div class="greeting">
+        <h1>Welcome back</h1>
+        <p>You left off yesterday at 4:12 PM</p>
+      </div>
+
+      <div class="v2-hero">
+        <div class="v2-hero-lbl">▶ Continue</div>
+        <div class="v2-hero-title">Listening Exam 1 — Part 2</div>
+        <div class="v2-hero-sub">
+          <span>4:12 / 20:00</span>
+          <span class="dot"></span>
+          <span>21% complete</span>
+        </div>
+        <div class="v2-bar"><div class="v2-bar-fill" style="width: 21%"></div></div>
+        <button class="v2-cta">▶ Resume</button>
+      </div>
+
+      <div class="section-lbl">All Skills</div>
+      <div class="v2-grid">
+        <div class="v2-card"><div class="v2-icon">📚</div><div class="v2-name">Vocab</div><div class="v2-mini-bar"><div class="v2-mini-fill" style="width:62%"></div></div></div>
+        <div class="v2-card"><div class="v2-icon">🎧</div><div class="v2-name">Listening</div><div class="v2-mini-bar"><div class="v2-mini-fill" style="width:34%"></div></div></div>
+        <div class="v2-card"><div class="v2-icon">✏️</div><div class="v2-name">Grammar</div><div class="v2-mini-bar"><div class="v2-mini-fill" style="width:18%"></div></div></div>
+        <div class="v2-card"><div class="v2-icon">📖</div><div class="v2-name">Reading</div><div class="v2-mini-bar"><div class="v2-mini-fill" style="width:45%"></div></div></div>
+        <div class="v2-card"><div class="v2-icon">✍️</div><div class="v2-name">Writing</div><div class="v2-mini-bar"><div class="v2-mini-fill" style="width:8%"></div></div></div>
+        <div class="v2-card"><div class="v2-icon">🎤</div><div class="v2-name">Speaking</div><div class="v2-mini-bar"><div class="v2-mini-fill" style="width:0%"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       COLUMN 3 — Variant 3: Minimal list
+       ============================================================ -->
+  <div class="column">
+    <div class="variant-title">Variant 3</div>
+    <div class="variant-name">Minimal List</div>
+    <div class="variant-desc">Text-forward row list. Fastest to scan progress; least visual chrome. Easy to extend with more skills.</div>
+
+    <div class="phone">
+      <div class="top">
+        <div class="brand"><div class="brand-logo">Y</div> VOCAB TRAINER</div>
+        <div class="avatar">K</div>
+      </div>
+      <div class="greeting">
+        <h1>Hello, Kabir</h1>
+        <p>Pick a skill to practice <span class="streak">🔥 12</span></p>
+      </div>
+
+      <div class="section-lbl">Skills</div>
+      <div class="v3-list">
+        <div class="v3-row">
+          <div class="v3-icon">📚</div>
+          <div class="v3-mid">
+            <div class="v3-top-row"><div class="v3-name">Vocabulary</div><div class="v3-sub">Empower B1 · U4</div></div>
+            <div class="v3-bar"><div class="v3-bar-fill" style="width:62%"></div></div>
+          </div>
+          <div class="v3-pct">62%<span class="v3-chev">›</span></div>
+        </div>
+        <div class="v3-row">
+          <div class="v3-icon">🎧</div>
+          <div class="v3-mid">
+            <div class="v3-top-row"><div class="v3-name">Listening</div><div class="v3-sub">Exam 1 · Part 2</div></div>
+            <div class="v3-bar"><div class="v3-bar-fill" style="width:34%"></div></div>
+          </div>
+          <div class="v3-pct">34%<span class="v3-chev">›</span></div>
+        </div>
+        <div class="v3-row">
+          <div class="v3-icon">✏️</div>
+          <div class="v3-mid">
+            <div class="v3-top-row"><div class="v3-name">Grammar</div><div class="v3-sub">Conditionals</div></div>
+            <div class="v3-bar"><div class="v3-bar-fill" style="width:18%"></div></div>
+          </div>
+          <div class="v3-pct">18%<span class="v3-chev">›</span></div>
+        </div>
+        <div class="v3-row">
+          <div class="v3-icon">📖</div>
+          <div class="v3-mid">
+            <div class="v3-top-row"><div class="v3-name">Reading</div><div class="v3-sub">Short texts · L3</div></div>
+            <div class="v3-bar"><div class="v3-bar-fill" style="width:45%"></div></div>
+          </div>
+          <div class="v3-pct">45%<span class="v3-chev">›</span></div>
+        </div>
+        <div class="v3-row">
+          <div class="v3-icon">✍️</div>
+          <div class="v3-mid">
+            <div class="v3-top-row"><div class="v3-name">Writing</div><div class="v3-sub">Not started</div></div>
+            <div class="v3-bar"><div class="v3-bar-fill" style="width:8%"></div></div>
+          </div>
+          <div class="v3-pct">8%<span class="v3-chev">›</span></div>
+        </div>
+        <div class="v3-row">
+          <div class="v3-icon">🎤</div>
+          <div class="v3-mid">
+            <div class="v3-top-row"><div class="v3-name">Speaking</div><div class="v3-sub">Coming soon</div></div>
+            <div class="v3-bar"><div class="v3-bar-fill" style="width:0%"></div></div>
+          </div>
+          <div class="v3-pct">—<span class="v3-chev">›</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

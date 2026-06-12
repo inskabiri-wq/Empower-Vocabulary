@@ -1,0 +1,209 @@
+{
+  "id": "b2-r9",
+  "level": "B2",
+  "title": "B2 Reading 9 — The Actual Cause of Obesity",
+  "subtitle": "One passage · MCQ, gap-fill, short-answer",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "The Actual Cause of Obesity",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">The discovery of the obesity gene in humans offered evidence that chronic weight gain is the <strong>consequence</strong> of a mismatch between nature and nurture.</p><p class=\"rd-para\" data-para=\"2\">One of the reasons for obesity is that dietary fat converts to body fat more efficiently than protein or carbohydrates. However recently scientists have discovered an equally important factor. Peter Havel of the University of California, and Michael Schwarts of the University of Washington, are <strong>investigating</strong> the possibility that high levels of fat and fructose are mucking up our brain chemistry, and thereby preventing the signals that would normally tell us to put down the fork. <span class=\"rd-gap\" data-gap=\"2\"></span> Under normal conditions, these hormones help maintain a <strong>stable</strong> body weight by <strong>adjusting</strong> levels of the peptides that control eating. However, a diet loaded with fat and fructose prevents the regulation of <strong>these hormones</strong>.</p><p class=\"rd-para\" data-para=\"3\">Other researchers are finding evidence that <strong>constant</strong> exposure to fat and sugar can cause some humans to crave <strong>them</strong> as they do an addictive drug. A Princeton University psychologist recently showed that rats which were fed a high-sugar diet went into a state of anxiety when the sugar was <strong>removed</strong>. <span class=\"rd-gap\" data-gap=\"3\"></span></p><p class=\"rd-para\" data-para=\"4\">There are many factors contributing to an explosion of obesity in the USA and the world, but the radical changes in our diet are first among <strong>them</strong>. While scientific work in this arena is still at its early stages, it is already clear that <strong>varying</strong> the <strong>amount</strong> of fat and other nutrients in the diet affect brain chemistry by activating certain genes, and this in turn directs our dietary preferences. <span class=\"rd-gap\" data-gap=\"4\"></span></p><p class=\"rd-para\" data-para=\"5\"><strong>peptides: small proteins · leptin: a hormone, made by fat cells, that decreases your appetite · ghrelin: a hormone that increases appetite</strong></p>",
+      "sections": [
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part A",
+          "instructions": "Circle the best answer according to the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "It has been identified that…",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Sugar has been a natural craving for many people since they were born."
+                },
+                {
+                  "id": "b",
+                  "text": "Imbalance between the body and its surroundings causes people to put on weight habitually."
+                },
+                {
+                  "id": "c",
+                  "text": "Nature is the most significant factor playing a role in obesity."
+                },
+                {
+                  "id": "d",
+                  "text": "Sugar and fat are drugs that make a person unaware of their danger."
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "A diet high in fat and fructose _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "makes us continue to eat even though our body has had enough"
+                },
+                {
+                  "id": "b",
+                  "text": "is less harmful than a diet high in protein and carbohydrate"
+                },
+                {
+                  "id": "c",
+                  "text": "helps us to maintain a stable body weight"
+                },
+                {
+                  "id": "d",
+                  "text": "regulates insulin, leptin and ghrelin levels"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m3",
+              "question": "Research on animals shows that frequent exposure to fat and sugar causes _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "anxiety"
+                },
+                {
+                  "id": "b",
+                  "text": "drug addiction"
+                },
+                {
+                  "id": "c",
+                  "text": "a desire for more sugar and fat"
+                },
+                {
+                  "id": "d",
+                  "text": "permanent brain damage"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m4",
+              "question": "Which of the following is TRUE?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Scientific research is insufficient to provide any explanation to the problem of obesity."
+                },
+                {
+                  "id": "b",
+                  "text": "We are now more careful about consuming highly processed, sweet and high-fat foods."
+                },
+                {
+                  "id": "c",
+                  "text": "Scientists are doing dangerous experiments to find a cure for obesity."
+                },
+                {
+                  "id": "d",
+                  "text": "The genes that are activated by our changing diet are a cause of obesity."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m5",
+              "question": "Which one is FALSE?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Percentage of obesity has been increasing globally."
+                },
+                {
+                  "id": "b",
+                  "text": "Eating habits affect our future appetite."
+                },
+                {
+                  "id": "c",
+                  "text": "All the effects of our current ways of eating are known therefore experts are worried."
+                },
+                {
+                  "id": "d",
+                  "text": "The more a person consumes sugary food, the less satisfied they are unless there is more of it next time."
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part B",
+          "instructions": "Write the number of the suitable paragraph next to the sentences. One is extra.",
+          "options": [
+            {
+              "id": "a",
+              "text": "The studies on animals conducted by Sarah Leibowitz, a neurologist at Rockefeller University, revealed that frequent exposure to fatty food causes the brain to crave still more fat."
+            },
+            {
+              "id": "b",
+              "text": "By submitting ourselves to a steady dose of highly processed, sweet, high-fat foods, we have entered into a dangerous experiment, the long-term consequences of which are only now beginning to surface."
+            },
+            {
+              "id": "c",
+              "text": "These signals are produced by peptides, which are regulated mainly by three hormones: insulin, leptin and ghrelin."
+            },
+            {
+              "id": "d",
+              "text": "And this is a major health issue caused by excessive body fat, resulting in various health complications and economic burdens."
+            }
+          ],
+          "items": [
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "c"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "a"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part C",
+          "instructions": "Find the answers from the text. Do not use more than 3 words.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "Which 2 elements of a diet block the effective control of hormones?",
+              "answer": "fat and fructose"
+            },
+            {
+              "id": "sa2",
+              "definition": "How can a body who is used to sugar react to absence of sugar?",
+              "answer": "by being anxious"
+            },
+            {
+              "id": "sa3",
+              "definition": "What affects our brain chemistry?",
+              "answer": "high fat",
+              "acceptable": [
+                "high fat",
+                "high fructose",
+                "other nutrients"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

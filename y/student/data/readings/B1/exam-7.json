@@ -1,0 +1,260 @@
+{
+  "id": "b1-r7",
+  "level": "B1",
+  "title": "B1 Reading 7 — Unusual Accommodation",
+  "subtitle": "One passage · Headings, MCQ, reference, vocabulary",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Unusual Accommodation",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Karosta jail in Latvia dates back to 1905. <strong>It</strong> was originally home to Russian sailors who didn't support the government. In the 1970s it housed political prisoners. According to their website this is an opportunity to stay overnight on real prisoners' beds. The website goes on to describe Karosta proudly as 'unfriendly, cold and uncomfortable'. They are not lying. This is more a reality jail experience than a hotel. 'Reception' is a dark corridor where a former prison guard explains the rules to you (no luggage except a toothbrush, no attempts to escape), and then fires <strong>his</strong> gun in the air to show you he is serious. After a meal of bread and sweet Russian tea, 'guests' have five minutes to wash before making up their own bed from a wooden bench and thin mattress. Does it sound unpleasant? It is. What do you expect for $12 per night?</p><p class=\"rd-para\" data-para=\"2\">Would you like to experience life in America's Wild West 150 years ago? Virginia City in Montana was a ghost town until the government restored it in the 1950s for tourism. The town works now as a large open-air museum. Nearby is the Nevada City Hotel and cabins where you can hang up your Stetson hat and enjoy life as a cowboy. The rooms have Victorian furniture and downstairs the saloon has a true Wild West feel. The cabins look extremely rustic and basic from the outside — two even have <strong>their</strong> original earth roofs — but inside <strong>they</strong> have large double beds and private bathrooms. If you book during the week, you might be <strong>disappointed</strong> because the city only comes to life at weekends, when actors walk around in period costumes, such as sheriffs, cowboys and people who are looking for gold.</p><p class=\"rd-para\" data-para=\"3\">If you thought of something old and prehistoric, why not try the caves of Sassi di Matera in Italy where people have lived since the Bronze Age? During the Renaissance, people developed them into richer rooms with stone walls and decorations. Then, until 1952, they were the poor homes of the peasants who lived there with <strong>their</strong> animals. Now, however, these caves are a real hotel in a historical setting thanks to <strong>renovation</strong>. Although there are no televisions or fridges, the rooms are comfortably furnished with antique furniture and traditional tiles. The receptionists are very polite and welcoming. The owners wanted the caves to be <strong>authentic</strong>, so they have built the furniture into the walls of the caves and left in place the iron rings where peasants tied up their animals. Prices start at $300 per night.</p><p class=\"rd-para\" data-para=\"4\">A modern art gallery is a place where you can lose yourself in an artist's vision of the world. A hotel is a place where you can spend the night, enjoying the comfort according to your budget. As its advertising promises, Propeller Island City Lodge in Berlin manages to combine the two. Placed in a former apartment block, the hotel is a collection of individually designed rooms — the upside-down room, the all-orange room, the mirror room — which are often extreme. In some art hotels, you could forget the art and simply enjoy the comfort of your surroundings. That's not the case with Propeller Island. However, the rooms can be small and claustrophobic (although some have balconies) and often you have to share a bathroom with other guests. But if you don't mind that, it may be the next best thing to spending the night in a gallery.</p>",
+      "sections": [
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part A",
+          "instructions": "Skim the text and match the headings with the paragraphs. There is ONE EXTRA heading.",
+          "options": [
+            {
+              "id": "A",
+              "text": "The gallery experience"
+            },
+            {
+              "id": "B",
+              "text": "Cheap and affordable hotels"
+            },
+            {
+              "id": "C",
+              "text": "Travel back in time"
+            },
+            {
+              "id": "D",
+              "text": "Sleeping in a cave"
+            },
+            {
+              "id": "E",
+              "text": "Scary prison hotel"
+            }
+          ],
+          "items": [
+            {
+              "id": "p1",
+              "label": "Paragraph 1",
+              "answer": "E"
+            },
+            {
+              "id": "p2",
+              "label": "Paragraph 2",
+              "answer": "C"
+            },
+            {
+              "id": "p3",
+              "label": "Paragraph 3",
+              "answer": "D"
+            },
+            {
+              "id": "p4",
+              "label": "Paragraph 4",
+              "answer": "A"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Read the text in more detail and answer the questions below.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Why does the author say \"This is more a reality jail experience than a hotel\" in Paragraph 1?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Because real prisoners live there today and the guests can meet them"
+                },
+                {
+                  "id": "b",
+                  "text": "Because the jail looks like a real hotel"
+                },
+                {
+                  "id": "c",
+                  "text": "Because the guests experience a prison-like atmosphere"
+                },
+                {
+                  "id": "d",
+                  "text": "Because they filmed a reality TV show there in the past"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "According to Paragraph 1 __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Karosta jail is cheap because they don't serve any food"
+                },
+                {
+                  "id": "b",
+                  "text": "the receptionist at the hotel sometimes gives a gun to the guests"
+                },
+                {
+                  "id": "c",
+                  "text": "the receptionist at the hotel cleans the rooms and makes the beds"
+                },
+                {
+                  "id": "d",
+                  "text": "the hotel's advertisement in the media is honest and real"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m3",
+              "question": "What is TRUE according to Paragraph 2?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Nevada City Hotel has existed for 150 years"
+                },
+                {
+                  "id": "b",
+                  "text": "Very few people lived in Virginia City before 1950"
+                },
+                {
+                  "id": "c",
+                  "text": "The hotel cabins are beautifully decorated from the outside"
+                },
+                {
+                  "id": "d",
+                  "text": "Many people come to the city looking for gold at weekends"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "What is FALSE according to Paragraph 3?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Nobody has lived in Sassi de Matera until the Renaissance"
+                },
+                {
+                  "id": "b",
+                  "text": "Sassi de Matera used to be the home of poor farmers"
+                },
+                {
+                  "id": "c",
+                  "text": "The hotel is comfortable, and the guests feel welcome"
+                },
+                {
+                  "id": "d",
+                  "text": "The owners left some parts in their original form"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "According to Paragraph 4 __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "the Propeller Island City Lodge is a hotel that combines rooms into apartments"
+                },
+                {
+                  "id": "b",
+                  "text": "the hotel has only small rooms so many people feel claustrophobic there"
+                },
+                {
+                  "id": "c",
+                  "text": "the hotel's advertisements promise that the hotel is both comfortable and affordable"
+                },
+                {
+                  "id": "d",
+                  "text": "each room in the hotel has its own bathroom with decorations such as mirrors"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part C (reference)",
+          "instructions": "Find what these words in the text refer to.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"It\" (paragraph 1):",
+              "answer": "Karosta jail",
+              "acceptable": [
+                "Karosta jail",
+                "Karosta",
+                "the jail"
+              ]
+            },
+            {
+              "id": "sa2",
+              "definition": "\"his\" (paragraph 1):",
+              "answer": "a former prison guard's",
+              "acceptable": [
+                "a former prison guard's",
+                "the prison guard's",
+                "the guard's",
+                "prison guard's"
+              ]
+            },
+            {
+              "id": "sa3",
+              "definition": "\"they\" (paragraph 2, \"they have large double beds\"):",
+              "answer": "cabins",
+              "acceptable": [
+                "cabins",
+                "the cabins"
+              ]
+            },
+            {
+              "id": "sa4",
+              "definition": "\"their\" (paragraph 3, \"lived there with their animals\"):",
+              "answer": "peasants'",
+              "acceptable": [
+                "peasants'",
+                "the peasants'"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shortanswer2",
+          "type": "find-word",
+          "label": "Part D (vocabulary)",
+          "instructions": "Find the words in the text that have the meanings below.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"feeling sad because someone or something didn't fulfil your expectations\" (paragraph 2):",
+              "answer": "disappointed"
+            },
+            {
+              "id": "sa2",
+              "definition": "\"making something more modern and of better quality\" (paragraph 3):",
+              "answer": "renovation"
+            },
+            {
+              "id": "sa3",
+              "definition": "\"being original, not a copy, real\" (paragraph 3):",
+              "answer": "authentic"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

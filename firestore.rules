@@ -1,0 +1,880 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ──
+
+    // Is the request from a signed-in user?
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Does the request come from the admin?
+    function isAdmin() {
+      return isAuth() && request.auth.token.email == 'akabiriaslifar@fsm.edu.tr';
+    }
+
+    // Does the requester's user document say role == 'teacher'?
+    function isTeacher() {
+      return isAuth() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
+    }
+
+    // Phase A: teacher AND has at least one class/year/module assigned.
+    // Used on lower-volume collections (activityLogs, assignmentCompletions,
+    // classroom answers) where per-doc denormalization isn't worth the cost.
+    //
+    // NOTE on empty strings: the admin tab's "-- Not Assigned --" dropdown
+    // option writes assignedYear/assignedModule as "" instead of deleting
+    // the field. We treat empty strings as "not set" here so a teacher
+    // who once clicked the dropdown but left it blank isn't treated as
+    // "must match year ''" (which nothing matches).
+    function teacherHasScope() {
+      return isTeacher() && (
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.assignedClasses is list &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.assignedClasses.size() > 0)
+        ||
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.assignedYear is string &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.assignedYear.size() > 0)
+        ||
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.assignedModule is string &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.assignedModule.size() > 0)
+      );
+    }
+
+    // (Phase B `teacherCanReadScope` was removed — Firestore's static
+    // query validator can't prove get()-based per-doc rules for our
+    // scoped queries, so we fall back to client-side filtering via
+    // .where() in config.js with teacherHasScope() at the rule layer.)
+
+    // Is the requester the owner of this document (doc ID == uid)?
+    function isOwner(userId) {
+      return isAuth() && request.auth.uid == userId;
+    }
+
+    // Does the incoming write try to change the role field?
+    function roleUnchanged() {
+      return !('role' in request.resource.data) ||
+        request.resource.data.role == resource.data.role;
+    }
+
+    // Demo users are real Firebase Auth accounts (pre-created by admin
+    // via tools/create-demo-accounts.js) whose user doc carries
+    // role == 'demo'. Anonymous-auth is NOT used. There used to be an
+    // `isDemo()` helper here, but no rule ever called it (demo gating
+    // is done indirectly via `canWriteAsRealUser`, which excludes
+    // anything that isn't admin/teacher/verified). Removed to silence
+    // the linter's "unused function" warning.
+
+    // ── Email-domain authorization ──
+    //
+    // Phase H: domain authorization is now DATA-DRIVEN. The allowed
+    // domains live in `/settings/organizations`:
+    //
+    //   {
+    //     list: [
+    //       { name: 'FSM Staff',    domain: 'fsm.edu.tr',     active: true, teacherEligible: true },
+    //       { name: 'FSM Students', domain: 'stu.fsm.edu.tr', active: true, teacherEligible: false },
+    //       { name: 'Boğaziçi',     domain: 'boun.edu.tr',    active: true, teacherEligible: true }
+    //     ],
+    //     activeDomains:          ['fsm.edu.tr','stu.fsm.edu.tr','boun.edu.tr'],  // denormalized
+    //     teacherEligibleDomains: ['fsm.edu.tr','boun.edu.tr']                    // denormalized
+    //   }
+    //
+    // Only admin can write that doc (existing /settings rule), so a
+    // malicious user CANNOT add their own domain. The doc is public-
+    // read so unauthenticated registration code can pre-check email
+    // validity (advertising "which schools can register" is not a
+    // secret — see the loosened read rule on /settings/{docId}).
+    //
+    // Hardcoded FSM grandfather: we keep matching `@fsm.edu.tr` and
+    // `@stu.fsm.edu.tr` even if the settings doc is missing/empty.
+    // This guarantees the existing FSM deployment never locks out
+    // its users mid-rollout. New deployments should seed the
+    // organizations doc via the admin UI and can later strip this
+    // hardcoded path if desired.
+    //
+    // Defence-in-depth around email parsing:
+    //   • require email_verified for write paths (isVerifiedFsm)
+    //   • lower() before matching so case can't bypass
+    //   • split('@').size() == 2 so multi-`@` payloads are rejected
+    //   • domain matched against the exact `activeDomains` list — NOT
+    //     a regex — so `attacker@fsm.edu.tr.evil.com` can't slip
+    //     through (its parsed domain is `fsm.edu.tr.evil.com`, which
+    //     is not literally in the list).
+    function emailIsFsm() {
+      return isAuth() && request.auth.token.email != null && (
+        // (1) Hardcoded grandfather — original FSM domains.
+        request.auth.token.email.lower().matches('.*@fsm[.]edu[.]tr$') ||
+        request.auth.token.email.lower().matches('.*@stu[.]fsm[.]edu[.]tr$') ||
+        // (2) Dynamic — admin-managed organizations from settings.
+        (
+          exists(/databases/$(database)/documents/settings/organizations) &&
+          request.auth.token.email.lower().split('@').size() == 2 &&
+          request.auth.token.email.lower().split('@')[1] in
+            get(/databases/$(database)/documents/settings/organizations).data.activeDomains
+        )
+      );
+    }
+
+    function isVerifiedFsm() {
+      return isAuth() &&
+        request.auth.token.email_verified == true &&
+        emailIsFsm();
+    }
+
+    // Only domains marked `teacherEligible: true` can host teacher
+    // accounts. The original FSM rule (staff yes, students no) is
+    // preserved via the hardcoded grandfather branch. Admin-added
+    // orgs use the denormalized `teacherEligibleDomains` array.
+    //
+    // Critical for the multi-tenant scenario: a school that buys this
+    // product can mark their staff domain `teacherEligible: true` and
+    // their student domain `teacherEligible: false`, locking students
+    // out of teacher promotion permanently — same separation FSM has.
+    function isTeacherEligibleEmail(email) {
+      return email != null && email.lower().split('@').size() == 2 && (
+        // (1) Hardcoded — FSM staff only (NOT students)
+        (email.lower().matches('.*@fsm[.]edu[.]tr$') &&
+         !email.lower().matches('.*@stu[.]fsm[.]edu[.]tr$')) ||
+        // (2) Dynamic
+        (
+          exists(/databases/$(database)/documents/settings/organizations) &&
+          email.lower().split('@')[1] in
+            get(/databases/$(database)/documents/settings/organizations).data.teacherEligibleDomains
+        )
+      );
+    }
+
+    // Common gate for write-paths that require a real, verified FSM user.
+    // Admin and teacher bypass the email-verification check
+    // (admin is hardcoded; teacher role implies an existing verified account).
+    function canWriteAsRealUser() {
+      return isAdmin() || isTeacher() || isVerifiedFsm();
+    }
+
+    // ── users collection ──
+    match /users/{userId} {
+      // Create allowed for ANY self-owned doc with a FSM email and
+      // role == 'student'. Every fresh registration is a student, even
+      // future teachers — admin promotes them via the update rule below.
+      //
+      // Demo accounts (role == 'demo') are pre-created by admin via the
+      // admin SDK (which bypasses these rules entirely). Clients cannot
+      // create demo docs themselves.
+      allow create: if isOwner(userId) &&
+        emailIsFsm() &&
+        request.resource.data.role == 'student';
+
+      // Users can read their own doc.
+      // Admin reads anything. Teachers read student docs if they have
+      // any scope (assigned class / year / module). Per-doc scope match
+      // is enforced CLIENT-SIDE — Firestore's query validator can't
+      // statically prove a get()-based per-doc rule for our scoped
+      // queries, so we keep this rule simple and rely on the client's
+      // .where() filters in config.js to narrow what each teacher sees.
+      allow read: if isOwner(userId) || isAdmin() || teacherHasScope();
+
+      // Update rules:
+      //   - The user themselves can update most fields on their own doc,
+      //     EXCEPT a set of "identity" fields (studentClass, level, module,
+      //     academicYear, email) which can only transition from null →
+      //     value, not value → another value. This blocks a student from
+      //     re-assigning themselves to a different class/level/module
+      //     after registration — admin must do that via the admin branch.
+      //     The null → value transition preserves the Google "complete
+      //     profile" flow, where the initial doc has these fields blank
+      //     until the user fills out the form.
+      //   - Admin can update any user, BUT:
+      //     (a) role must be one of the known values (no inventing roles),
+      //     (b) promotion to 'teacher' is only allowed when the target
+      //         email is a staff @fsm.edu.tr address (NOT @stu.fsm.edu.tr,
+      //         NOT demo/anonymous). Even admin cannot bypass this rule.
+      allow update: if (
+        isAdmin() &&
+        request.resource.data.role in ['student', 'teacher', 'demo'] &&
+        (
+          request.resource.data.role != 'teacher' ||
+          isTeacherEligibleEmail(request.resource.data.email)
+        )
+      ) || (
+        isOwner(userId) && roleUnchanged() &&
+        // Email is locked once set (null → value still allowed for
+        // Google profile completion).
+        (request.resource.data.get('email', null) == resource.data.get('email', null) ||
+         resource.data.get('email', null) == null) &&
+        // active flag cannot be self-flipped — only the account-gate
+        // helper writes it on yearly expiry, AND only admins should
+        // be able to reactivate. We explicitly require it to stay
+        // unchanged on student self-updates.
+        (request.resource.data.get('active', true) == resource.data.get('active', true)) &&
+        (
+          // ── BRANCH A: identity-field lock (existing behaviour) ──
+          // Same null-OR-unchanged rule as before for class / level /
+          // module / academicYear. The student can update OTHER
+          // fields (avatar, stats, lastLogin, etc.) without touching
+          // these four.
+          (
+            (request.resource.data.get('studentClass', null) == resource.data.get('studentClass', null) ||
+             resource.data.get('studentClass', null) == null) &&
+            (request.resource.data.get('level', null) == resource.data.get('level', null) ||
+             resource.data.get('level', null) == null) &&
+            (request.resource.data.get('module', null) == resource.data.get('module', null) ||
+             resource.data.get('module', null) == null) &&
+            (request.resource.data.get('academicYear', null) == resource.data.get('academicYear', null) ||
+             resource.data.get('academicYear', null) == null)
+          )
+          ||
+          // ── BRANCH B: bi-monthly verification update ──
+          // Allow level / class / module / academicYear to change IF
+          // the same write also bumps lastVerifiedAt AND the new
+          // module is different from the previous one (per the
+          // teacher spec — students must advance to a new module
+          // every 2 months). This binds the field changes to the
+          // verification flow only; arbitrary self-edits via the
+          // legacy path still hit Branch A's lock.
+          (
+            request.resource.data.lastVerifiedAt is timestamp &&
+            request.resource.data.lastVerifiedAt != resource.data.get('lastVerifiedAt', null) &&
+            request.resource.data.module is string &&
+            request.resource.data.module != resource.data.get('module', '')
+          )
+        )
+      );
+
+      // Only admin can delete user docs.
+      allow delete: if isAdmin();
+    }
+
+    // ── sessions collection (progress / scores) ──
+    // Demo users are NEVER allowed to write here — keeps analytics clean.
+    // Defensive bound: percentage clamped to 0..100. NOT bounding the
+    // raw `score` field because in listening/reading exams `score` is
+    // the COUNT of correct answers (can exceed 100 on a long exam) —
+    // only `percentage` is a true 0..100 value. Bound is null-safe so
+    // sessions that don't carry a percentage at all (e.g. legacy /
+    // non-test session types) still pass.
+    match /sessions/{sessionId} {
+      allow create: if canWriteAsRealUser() &&
+        request.resource.data.userId == request.auth.uid &&
+        (request.resource.data.get('percentage', null) == null ||
+         (request.resource.data.get('percentage', null) is number &&
+          request.resource.data.get('percentage', null) >= 0 &&
+          request.resource.data.get('percentage', null) <= 100));
+
+      // Read scope:
+      //   - Student reads own (resource.data.userId == request.auth.uid)
+      //   - Admin reads all
+      //   - Teacher with ANY scope reads sessions. Per-doc filtering
+      //     happens CLIENT-SIDE in config.js scoped queries — see the
+      //     comment on the users read rule above.
+      allow read: if isAuth() && (
+        resource.data.userId == request.auth.uid ||
+        isAdmin() ||
+        teacherHasScope()
+      );
+
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── settings collection ──
+    //
+    // The `organizations` doc is special-cased: it must be readable
+    // BEFORE the user is logged in so the registration page can warn
+    // them that their email domain isn't eligible. Its contents are
+    // non-sensitive — they're effectively advertising material
+    // ("which schools can sign up"). All other settings docs (e.g.
+    // teacher whitelist, feature flags) still require auth to read.
+    //
+    // Writes are admin-only across the board.
+    match /settings/{docId} {
+      allow read: if isAuth() || docId == 'organizations';
+      allow write: if isAdmin();
+    }
+
+    // Policy mini course activation: TEACHERS (not just admin) switch the
+    // course on/off from the dashboard. Additive grant on top of the
+    // general /settings rule above (Firestore allows if ANY match allows).
+    match /settings/policyCourse {
+      allow read: if isAuth();
+      allow write: if isTeacher();
+    }
+
+    // ── courseProgress collection — policy mini course ──
+    // One doc per student: module/final results, restudy + ban state,
+    // certificate. The 2-day test ban is anchored on lastFailAt server
+    // timestamps written here.
+    match /courseProgress/{studentId} {
+      // Students write only their own progress (demo blocked).
+      allow create, update: if canWriteAsRealUser() &&
+        isOwner(studentId) &&
+        request.resource.data.userId == request.auth.uid;
+      // Students read their own; staff read for the completion table.
+      allow read: if isAuth() && (isOwner(studentId) || isAdmin() || teacherHasScope());
+      allow delete: if isAdmin();
+    }
+
+    // ── activityLogs collection ──
+    match /activityLogs/{logId} {
+      // Real users (verified FSM, teacher, admin) can log their own activity.
+      // Demo skipped to keep logs meaningful.
+      allow create: if canWriteAsRealUser() &&
+        request.resource.data.userId == request.auth.uid;
+
+      allow read: if isAdmin() || teacherHasScope();
+
+      allow update, delete: if isAdmin();
+    }
+
+    // ── assignments collection ──
+    // Target validation: the targetType must be one of the four known
+    // scopes. ALL of them are allowed for any teacher, because the
+    // assignment forms (vocab / exam / writing) offer all four
+    // ("Entire Class / Entire Level / Entire Module / Individual") to
+    // every teacher. The previous rule restricted level/module to
+    // admins only — but the UI never honoured that, so a non-admin
+    // teacher who picked "Entire Level" or "Entire Module" had their
+    // write silently REJECTED (assignment looked like it failed to
+    // save). We align the rule with the UI here.
+    //
+    // Trust model: same as the pre-existing 'class' scope — a teacher
+    // self-selects their target; the rule layer doesn't cross-check
+    // against the teacher's assignedClasses/levels/modules (that would
+    // need a get() on the user doc). If you later want level/module
+    // back to admin-only, re-add the `&& (isAdmin() || …)` guard AND
+    // hide those options from non-admins in the three forms.
+    function _validAssignmentTarget(d) {
+      return d.targetType in ['class', 'level', 'module', 'individual'];
+    }
+
+    // Assignment ownership check (used on update + delete).
+    //
+    // Ownership is encoded by the `teacherId` field, which every
+    // assignment form (teacher-assignments.js, exam-form.js,
+    // writing-form.js) already writes at create time. The check is on
+    // `resource.data.teacherId` — the PRIOR-write value — so a
+    // malicious teacher can't "claim" someone else's doc by writing a
+    // different teacherId in the update payload (the rule rejects the
+    // write before the field changes hands).
+    //
+    // Legacy docs without a teacherId (created before this rule was
+    // added) are GRANDFATHERED — anyone with the teacher role can
+    // still edit them, so existing assignments don't suddenly become
+    // un-editable. A future backfill (admin script) can stamp
+    // teacherId onto legacy docs to remove this loophole.
+    function _ownsAssignment() {
+      return isAdmin() ||
+        !('teacherId' in resource.data) ||
+        resource.data.teacherId == request.auth.uid;
+    }
+
+    match /assignments/{assignmentId} {
+      // Create: teacher role + valid target + can only create as
+      // themselves (admin bypasses for backfills / fixes).
+      allow create: if isTeacher() &&
+        _validAssignmentTarget(request.resource.data) &&
+        (isAdmin() || request.resource.data.teacherId == request.auth.uid);
+
+      // Update: teacher role + valid target + MUST own the doc.
+      // Stops Teacher A from editing Teacher B's assignment.
+      allow update: if isTeacher() &&
+        _validAssignmentTarget(request.resource.data) &&
+        _ownsAssignment();
+
+      // Delete: teacher role + MUST own the doc (or be admin).
+      allow delete: if isTeacher() && _ownsAssignment();
+
+      // Any authenticated user (including demo) can read assignments.
+      allow read: if isAuth();
+    }
+
+    // ── assignmentCompletions collection ──
+    // Demo users cannot submit completions; only verified students/teachers/admin.
+    // Defensive bound: bestScore clamped 0..100. Null-safe so the writing
+    // path (writing-exam.js sets `bestScore: null` because the teacher
+    // grades later) still passes. A student can still mark themselves
+    // "completed" for an assignment they didn't actually do (rule layer
+    // can't tell the difference), but they can't claim a bestScore of
+    // 999. Documented compromise — full prevention requires a Cloud
+    // Function that cross-checks against sessions.
+    match /assignmentCompletions/{completionId} {
+      allow create, update: if canWriteAsRealUser() &&
+        completionId.matches(request.auth.uid + '_.*') &&
+        (request.resource.data.get('bestScore', null) == null ||
+         (request.resource.data.get('bestScore', null) is number &&
+          request.resource.data.get('bestScore', null) >= 0 &&
+          request.resource.data.get('bestScore', null) <= 100));
+
+      allow read: if isAuth() && (
+        completionId.matches(request.auth.uid + '_.*') ||
+        isAdmin() ||
+        teacherHasScope()
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    // ── writingSubmissions collection ──
+    // Dedicated home for student writing-exam essays. One doc per
+    // (student, assignment) pair so resubmissions overwrite rather
+    // than pile up. Doc id is `{uid}_{assignmentId}` — same pattern
+    // as assignmentCompletions.
+    //
+    // Lifecycle:
+    //   • Student writes (status: 'submitted') on Submit.
+    //   • Teacher with scope updates (status: 'graded', score, comment).
+    //   • Admin can delete.
+    match /writingSubmissions/{submissionId} {
+      // ── Create rule ──
+      // Initial submission. Doc id MUST match the writer (prevents
+      // writing as another student) AND the userId field must match.
+      // Demo users blocked via canWriteAsRealUser().
+      //
+      // SECURITY HARDENING (Phase E review): the student cannot
+      // self-grade by writing a doc with `score: 20, status: 'graded'`
+      // as the initial state. Initial writes are pinned to:
+      //   status == 'submitted'
+      //   score / teacherComment / gradedBy / gradedAt all == null
+      // The teacher fills those in later via the restricted update
+      // branch below. writing-exam.js already writes exactly these
+      // values, so this is a defensive cap, not a behaviour change.
+      allow create: if canWriteAsRealUser() &&
+        submissionId.matches(request.auth.uid + '_.*') &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.status == 'submitted' &&
+        request.resource.data.score == null &&
+        request.resource.data.teacherComment == null &&
+        request.resource.data.gradedBy == null &&
+        request.resource.data.gradedAt == null;
+
+      // ── Update rule ──
+      // Two branches:
+      //
+      //   (A) Student resubmits their own essay while it's still
+      //       awaiting grading. Two extra rails on top of ownership:
+      //         • The prior doc must still be at status 'submitted'.
+      //           Once the teacher flips it to 'graded' or 'returned',
+      //           the student can no longer overwrite (preserves grade).
+      //         • None of the five grading fields may change on this
+      //           write — `.hasAny([...])` returns true if the student
+      //           tries to touch any of them, and we negate it.
+      //
+      //   (B) Teacher / admin grades the submission. Allowed fields
+      //       are restricted to score / teacherComment / status /
+      //       gradedBy / gradedAt only. The essay text, word count,
+      //       userId, etc. CANNOT be tampered with by a teacher.
+      //       Extra defensive validation: score must be null or a
+      //       number in [0, 20]; status must be a known enum value.
+      allow update: if (
+        // (A) Student self-update. Two sub-cases:
+        //
+        //     (A1) Pre-grading resubmit: prior status is 'submitted',
+        //          and the write doesn't touch any grading field
+        //          (score / teacherComment / status / gradedBy /
+        //          gradedAt / criteria).
+        //
+        //     (A2) Revision after teacher 'returned': prior status is
+        //          'returned', new status is 'submitted', and the
+        //          score/teacherComment/gradedBy/gradedAt/criteria
+        //          values are PRESERVED unchanged. writing-exam.js
+        //          handles this by omitting those fields from the
+        //          set({merge:true}) payload on resubmit, so the
+        //          prior teacher feedback stays attached as context.
+        (canWriteAsRealUser() &&
+         submissionId.matches(request.auth.uid + '_.*') &&
+         request.resource.data.userId == request.auth.uid &&
+         (
+           // (A1) Pre-grading resubmit (students must NOT touch grading
+           //      fields, including teacher inline annotations).
+           (resource.data.status == 'submitted' &&
+            !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['score','teacherComment','status','gradedBy','gradedAt','criteria','annotations']))
+           ||
+           // (A2) Revision after 'returned' — teacher's grading fields
+           //      (incl. inline annotations) must be preserved unchanged.
+           (resource.data.status == 'returned' &&
+            request.resource.data.status == 'submitted' &&
+            request.resource.data.score          == resource.data.score &&
+            request.resource.data.teacherComment == resource.data.teacherComment &&
+            request.resource.data.gradedBy       == resource.data.gradedBy &&
+            request.resource.data.gradedAt       == resource.data.gradedAt &&
+            request.resource.data.get('criteria', null) == resource.data.get('criteria', null) &&
+            request.resource.data.get('annotations', null) == resource.data.get('annotations', null))
+         ))
+        ||
+        // (B) Teacher / admin grading — restricted field set + value
+        //     sanity. teacherHasScope() requires SOME assignment; the
+        //     per-doc class/level/module filter remains client-side.
+        //
+        //     Phase G.6: `criteria` is now in the allowed-fields set.
+        //     Shape: { TA: 0..5, CC: 0..5, GR: 0..5, VO: 0..5 }.
+        //     We allow either an absent/null criteria (legacy single-
+        //     score grading) or a map whose keys are within the known
+        //     set AND whose values are numbers in [0, 5]. The `score`
+        //     total is still validated independently (kept consistent
+        //     by the client: score = sum of criteria when criteria is
+        //     present).
+        ((isAdmin() || teacherHasScope()) &&
+         request.resource.data.diff(resource.data).affectedKeys()
+           .hasOnly(['score','teacherComment','status','gradedBy','gradedAt','criteria','annotations']) &&
+         (request.resource.data.score == null ||
+          (request.resource.data.score is number &&
+           request.resource.data.score >= 0 &&
+           request.resource.data.score <= 20)) &&
+         request.resource.data.status in ['submitted', 'graded', 'returned'] &&
+         (request.resource.data.get('criteria', null) == null ||
+          (request.resource.data.criteria is map &&
+           request.resource.data.criteria.keys().hasOnly(['TA','CC','GR','VO']) &&
+           request.resource.data.criteria.get('TA', 0) is number &&
+           request.resource.data.criteria.get('TA', 0) >= 0 &&
+           request.resource.data.criteria.get('TA', 0) <= 5 &&
+           request.resource.data.criteria.get('CC', 0) is number &&
+           request.resource.data.criteria.get('CC', 0) >= 0 &&
+           request.resource.data.criteria.get('CC', 0) <= 5 &&
+           request.resource.data.criteria.get('GR', 0) is number &&
+           request.resource.data.criteria.get('GR', 0) >= 0 &&
+           request.resource.data.criteria.get('GR', 0) <= 5 &&
+           request.resource.data.criteria.get('VO', 0) is number &&
+           request.resource.data.criteria.get('VO', 0) >= 0 &&
+           request.resource.data.criteria.get('VO', 0) <= 5)))
+      );
+
+      // Read: own submission • admin • any teacher with scope.
+      // (Per-doc class/level/module enforcement is client-side; rules
+      // mirror the relaxed sessions/users posture documented earlier.)
+      allow read: if isAuth() && (
+        submissionId.matches(request.auth.uid + '_.*') ||
+        isAdmin() ||
+        teacherHasScope()
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    // ── classroom_sessions collection ──
+    // Same ownership posture as assignments: any teacher can CREATE,
+    // but only the creator (or admin) can UPDATE / DELETE. The
+    // `createdBy` field is already written by teacher.js at create
+    // time, and the `update()` calls in that file only touch
+    // status/startedAt/endedAt (createdBy is preserved). Legacy
+    // sessions without createdBy are grandfathered.
+    function _ownsClassroomSession() {
+      return isAdmin() ||
+        !('createdBy' in resource.data) ||
+        resource.data.createdBy == request.auth.uid;
+    }
+
+    match /classroom_sessions/{sessionCode} {
+      // Create: any teacher, but they must stamp themselves as creator
+      // (admin bypasses for backfills).
+      allow create: if isTeacher() &&
+        (isAdmin() || request.resource.data.createdBy == request.auth.uid);
+
+      // Update / delete: teacher + ownership.
+      allow update, delete: if isTeacher() && _ownsClassroomSession();
+
+      // Any authenticated user (including demo) can read sessions to join by code.
+      allow read: if isAuth();
+
+      // Players subcollection
+      match /players/{playerId} {
+        // Demo users CAN create their own player doc so they appear in the
+        // roster (lets them experience the classroom feel) — but
+        // answer-writes below are blocked.
+        allow create, update: if isOwner(playerId);
+
+        allow read: if isAuth();
+
+        // Kick player: only the session creator (or admin). Same
+        // ownership check as the parent session.
+        allow delete: if isTeacher() &&
+          (isAdmin() ||
+           !exists(/databases/$(database)/documents/classroom_sessions/$(sessionCode)) ||
+           !('createdBy' in get(/databases/$(database)/documents/classroom_sessions/$(sessionCode)).data) ||
+           get(/databases/$(database)/documents/classroom_sessions/$(sessionCode)).data.createdBy == request.auth.uid);
+
+        // Per-question answers subcollection — demo blocked from writing here.
+        match /answers/{answerId} {
+          allow create, update: if isOwner(playerId) && canWriteAsRealUser();
+
+          // Tightened: a student can only read their own answers; admin
+          // sees everything; teachers see all only if they have scope.
+          allow read: if isAuth() && (isOwner(playerId) || isAdmin() || teacherHasScope());
+        }
+      }
+    }
+
+    // ── heist_sessions collection — "The Heist" classroom game ──
+    //
+    // Architecture: the teacher's browser is the REFEREE (no Cloud
+    // Functions yet). Students submit hack requests; the host's tab
+    // reads /passwords, validates, and updates balances + the hack
+    // doc atomically.
+    //
+    // Trust posture mirrors classroom_sessions, with two extras:
+    //   • /passwords/{uid} is restricted (owner + host can read,
+    //     only owner can write) so vault passwords don't leak.
+    //   • /players/{uid} is writable by owner AND host (so the host
+    //     can transfer coins between attacker + victim).
+    //
+    // Students can join anonymously (signInAnonymously) since they
+    // join via a 4-letter room code physically given by the teacher.
+    function _ownsHeistSession() {
+      return isAdmin() ||
+        !('hostUid' in resource.data) ||
+        resource.data.hostUid == request.auth.uid;
+    }
+    function _isHeistHost(code) {
+      return isAuth() &&
+        exists(/databases/$(database)/documents/heist_sessions/$(code)) &&
+        get(/databases/$(database)/documents/heist_sessions/$(code)).data.hostUid == request.auth.uid;
+    }
+
+    match /heist_sessions/{code} {
+      // Create: teacher role only — students can't host their own
+      // classroom games. Must stamp themselves as host so the
+      // ownership check above can fire on updates.
+      allow create: if isTeacher() &&
+        (isAdmin() || request.resource.data.hostUid == request.auth.uid);
+
+      // Update / delete: host (or admin).
+      allow update, delete: if isTeacher() && _ownsHeistSession();
+
+      // Read: any auth user — so anonymous-joined students can fetch
+      // session metadata (pack name, password choices, status).
+      allow read: if isAuth();
+
+      // ── Players ──
+      // Each student owns their own player doc. The host can also
+      // write to ANY player doc (to transfer coins on hack resolution).
+      match /players/{uid} {
+        allow create, update: if isOwner(uid) || _isHeistHost(code);
+        allow read: if isAuth();
+        allow delete: if _isHeistHost(code);
+      }
+
+      // ── Passwords (restricted) ──
+      // Only the owner can write their password. Read is owner OR host.
+      // Other students CANNOT read passwords — that would let them
+      // skip the Taboo-hint guessing and just look up the answer.
+      match /passwords/{uid} {
+        // Owner sets their initial password; host can also write here
+        // to ROTATE a vault's password after a successful crack, so
+        // attackers can't farm the same vault repeatedly with a
+        // now-known hint. Read stays gated to owner + host (other
+        // students still can't read passwords directly).
+        allow create, update: if isOwner(uid) || _isHeistHost(code);
+        allow read: if isOwner(uid) || _isHeistHost(code);
+        allow delete: if false;
+      }
+
+      // ── Hacks ──
+      // Attackers create a `pending` hack request.
+      // Host updates to `resolved` (with success/feeBurned/amountStolen).
+      // Everyone can read so attacker + victim see resolution toasts.
+      match /hacks/{hackId} {
+        allow create: if isAuth() &&
+          request.resource.data.attackerUid == request.auth.uid &&
+          request.resource.data.status == 'pending';
+        allow update: if _isHeistHost(code);
+        allow read:   if isAuth();
+        allow delete: if _isHeistHost(code);
+      }
+    }
+
+    // ── trust_sessions collection — "Trust No One" classroom game ──
+    //
+    // Same trust-model as heist_sessions: the teacher's browser is
+    // the referee (Phase 2-4 will resolve clues / meetings / votes).
+    // Students can join anonymously; host can write to any player
+    // doc within their session (for role assignment + later vote
+    // resolution + ghost transitions).
+    function _ownsTrustSession() {
+      return isAdmin() ||
+        !('hostUid' in resource.data) ||
+        resource.data.hostUid == request.auth.uid;
+    }
+    function _isTrustHost(code) {
+      return isAuth() &&
+        exists(/databases/$(database)/documents/trust_sessions/$(code)) &&
+        get(/databases/$(database)/documents/trust_sessions/$(code)).data.hostUid == request.auth.uid;
+    }
+
+    match /trust_sessions/{code} {
+      allow create: if isTeacher() &&
+        (isAdmin() || request.resource.data.hostUid == request.auth.uid);
+      allow update, delete: if isTeacher() && _ownsTrustSession();
+      allow read: if isAuth();
+
+      // Players — owner or host can write; everyone can read for the
+      // shared roster + meeting screen.
+      match /players/{uid} {
+        allow create, update: if isOwner(uid) || _isTrustHost(code);
+        allow read: if isAuth();
+        allow delete: if _isTrustHost(code);
+      }
+
+      // Future Phase 2-3 subcollections — declared up-front so the
+      // referee can write to them without an extra rules deploy. All
+      // gated on host or self-ownership where appropriate.
+      match /clues/{clueId} {
+        // Clues are written by the host (real-stat picks) or by
+        // impostors burning their false-clue charge. Read by all.
+        allow create: if isAuth() && (
+          _isTrustHost(code) ||
+          (request.resource.data.attackerUid == request.auth.uid &&
+           request.resource.data.status == 'pending')
+        );
+        allow update, delete: if _isTrustHost(code);
+        allow read: if isAuth();
+      }
+      match /sabotages/{sabId} {
+        allow create: if isAuth() &&
+          request.resource.data.attackerUid == request.auth.uid &&
+          request.resource.data.status == 'pending';
+        allow update, delete: if _isTrustHost(code);
+        allow read: if isAuth();
+      }
+      match /meetings/{meetingId} {
+        // Either the host or a student-with-an-emergency-charge can
+        // create. The button availability is enforced client-side;
+        // server-side we just require an authed user with a 'called_by'
+        // matching their uid OR the host.
+        allow create: if isAuth() && (
+          _isTrustHost(code) ||
+          request.resource.data.calledBy == request.auth.uid
+        );
+        // Host runs the vote resolution.
+        allow update: if _isTrustHost(code);
+        allow read: if isAuth();
+        allow delete: if _isTrustHost(code);
+
+        // Votes: each player writes their own vote doc.
+        match /votes/{voterUid} {
+          allow create, update: if isOwner(voterUid);
+          allow read: if isAuth();
+        }
+      }
+
+      // ── Donations (Phase 4) ──
+      // Ghost-mode coin transfers between same-role teammates.
+      // The donor (auth'd ghost) writes a pending /donations doc with
+      // their own uid stamped as `donorUid`. The host resolves it via
+      // transaction — credit recipient on success, refund donor on
+      // recipient-died-in-flight. Validation of "same role" is
+      // re-checked in the host transaction (rules can't see role
+      // without a get, and the client already enforces it on UI).
+      match /donations/{donId} {
+        allow create: if isAuth() &&
+          request.resource.data.donorUid == request.auth.uid &&
+          request.resource.data.status == 'pending' &&
+          request.resource.data.amount is number &&
+          request.resource.data.amount > 0;
+        allow update, delete: if _isTrustHost(code);
+        allow read: if isAuth();
+      }
+    }
+
+    // ── reading_sessions collection — classroom-mode reading exam ──
+    //
+    // Same trust posture as trust_sessions: the teacher's tab is the
+    // referee. Critically, this collection NEVER stores the answer
+    // key — the host's tab fetches it from the source JSON file and
+    // grades client-side. Students only see questions; they never
+    // get the passage URL or any field that would let them work
+    // backward to the correct answer.
+    //
+    // The student writes their own answers under
+    // /players/{uid}/answers/{questionId}. The host's snapshot listener
+    // scores them in real time but doesn't write back to the answer
+    // doc — scoring is held in session/{uid} aggregate fields.
+    function _ownsReadingSession() {
+      return isAdmin() ||
+        !('hostUid' in resource.data) ||
+        resource.data.hostUid == request.auth.uid;
+    }
+    function _isReadingHost(code) {
+      return isAuth() &&
+        exists(/databases/$(database)/documents/reading_sessions/$(code)) &&
+        get(/databases/$(database)/documents/reading_sessions/$(code)).data.hostUid == request.auth.uid;
+    }
+
+    match /reading_sessions/{code} {
+      allow create: if isTeacher() &&
+        (isAdmin() || request.resource.data.hostUid == request.auth.uid);
+      allow update, delete: if isTeacher() && _ownsReadingSession();
+      // Public-read so anonymously-joined students can fetch session
+      // metadata (status, exam id, time limit, revealedAt). The exam
+      // metadata stored here intentionally OMITS the answer key.
+      allow read: if isAuth();
+
+      // ── Players ──
+      // Each student owns their player doc (name, score, submittedAt).
+      // The host also writes (to stamp `score`, `submittedAtServer`,
+      // and any host-side derived fields after grading).
+      match /players/{uid} {
+        allow create, update: if isOwner(uid) || _isReadingHost(code);
+        allow read: if isAuth();
+        allow delete: if _isReadingHost(code);
+
+        // ── Answers ──
+        // Student writes their per-question picks here. Doc id is the
+        // composite "{sectionId}__{itemId}" so each question has its
+        // own doc and updates are atomic. Host reads to grade; never
+        // writes (would defeat the no-leak design — student's UI
+        // reads its own answers back to render selected state).
+        match /answers/{questionId} {
+          allow create, update: if isOwner(uid);
+          allow read: if isAuth();
+          allow delete: if _isReadingHost(code);
+        }
+      }
+    }
+
+    // ── listening_sessions collection — classroom-mode listening exam ──
+    //
+    // Same architectural posture as reading_sessions: host's tab is the
+    // referee, audio URL is NEVER written to Firestore (host pulls it
+    // from the EXAM_REGISTRY), questionsManifest is the student-safe
+    // shape with all answers stripped. The host additionally writes
+    // `audioStatus`, `activeQuestionKey`, and `replayCount` to the
+    // session as the audio plays, so students' tabs can render a
+    // Q-marker highlight + "replays used" hint.
+    function _ownsListeningSession() {
+      return isAdmin() ||
+        !('hostUid' in resource.data) ||
+        resource.data.hostUid == request.auth.uid;
+    }
+    function _isListeningHost(code) {
+      return isAuth() &&
+        exists(/databases/$(database)/documents/listening_sessions/$(code)) &&
+        get(/databases/$(database)/documents/listening_sessions/$(code)).data.hostUid == request.auth.uid;
+    }
+
+    match /listening_sessions/{code} {
+      allow create: if isTeacher() &&
+        (isAdmin() || request.resource.data.hostUid == request.auth.uid);
+      allow update, delete: if isTeacher() && _ownsListeningSession();
+      allow read: if isAuth();
+
+      match /players/{uid} {
+        allow create, update: if isOwner(uid) || _isListeningHost(code);
+        allow read: if isAuth();
+        allow delete: if _isListeningHost(code);
+
+        match /answers/{questionId} {
+          allow create, update: if isOwner(uid);
+          allow read: if isAuth();
+          allow delete: if _isListeningHost(code);
+        }
+      }
+    }
+
+    // ── Deny everything else ──
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

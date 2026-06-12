@@ -1,0 +1,159 @@
+{
+  "id": "a1-r1",
+  "level": "A1",
+  "title": "A1 Reading 1 — A Television Presenter",
+  "subtitle": "One passage · Gaps, short-answer",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "A Television Presenter",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Raina Ali is a successful TV presenter at Dubai TV. She prepares and presents \"24 Hours in a City\". She lives with her son Ryan, aged 7. <span class=\"rd-gap\" data-gap=\"1\"></span> <strong>They</strong> live in a flat in Al Satwa, Dubai.</p><p class=\"rd-para\" data-para=\"2\">Her working day starts very early. From Monday to Friday she gets up at half past three. After she has a shower, she drinks a cup of coffee. She usually leaves home at ten past four because the service bus always arrives a few minutes early. <span class=\"rd-gap\" data-gap=\"2\"></span> She gets to the studio at about five o'clock and starts work. Then she leaves the studio at a quarter past ten. After that, she gets home at two o'clock. She comes home very tired, so a woman helps <strong>her</strong> with the housework and the ironing.</p><p class=\"rd-para\" data-para=\"3\">At 5.30 she goes to pick up Ryan from school. They go shopping. <span class=\"rd-gap\" data-gap=\"3\"></span> In the evening, she cooks dinner and helps Ryan with his homework. After dinner, she reads the newspaper or answers e-mails until 9.00. She goes to bed at ten o'clock because she feels very tired. At weekends she doesn't get up until ten o'clock. On Saturday she tries to spare some time for her son because she's very busy during the weekdays. <span class=\"rd-gap\" data-gap=\"4\"></span> They usually spend time shopping or going to the cinema. On Sunday she stays at home and watches TV with Ryan. \"My life is difficult but I love <strong>it</strong>,\" she says.</p>",
+      "sections": [
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part A",
+          "instructions": "Match the sentences (a-f) with the gaps (1-4). There are two extra sentences.",
+          "options": [
+            {
+              "id": "a",
+              "text": "Ryan likes playing at the playground while his mom is buying grocery."
+            },
+            {
+              "id": "b",
+              "text": "She doesn't drive to work because this way it is much cheaper."
+            },
+            {
+              "id": "c",
+              "text": "Raina prefers to surprise Ryan with gifts after school."
+            },
+            {
+              "id": "d",
+              "text": "Ryan is a 4th grade student this year."
+            },
+            {
+              "id": "e",
+              "text": "She makes fun plans for every Saturday and Sunday."
+            },
+            {
+              "id": "f",
+              "text": "Raina's favourite activity is doing pilates with her best friends."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "d"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "b"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "a"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "e"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part B",
+          "instructions": "Complete these sentences using so and because using the information in the text.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "The service bus arrives a few minutes early, so __________.",
+              "answer": "she leaves home at 4.10"
+            },
+            {
+              "id": "sa2",
+              "definition": "A woman helps her with the housework and the ironing because __________.",
+              "answer": "she comes home very tired"
+            },
+            {
+              "id": "sa3",
+              "definition": "She feels very tired at night, so __________.",
+              "answer": "she goes to bed at 10 o'clock"
+            },
+            {
+              "id": "sa4",
+              "definition": "She spares some time for Ryan at the weekend because __________.",
+              "answer": "she's very busy during the weekdays"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer2",
+          "type": "find-word",
+          "label": "Part C",
+          "instructions": "Answer the following questions according to the information given in the text.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "What time does she leave the studio?",
+              "answer": "at a quarter past ten"
+            },
+            {
+              "id": "sa2",
+              "definition": "When does she help Ryan with his homework?",
+              "answer": "in the evening"
+            },
+            {
+              "id": "sa3",
+              "definition": "What does she do before she goes to bed?",
+              "answer": "reads the newspaper and answers e-mails"
+            },
+            {
+              "id": "sa4",
+              "definition": "What do they usually do on Saturday?",
+              "answer": "go shopping or go to the cinema"
+            },
+            {
+              "id": "sa5",
+              "definition": "What does she think about her life?",
+              "answer": "It is difficult, but she loves it."
+            }
+          ]
+        },
+        {
+          "id": "shortanswer3",
+          "type": "find-word",
+          "label": "Part D",
+          "instructions": "Write what the following words in the text refer to.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"they\" in paragraph 1 refers to __________",
+              "answer": "Raina and her son"
+            },
+            {
+              "id": "sa2",
+              "definition": "\"her\" in paragraph 2 refers to __________",
+              "answer": "Raina"
+            },
+            {
+              "id": "sa3",
+              "definition": "\"it\" in paragraph 3 refers to __________",
+              "answer": "my life",
+              "acceptable": [
+                "my life",
+                "her life"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

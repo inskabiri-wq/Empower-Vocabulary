@@ -1,0 +1,264 @@
+{
+  "id": "a2-r11",
+  "level": "A2",
+  "title": "A2 Reading 11 — Slow Food (Scanning)",
+  "subtitle": "One passage · Short-answer scanning, T/F, vocabulary, reference",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Slow Food",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Italians know and love good food. It's at the heart of their culture. They don't like to rush through meals, either. So, many of them think that fast food is a terrible idea.</p><p class=\"rd-para\" data-para=\"2\">In 1986, something happened in Italy. An American fast food restaurant — a McDonald's — opened in Rome. Many Italians were surprised and angry. They thought, \"This is an <strong>attack</strong> on Italian culture!\" One man, Carlo Petrini, decided to fight back. \"Fast food is the <strong>enemy</strong>,\" he said. In 1989, Petrini started a group called Slow Food. Today, about 70,000 people belong to the group. They live in forty-five countries around the world. More people join every day.</p><p class=\"rd-para\" data-para=\"3\">The <strong>members</strong> of Slow Food have many ideas in common. There are a lot of problems with food today, <strong>they</strong> say. Fast food is one of them. For one thing, it's not healthy food. Also, it's the same everywhere. \"That's boring,\" they say. They want to keep traditional cooking with all its variety.</p><p class=\"rd-para\" data-para=\"4\">Slow Food members worry about a second problem, too. Some types of plants and animals are getting to be very rare. They include, <strong>for instance</strong>, a kind of tree in Morocco, a special type of Austrian cow, and wild rice in the United States. The world is in danger of losing <strong>them</strong> completely. Slow Food doesn't want to let them disappear, so they're working with farmers to keep them <strong>alive</strong>.</p><p class=\"rd-para\" data-para=\"5\">There's a third problem. Big companies produce much of our food today. They sell their products in many places, so they want products that can travel well. Big growers want the kinds of fruit and vegetables that look good after a long trip. But how do their apples, lettuce, and tomatoes taste? That's less important to them. So now we have more trouble finding good-tasting food.</p><p class=\"rd-para\" data-para=\"6\">Today, it's common to eat foods from far away. Food travels an average distance of 1,300 miles to reach dinner tables in the United States. In the past, people got their food from farms and factories in their local area. Slow Food members say, \"People should buy more local food. It's fresh, and it's part of our culture.\" One American, Gary Nabhan, decided to try <strong>this</strong>. For one year, all his food came from plants and animals near his home in Arizona. One local animal is the rattlesnake. Nabhan ate that, too! In his book Coming Home to Eat, he says it tastes just like chicken.</p><p class=\"rd-para\" data-para=\"7\">Fast food is reaching more and more parts of the world. But Slow Food is getting its message to more and more people, too.</p>",
+      "sections": [
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part A (scanning)",
+          "instructions": "Scan the reading and write short answers to the questions.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "How do Italians feel about good food?",
+              "answer": "it is at the heart of their culture",
+              "acceptable": [
+                "it is at the heart of their culture",
+                "they love good food",
+                "they think it is at the heart of their culture"
+              ]
+            },
+            {
+              "id": "sa2",
+              "definition": "What happened in Rome in 1986?",
+              "answer": "a McDonald's opened",
+              "acceptable": [
+                "a McDonald's opened",
+                "a McDonald's opened in Rome",
+                "an American fast food restaurant opened in Rome"
+              ]
+            },
+            {
+              "id": "sa3",
+              "definition": "Who is Carlo Petrini?",
+              "answer": "he started Slow Food",
+              "acceptable": [
+                "he started Slow Food",
+                "the man who started a group called Slow Food",
+                "he started a group called Slow Food to fight back fast food"
+              ]
+            },
+            {
+              "id": "sa4",
+              "definition": "What do Slow Food members think about fast food?",
+              "answer": "they think it is unhealthy and boring",
+              "acceptable": [
+                "they think it is unhealthy and boring",
+                "they want to keep traditional cooking",
+                "fast food is the enemy"
+              ]
+            },
+            {
+              "id": "sa5",
+              "definition": "What's in danger of disappearing?",
+              "answer": "some types of plants and animals",
+              "acceptable": [
+                "some types of plants and animals",
+                "rare plants and animals"
+              ]
+            },
+            {
+              "id": "sa6",
+              "definition": "How far does food travel on average in the United States?",
+              "answer": "1,300 miles",
+              "acceptable": [
+                "1,300 miles",
+                "an average distance of 1,300 miles"
+              ]
+            },
+            {
+              "id": "sa7",
+              "definition": "Who is Gary Nabhan?",
+              "answer": "an American who ate only local food for one year",
+              "acceptable": [
+                "an American who ate only local food for one year",
+                "a man who only ate food from near his home in Arizona for one year"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Circle True or False for each sentence.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Good food is an important part of Italian culture.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m2",
+              "question": "The group Slow Food started after a McDonald's opened in Rome.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m3",
+              "question": "Slow Food members say fast food is boring and bad for you.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m4",
+              "question": "Slow Food members want everyone to eat Italian food.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m5",
+              "question": "Slow Food says there are too many types of food in the world.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m6",
+              "question": "Foods from big food companies usually travel long distances.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer2",
+          "type": "find-word",
+          "label": "Part C (vocabulary)",
+          "instructions": "Find the right word or phrase in the passage for each definition.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "(paragraph 2) a use of force to hurt someone or something:",
+              "answer": "attack"
+            },
+            {
+              "id": "sa2",
+              "definition": "(paragraph 2) someone you are fighting in a war; the opposite of friend:",
+              "answer": "enemy"
+            },
+            {
+              "id": "sa3",
+              "definition": "(paragraph 3) people who belong to a group, club, or organization:",
+              "answer": "members",
+              "acceptable": [
+                "members",
+                "member"
+              ]
+            },
+            {
+              "id": "sa4",
+              "definition": "(paragraph 4) for example:",
+              "answer": "for instance"
+            },
+            {
+              "id": "sa5",
+              "definition": "(paragraph 4) living, continuing to be or exist:",
+              "answer": "alive"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer3",
+          "type": "find-word",
+          "label": "Part D (reference)",
+          "instructions": "Find what these words refer to.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"they\" (paragraph 2):",
+              "answer": "Slow Food members",
+              "acceptable": [
+                "Slow Food members",
+                "the members of Slow Food"
+              ]
+            },
+            {
+              "id": "sa2",
+              "definition": "\"them\" (paragraph 4):",
+              "answer": "some types of plants and animals",
+              "acceptable": [
+                "some types of plants and animals",
+                "plants and animals",
+                "rare plants and animals"
+              ]
+            },
+            {
+              "id": "sa3",
+              "definition": "\"this\" (paragraph 6):",
+              "answer": "buying more local food",
+              "acceptable": [
+                "buying more local food",
+                "the act of buying more local food",
+                "eating local food"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

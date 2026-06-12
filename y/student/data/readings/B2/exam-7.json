@@ -1,0 +1,284 @@
+{
+  "id": "b2-r7",
+  "level": "B2",
+  "title": "B2 Reading 7 — What does it take to be successful?",
+  "subtitle": "One passage · Headings, MCQ, reference, fill-in, writing",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "What does it take to be successful?",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Many books have been written about the secrets of success. But what special qualities do successful people have in common?</p><p class=\"rd-para\" data-para=\"2\"><strong>1. VISION</strong></p><p class=\"rd-para\" data-para=\"3\">Successful people visualise what they want. They have a picture in their mind of what their business will be like when they achieve their goals. <strong>This</strong> allows them to make decisions that support their vision.</p><p class=\"rd-para\" data-para=\"4\">Bill Gates' vision was to \"put a computer on every desktop and in every home.\" At the time he was developing his first models, computers were very large, expensive, and mainly used in offices and factories. Most people couldn't see what Gates saw: that computers could have a value for personal uses. Today, most of us can't imagine life without a computer, and Microsoft has grown into a multi-billion-dollar company.</p><p class=\"rd-para\" data-para=\"5\">A talented programmer, Mark Zuckerberg had a vision for connecting people online. He was so convinced of his vision he even dropped out of college to develop <strong>it</strong>. In just a few years, Facebook became the most popular social networking site in the world.</p><p class=\"rd-para\" data-para=\"6\"><strong>2. PERSISTENCE</strong></p><p class=\"rd-para\" data-para=\"7\">Success doesn't come easily. Successful people are disciplined and persevere through failure. A key benefit of failure is to learn from your mistakes. You won't find one successful person who hasn't experienced any <strong>setbacks</strong>.</p><p class=\"rd-para\" data-para=\"8\">Oprah Winfrey is one of the world's most successful women in television, but she was once fired from her job as a television reporter. Most people wouldn't believe that the best basketball player of all time was cut from his high school team. Michael Jordan says, \"I have missed more than 9,000 shots in my career. I have lost almost 300 games. ... I have failed over and over again in my life. And that is why I succeeded.\"</p><p class=\"rd-para\" data-para=\"9\"><strong>3. CREATIVITY</strong></p><p class=\"rd-para\" data-para=\"10\">Where other people see problems and limitations, successful people see possibilities and opportunities. When Akio Morita, the co-founder of Sony, developed a tape recorder he had great difficulty in selling <strong>it</strong> because people could not see a use for it. After observing people in their daily lives he realised people spent hours travelling and walking and so he adapted his design to become the world famous walkman.</p><p class=\"rd-para\" data-para=\"11\">When the web took off in the mid-1990s, computer programmer Pierre Omidyar worried that big businesses would be a barrier to individual commerce. He saw the potential of the Internet to connect people around the world instantly. So Omidyar created eBay, a hugely successful online market where individuals compete with big companies.</p><p class=\"rd-para\" data-para=\"12\"><strong>4. PASSION</strong></p><p class=\"rd-para\" data-para=\"13\">Successful people love what they do. Celebrity designer Jean-Paul Gaultier had no formal training in design, but loved creating clothing and at a young age began sending <strong>his</strong> drawings to famous French designers. One of these designers recognised his talent and hired him as an assistant. Later, he launched his own line of clothing, and quickly became a global success.</p><p class=\"rd-para\" data-para=\"14\">Arguably all successful people have a mixture of vision, persistence, creativity and passion, and one particular example is the director Steven Spielberg. From the age of eight he was making movies on a home video camera and he won awards while he was still in school. However, his poor school grades made it difficult for him to get accepted to a top college, and eventually he dropped out of college altogether, sidetracked by his passion for film making. Every day he would sneak out into a Universal Studios location trying to make contacts and get known, and he was frequently thrown out. Eventually, his talents led him to becoming one of the most successful directors in movie history.</p><p class=\"rd-para\" data-para=\"15\">Talented individuals do not necessarily make successful ones since talent alone is not enough. However, talent combined with passion, vision, persistence and creativity is a <strong>potent</strong> force for success.</p>",
+      "sections": [
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part A",
+          "instructions": "Match the main ideas (A-D) to the sections (1-4) of the text.",
+          "options": [
+            {
+              "id": "A",
+              "text": "Hard work and never giving up are a key to success."
+            },
+            {
+              "id": "B",
+              "text": "To be successful it's important to love what you do."
+            },
+            {
+              "id": "C",
+              "text": "Successful people can see what they want to achieve."
+            },
+            {
+              "id": "D",
+              "text": "Successful people use their imagination to see opportunities."
+            }
+          ],
+          "items": [
+            {
+              "id": "p1",
+              "label": "1. VISION",
+              "answer": "C"
+            },
+            {
+              "id": "p2",
+              "label": "2. PERSISTENCE",
+              "answer": "A"
+            },
+            {
+              "id": "p3",
+              "label": "3. CREATIVITY",
+              "answer": "D"
+            },
+            {
+              "id": "p4",
+              "label": "4. PASSION",
+              "answer": "B"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Circle the best choice according to the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Visionary people _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "recognise the potential of an idea before others"
+                },
+                {
+                  "id": "b",
+                  "text": "tend to be successful in the field of technology"
+                },
+                {
+                  "id": "c",
+                  "text": "are able to visualise a picture before taking it"
+                },
+                {
+                  "id": "d",
+                  "text": "have a miraculous gift of predicting the future"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m2",
+              "question": "Michael Jordan refers to his failures (missing more than 9,000 shots and losing almost 300 games) to show _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "that he learned from his failures"
+                },
+                {
+                  "id": "b",
+                  "text": "why he was cut from his high school team"
+                },
+                {
+                  "id": "c",
+                  "text": "how experienced he is in failing"
+                },
+                {
+                  "id": "d",
+                  "text": "that he is the best basketball player of all time"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m3",
+              "question": "Pierre Omidyar was concerned that _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "individual commerce would not meet the demand"
+                },
+                {
+                  "id": "b",
+                  "text": "big businesses would dominate the web"
+                },
+                {
+                  "id": "c",
+                  "text": "competition among individuals would be huge"
+                },
+                {
+                  "id": "d",
+                  "text": "big businesses would lose revenue because of the competition"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "Whose first invention was not widely used by people?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Bill Gates'"
+                },
+                {
+                  "id": "b",
+                  "text": "Mark Zuckerberg's"
+                },
+                {
+                  "id": "c",
+                  "text": "Akio Morita's"
+                },
+                {
+                  "id": "d",
+                  "text": "Pierre Omidyar's"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m5",
+              "question": "Which of the following is FALSE about Steven Spielberg?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "He started making movies at an early age."
+                },
+                {
+                  "id": "b",
+                  "text": "He was kicked out of college because of his poor grades."
+                },
+                {
+                  "id": "c",
+                  "text": "His attempts to be known were rejected several times, but he did not give up."
+                },
+                {
+                  "id": "d",
+                  "text": "Even with a home video camera, he was able to get prizes when he was a student."
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "vocab",
+          "type": "mcq",
+          "label": "Part B (vocabulary)",
+          "instructions": "Choose the closest meaning.",
+          "items": [
+            {
+              "id": "v1",
+              "question": "In paragraph 5, \"setback\" probably means:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "emergency"
+                },
+                {
+                  "id": "b",
+                  "text": "delay"
+                },
+                {
+                  "id": "c",
+                  "text": "help"
+                },
+                {
+                  "id": "d",
+                  "text": "defeat"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "v2",
+              "question": "In paragraph 11, \"potent\" probably means:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "changing"
+                },
+                {
+                  "id": "b",
+                  "text": "suitable"
+                },
+                {
+                  "id": "c",
+                  "text": "persuasive"
+                },
+                {
+                  "id": "d",
+                  "text": "powerful"
+                }
+              ],
+              "answer": "d"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part C",
+          "instructions": "What do the following words refer to? They are bold and underlined in the text.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"This\" (paragraph 2):",
+              "answer": "having a picture in their mind (of what their business will be like when they achieve their goals)"
+            },
+            {
+              "id": "sa2",
+              "definition": "\"it\" (paragraph 4):",
+              "answer": "his vision for connecting people online"
+            },
+            {
+              "id": "sa3",
+              "definition": "\"it\" (paragraph 7):",
+              "answer": "tape recorder"
+            },
+            {
+              "id": "sa4",
+              "definition": "\"his\" (paragraph 9):",
+              "answer": "Jean-Paul Gaultier's"
+            }
+          ]
+        },
+        {
+          "id": "writing",
+          "type": "writing",
+          "label": "Part D (vocabulary in context)",
+          "instructions": "Find a word or phrase in the text that means the following.",
+          "prompt": "1. \"to try to do or continue doing something in a determined way, despite having problems\" (paragraph 5)",
+          "minWords": 5
+        },
+        {
+          "id": "writing2",
+          "type": "writing",
+          "label": "Part E",
+          "instructions": "Answer the following question in your own words (min. 50 words).",
+          "prompt": "Which quality (vision, persistence, creativity or passion) is the most important factor in success? Why?",
+          "minWords": 50
+        }
+      ]
+    }
+  ]
+}

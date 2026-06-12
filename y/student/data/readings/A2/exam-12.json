@@ -1,0 +1,322 @@
+{
+  "id": "a2-r12",
+  "level": "A2",
+  "title": "A2 Reading 12 — Hidden Talents",
+  "subtitle": "One passage · Headings, sentence-insert, MCQ, vocab",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Hidden Talents",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">They often didn't learn to read and write until they were older. Their parents often thought they were stupid and their friends laughed at them. Some of them hated their schooldays and decided to <strong>drop out</strong> of school as soon as possible. In short, they had unhappy school days.</p><p class=\"rd-para\" data-para=\"2\">Some of the world's greatest composers, writers and inventors had an unpleasant time at school like this. <span class=\"rd-gap\" data-gap=\"1\"></span> Were these people stupid? No, of course not! Some people believe that they had something in common — dyslexia.</p><p class=\"rd-para\" data-para=\"3\">Dyslexia is a learning disability which means that people have problems with reading and remembering written words. <span class=\"rd-gap\" data-gap=\"2\"></span> Studies show that people with dyslexia use a different part of their brain to read and remember. Experts think that the cause of dyslexia is genetic: probably somebody else in the family also had dyslexia. Statistically, about 15 percent of people are dyslexic, but not everybody who has dyslexia knows about it.</p><p class=\"rd-para\" data-para=\"4\">Some people with dyslexia discover they have special, hidden talents, but only when they are older. A good example is Agatha Christie, one of the most successful writers in history — two billion books published in 44 languages! At school she had problems with writing and often got bad <strong>marks</strong> for essays. Her parents were <strong>disappointed</strong> and wanted Agatha to leave school early. <span class=\"rd-gap\" data-gap=\"3\"></span> And even when she was already a famous crime writer, she sometimes felt embarrassed because she still couldn't spell.</p><p class=\"rd-para\" data-para=\"5\">There are many more examples of people like Agatha Christie: Hans Christian Andersen, Albert Einstein, Leonardo da Vinci, Pablo Picasso and Thomas Edison; <span class=\"rd-gap\" data-gap=\"4\"></span> Of course, that doesn't mean that everybody with dyslexia is a genius, but it shows that sometimes people can be a lot more intelligent than they seem.</p>",
+      "sections": [
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part A (pre-reading)",
+          "instructions": "Read the first paragraph. What do you think the text is about?",
+          "items": [
+            {
+              "id": "m1",
+              "question": "The text is about:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Stupid children and their families"
+                },
+                {
+                  "id": "b",
+                  "text": "People who had problems at home and at school"
+                },
+                {
+                  "id": "c",
+                  "text": "The effects of bad education on children"
+                },
+                {
+                  "id": "d",
+                  "text": "People who became successful after they finished school"
+                }
+              ],
+              "answer": "d"
+            }
+          ]
+        },
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part B",
+          "instructions": "Match the headings with the paragraphs. There is ONE extra heading.",
+          "options": [
+            {
+              "id": "A",
+              "text": "What's dyslexia?"
+            },
+            {
+              "id": "B",
+              "text": "Typical problems for children with dyslexia at school"
+            },
+            {
+              "id": "C",
+              "text": "How to help people with dyslexia"
+            },
+            {
+              "id": "D",
+              "text": "What some talented people had in common"
+            },
+            {
+              "id": "E",
+              "text": "Other famous people who had dyslexia"
+            },
+            {
+              "id": "F",
+              "text": "A person who had hidden talents"
+            }
+          ],
+          "items": [
+            {
+              "id": "p1",
+              "label": "Paragraph 1",
+              "answer": "B"
+            },
+            {
+              "id": "p2",
+              "label": "Paragraph 2",
+              "answer": "D"
+            },
+            {
+              "id": "p3",
+              "label": "Paragraph 3",
+              "answer": "A"
+            },
+            {
+              "id": "p4",
+              "label": "Paragraph 4",
+              "answer": "F"
+            },
+            {
+              "id": "p5",
+              "label": "Paragraph 5",
+              "answer": "E"
+            }
+          ]
+        },
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part C",
+          "instructions": "Read the text and complete the gaps with the correct sentences.",
+          "options": [
+            {
+              "id": "a",
+              "text": "important and creative people who had problems with reading and writing when they were young."
+            },
+            {
+              "id": "b",
+              "text": "It is often difficult for them to memorize things."
+            },
+            {
+              "id": "c",
+              "text": "Later, when they became successful, nobody was more surprised than their old classmates."
+            },
+            {
+              "id": "d",
+              "text": "She only started writing because her older sister said she couldn't do it!"
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "c"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "b"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "d"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part D",
+          "instructions": "Circle the correct answer.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "The children in paragraph 1 __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "had a difficult time at school"
+                },
+                {
+                  "id": "b",
+                  "text": "had classmates who were stupid"
+                },
+                {
+                  "id": "c",
+                  "text": "hated their friends because they laughed at them"
+                },
+                {
+                  "id": "d",
+                  "text": "had difficulty communicating with their parents"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m2",
+              "question": "Some famous writers, composers and inventors __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "were not very intelligent"
+                },
+                {
+                  "id": "b",
+                  "text": "were surprised when they became successful"
+                },
+                {
+                  "id": "c",
+                  "text": "had similar problems when they were children"
+                },
+                {
+                  "id": "d",
+                  "text": "became very successful at school"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "Which of the following is FALSE about dyslexia?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "People who are dyslexic were probably born with this disability."
+                },
+                {
+                  "id": "b",
+                  "text": "Some dyslexic people have never known about it."
+                },
+                {
+                  "id": "c",
+                  "text": "Dyslexic people can't read and remember anything."
+                },
+                {
+                  "id": "d",
+                  "text": "Dyslexic people have trouble learning to read and write."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m4",
+              "question": "Agatha Christie started writing because __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "her teacher and parents wanted her to"
+                },
+                {
+                  "id": "b",
+                  "text": "she wanted to show her sister that she could write"
+                },
+                {
+                  "id": "c",
+                  "text": "she wanted to leave school early"
+                },
+                {
+                  "id": "d",
+                  "text": "she didn't want to disappoint her parents"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m5",
+              "question": "The people mentioned in the last paragraph __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "were not all geniuses."
+                },
+                {
+                  "id": "b",
+                  "text": "were crime writers like Agatha Christie."
+                },
+                {
+                  "id": "c",
+                  "text": "are well-known people who had dyslexia."
+                },
+                {
+                  "id": "d",
+                  "text": "seemed more intelligent than they actually were."
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part E (vocabulary)",
+          "instructions": "Match the definitions with the words and phrases in the text.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "(v) [paragraph 1] stop going to school / university:",
+              "answer": "drop out"
+            },
+            {
+              "id": "sa2",
+              "definition": "(n) [paragraph 2] pupils in the same class at school:",
+              "answer": "classmates"
+            },
+            {
+              "id": "sa3",
+              "definition": "(v) [paragraph 3] learn by heart:",
+              "answer": "memorize",
+              "acceptable": [
+                "memorize",
+                "memorise"
+              ]
+            },
+            {
+              "id": "sa4",
+              "definition": "(n) [paragraph 4] a score which shows how good a piece of work is:",
+              "answer": "mark",
+              "acceptable": [
+                "mark",
+                "marks"
+              ]
+            },
+            {
+              "id": "sa5",
+              "definition": "(adj) [paragraph 4] unhappy because of poor results:",
+              "answer": "disappointed"
+            },
+            {
+              "id": "sa6",
+              "definition": "(adj) [paragraph 5] good at using your imagination:",
+              "answer": "creative"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

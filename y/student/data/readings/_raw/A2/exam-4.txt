@@ -1,0 +1,139 @@
+ID: a2-r4
+LEVEL: A2
+TITLE: A2 Reading 4 — Types of Families
+SUBTITLE: One passage · Sentence-insert, matching, MCQ
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Types of Families
+
+PASSAGE:
+A family is a group of people that have a common ancestor. They usually live together in the same house. Although it is a fact that not all families are the same, we can categorize them into different types.
+
+{gap:1} It consists of parents and their children living together. It can be a positive environment to raise children if there is love, emotional support, low stress, and a stable economic environment. There are three types of nuclear families. In the first type the father works and the mother cares for the children. {gap:2} In the third type of family, both parents work. This last type of family is the most common in the USA and Canada.
+
+In an extended family, different family members such as grandparents, aunts, uncles and cousins live together. {gap:3} The extended family may live together for financial reasons. When more adults live together, they can all contribute to the household budget. Also, when people get old or sick, they sometimes live with their adult children or relatives. {gap:4} Some people return to their parents' home after they break up because they need emotional support and help with child care.
+
+Recently, many people are having children later in life. They only have one child because they don't have enough time to have another one. These types of families are called single child families. {gap:5} But research doesn't support this. Some families have no children at all. The couples that are in these families choose not to have children because they want to have more free time. Other couples choose not to have children for financial reasons.
+
+Families with only one parent are called single parent families. There are several causes of these types of families. The first reason is divorce. {gap:6} Additionally, some parents never get married in the first place.
+
+When the husband or wife in a marriage brings children with them from a past marriage, this is called a blended or reconstituted family. This type of family is now more common because of the increase in divorces. For some children this kind of family can be good because there are two parents, instead of just one. {gap:7}
+
+As the basis of all societies, families of all types are very important. This is true now and will be true in the future as well.
+
+# GAPS
+LABEL: Part A
+INSTRUCTIONS: Read the article and complete the gaps with the correct sentence below. There is ONE extra sentence.
+a: In many countries in Europe and North America, a nuclear family is the most common form of family.
+b: In the second type, the mother works and the father stays at home with the children.
+c: In many areas of the world, such as Asia, the Middle East, Africa, Latin America, and Southern Europe, this type of family is common.
+d: Another reason is divorce.
+e: Some people believe that children raised in these kinds of families are spoiled, selfish and lonely.
+f: Another reason is that one of the parents dies, and the surviving parent becomes a widow.
+g: But there can also be some difficulties as the two new families try to become one.
+h: It is not always easy to categorize families due to certain reasons.
+ANSWERS: 1=a, 2=b, 3=c, 4=d, 5=e, 6=f, 7=g
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Match each description of a family with a type of family.
+1. Nuclear family:
+   a) Two years ago, Darrel and Tanya got married. Before they got married Darrel had three sons and Tanya had a daughter. Now they all live together.
+   b) Hiroshi's wife died several years ago of cancer. He now raises his two sons Tomo and Taiki by himself.
+   c) Jose and Maria live with their 3 children. They also live with their parents, an uncle and an aunt.
+   d) Harry and his wife Jane have been married for six years. They have one daughter named Melissa.
+   e) Husband and wife Dalee and Meegung have been married for two years. They are both very successful business people and don't have any children.
+   f) Jack and Betty, who have been married for over 15 years, have two children named Daniel and Christine.
+   ANSWER: f
+2. Extended family:
+   a) Two years ago, Darrel and Tanya got married. Before they got married Darrel had three sons and Tanya had a daughter. Now they all live together.
+   b) Hiroshi's wife died several years ago of cancer. He now raises his two sons Tomo and Taiki by himself.
+   c) Jose and Maria live with their 3 children. They also live with their parents, an uncle and an aunt.
+   d) Harry and his wife Jane have been married for six years. They have one daughter named Melissa.
+   e) Husband and wife Dalee and Meegung have been married for two years. They are both very successful business people and don't have any children.
+   f) Jack and Betty, who have been married for over 15 years, have two children named Daniel and Christine.
+   ANSWER: c
+3. Single child family:
+   a) Two years ago, Darrel and Tanya got married. Before they got married Darrel had three sons and Tanya had a daughter. Now they all live together.
+   b) Hiroshi's wife died several years ago of cancer. He now raises his two sons Tomo and Taiki by himself.
+   c) Jose and Maria live with their 3 children. They also live with their parents, an uncle and an aunt.
+   d) Harry and his wife Jane have been married for six years. They have one daughter named Melissa.
+   e) Husband and wife Dalee and Meegung have been married for two years. They are both very successful business people and don't have any children.
+   f) Jack and Betty, who have been married for over 15 years, have two children named Daniel and Christine.
+   ANSWER: d
+4. Childless family:
+   a) Two years ago, Darrel and Tanya got married. Before they got married Darrel had three sons and Tanya had a daughter. Now they all live together.
+   b) Hiroshi's wife died several years ago of cancer. He now raises his two sons Tomo and Taiki by himself.
+   c) Jose and Maria live with their 3 children. They also live with their parents, an uncle and an aunt.
+   d) Harry and his wife Jane have been married for six years. They have one daughter named Melissa.
+   e) Husband and wife Dalee and Meegung have been married for two years. They are both very successful business people and don't have any children.
+   f) Jack and Betty, who have been married for over 15 years, have two children named Daniel and Christine.
+   ANSWER: e
+5. Single parent family:
+   a) Two years ago, Darrel and Tanya got married. Before they got married Darrel had three sons and Tanya had a daughter. Now they all live together.
+   b) Hiroshi's wife died several years ago of cancer. He now raises his two sons Tomo and Taiki by himself.
+   c) Jose and Maria live with their 3 children. They also live with their parents, an uncle and an aunt.
+   d) Harry and his wife Jane have been married for six years. They have one daughter named Melissa.
+   e) Husband and wife Dalee and Meegung have been married for two years. They are both very successful business people and don't have any children.
+   f) Jack and Betty, who have been married for over 15 years, have two children named Daniel and Christine.
+   ANSWER: b
+6. Blended family:
+   a) Two years ago, Darrel and Tanya got married. Before they got married Darrel had three sons and Tanya had a daughter. Now they all live together.
+   b) Hiroshi's wife died several years ago of cancer. He now raises his two sons Tomo and Taiki by himself.
+   c) Jose and Maria live with their 3 children. They also live with their parents, an uncle and an aunt.
+   d) Harry and his wife Jane have been married for six years. They have one daughter named Melissa.
+   e) Husband and wife Dalee and Meegung have been married for two years. They are both very successful business people and don't have any children.
+   f) Jack and Betty, who have been married for over 15 years, have two children named Daniel and Christine.
+   ANSWER: a
+
+# MCQ
+LABEL: Part C
+INSTRUCTIONS: Circle the correct option according to the text.
+1. A family is called nuclear when __________.
+   a) both the man and the woman work
+   b) the woman looks after the children
+   c) two parents live with their children
+   d) there is love and support in the family
+   ANSWER: c
+2. In paragraph 2, the word "stable" is closest in meaning to __________.
+   a) safe
+   b) weak
+   c) quiet
+   d) serious
+   ANSWER: a
+3. According to paragraph 3, people live in extended families __________.
+   a) to support an ill family member
+   b) to continue family traditions
+   c) to have happy marriages
+   d) to avoid health problems
+   ANSWER: a
+4. According to paragraph 4, many people are having only one child __________.
+   a) to have more free time
+   b) for financial reasons
+   c) because of their age
+   d) because they are selfish
+   ANSWER: c
+5. Which one is NOT MENTIONED as a reason for having a single parent family?
+   a) Parents are not living together anymore.
+   b) There was never a relationship between the parents.
+   c) One parent is not alive anymore.
+   d) Parents have never loved each other.
+   ANSWER: d
+6. In paragraph 5, the word "surviving" is closest in meaning to __________.
+   a) lonely
+   b) strong
+   c) waiting
+   d) living
+   ANSWER: d
+7. In paragraph 6, the word "increase" is closest in meaning to __________.
+   a) go up
+   b) go down
+   c) go up and down
+   d) stay the same
+   ANSWER: a
+8. Which of the following is FALSE about blended families?
+   a) Divorce is more common in blended families.
+   b) Having a blended family is not always easy.
+   c) Children can benefit from being in a blended family.
+   d) In a blended family one of the parents is not the biological parent.
+   ANSWER: a

@@ -1,0 +1,159 @@
+ID: a2-r3
+LEVEL: A2
+TITLE: A2 Reading 3 — Slow Food
+SUBTITLE: One passage · Sentence-insert, MCQ, vocab matching
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Slow Food
+
+PASSAGE:
+Italians know and love good food. It's at the heart of their culture. They don't like to rush through meals, either. So, many of them think that fast food is a terrible idea.
+
+{gap:1} Many Italians were surprised and angry. They thought, "This is an attack on Italian culture!" One man, Carlo Petrini, decided to fight back. "Fast food is the enemy," he said. In 1989, Petrini started a group called Slow Food. Today, about 70,000 people belong to the group. They live in forty-five countries around the world. More people join every day.
+
+The members of Slow Food have many ideas in common. {gap:2} Fast food is one of them. For one thing, it's not healthy food and it's everywhere. Also, it's the same everywhere. "That's boring," they say. They want to keep traditional cooking with all its variety.
+
+Slow Food members worry about a second problem, too. Some types of plants and animals are becoming very rare. {gap:3} The world is in danger of losing them completely. Slow Food doesn't want to let them disappear, so they're working with farmers to keep them alive.
+
+There's a third problem. Big companies produce much of our food today. They sell their products in many places, so they want products that can travel well. Big growers want the kinds of fruit and vegetables that look good after a long trip. But how do their apples, lettuce, and tomatoes taste? That's less important to them. {gap:4}
+
+Today, it's common to eat foods from far away. {gap:5} In the past, people got their food from farms and factories in their local area. Slow Food members say, "People should buy more local food. It's fresh, and it's part of our culture." One American, Gary Nabhan, decided to try this. For one year, all his food came from plants and animals near his home in Arizona. One local animal is the rattlesnake. Nabhan ate that, too! In his book Coming Home to Eat he says it tastes just like chicken.
+
+Fast food is reaching more and more parts of the world. But Slow Food is getting its message to more and more people, too.
+
+# GAPS
+LABEL: Part A
+INSTRUCTIONS: Read the article and complete the gaps with the correct sentence below. There is ONE extra sentence.
+a: There are a lot of problems with food today, they say.
+b: Food travels an average distance of 1,300 miles to reach dinner tables in the United States.
+c: The idea of slow food has been the healthiest option for the ones who don't want to have a major illness such as cancer.
+d: So now we have more trouble finding good-tasting food.
+e: In 1986, something happened in Italy. An American fast food restaurant — a McDonald's — opened in Rome.
+f: They include, for instance, a kind of tree in Morocco, a special type of Austrian cow, and wild rice in the United States.
+ANSWERS: 1=e, 2=a, 3=f, 4=d, 5=b
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Answer the following questions according to the text.
+1. According to paragraph 1, fast food is not popular in Italy because __________.
+   a) fast food is very expensive there
+   b) the quality of fast food is terrible in some parts of Italy
+   c) most Italians don't want to hurry when they eat
+   d) eating fast food is an attack on their culture
+   ANSWER: c
+2. Which one is FALSE according to paragraph 2?
+   a) The first fast food restaurant opened in Italy in 1986.
+   b) There are 70,000 members of the Slow Food group in Italy.
+   c) Many Italians were not happy when the first fast food restaurant opened in Rome.
+   d) Slow Food is an international group and the number of its members increases every day.
+   ANSWER: b
+3. Carlo Petrini decided to establish the Slow Food Group because of __________ reasons.
+   a) personal
+   b) financial
+   c) cultural
+   d) health
+   ANSWER: c
+4. Which one is NOT a problem with food today according to the members of Slow Food?
+   a) Big companies do not care about the taste of their food, so it is difficult to find food with good taste.
+   b) Some kinds of plants and animals will disappear soon if people do not help farmers.
+   c) Fast food is not good for people's health but you can find it in every place.
+   d) When big growers send their products to faraway places, they usually look bad after the trip.
+   ANSWER: d
+5. According to the members of Slow Food, traditional cooking is different from fast food because __________.
+   a) traditional cooking is not the same in every place, so it is more interesting
+   b) it is easy to prepare fast food but traditional cooking takes a lot of time
+   c) traditional cooking is not healthy but it tastes better than fast food
+   d) some plants and animals will be very rare if people continue traditional cooking
+   ANSWER: a
+6. According to paragraph 5, big food companies send their products to many places, so they want to produce and sell products with __________.
+   a) a good taste
+   b) a good appearance
+   c) a low cost
+   d) a high nutrition
+   ANSWER: b
+7. According to paragraph 6, __________.
+   a) a lot of American people buy food from local markets
+   b) buying food from faraway places is a part of the American culture
+   c) Gary Nabhan ate chicken for one year when he decided to buy local food
+   d) it is better to buy and eat food from local markets
+   ANSWER: d
+8. We can understand from paragraph 7 that the writer of the text is __________ about the future of the Slow Food organisation.
+   a) optimistic
+   b) worried
+   c) pessimistic
+   d) surprised
+   ANSWER: a
+
+# MCQ
+LABEL: Part C
+INSTRUCTIONS: Match the words from the article with their definitions. There is ONE extra definition.
+1. Meal:
+   a) A person who is part of a group
+   b) Something that is made to be sold
+   c) Food or the time for food such as dinner or lunch
+   d) To arrive at a place after some time of travelling
+   e) To defend yourself
+   f) Something following the customs of a group
+   g) To no longer exist
+   h) Modern way of eating food
+   ANSWER: c
+2. Fight back:
+   a) A person who is part of a group
+   b) Something that is made to be sold
+   c) Food or the time for food such as dinner or lunch
+   d) To arrive at a place after some time of travelling
+   e) To defend yourself
+   f) Something following the customs of a group
+   g) To no longer exist
+   h) Modern way of eating food
+   ANSWER: e
+3. Traditional:
+   a) A person who is part of a group
+   b) Something that is made to be sold
+   c) Food or the time for food such as dinner or lunch
+   d) To arrive at a place after some time of travelling
+   e) To defend yourself
+   f) Something following the customs of a group
+   g) To no longer exist
+   h) Modern way of eating food
+   ANSWER: f
+4. Member:
+   a) A person who is part of a group
+   b) Something that is made to be sold
+   c) Food or the time for food such as dinner or lunch
+   d) To arrive at a place after some time of travelling
+   e) To defend yourself
+   f) Something following the customs of a group
+   g) To no longer exist
+   h) Modern way of eating food
+   ANSWER: a
+5. Disappear:
+   a) A person who is part of a group
+   b) Something that is made to be sold
+   c) Food or the time for food such as dinner or lunch
+   d) To arrive at a place after some time of travelling
+   e) To defend yourself
+   f) Something following the customs of a group
+   g) To no longer exist
+   h) Modern way of eating food
+   ANSWER: g
+6. Product:
+   a) A person who is part of a group
+   b) Something that is made to be sold
+   c) Food or the time for food such as dinner or lunch
+   d) To arrive at a place after some time of travelling
+   e) To defend yourself
+   f) Something following the customs of a group
+   g) To no longer exist
+   h) Modern way of eating food
+   ANSWER: b
+7. Reach:
+   a) A person who is part of a group
+   b) Something that is made to be sold
+   c) Food or the time for food such as dinner or lunch
+   d) To arrive at a place after some time of travelling
+   e) To defend yourself
+   f) Something following the customs of a group
+   g) To no longer exist
+   h) Modern way of eating food
+   ANSWER: d

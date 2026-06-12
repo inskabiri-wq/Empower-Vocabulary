@@ -1,0 +1,98 @@
+ID: a2-r12
+LEVEL: A2
+TITLE: A2 Reading 12 — Hidden Talents
+SUBTITLE: One passage · Headings, sentence-insert, MCQ, vocab
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Hidden Talents
+
+PASSAGE:
+They often didn't learn to read and write until they were older. Their parents often thought they were stupid and their friends laughed at them. Some of them hated their schooldays and decided to *drop out* of school as soon as possible. In short, they had unhappy school days.
+
+Some of the world's greatest composers, writers and inventors had an unpleasant time at school like this. {gap:1} Were these people stupid? No, of course not! Some people believe that they had something in common — dyslexia.
+
+Dyslexia is a learning disability which means that people have problems with reading and remembering written words. {gap:2} Studies show that people with dyslexia use a different part of their brain to read and remember. Experts think that the cause of dyslexia is genetic: probably somebody else in the family also had dyslexia. Statistically, about 15 percent of people are dyslexic, but not everybody who has dyslexia knows about it.
+
+Some people with dyslexia discover they have special, hidden talents, but only when they are older. A good example is Agatha Christie, one of the most successful writers in history — two billion books published in 44 languages! At school she had problems with writing and often got bad *marks* for essays. Her parents were *disappointed* and wanted Agatha to leave school early. {gap:3} And even when she was already a famous crime writer, she sometimes felt embarrassed because she still couldn't spell.
+
+There are many more examples of people like Agatha Christie: Hans Christian Andersen, Albert Einstein, Leonardo da Vinci, Pablo Picasso and Thomas Edison; {gap:4} Of course, that doesn't mean that everybody with dyslexia is a genius, but it shows that sometimes people can be a lot more intelligent than they seem.
+
+# MCQ
+LABEL: Part A (pre-reading)
+INSTRUCTIONS: Read the first paragraph. What do you think the text is about?
+1. The text is about:
+   a) Stupid children and their families
+   b) People who had problems at home and at school
+   c) The effects of bad education on children
+   d) People who became successful after they finished school
+   ANSWER: d
+
+# HEADINGS
+LABEL: Part B
+INSTRUCTIONS: Match the headings with the paragraphs. There is ONE extra heading.
+A: What's dyslexia?
+B: Typical problems for children with dyslexia at school
+C: How to help people with dyslexia
+D: What some talented people had in common
+E: Other famous people who had dyslexia
+F: A person who had hidden talents
+ANSWERS: 1=B, 2=D, 3=A, 4=F, 5=E
+
+# GAPS
+LABEL: Part C
+INSTRUCTIONS: Read the text and complete the gaps with the correct sentences.
+a: important and creative people who had problems with reading and writing when they were young.
+b: It is often difficult for them to memorize things.
+c: Later, when they became successful, nobody was more surprised than their old classmates.
+d: She only started writing because her older sister said she couldn't do it!
+ANSWERS: 1=c, 2=b, 3=d, 4=a
+
+# MCQ
+LABEL: Part D
+INSTRUCTIONS: Circle the correct answer.
+1. The children in paragraph 1 __________.
+   a) had a difficult time at school
+   b) had classmates who were stupid
+   c) hated their friends because they laughed at them
+   d) had difficulty communicating with their parents
+   ANSWER: a
+2. Some famous writers, composers and inventors __________.
+   a) were not very intelligent
+   b) were surprised when they became successful
+   c) had similar problems when they were children
+   d) became very successful at school
+   ANSWER: c
+3. Which of the following is FALSE about dyslexia?
+   a) People who are dyslexic were probably born with this disability.
+   b) Some dyslexic people have never known about it.
+   c) Dyslexic people can't read and remember anything.
+   d) Dyslexic people have trouble learning to read and write.
+   ANSWER: c
+4. Agatha Christie started writing because __________.
+   a) her teacher and parents wanted her to
+   b) she wanted to show her sister that she could write
+   c) she wanted to leave school early
+   d) she didn't want to disappoint her parents
+   ANSWER: b
+5. The people mentioned in the last paragraph __________.
+   a) were not all geniuses.
+   b) were crime writers like Agatha Christie.
+   c) are well-known people who had dyslexia.
+   d) seemed more intelligent than they actually were.
+   ANSWER: c
+
+# SHORTANSWER
+LABEL: Part E (vocabulary)
+INSTRUCTIONS: Match the definitions with the words and phrases in the text.
+1. (v) [paragraph 1] stop going to school / university:
+   ANSWER: drop out
+2. (n) [paragraph 2] pupils in the same class at school:
+   ANSWER: classmates
+3. (v) [paragraph 3] learn by heart:
+   ANSWER: memorize / memorise
+4. (n) [paragraph 4] a score which shows how good a piece of work is:
+   ANSWER: mark / marks
+5. (adj) [paragraph 4] unhappy because of poor results:
+   ANSWER: disappointed
+6. (adj) [paragraph 5] good at using your imagination:
+   ANSWER: creative

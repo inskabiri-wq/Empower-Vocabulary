@@ -1,0 +1,357 @@
+{
+  "id": "b2-r6",
+  "level": "B2",
+  "title": "B2 Reading 6 — The Sky's the Limit",
+  "subtitle": "One passage · Headings, MCQ, reference, writing",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "The Sky's the Limit",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">For centuries some of the tallest buildings in the world were religious buildings, but few were ever more than 150 meters tall. Almost all of these buildings took decades or even hundreds of years to complete. However, the invention of steel frames in the late 1800s meant that the walls did not carry the weight of a structure. This development meant that suddenly much taller buildings were possible, and they could be built quickly. Skyscrapers were born, and they changed the face of our cities.</p><p class=\"rd-para\" data-para=\"2\">Since 1901 the world's tallest building has always been a skyscraper and until 1974 <strong>this</strong> was always in New York. The most famous of <strong>these</strong> was the Empire State Building. <strong>It</strong> held the record as the world's tallest building for over 40 years, longer than any building in modern history. Only after the end of the century, the tallest building appeared outside North America. It was in Taipei and it was the first building that was more than half a kilometre tall, Taipei 101. However, the opening of Burj Khalifa in Dubai in 2010 showed an <strong>incredible</strong> 62% increase in height on the previous world's tallest building. Other most new record-holders had only ever shown an increase of between 5% and 20%.</p><p class=\"rd-para\" data-para=\"3\">Countries and cities have competed with each other for centuries to hold records for the tallest structures. To many people, tall buildings are a sign of modernity, wealth, power, and success. The Eiffel Tower was completed in 1889 as part of the 1889 World's Fair to celebrate the hundredth anniversary of the French Revolution. It was the tallest structure in the world, and was built to highlight France's design and engineering skills. For centuries, the contest to build the world's tallest structure was dominated by Europe and then North America, but today the economic growth and power of countries in other regions has seen a dramatic <strong>shift</strong> in the location of \"supertall\" building construction.</p><p class=\"rd-para\" data-para=\"4\">Tall buildings are seen as a symbol of success and status by many but they are not always popular with local residents, particularly in some historic cities. London is very old and is spread over a vast area, so there are not many tall buildings in the centre of the city. As a result, the construction of the Shard, the tallest building in London and in the entire European Union, has been highly controversial. <strong>It</strong> is only a few hundred metres across the River Thames from the Tower of London — one of the oldest and most famous landmarks in London. Many feel that such modern constructions should not be built near historic sites.</p><p class=\"rd-para\" data-para=\"5\">Not surprisingly, due to the levels of debt in the U.K. at the time of construction, the Shard has largely been funded by external investment. The vast majority of funds have been provided by a Qatari investment fund. However, London residents should hope that <strong>its</strong> opening doesn't lead to a major downturn in their economy. The Empire State Building was finished in 1931, very soon after Wall Street crashed. The Petronas Towers in Kuala Lumpur were built in 1998, just after the Asian financial crisis. The Taipei 101 in Taiwan, constructed between 1999 and 2003, was closely linked to the dotcom bubble. The Burj Khalifa in Dubai was opened in early 2010, and shortly afterward the emirate's investment company collapsed.</p><p class=\"rd-para\" data-para=\"6\">The Burj Khalifa might be the tallest structure in the world currently but <strong>its</strong> status is under threat from numerous planned buildings around the world. Two likely future <strong>contenders</strong> for the title are the Burj Mubarak Al Kabir in Kuwait and the Kingdom Tower in Saudi Arabia. They would be over 1000m if they were constructed as planned. One tower which will probably never be built is the 4km high X-Seed 4000 in Tokyo, which would house over a million people across 800 floors. <strong>It</strong> was designed in 1995 to attract publicity rather than as a serious proposal, but who knows when such fanciful ideas could become a reality? Burj Khalifa is more than double the height of the Empire State Building, and surely no one in 1931 would have imagined <strong>that</strong>.</p>",
+      "sections": [
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part A",
+          "instructions": "Match the paragraphs with the headings. There is ONE extra heading.",
+          "options": [
+            {
+              "id": "A",
+              "text": "Why construct tall buildings?"
+            },
+            {
+              "id": "B",
+              "text": "The economic consequences of building tall structures."
+            },
+            {
+              "id": "C",
+              "text": "How buildings became taller."
+            },
+            {
+              "id": "D",
+              "text": "Tall structures of the future."
+            },
+            {
+              "id": "E",
+              "text": "Controversy over a skyscraper."
+            },
+            {
+              "id": "F",
+              "text": "Why cities change."
+            },
+            {
+              "id": "G",
+              "text": "The tallest skyscrapers of the last hundred years."
+            }
+          ],
+          "items": [
+            {
+              "id": "p1",
+              "label": "Paragraph 1",
+              "answer": "C"
+            },
+            {
+              "id": "p2",
+              "label": "Paragraph 2",
+              "answer": "G"
+            },
+            {
+              "id": "p3",
+              "label": "Paragraph 3",
+              "answer": "A"
+            },
+            {
+              "id": "p4",
+              "label": "Paragraph 4",
+              "answer": "E"
+            },
+            {
+              "id": "p5",
+              "label": "Paragraph 5",
+              "answer": "B"
+            },
+            {
+              "id": "p6",
+              "label": "Paragraph 6",
+              "answer": "D"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Circle the best choice according to the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "According to paragraph 1, before steel frames were invented _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "the world's tallest buildings were built"
+                },
+                {
+                  "id": "b",
+                  "text": "the weight of the buildings was supported by the walls"
+                },
+                {
+                  "id": "c",
+                  "text": "skyscrapers were born and changed the appearance of cities"
+                },
+                {
+                  "id": "d",
+                  "text": "many tall religious buildings were 150 metres tall"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "Which of the following statements is FALSE according to paragraph 2?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "No other skyscraper has been the world's tallest building as long as the Empire State."
+                },
+                {
+                  "id": "b",
+                  "text": "Taipei 101 was the first skyscraper to be the world's tallest building outside the USA."
+                },
+                {
+                  "id": "c",
+                  "text": "Burj Khalifa was 62% higher than the world's tallest building before it."
+                },
+                {
+                  "id": "d",
+                  "text": "Other new buildings broke Burj Khalifa's record with an increase of around 25%."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m3",
+              "question": "According to paragraph 3, the Eiffel Tower was built to _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "compete with the tallest structures of the time"
+                },
+                {
+                  "id": "b",
+                  "text": "show France's design and engineering skill"
+                },
+                {
+                  "id": "c",
+                  "text": "symbolize economic growth and social power"
+                },
+                {
+                  "id": "d",
+                  "text": "celebrate the 1889 World's Fair"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "Which of the following is FALSE about the Shard according to paragraph 4?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "It is criticized for its nearness to a historic landmark."
+                },
+                {
+                  "id": "b",
+                  "text": "It is the only very tall building in the area."
+                },
+                {
+                  "id": "c",
+                  "text": "It is a few hundred meters taller than the Tower of London."
+                },
+                {
+                  "id": "d",
+                  "text": "It is funded by foreign investors."
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "vocab",
+          "type": "mcq",
+          "label": "Part B (vocabulary)",
+          "instructions": "Choose the closest meaning for each word.",
+          "items": [
+            {
+              "id": "v1",
+              "question": "In paragraph 2, \"incredible\" probably means:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "worrying"
+                },
+                {
+                  "id": "b",
+                  "text": "tall"
+                },
+                {
+                  "id": "c",
+                  "text": "unbelievable"
+                },
+                {
+                  "id": "d",
+                  "text": "maximum"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "v2",
+              "question": "In paragraph 3, \"shift\" probably means:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "change"
+                },
+                {
+                  "id": "b",
+                  "text": "activity"
+                },
+                {
+                  "id": "c",
+                  "text": "life"
+                },
+                {
+                  "id": "d",
+                  "text": "energy"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "v3",
+              "question": "In paragraph 6, \"contender\" probably means:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "enemy"
+                },
+                {
+                  "id": "b",
+                  "text": "advocate"
+                },
+                {
+                  "id": "c",
+                  "text": "supporter"
+                },
+                {
+                  "id": "d",
+                  "text": "competitor"
+                }
+              ],
+              "answer": "d"
+            }
+          ]
+        },
+        {
+          "id": "reference",
+          "type": "mcq",
+          "label": "Part B (reference)",
+          "instructions": "Choose what each word refers to.",
+          "items": [
+            {
+              "id": "r1",
+              "question": "In paragraph 2, \"these\" refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "face of our cities"
+                },
+                {
+                  "id": "b",
+                  "text": "1901 and 1974"
+                },
+                {
+                  "id": "c",
+                  "text": "world's tallest buildings"
+                },
+                {
+                  "id": "d",
+                  "text": "most new record holders"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "r2",
+              "question": "In paragraph 2, \"It\" refers to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "1974"
+                },
+                {
+                  "id": "b",
+                  "text": "Empire State Building"
+                },
+                {
+                  "id": "c",
+                  "text": "New York"
+                },
+                {
+                  "id": "d",
+                  "text": "1901"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part C",
+          "instructions": "What do the following words refer to? They are bold and underlined in the text.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"it\" (paragraph 4):",
+              "answer": "the Shard"
+            },
+            {
+              "id": "sa2",
+              "definition": "\"its\" (paragraph 5):",
+              "answer": "the Shard's"
+            },
+            {
+              "id": "sa3",
+              "definition": "\"its\" (paragraph 6):",
+              "answer": "the Burj Khalifa's"
+            },
+            {
+              "id": "sa4",
+              "definition": "\"It\" (paragraph 6):",
+              "answer": "the X-Seed 4000"
+            },
+            {
+              "id": "sa5",
+              "definition": "\"that\" (paragraph 6):",
+              "answer": "the idea that the Burj Khalifa is more than double the height of the Empire State Building"
+            }
+          ]
+        },
+        {
+          "id": "writing",
+          "type": "writing",
+          "label": "Part D",
+          "instructions": "Answer the following question in your own words (min. 50 words).",
+          "prompt": "Why do you think some countries and cities see modern developments as positive and others see them as negative?",
+          "minWords": 50
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,480 @@
+{
+  "id": "b2-r4",
+  "level": "B2",
+  "title": "B2 Reading 4 — Homeschooling: A Better Way to Learn?",
+  "subtitle": "One passage · Gaps, MCQ, vocabulary, reference, writing",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Homeschooling – A Better Way to Learn?",
+      "introHtml": "<p>Discuss the following questions with a partner.</p><ol><li>Did you enjoy attending school when you were younger? Why?</li><li>What do you understand by the term <strong>homeschooling</strong>?</li><li>What do you think the benefits of homeschooling are? What are the drawbacks? Make a list for each.</li></ol>",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Increasing numbers of parents in the U.S. are choosing to teach their kids at home. In fact, the U.S. Department of Education estimated that, in 1999, around 850,000 children were being homeschooled. Some educational experts say the real figure is about double this estimate, and the ranks of homeschooled children appear to be growing at a rate of about 11 percent annually.</p><p class=\"rd-para\" data-para=\"2\">At one time, homeschooling had a negative reputation; it was traditionally used for students who could not attend school because of behavioral or learning difficulties. Today, however, more parents are <strong>taking on</strong> the responsibility of educating their children at home due to dissatisfaction with the educational system. <span class=\"rd-gap\" data-gap=\"1\"></span> Teacher shortages and lack of funding mean that, in many schools, one teacher is responsible for thirty or forty pupils. The result is often that children are deprived of the attention <strong>they</strong> need. <strong>Escalating</strong> classroom violence has also motivated some parents to remove their children from school.</p><p class=\"rd-para\" data-para=\"3\">Supporters of homeschooling believe that children learn better when they are in a secure, loving environment. <span class=\"rd-gap\" data-gap=\"2\"></span> In fact, originally the home was the classroom, long before schools were established. Parents who homeschool argue that they can monitor their children's education and give them the attention that is lacking in a traditional school setting. Students can also pick and choose what to study and when to study, thus enabling <strong>them</strong> to learn at their own pace.</p><p class=\"rd-para\" data-para=\"4\">In contrast, critics of homeschooling say that children who are not in the classroom <strong>miss out on</strong> learning important social skills because they have little interaction with their peers. Several studies, though, have shown that the home-educated appear to do just as well in terms of social and emotional development as other students, having spent more time in the comfort and security of their home, with guidance from parents who care about their welfare. <span class=\"rd-gap\" data-gap=\"3\"></span> Many parents who homeschool have no teacher training and are not <strong>competent</strong> educators of all the subjects taught in schools. In terms of academic achievement, however, homeschooled children do just as well as those who have been in the classroom and many walk the campuses of Harvard and Stanford alongside the conventionally educated.</p><p class=\"rd-para\" data-para=\"5\">With an increasing number of <strong>disgruntled</strong> parents taking their children out of class, schools are receiving less funding from the government because they have fewer students. Some see <strong>this</strong> as a threat to the system and argue that schools will never be able to improve their situation and restore parents' confidence in the educational system. <span class=\"rd-gap\" data-gap=\"4\"></span> They can also take part in extracurricular activities such as playing football or taking ballet lessons. While parents will not completely put their confidence back into the system, many of them have reached a compromise that allows their children the extra benefits of peer interaction and access to a wider choice of activities.</p><p class=\"rd-para\" data-para=\"6\">Although there are arguments for and against <strong>it</strong>, homeschooling in the U.S. has become a multi-million-dollar industry, and it is growing. <span class=\"rd-gap\" data-gap=\"5\"></span> Though once the last resort for troubled children, homeschooling today is an accepted alternative to an educational system that some believe is failing.</p>",
+      "sections": [
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part B",
+          "instructions": "Match the sentences (a-g) with the gaps (1-5). There are two extra sentences.",
+          "options": [
+            {
+              "id": "a",
+              "text": "There are now websites, support groups, and conventions that help parents to assert their rights and enable them to learn more about educating their children."
+            },
+            {
+              "id": "b",
+              "text": "Many psychologists see the home as the most natural learning environment."
+            },
+            {
+              "id": "c",
+              "text": "Many schools have opened their doors to homeschoolers on a part-time basis, allowing these children to attend classes once or twice a week."
+            },
+            {
+              "id": "d",
+              "text": "There is no doubt that parents are capable of educating their children at home, but they may not have the time."
+            },
+            {
+              "id": "e",
+              "text": "Many parents are unhappy about class size, as well as problems inside the classroom."
+            },
+            {
+              "id": "f",
+              "text": "In spite of this, many critics of homeschooling have raised concerns about the ability of parents to teach their kids effectively."
+            },
+            {
+              "id": "g",
+              "text": "More and more parents are now seeing homeschooling as an opportunity to spend more time with their children."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "e"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "b"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "f"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "c"
+            },
+            {
+              "id": "5",
+              "label": "Gap 5",
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part D",
+          "instructions": "Read the text and circle the correct answer.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "In 1999, approximately 850,000 children in the USA were homeschooled, but that number is probably closer to ______.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "900,000"
+                },
+                {
+                  "id": "b",
+                  "text": "1,000,000"
+                },
+                {
+                  "id": "c",
+                  "text": "1,500,000"
+                },
+                {
+                  "id": "d",
+                  "text": "1,700,000"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m2",
+              "question": "According to paragraph 2, ______.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "homeschooling has always been considered to be a better alternative to traditional schooling"
+                },
+                {
+                  "id": "b",
+                  "text": "homeschooling is only preferred by parents whose children have behavioral and learning difficulties"
+                },
+                {
+                  "id": "c",
+                  "text": "more parents have turned to homeschooling recently because of problems with the educational system"
+                },
+                {
+                  "id": "d",
+                  "text": "parents, as well as school teachers, find it extremely hard to give enough attention to children"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "Which of the following is NOT an advantage of homeschooling?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "It enables children to learn more than their peers in traditional school settings."
+                },
+                {
+                  "id": "b",
+                  "text": "Students can arrange their own study schedules and study at their own pace."
+                },
+                {
+                  "id": "c",
+                  "text": "Parents can monitor their children's educational progress closely."
+                },
+                {
+                  "id": "d",
+                  "text": "It provides children with the most natural learning environment."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m4",
+              "question": "Critics of homeschooling argue that _________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "children who are homeschooled may not improve their social skills as well as the other kids"
+                },
+                {
+                  "id": "b",
+                  "text": "homeschooled children do just as well as those who have been in the classroom"
+                },
+                {
+                  "id": "c",
+                  "text": "despite not having any teacher training, parents can teach many subjects as effectively as teachers"
+                },
+                {
+                  "id": "d",
+                  "text": "homeschooled children have no interaction with their peers"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "In paragraph 4, why does the author say \"many walk the campuses of Harvard and Stanford alongside the conventionally educated\"?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "To raise concerns about the ability of parents to teach their kids effectively."
+                },
+                {
+                  "id": "b",
+                  "text": "To show that mostly the top universities accept homeschooled children."
+                },
+                {
+                  "id": "c",
+                  "text": "To point out that parents who homeschool their children don't need teacher training."
+                },
+                {
+                  "id": "d",
+                  "text": "To show that homeschooled children do just as well as the traditionally educated children."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m6",
+              "question": "According to paragraph 5, the rise of homeschooling in the US ______.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "is posing a threat to the improvement of the current educational system"
+                },
+                {
+                  "id": "b",
+                  "text": "is helping parents restore confidence in the educational system"
+                },
+                {
+                  "id": "c",
+                  "text": "creates new extracurricular activities that children can take part in"
+                },
+                {
+                  "id": "d",
+                  "text": "enables parents to spend less money on their children's education"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m7",
+              "question": "The purpose of the text is to show that ______.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "there are also some disadvantages of homeschooling"
+                },
+                {
+                  "id": "b",
+                  "text": "the quality of education in traditional schools is not good"
+                },
+                {
+                  "id": "c",
+                  "text": "homeschooling has become an accepted alternative to traditional schooling"
+                },
+                {
+                  "id": "d",
+                  "text": "traditionally educated students are likely to have better social and academic skills"
+                }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "vocab",
+          "type": "mcq",
+          "label": "Part E",
+          "instructions": "Guess the meaning of the words or phrases from the text and circle the correct answer.",
+          "items": [
+            {
+              "id": "v1",
+              "question": "\"take on\" in paragraph 2 is closest in meaning to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "avoid"
+                },
+                {
+                  "id": "b",
+                  "text": "assign"
+                },
+                {
+                  "id": "c",
+                  "text": "give"
+                },
+                {
+                  "id": "d",
+                  "text": "accept"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "v2",
+              "question": "\"escalating\" in paragraph 2 is closest in meaning to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "becoming worse"
+                },
+                {
+                  "id": "b",
+                  "text": "becoming less serious"
+                },
+                {
+                  "id": "c",
+                  "text": "becoming more urgent"
+                },
+                {
+                  "id": "d",
+                  "text": "losing importance"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "v3",
+              "question": "\"miss out on\" in paragraph 4 is closest in meaning to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "miss someone"
+                },
+                {
+                  "id": "b",
+                  "text": "be able to do something"
+                },
+                {
+                  "id": "c",
+                  "text": "lose a chance of doing something"
+                },
+                {
+                  "id": "d",
+                  "text": "be afraid of something"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "v4",
+              "question": "\"competent\" in paragraph 4 is closest in meaning to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "lacking the necessary skills"
+                },
+                {
+                  "id": "b",
+                  "text": "disciplined"
+                },
+                {
+                  "id": "c",
+                  "text": "capable of doing something effectively"
+                },
+                {
+                  "id": "d",
+                  "text": "famous"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "v5",
+              "question": "\"disgruntled\" in paragraph 5 is closest in meaning to:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "dishonest"
+                },
+                {
+                  "id": "b",
+                  "text": "dissatisfied"
+                },
+                {
+                  "id": "c",
+                  "text": "disobedient"
+                },
+                {
+                  "id": "d",
+                  "text": "disabled"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "reference",
+          "type": "mcq",
+          "label": "Part F",
+          "instructions": "What do the following words refer to in the text?",
+          "items": [
+            {
+              "id": "r1",
+              "question": "\"they\" in paragraph 2:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "parents"
+                },
+                {
+                  "id": "b",
+                  "text": "children"
+                },
+                {
+                  "id": "c",
+                  "text": "schools"
+                },
+                {
+                  "id": "d",
+                  "text": "shortages"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "r2",
+              "question": "\"them\" in paragraph 3:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "parents"
+                },
+                {
+                  "id": "b",
+                  "text": "many psychologists"
+                },
+                {
+                  "id": "c",
+                  "text": "supporters of homeschooling"
+                },
+                {
+                  "id": "d",
+                  "text": "students"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "r3",
+              "question": "\"this\" in paragraph 5:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "schools receiving less money in per-pupil funding"
+                },
+                {
+                  "id": "b",
+                  "text": "schools improving their situation"
+                },
+                {
+                  "id": "c",
+                  "text": "restoring parents' confidence in the educational system"
+                },
+                {
+                  "id": "d",
+                  "text": "increasing number of disgruntled parents"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "r4",
+              "question": "\"it\" in paragraph 6:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "homeschooling"
+                },
+                {
+                  "id": "b",
+                  "text": "argument"
+                },
+                {
+                  "id": "c",
+                  "text": "multi-million dollar industry"
+                },
+                {
+                  "id": "d",
+                  "text": "alternative"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "writing",
+          "type": "writing",
+          "label": "Part G",
+          "instructions": "Answer the question in your own words (min. 50 words).",
+          "prompt": "\"Are you in favour of or against homeschooling?\" Why? Explain.",
+          "minWords": 50
+        }
+      ]
+    }
+  ]
+}

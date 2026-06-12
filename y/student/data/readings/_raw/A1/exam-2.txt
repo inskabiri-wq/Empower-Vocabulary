@@ -1,0 +1,71 @@
+ID: a1-r2
+LEVEL: A1
+TITLE: A1 Reading 2 — At The Movies: Bollywood
+SUBTITLE: One passage · Gaps, headings, MCQ
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: At The Movies: Bollywood
+
+PASSAGE:
+The word "Bollywood" is a mix of the words "Bombay" (a city in India now called "Mumbai") and "Hollywood". Bollywood is the largest movie-making business in India (and the world). {gap:1} Every year, Bollywood makes more movies and money than Hollywood does.
+
+Bollywood movies share certain features. First, most Bollywood films are a minimum of three hours long. {gap:2} The movie usually stops in the middle and people take a short break.
+
+Also many Bollywood movies are about love. Often in a story, the boy's parents don't like the girl, or the girl's parents don't like the boy. The lovers, divided by their families, try to be together. {gap:3}
+
+Another important part of Bollywood movies is music. Singing and dancing in a Bollywood film is very common. The music is often a mix of Indian pop songs and traditional melodies. {gap:4} Some people think the music is as important as the movie's story. In some Indian theaters, people watching the movie will sing and dance with the performers on screen!
+
+# GAPS
+LABEL: Part A
+INSTRUCTIONS: Match the sentences (a-f) with the gaps (1-4). There are two extra sentences.
+a: The endings also very typically include dancing.
+b: It is a representation of how important music is in Indian Culture.
+c: While some people believe that Hollywood is the number one in the industry, the reality is different.
+d: The movie 'LOC: Kargil' with 4 hours and 25 minutes, is the longest film in the world.
+e: Bollywood movies are famous for the colourful dresses of the actors and actresses.
+f: The movies also include more than one story at a time.
+ANSWERS: 1=c, 2=f, 3=a, 4=b
+
+# HEADINGS
+LABEL: Part B
+INSTRUCTIONS: Read the text and match the paragraphs with the topics. There is one extra.
+A: What is the role of music in Bollywood movies?
+B: Why do people watching the movie sing and dance?
+C: What are most Bollywood films about?
+D: What is Bollywood?
+E: How long is an average Bollywood movie?
+ANSWERS: 1=D, 2=E, 3=C, 4=A
+
+# MCQ
+LABEL: Part C
+INSTRUCTIONS: Answer the questions according to the text.
+1. What is the purpose of this passage?
+   a) to describe Hollywood movies
+   b) to introduce readers to Bollywood films
+   c) to show the similarities between Hollywood and Bollywood movies
+   d) to show the differences between Hollywood and Bollywood movies
+   ANSWER: b
+2. Which sentence is true?
+   a) Bollywood movies come from Britain.
+   b) Hollywood makes the most movies in the world.
+   c) Most Bollywood movies are different from each other.
+   d) The word "Bollywood" comes from the name of an Indian city + "Hollywood".
+   ANSWER: d
+3. Many Bollywood movies are __________.
+   a) very short
+   b) in English
+   c) love stories
+   d) four hours with no break
+   ANSWER: c
+4. How many Bollywood films have singing and dancing?
+   a) almost all
+   b) some
+   c) very few
+   d) none
+   ANSWER: a
+5. Which sentence about the music in Bollywood movies is true?
+   a) It is American pop music.
+   b) Music is not very important in a movie.
+   c) Sometimes movie viewers sing with the actors.
+   d) Usually, the movies have only traditional Indian songs.
+   ANSWER: c

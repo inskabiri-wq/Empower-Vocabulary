@@ -1,0 +1,107 @@
+ID: b1-r13
+LEVEL: B1
+TITLE: B1 Reading 13 — Changing Life Styles
+SUBTITLE: One passage · Main idea, sentence-insert, MCQ, vocab, reference
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Changing Life Styles
+
+PASSAGE:
+Americans today have different eating habits than they had in the past. There is a wide selection of food available. They have a broader knowledge of nutrition, so they buy more fresh fruit and vegetables than ever before. At the same time, Americans purchase increasing quantities of sweets, snacks, and sodas.
+
+Statistics show that the way people live *determines* the way they eat. American lifestyles have changed. {gap:1} These changing lifestyles are responsible for the increasing number of people who must rush meals or sometimes *skip* *them* altogether. Many Americans have less time than ever before to spend preparing food. Partly as a consequence of this limited time, 60% of all American homes now have microwave ovens. Moreover, Americans eat out nearly four times a week on the average.
+
+It is easy to study the amounts and kinds of food that people consume. The United States Department of Agriculture (USDA) and the food industry — growers, processors, marketers, and restaurateurs — *compile* sales statistics and keep accurate records. {gap:2} Red meat which used to be the most popular choice for dinner is no longer an American favorite. Instead, chicken, turkey, and fish have become more popular. Sales of these foods have greatly increased in recent years. *This* is probably a result of cholesterol, or animal fat. Doctors believe that cholesterol is a threat to human health.
+
+{gap:3} They have certain ideas about which foods will increase their athletic ability, help *them* lose weight, make them alert for business meetings, or put them in the mood for romance. For example, Americans chose pasta, fruit, and vegetables, which *supply* them with carbohydrates, to give them strength for physical activity, such as sports. Adults choose foods rich in fiber, such as bread and cereal, for breakfast, and salads for lunch to prepare them for business appointments. {gap:4} While many of these ideas are based on nutritional facts, some are not.
+
+Americans' awareness of nutrition, along with their changing tastes and needs, leads them to consume a wide variety of foods — foods for health, for fun, and simply for good taste.
+
+# MCQ
+LABEL: Part A
+INSTRUCTIONS: Skim through the text and choose the main idea.
+1. The main idea of the text is:
+   a) Americans' culture affects their lives.
+   b) Americans have unhealthy lives.
+   c) Americans' lifestyles and eating habits are changing.
+   d) Americans' food industry is developing day by day.
+   ANSWER: c
+
+# GAPS
+LABEL: Part B
+INSTRUCTIONS: Put the sentences in the correct places in the text. There are TWO extra sentences.
+a: For romantic dinners, however, Americans choose shrimp and lobster.
+b: They now include growing numbers of people who live alone, single parents and children, and double-income families.
+c: The only food most Americans don't eat is seafood.
+d: According to a recent survey, Americans also change their eating patterns to meet the needs of different situations.
+e: Their taste in food has changed a lot since then.
+f: This information not only tells us what people are eating, but also tells us about the changes in attitudes and tastes.
+ANSWERS: 1=b, 2=f, 3=d, 4=a
+
+# MCQ
+LABEL: Part C
+INSTRUCTIONS: Answer the following questions according to the text.
+1. Which of the following statements is TRUE?
+   a) Americans do not have a variety of foods.
+   b) Today Americans purchase less fresh fruit and vegetables.
+   c) What Americans eat today and in the past is the same.
+   d) Americans have a broader knowledge of nutrition.
+   ANSWER: d
+2. It is clear from paragraph 2 that __________.
+   a) there is a link between the way people live and the way they eat.
+   b) today, Americans allocate more time to prepare their food.
+   c) people who live alone cook at home more than married couples with children do.
+   d) Americans have a traditional eating habit.
+   ANSWER: a
+3. According to paragraph 3, __________.
+   a) USDA keeps only the record of what people are eating today.
+   b) the information that the food industry compiles is not reliable.
+   c) Americans' favorite meal for dinner isn't red meat today.
+   d) chicken, turkey, and fish are more popular foods today because they are cheaper.
+   ANSWER: c
+4. Which of the following statements is FALSE?
+   a) Americans want to meet the needs of different situations with their new eating habits.
+   b) Americans believe that different foods have different effects on them.
+   c) Americans eat pasta, fruit, and vegetables to increase their athletic ability.
+   d) Their ideas about foods are all based on nutritional facts.
+   ANSWER: d
+
+# MCQ
+LABEL: Part D (vocabulary)
+INSTRUCTIONS: Guess the meaning of the words from the text.
+1. The word "determine" in paragraph 2 means __________.
+   a) to affect
+   b) to prefer
+   c) to decide
+   d) to avoid
+   ANSWER: c
+2. The word "skip" in paragraph 2 means __________.
+   a) not preferring something
+   b) not doing something
+   c) not finishing something
+   d) not keeping something
+   ANSWER: b
+3. The word "compile" in paragraph 3 means __________.
+   a) making a list, record from different sources
+   b) comparing 2 things
+   c) changing the existing knowledge
+   d) making something from scratch
+   ANSWER: a
+4. The word "supply" in paragraph 4 means __________.
+   a) to need
+   b) to provide
+   c) to complete
+   d) to promise
+   ANSWER: b
+
+# SHORTANSWER
+LABEL: Part E (reference)
+INSTRUCTIONS: What do these words in the text refer to?
+1. "they" (paragraph 2):
+   ANSWER: people / Americans
+2. "them" (paragraph 2, "rush meals or sometimes skip them"):
+   ANSWER: meals
+3. "This" (paragraph 3):
+   ANSWER: the increase in the sales of chicken, fish, turkey in recent years / the popularity of chicken, turkey, and fish / increased sales of chicken, turkey, and fish
+4. "them" (paragraph 4):
+   ANSWER: Americans

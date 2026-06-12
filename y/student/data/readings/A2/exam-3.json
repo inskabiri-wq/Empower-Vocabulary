@@ -1,0 +1,549 @@
+{
+  "id": "a2-r3",
+  "level": "A2",
+  "title": "A2 Reading 3 — Slow Food",
+  "subtitle": "One passage · Sentence-insert, MCQ, vocab matching",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Slow Food",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Italians know and love good food. It's at the heart of their culture. They don't like to rush through meals, either. So, many of them think that fast food is a terrible idea.</p><p class=\"rd-para\" data-para=\"2\"><span class=\"rd-gap\" data-gap=\"1\"></span> Many Italians were surprised and angry. They thought, \"This is an attack on Italian culture!\" One man, Carlo Petrini, decided to fight back. \"Fast food is the enemy,\" he said. In 1989, Petrini started a group called Slow Food. Today, about 70,000 people belong to the group. They live in forty-five countries around the world. More people join every day.</p><p class=\"rd-para\" data-para=\"3\">The members of Slow Food have many ideas in common. <span class=\"rd-gap\" data-gap=\"2\"></span> Fast food is one of them. For one thing, it's not healthy food and it's everywhere. Also, it's the same everywhere. \"That's boring,\" they say. They want to keep traditional cooking with all its variety.</p><p class=\"rd-para\" data-para=\"4\">Slow Food members worry about a second problem, too. Some types of plants and animals are becoming very rare. <span class=\"rd-gap\" data-gap=\"3\"></span> The world is in danger of losing them completely. Slow Food doesn't want to let them disappear, so they're working with farmers to keep them alive.</p><p class=\"rd-para\" data-para=\"5\">There's a third problem. Big companies produce much of our food today. They sell their products in many places, so they want products that can travel well. Big growers want the kinds of fruit and vegetables that look good after a long trip. But how do their apples, lettuce, and tomatoes taste? That's less important to them. <span class=\"rd-gap\" data-gap=\"4\"></span></p><p class=\"rd-para\" data-para=\"6\">Today, it's common to eat foods from far away. <span class=\"rd-gap\" data-gap=\"5\"></span> In the past, people got their food from farms and factories in their local area. Slow Food members say, \"People should buy more local food. It's fresh, and it's part of our culture.\" One American, Gary Nabhan, decided to try this. For one year, all his food came from plants and animals near his home in Arizona. One local animal is the rattlesnake. Nabhan ate that, too! In his book Coming Home to Eat he says it tastes just like chicken.</p><p class=\"rd-para\" data-para=\"7\">Fast food is reaching more and more parts of the world. But Slow Food is getting its message to more and more people, too.</p>",
+      "sections": [
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part A",
+          "instructions": "Read the article and complete the gaps with the correct sentence below. There is ONE extra sentence.",
+          "options": [
+            {
+              "id": "a",
+              "text": "There are a lot of problems with food today, they say."
+            },
+            {
+              "id": "b",
+              "text": "Food travels an average distance of 1,300 miles to reach dinner tables in the United States."
+            },
+            {
+              "id": "c",
+              "text": "The idea of slow food has been the healthiest option for the ones who don't want to have a major illness such as cancer."
+            },
+            {
+              "id": "d",
+              "text": "So now we have more trouble finding good-tasting food."
+            },
+            {
+              "id": "e",
+              "text": "In 1986, something happened in Italy. An American fast food restaurant — a McDonald's — opened in Rome."
+            },
+            {
+              "id": "f",
+              "text": "They include, for instance, a kind of tree in Morocco, a special type of Austrian cow, and wild rice in the United States."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "e"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "a"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "f"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "d"
+            },
+            {
+              "id": "5",
+              "label": "Gap 5",
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Answer the following questions according to the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "According to paragraph 1, fast food is not popular in Italy because __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "fast food is very expensive there"
+                },
+                {
+                  "id": "b",
+                  "text": "the quality of fast food is terrible in some parts of Italy"
+                },
+                {
+                  "id": "c",
+                  "text": "most Italians don't want to hurry when they eat"
+                },
+                {
+                  "id": "d",
+                  "text": "eating fast food is an attack on their culture"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "Which one is FALSE according to paragraph 2?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "The first fast food restaurant opened in Italy in 1986."
+                },
+                {
+                  "id": "b",
+                  "text": "There are 70,000 members of the Slow Food group in Italy."
+                },
+                {
+                  "id": "c",
+                  "text": "Many Italians were not happy when the first fast food restaurant opened in Rome."
+                },
+                {
+                  "id": "d",
+                  "text": "Slow Food is an international group and the number of its members increases every day."
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m3",
+              "question": "Carlo Petrini decided to establish the Slow Food Group because of __________ reasons.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "personal"
+                },
+                {
+                  "id": "b",
+                  "text": "financial"
+                },
+                {
+                  "id": "c",
+                  "text": "cultural"
+                },
+                {
+                  "id": "d",
+                  "text": "health"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m4",
+              "question": "Which one is NOT a problem with food today according to the members of Slow Food?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Big companies do not care about the taste of their food, so it is difficult to find food with good taste."
+                },
+                {
+                  "id": "b",
+                  "text": "Some kinds of plants and animals will disappear soon if people do not help farmers."
+                },
+                {
+                  "id": "c",
+                  "text": "Fast food is not good for people's health but you can find it in every place."
+                },
+                {
+                  "id": "d",
+                  "text": "When big growers send their products to faraway places, they usually look bad after the trip."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m5",
+              "question": "According to the members of Slow Food, traditional cooking is different from fast food because __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "traditional cooking is not the same in every place, so it is more interesting"
+                },
+                {
+                  "id": "b",
+                  "text": "it is easy to prepare fast food but traditional cooking takes a lot of time"
+                },
+                {
+                  "id": "c",
+                  "text": "traditional cooking is not healthy but it tastes better than fast food"
+                },
+                {
+                  "id": "d",
+                  "text": "some plants and animals will be very rare if people continue traditional cooking"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m6",
+              "question": "According to paragraph 5, big food companies send their products to many places, so they want to produce and sell products with __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "a good taste"
+                },
+                {
+                  "id": "b",
+                  "text": "a good appearance"
+                },
+                {
+                  "id": "c",
+                  "text": "a low cost"
+                },
+                {
+                  "id": "d",
+                  "text": "a high nutrition"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m7",
+              "question": "According to paragraph 6, __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "a lot of American people buy food from local markets"
+                },
+                {
+                  "id": "b",
+                  "text": "buying food from faraway places is a part of the American culture"
+                },
+                {
+                  "id": "c",
+                  "text": "Gary Nabhan ate chicken for one year when he decided to buy local food"
+                },
+                {
+                  "id": "d",
+                  "text": "it is better to buy and eat food from local markets"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m8",
+              "question": "We can understand from paragraph 7 that the writer of the text is __________ about the future of the Slow Food organisation.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "optimistic"
+                },
+                {
+                  "id": "b",
+                  "text": "worried"
+                },
+                {
+                  "id": "c",
+                  "text": "pessimistic"
+                },
+                {
+                  "id": "d",
+                  "text": "surprised"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq2",
+          "type": "mcq",
+          "label": "Part C",
+          "instructions": "Match the words from the article with their definitions. There is ONE extra definition.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Meal:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "A person who is part of a group"
+                },
+                {
+                  "id": "b",
+                  "text": "Something that is made to be sold"
+                },
+                {
+                  "id": "c",
+                  "text": "Food or the time for food such as dinner or lunch"
+                },
+                {
+                  "id": "d",
+                  "text": "To arrive at a place after some time of travelling"
+                },
+                {
+                  "id": "e",
+                  "text": "To defend yourself"
+                },
+                {
+                  "id": "f",
+                  "text": "Something following the customs of a group"
+                },
+                {
+                  "id": "g",
+                  "text": "To no longer exist"
+                },
+                {
+                  "id": "h",
+                  "text": "Modern way of eating food"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "Fight back:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "A person who is part of a group"
+                },
+                {
+                  "id": "b",
+                  "text": "Something that is made to be sold"
+                },
+                {
+                  "id": "c",
+                  "text": "Food or the time for food such as dinner or lunch"
+                },
+                {
+                  "id": "d",
+                  "text": "To arrive at a place after some time of travelling"
+                },
+                {
+                  "id": "e",
+                  "text": "To defend yourself"
+                },
+                {
+                  "id": "f",
+                  "text": "Something following the customs of a group"
+                },
+                {
+                  "id": "g",
+                  "text": "To no longer exist"
+                },
+                {
+                  "id": "h",
+                  "text": "Modern way of eating food"
+                }
+              ],
+              "answer": "e"
+            },
+            {
+              "id": "m3",
+              "question": "Traditional:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "A person who is part of a group"
+                },
+                {
+                  "id": "b",
+                  "text": "Something that is made to be sold"
+                },
+                {
+                  "id": "c",
+                  "text": "Food or the time for food such as dinner or lunch"
+                },
+                {
+                  "id": "d",
+                  "text": "To arrive at a place after some time of travelling"
+                },
+                {
+                  "id": "e",
+                  "text": "To defend yourself"
+                },
+                {
+                  "id": "f",
+                  "text": "Something following the customs of a group"
+                },
+                {
+                  "id": "g",
+                  "text": "To no longer exist"
+                },
+                {
+                  "id": "h",
+                  "text": "Modern way of eating food"
+                }
+              ],
+              "answer": "f"
+            },
+            {
+              "id": "m4",
+              "question": "Member:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "A person who is part of a group"
+                },
+                {
+                  "id": "b",
+                  "text": "Something that is made to be sold"
+                },
+                {
+                  "id": "c",
+                  "text": "Food or the time for food such as dinner or lunch"
+                },
+                {
+                  "id": "d",
+                  "text": "To arrive at a place after some time of travelling"
+                },
+                {
+                  "id": "e",
+                  "text": "To defend yourself"
+                },
+                {
+                  "id": "f",
+                  "text": "Something following the customs of a group"
+                },
+                {
+                  "id": "g",
+                  "text": "To no longer exist"
+                },
+                {
+                  "id": "h",
+                  "text": "Modern way of eating food"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "Disappear:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "A person who is part of a group"
+                },
+                {
+                  "id": "b",
+                  "text": "Something that is made to be sold"
+                },
+                {
+                  "id": "c",
+                  "text": "Food or the time for food such as dinner or lunch"
+                },
+                {
+                  "id": "d",
+                  "text": "To arrive at a place after some time of travelling"
+                },
+                {
+                  "id": "e",
+                  "text": "To defend yourself"
+                },
+                {
+                  "id": "f",
+                  "text": "Something following the customs of a group"
+                },
+                {
+                  "id": "g",
+                  "text": "To no longer exist"
+                },
+                {
+                  "id": "h",
+                  "text": "Modern way of eating food"
+                }
+              ],
+              "answer": "g"
+            },
+            {
+              "id": "m6",
+              "question": "Product:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "A person who is part of a group"
+                },
+                {
+                  "id": "b",
+                  "text": "Something that is made to be sold"
+                },
+                {
+                  "id": "c",
+                  "text": "Food or the time for food such as dinner or lunch"
+                },
+                {
+                  "id": "d",
+                  "text": "To arrive at a place after some time of travelling"
+                },
+                {
+                  "id": "e",
+                  "text": "To defend yourself"
+                },
+                {
+                  "id": "f",
+                  "text": "Something following the customs of a group"
+                },
+                {
+                  "id": "g",
+                  "text": "To no longer exist"
+                },
+                {
+                  "id": "h",
+                  "text": "Modern way of eating food"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m7",
+              "question": "Reach:",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "A person who is part of a group"
+                },
+                {
+                  "id": "b",
+                  "text": "Something that is made to be sold"
+                },
+                {
+                  "id": "c",
+                  "text": "Food or the time for food such as dinner or lunch"
+                },
+                {
+                  "id": "d",
+                  "text": "To arrive at a place after some time of travelling"
+                },
+                {
+                  "id": "e",
+                  "text": "To defend yourself"
+                },
+                {
+                  "id": "f",
+                  "text": "Something following the customs of a group"
+                },
+                {
+                  "id": "g",
+                  "text": "To no longer exist"
+                },
+                {
+                  "id": "h",
+                  "text": "Modern way of eating food"
+                }
+              ],
+              "answer": "d"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

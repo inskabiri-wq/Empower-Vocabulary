@@ -1,0 +1,582 @@
+{
+  "id": "b2-exam-1",
+  "level": "B2",
+  "title": "B2 Reading Practice — Set 1",
+  "subtitle": "Three passages · Mixed question types",
+  "timeLimitMin": 60,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Is a University Degree Necessary for Success?",
+      "introHtml": "<p>Discuss the following questions before you read.</p><ol><li>Why do you study at a university?</li><li>What are the benefits of having a university degree?</li></ol>",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">The debate about whether one needs a degree to be successful versus the possibility of being successful by following one's passions is one that takes place all around the world. <span class=\"rd-gap\" data-gap=\"1\"></span> Basically, there are hundreds of thousands of people with high qualifications who are not able to get a job or become financially successful. There are also hundreds of examples of people who never finished college but built up successful businesses and who achieved vast financial wealth. Bill Gates started Microsoft when he was 19 and has become one of the world's wealthiest people. Mark Zuckerberg owns one of the most highly-valued technology companies in the U.S. Steve Jobs founded Apple in his garage. What do these three people have in common? None of them finished college; in fact, Bill Gates is considered \"Harvard's most successful <strong>dropout</strong>.\" <span class=\"rd-gap\" data-gap=\"2\"></span> So, is it possible to succeed without college?</p><p class=\"rd-para\" data-para=\"2\">If people are willing to work harder than others, arrive at work first and leave last, and if they are willing to put in the time and effort to improve, there is no doubt that they will succeed. <span class=\"rd-gap\" data-gap=\"3\"></span> It may even take years to achieve success through their own <strong>endeavors</strong>, but if they never give up and if they keep learning from their mistakes, they will succeed and achieve what most people only dream of.</p><p class=\"rd-para\" data-para=\"3\">However, those who do not have much ambition, or those who do not like to take initiative and only put in the minimum required amount of effort at the things they do are different. <span class=\"rd-gap\" data-gap=\"4\"></span> Following one's own passions and business ideas is a lot riskier, but at the same time if a person knows that he is going to give everything he has and more in terms of effort, time, and money, then he has higher chances of succeeding financially. <span class=\"rd-gap\" data-gap=\"5\"></span> If they are the kind of people who need to be told what to do, they will probably never start their own business or earn a lot of money. Even if they start it, they will probably lose focus and never experience the success of their actions. Then a degree will theoretically allow these kinds of people to get a <strong>decent</strong> job and provide them with financial security as long as they can work.</p><p class=\"rd-para\" data-para=\"4\">As a result, people do not need a university degree to achieve financial success in life, and they definitely do not need one in order to lead a happy life. Getting a degree is <strong>a safer bet</strong> for financial security, but also not a guarantee for their future.</p><p class=\"rd-para\" data-para=\"5\">The definition of success varies from person to person. For some it may be having enough money. <span class=\"rd-gap\" data-gap=\"6\"></span> For some, it simply means having a loving and supportive family. Regardless of how you personally define success, you should just keep in mind that different people lead different lives and there is not one single way of being successful in life. Some may not have a desire to be independent and may prefer to have a job and work for a company with a university degree, but it does not mean that it will <strong>assure</strong> them of success in the future. Some may also <strong>pursue</strong> their passions and business ideas without having a university degree and these may bring them huge success in their lives. The most important thing is that they should be certain that they will not regret their decision, even if they have no or little success.</p>",
+      "sections": [
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part B",
+          "instructions": "Match the paragraphs with the topics. There is ONE extra topic.",
+          "options": [
+            { "id": "A", "text": "A University degree does not guarantee a happy and wealthy life" },
+            { "id": "B", "text": "The quickest and easiest way to be rich" },
+            { "id": "C", "text": "What is the argument about?" },
+            { "id": "D", "text": "The importance of being a devoted worker" },
+            { "id": "E", "text": "Taking initiative brings success" },
+            { "id": "F", "text": "The meaning of success is unique for each individual" }
+          ],
+          "items": [
+            { "id": "p1", "label": "Paragraph 1", "answer": "C" },
+            { "id": "p2", "label": "Paragraph 2", "answer": "D" },
+            { "id": "p3", "label": "Paragraph 3", "answer": "E" },
+            { "id": "p4", "label": "Paragraph 4", "answer": "A" },
+            { "id": "p5", "label": "Paragraph 5", "answer": "F" }
+          ]
+        },
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part C",
+          "instructions": "Match the sentences (a–h) with the gaps (1–6) in the passage. There are TWO extra sentences.",
+          "options": [
+            { "id": "a", "text": "They will likely be better off with a degree than without one." },
+            { "id": "b", "text": "If that person owns a business, the rewards are often higher than he would get from a job." },
+            { "id": "c", "text": "People who are more self-confident and determined are more likely to be successful at their own businesses." },
+            { "id": "d", "text": "What's more, countless others have gone on to start successful businesses without first earning a bachelor's degree." },
+            { "id": "e", "text": "Regardless of whether they have a degree, most people would like to be financially well-off." },
+            { "id": "f", "text": "Some may consider themselves successful if they are being respected by their peers." },
+            { "id": "g", "text": "There is no absolute answer that will give people a clear direction to follow." },
+            { "id": "h", "text": "Whether they have a degree or not does not have a decisive role, but they may not succeed at first." }
+          ],
+          "items": [
+            { "id": "1", "label": "Gap 1", "answer": "g" },
+            { "id": "2", "label": "Gap 2", "answer": "d" },
+            { "id": "3", "label": "Gap 3", "answer": "h" },
+            { "id": "4", "label": "Gap 4", "answer": "a" },
+            { "id": "5", "label": "Gap 5", "answer": "b" },
+            { "id": "6", "label": "Gap 6", "answer": "f" }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part D",
+          "instructions": "Choose the best option.",
+          "items": [
+            {
+              "id": "d1",
+              "question": "Which of the following is NOT MENTIONED in paragraph 1?",
+              "options": [
+                { "id": "a", "text": "There are many examples of successful people without university degrees." },
+                { "id": "b", "text": "It is still argued if a university degree is essential or not." },
+                { "id": "c", "text": "There are unemployed people with high qualifications." },
+                { "id": "d", "text": "University degrees and qualifications enable you to be more advantageous." }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "d2",
+              "question": "According to paragraph 2, which of the following is NOT necessary to be successful?",
+              "options": [
+                { "id": "a", "text": "Working at the same place for years" },
+                { "id": "b", "text": "Learning from one's mistakes" },
+                { "id": "c", "text": "Being a dedicated worker" },
+                { "id": "d", "text": "Showing effort" }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "d3",
+              "question": "According to paragraph 3, who may lose focus and never experience the success of their actions?",
+              "options": [
+                { "id": "a", "text": "A person who owns a business" },
+                { "id": "b", "text": "Someone who needs to be told what to do" },
+                { "id": "c", "text": "Someone who has only a bachelor's degree" },
+                { "id": "d", "text": "A person who works for a company" }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "d4",
+              "question": "Which of the following is NOT given as a definition of success in paragraph 5?",
+              "options": [
+                { "id": "a", "text": "Having a loving and caring family" },
+                { "id": "b", "text": "Being able to afford to buy the things you want" },
+                { "id": "c", "text": "Following your path and ambitions" },
+                { "id": "d", "text": "Being appreciated by others" }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "d5",
+              "question": "What does the writer highlight in paragraph 5?",
+              "options": [
+                { "id": "a", "text": "How you define success describes your goals." },
+                { "id": "b", "text": "The desire to be independent brings success." },
+                { "id": "c", "text": "You should never feel guilty about your decisions." },
+                { "id": "d", "text": "Having no or little success makes you more ambitious." }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "vocab",
+          "type": "mcq",
+          "label": "Part E",
+          "instructions": "Guess the meaning of the words from the text. They are bold in the passage.",
+          "items": [
+            {
+              "id": "e1",
+              "question": "\"dropout\" in paragraph 1 is closest in meaning to:",
+              "options": [
+                { "id": "a", "text": "a student who leaves school or university before completely finishing" },
+                { "id": "b", "text": "a student who becomes successful without a university degree" },
+                { "id": "c", "text": "a student who gets extremely wealthy" },
+                { "id": "d", "text": "a student who has enthusiasm and goals to be successful" }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "e2",
+              "question": "\"endeavors\" in paragraph 2 is closest in meaning to:",
+              "options": [
+                { "id": "a", "text": "risks" },
+                { "id": "b", "text": "mistakes" },
+                { "id": "c", "text": "dreams" },
+                { "id": "d", "text": "attempts" }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "e3",
+              "question": "\"decent\" in paragraph 3 is closest in meaning to:",
+              "options": [
+                { "id": "a", "text": "appropriate" },
+                { "id": "b", "text": "part-time" },
+                { "id": "c", "text": "low paid" },
+                { "id": "d", "text": "boring" }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "e4",
+              "question": "\"a safer bet\" in paragraph 4 is closest in meaning to:",
+              "options": [
+                { "id": "a", "text": "less beneficial" },
+                { "id": "b", "text": "a sensible choice" },
+                { "id": "c", "text": "a happier life" },
+                { "id": "d", "text": "a better income" }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "e5",
+              "question": "\"assure\" in paragraph 5 is closest in meaning to:",
+              "options": [
+                { "id": "a", "text": "complete" },
+                { "id": "b", "text": "restrict" },
+                { "id": "c", "text": "monitor" },
+                { "id": "d", "text": "guarantee" }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "e6",
+              "question": "\"pursue\" in paragraph 5 is closest in meaning to:",
+              "options": [
+                { "id": "a", "text": "experiment" },
+                { "id": "b", "text": "deprive" },
+                { "id": "c", "text": "follow" },
+                { "id": "d", "text": "provide" }
+              ],
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "id": "writing",
+          "type": "writing",
+          "label": "Part F",
+          "instructions": "What do you think about the following? (write at least 50 words)",
+          "prompt": "\"A university degree is a must to be successful in life.\""
+        }
+      ]
+    },
+    {
+      "passageNumber": 2,
+      "title": "Brand Stretching",
+      "introHtml": "<p>Before you read, think about what <em>brand stretching</em> might mean.</p>",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">A manufacturer of sports shoes starts selling consumer electronics. A soft drink lends its name to a range of urban clothing. What's going on? In simpler times, you knew where you were with brands. <span class=\"rd-gap\" data-gap=\"1\"></span> Today, however, big companies try to redefine brands not so much as a product but more as a way of life, and <strong>they</strong> want to stretch them into new areas. In the early years of consumer society, a brand name on a box simply identified what was inside. People were looking for products that would improve their quality of life, and choose brands most likely to achieve that purpose. <span class=\"rd-gap\" data-gap=\"2\"></span> The functionality of the product was still important, but people also started using brands to say something about themselves. For example, choosing a brand of cosmetics would suggest they belonged to high society.</p><p class=\"rd-para\" data-para=\"2\">Now, we have entered the third age of branding, in which so many companies are making <strong>roughly</strong> the same product at <strong>roughly</strong> the same price. <span class=\"rd-gap\" data-gap=\"3\"></span> Instead, companies are trying to make their brands stand out by emphasising their emotional aspects, hoping consumers will identify with the set of values the brand represents.</p><p class=\"rd-para\" data-para=\"3\">One disadvantage of a product-based brand is that if the product goes out of fashion, the brand goes with <strong>it</strong>. This is a serious concern for manufacturers of breakfast cereals, who are struggling with weak demand for their products. <span class=\"rd-gap\" data-gap=\"4\"></span> The advantage of emotional brands is that companies can transfer their brand strength into other areas. This way they can increase revenues and reduce their exposure to the <strong>lifespan</strong> of a single product.</p><p class=\"rd-para\" data-para=\"4\">In addition to this, brands are flexible. On the one hand, they can have solid and practical values; on the other hand, they can have more <strong>abstract</strong> or emotional values. An example of a practical brand would be one related to a transport network such as a train company. In this instance, the brand is associated with infrastructure and its ability to get you from A to B. An example of a more abstract or emotional brand would be a leisure brand such as Nike that associates itself with dreams and enjoyment. It is the <strong>latter</strong> which has the maximum potential for stretch.</p><p class=\"rd-para\" data-para=\"5\">But even emotional brands have a limit to their flexibility. The product has to be related to the brand promise. <span class=\"rd-gap\" data-gap=\"5\"></span> From this <strong>viewpoint</strong>, it made sense when a sports shoe company moved into consumer electronics by stretching their brand to include walkie-talkies for hikers because it was sports-focused.</p><p class=\"rd-para\" data-para=\"6\">When the move was made from soft drinks into clothing, however, the branding consultants were not very excited. The drink was so closely <strong>associated with</strong> that particular brand name that moving into clothing from the drink was mentally difficult and quite risky. However, the emotional attributes that youngsters find appealing in the drink are fashionable at the moment. <span class=\"rd-gap\" data-gap=\"6\"></span> Maybe this just shows that an inspired move — even if risky — sometimes <strong>pays off</strong>.</p>",
+      "sections": [
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part B",
+          "instructions": "Match the paragraphs with the headings. There is ONE extra heading.",
+          "options": [
+            { "id": "A", "text": "An unexpected success" },
+            { "id": "B", "text": "Brands encouraging overconsumption" },
+            { "id": "C", "text": "How industrialization can change consumer attitudes to brands" },
+            { "id": "D", "text": "Functionality no longer as the focus of marketing" },
+            { "id": "E", "text": "One drawback of a product-based brand" },
+            { "id": "F", "text": "The kinds of brands that are more likely to stretch" },
+            { "id": "G", "text": "An important thing to consider when brand stretching" }
+          ],
+          "items": [
+            { "id": "p1", "label": "Paragraph 1", "answer": "C" },
+            { "id": "p2", "label": "Paragraph 2", "answer": "D" },
+            { "id": "p3", "label": "Paragraph 3", "answer": "E" },
+            { "id": "p4", "label": "Paragraph 4", "answer": "F" },
+            { "id": "p5", "label": "Paragraph 5", "answer": "G" },
+            { "id": "p6", "label": "Paragraph 6", "answer": "A" }
+          ]
+        },
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part C",
+          "instructions": "Match the sentences (a–h) with the gaps (1–6). There are TWO extra sentences.",
+          "options": [
+            { "id": "a", "text": "But as people in industrialised nations became wealthier and fulfilled their needs, brands acquired a different meaning." },
+            { "id": "b", "text": "Brand recognition is also important in marketing." },
+            { "id": "c", "text": "So far, their marketing efforts seem to be having little effect." },
+            { "id": "d", "text": "One brand name meant good-quality sports shoes, another a soft drink; no confusion." },
+            { "id": "e", "text": "Therefore, the response to the clothes with the same name as the drink has been positive." },
+            { "id": "f", "text": "Just to sell a product with your logo on it is a short-term, bad idea." },
+            { "id": "g", "text": "Brands become more successful when companies consider the needs and expectancies of their customers." },
+            { "id": "h", "text": "In other words, there is not much difference between products in terms of functionality." }
+          ],
+          "items": [
+            { "id": "1", "label": "Gap 1", "answer": "d" },
+            { "id": "2", "label": "Gap 2", "answer": "a" },
+            { "id": "3", "label": "Gap 3", "answer": "h" },
+            { "id": "4", "label": "Gap 4", "answer": "c" },
+            { "id": "5", "label": "Gap 5", "answer": "f" },
+            { "id": "6", "label": "Gap 6", "answer": "e" }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part D",
+          "instructions": "Choose the best option according to the text.",
+          "items": [
+            {
+              "id": "d1",
+              "question": "According to paragraph 1, what led to a change in attitudes to brands?",
+              "options": [
+                { "id": "a", "text": "the influence of new products on the market" },
+                { "id": "b", "text": "the financial circumstances of consumers" },
+                { "id": "c", "text": "more sophisticated marketing" },
+                { "id": "d", "text": "a greater choice of products" }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "d2",
+              "question": "According to paragraph 2, which of the following is true about the third age of branding?",
+              "options": [
+                { "id": "a", "text": "Competing products may function equally well." },
+                { "id": "b", "text": "The range of products available is too large to survive." },
+                { "id": "c", "text": "Consumers do not change their favourite products." },
+                { "id": "d", "text": "Price has become a key factor in consumers' choice of products." }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "d3",
+              "question": "In paragraph 3, the writer mentions manufacturers of breakfast cereals to show how _____.",
+              "options": [
+                { "id": "a", "text": "competition can have an impact on a product" },
+                { "id": "b", "text": "a brand can lose its popularity despite a high demand for the product" },
+                { "id": "c", "text": "without advertising a product cannot be sold" },
+                { "id": "d", "text": "changes in the popularity of products can cause difficulties" }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "d4",
+              "question": "In paragraph 4, the writer refers to railways to show that brands like this _____.",
+              "options": [
+                { "id": "a", "text": "do not recognise the value of stretching" },
+                { "id": "b", "text": "suffer from having an unattractive image" },
+                { "id": "c", "text": "are not suitable for stretching" },
+                { "id": "d", "text": "are extremely difficult to advertise" }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "d5",
+              "question": "In paragraph 5, the writer argues that the stretch from sports shoes into consumer electronics is likely to be successful because _____.",
+              "options": [
+                { "id": "a", "text": "existing customers have demanded the new products" },
+                { "id": "b", "text": "they will be sold in the same outlets" },
+                { "id": "c", "text": "the cost of the new products will be the same" },
+                { "id": "d", "text": "there is a connection in the way that the goods can be used" }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "d6",
+              "question": "In paragraph 6, the writer argues that the stretch from soft drinks into clothing _____.",
+              "options": [
+                { "id": "a", "text": "was a gamble that succeeded" },
+                { "id": "b", "text": "showed the value of careful advertising" },
+                { "id": "c", "text": "created production problems for the manufacturer" },
+                { "id": "d", "text": "did not appeal to young people" }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "d7",
+              "question": "In paragraph 1, 'they' refers to ____.",
+              "options": [
+                { "id": "a", "text": "brands" },
+                { "id": "b", "text": "consumer electronics" },
+                { "id": "c", "text": "companies" },
+                { "id": "d", "text": "products" }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "d8",
+              "question": "In paragraph 3, 'it' refers to ____.",
+              "options": [
+                { "id": "a", "text": "disadvantage" },
+                { "id": "b", "text": "product" },
+                { "id": "c", "text": "brand" },
+                { "id": "d", "text": "fashion" }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "d9",
+              "question": "In paragraph 4, 'latter' refers to ____.",
+              "options": [
+                { "id": "a", "text": "transport network" },
+                { "id": "b", "text": "dreams and enjoyment" },
+                { "id": "c", "text": "practical brand" },
+                { "id": "d", "text": "emotional brand" }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "d10",
+              "question": "In paragraph 6, 'associated with' refers to ____.",
+              "options": [
+                { "id": "a", "text": "in the centre of" },
+                { "id": "b", "text": "connected with" },
+                { "id": "c", "text": "faced with" },
+                { "id": "d", "text": "deal with" }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "find-word",
+          "type": "find-word",
+          "label": "Part E",
+          "instructions": "Find a word in the text which means the following. Type it in the box.",
+          "items": [
+            { "id": "e1", "definition": "about, approximately", "paragraph": 2, "answer": "roughly", "acceptable": ["roughly"] },
+            { "id": "e2", "definition": "the amount of time that a person lives or a thing exists", "paragraph": 3, "answer": "lifespan", "acceptable": ["lifespan", "life span"] },
+            { "id": "e3", "definition": "existing as an idea, feeling, or quality, rather than as something real that you can see or touch", "paragraph": 4, "answer": "abstract", "acceptable": ["abstract"] },
+            { "id": "e4", "definition": "a way of thinking about a situation", "paragraph": 5, "answer": "viewpoint", "acceptable": ["viewpoint", "view point"] },
+            { "id": "e5", "definition": "to be advantageous and yield benefits", "paragraph": 6, "answer": "pay off", "acceptable": ["pay off", "pays off", "paying off", "payoff"] }
+          ]
+        },
+        {
+          "id": "writing",
+          "type": "writing",
+          "label": "Part F",
+          "instructions": "Answer the following question in your own words (minimum 50 words).",
+          "prompt": "What is more important to you in a product: functionality, price, or its brand? Why?"
+        }
+      ]
+    },
+    {
+      "passageNumber": 3,
+      "title": "Getting the Picture from DNA",
+      "subtitle": "Working out what someone looks like from only a DNA sample is no longer science fiction. You'd be surprised what forensics experts can already do, says Clare Wilson.",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">At present, if police find DNA which could be that of the criminal at the scene of a crime (for example, in blood or hair), standard <strong>forensic</strong> techniques can help in two ways. If there's a suspect in custody, the police can see if their DNA matches the 'crime stain', as it is called. Or in the absence of a suspect, they can see if <strong><u>it</u></strong> matches the DNA of any known criminal held in their archives.</p><p class=\"rd-para\" data-para=\"2\">Both techniques have proved <strong><u>their</u></strong> worth in criminal investigations. <span class=\"rd-gap\" data-gap=\"1\"></span> Ever since DNA testing was introduced, forensic scientists have wondered how much a DNA sample on its own could tell them about what a criminal might look like.</p><p class=\"rd-para\" data-para=\"3\">Scientists have already had some success with predicting hair colour from DNA samples. For example, researchers at Britain's Forensic Science Service (FSS) have developed a DNA test which will tell with 98% <strong>accuracy</strong> whether or not someone has red hair. However, the red-hair test is of limited use in Britain, where only 6% of the population are red-headed. What about blonde, brown and black-haired criminals? Hair colour is usually determined by the cumulative effect of several genes, so unfortunately there's no such thing as a single gene for blonde hair that could be turned into a simple test, for example. It's the same with eye colour.</p><p class=\"rd-para\" data-para=\"4\">But biotechnology firm DNAPrint Genomics of Florida, USA, is <strong>having a crack at</strong> both problems. As a starting point, research was carried out using mice to discover the genes that controlled eye colour. <span class=\"rd-gap\" data-gap=\"2\"></span> Next, the DNAPrint researchers took DNA samples from 500 volunteers and recorded their eye colours. They then applied a technique called SNP mapping to see if they could discover any <strong>correlation</strong>s between eye colour and DNA. Of the ten genes, they found that only four really matter. By looking at <strong><u>these</u></strong>, they can classify someone as having dark eyes (black and brown), light coloured eyes (blue and grey), or hazel eyes (greenish-brown) — with 97% certainty.</p><p class=\"rd-para\" data-para=\"5\">DNAPrint is now applying exactly the same technique to hair colour, identifying possible genes and looking for SNPs. Representatives say they have <strong>made some headway</strong> and can classify people into one of three groups — blonde, brown or black-haired — with some accuracy, from their DNA alone.</p><p class=\"rd-para\" data-para=\"6\">Back in Britain, the Forensic Science Service has also pursued the genetic basis of facial features. A few years ago, it helped fund a major project carried out by scientists at University College London (UCL). Over several months, an exhibit at a London museum invited visitors to leave DNA samples and have their faces scanned using 3D surface mapping. <span class=\"rd-gap\" data-gap=\"3\"></span> The UCL researchers tried to break down this data on overall facial shape into distinct features such as the curve of the nose or chin clefts and correlate them to DNA sequences. But <strong><u>they</u></strong> made little progress. <span class=\"rd-gap\" data-gap=\"4\"></span> When the lead scientist retired, the project ended without drawing any firm conclusions.</p><p class=\"rd-para\" data-para=\"7\">But the idea of finding genes for facial features isn't dead. Many of the genes involved are common to most mammals. <span class=\"rd-gap\" data-gap=\"5\"></span> One promising project has found that mice show significant variation in jaw shape and size, and has begun to unfold the genetics behind the variation. Project leader Chris Killgenberg of the University of Konstanz in Germany <strong>caution</strong>s that, as with humans, the genetics controlling jaw shape in mice is horribly complicated, but the project is making some progress. In one study of 535 mice, <strong><u>it</u></strong> has identified genes for jaw shape, jaw size and jaw symmetry and found two basic patterns resulting from the combination of these genes.</p><p class=\"rd-para\" data-para=\"8\">The UK-based human rights group known as 'Liberty' has concerns, saying that the existing tests are not yet sufficiently conclusive to be used as a basis for arresting suspects. <span class=\"rd-gap\" data-gap=\"6\"></span> Kevin Sullivan, from the Forensic Science Service, points out that when it comes to someone's facial characteristics, playing rugby might have more of an effect on your ear and nose shape than your genes. But he is optimistic about the future of the research. 'Law-abiding citizens don't have anything to worry about,' he says. 'But criminals do.'</p>",
+      "sections": [
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part A",
+          "instructions": "Match the paragraphs with the headings. There is ONE extra heading.",
+          "options": [
+            { "id": "A", "text": "A promising study which aims to find the genetic basis for facial characteristics" },
+            { "id": "B", "text": "Doubts about the efficiency of DNA testing to catch criminals" },
+            { "id": "C", "text": "A failed attempt in finding the genes for facial features" },
+            { "id": "D", "text": "Research into the genetic basis of eye colour" },
+            { "id": "E", "text": "Using DNA testing to prove the innocence of arrested suspects" },
+            { "id": "F", "text": "Limitation of DNA testing to predict hair colour" },
+            { "id": "G", "text": "Progress in predicting hair colour correctly" }
+          ],
+          "items": [
+            { "id": "p3", "label": "Paragraph 3", "answer": "F" },
+            { "id": "p4", "label": "Paragraph 4", "answer": "D" },
+            { "id": "p5", "label": "Paragraph 5", "answer": "G" },
+            { "id": "p6", "label": "Paragraph 6", "answer": "C" },
+            { "id": "p7", "label": "Paragraph 7", "answer": "A" },
+            { "id": "p8", "label": "Paragraph 8", "answer": "B" }
+          ]
+        },
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part B",
+          "instructions": "Match the sentences (a–h) with the gaps (1–6). There are TWO extra sentences.",
+          "options": [
+            { "id": "a", "text": "However, the findings weren't in line with the expected outcome." },
+            { "id": "b", "text": "Certainly, genes never tell the whole story with physical characteristics — environment plays a key role too." },
+            { "id": "c", "text": "About 600 people volunteered." },
+            { "id": "d", "text": "So, a gene for a large jaw in mice, for example, might very well be found in humans, too." },
+            { "id": "e", "text": "Similar areas in human DNA were then investigated, and ten possible genes were found." },
+            { "id": "f", "text": "But what if there's no suspect and no match in the archive?" },
+            { "id": "g", "text": "Just as with eye colour, there is no one gene for a big nose, so the enormous complexity of the task defeated the researchers." },
+            { "id": "h", "text": "It was found that the genes in humans and animals work in a slightly similar way." }
+          ],
+          "items": [
+            { "id": "1", "label": "Gap 1", "answer": "f" },
+            { "id": "2", "label": "Gap 2", "answer": "e" },
+            { "id": "3", "label": "Gap 3", "answer": "c" },
+            { "id": "4", "label": "Gap 4", "answer": "g" },
+            { "id": "5", "label": "Gap 5", "answer": "d" },
+            { "id": "6", "label": "Gap 6", "answer": "b" }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part C",
+          "instructions": "Choose the best answer according to the text.",
+          "items": [
+            {
+              "id": "c1",
+              "question": "In paragraph 1, what is meant by a 'crime stain'?",
+              "options": [
+                { "id": "a", "text": "too much blood at the scene of a crime" },
+                { "id": "b", "text": "DNA belonging to known criminals" },
+                { "id": "c", "text": "samples of blood or hair in criminal archives" },
+                { "id": "d", "text": "DNA samples left at the scene of a crime" }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "c2",
+              "question": "Forensic scientists are interested in finding out _____.",
+              "options": [
+                { "id": "a", "text": "if the genes responsible for criminal tendencies can be identified" },
+                { "id": "b", "text": "how far personal appearance can be predicted from DNA" },
+                { "id": "c", "text": "if hair colour could be linked to criminal behaviour" },
+                { "id": "d", "text": "whether or not DNA can be used to identify a suspected criminal" }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "c3",
+              "question": "What problem do scientists face in developing DNA tests for hair and eye colour?",
+              "options": [
+                { "id": "a", "text": "the fact that hair and eye colour are not generally determined by one gene" },
+                { "id": "b", "text": "finding a sufficient number of volunteers to take DNA samples from" },
+                { "id": "c", "text": "the fact that hair and eye colour are not necessarily related" },
+                { "id": "d", "text": "the distribution of hair and eye colour from one country to another" }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "c4",
+              "question": "According to paragraph 6, the project carried out by UCL failed because _____.",
+              "options": [
+                { "id": "a", "text": "the lead scientist retired" },
+                { "id": "b", "text": "the funds were insufficient" },
+                { "id": "c", "text": "the researchers were incompetent" },
+                { "id": "d", "text": "the task proved unmanageable" }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "c5",
+              "question": "We can understand from paragraph 7 that the research being done on mice aims to _____.",
+              "options": [
+                { "id": "a", "text": "find out about genes for facial features" },
+                { "id": "b", "text": "identify different jaw shapes in mice" },
+                { "id": "c", "text": "compare and contrast the jaw shapes of different mice" },
+                { "id": "d", "text": "prove the complexity of genes associated with facial features" }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "c6",
+              "question": "According to paragraph 8, the human rights group, 'Liberty', has concerns because they think that _____.",
+              "options": [
+                { "id": "a", "text": "the environment plays a minor role in turning people into criminals" },
+                { "id": "b", "text": "the stories of the suspects are as important as their physical characteristics" },
+                { "id": "c", "text": "the DNA tests do not yet provide totally accurate results" },
+                { "id": "d", "text": "the police don't take DNA tests into consideration when arresting suspects" }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "c7",
+              "question": "The expression 'have a crack at' in paragraph 4 is closest in meaning to ___.",
+              "options": [
+                { "id": "a", "text": "pose a threat" },
+                { "id": "b", "text": "make a decision" },
+                { "id": "c", "text": "make an attempt" },
+                { "id": "d", "text": "take an opportunity" }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "c8",
+              "question": "The expression 'make headway' in paragraph 5 is closest in meaning to ___.",
+              "options": [
+                { "id": "a", "text": "make a difference" },
+                { "id": "b", "text": "make progress" },
+                { "id": "c", "text": "make a model" },
+                { "id": "d", "text": "make a discovery" }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "find-word",
+          "type": "find-word",
+          "label": "Part D",
+          "instructions": "Find a word in the text which means the following. Type it in the box.",
+          "items": [
+            { "id": "d1", "definition": "scientific techniques used for solving crimes", "paragraph": 1, "answer": "forensic", "acceptable": ["forensic", "forensics"] },
+            { "id": "d2", "definition": "the quality of being true, correct or exact", "paragraph": 3, "answer": "accuracy", "acceptable": ["accuracy"] },
+            { "id": "d3", "definition": "a connection between two ideas, facts etc, especially when one may be the cause of the other", "paragraph": 4, "answer": "correlation", "acceptable": ["correlation", "correlations"] },
+            { "id": "d4", "definition": "to warn someone", "paragraph": 7, "answer": "caution", "acceptable": ["caution", "cautions", "cautioned"] }
+          ]
+        },
+        {
+          "id": "pronoun-ref",
+          "type": "free-text",
+          "label": "Part E",
+          "instructions": "What do the following words refer to? They are bold and underlined in the text.",
+          "items": [
+            { "id": "e1", "label": "it (paragraph 1)", "answer": "crime stain", "acceptable": ["crime stain", "the crime stain", "the suspect's DNA", "suspect's DNA"] },
+            { "id": "e2", "label": "their (paragraph 2)", "answer": "(both) techniques'", "acceptable": ["techniques", "both techniques", "the techniques", "techniques'", "both techniques'"] },
+            { "id": "e3", "label": "these (paragraph 4)", "answer": "the four genes (that really matter)", "acceptable": ["four genes", "the four genes", "the four genes that really matter", "four genes that really matter", "the genes", "genes"] },
+            { "id": "e4", "label": "they (paragraph 6)", "answer": "the UCL researchers", "acceptable": ["the ucl researchers", "ucl researchers", "researchers", "the researchers"] },
+            { "id": "e5", "label": "it (paragraph 7)", "answer": "the project", "acceptable": ["the project", "project", "this project"] }
+          ]
+        },
+        {
+          "id": "writing",
+          "type": "writing",
+          "label": "Part F",
+          "instructions": "Answer the following question in your own words (minimum 50 words).",
+          "prompt": "Do you think it is right to use DNA samples in criminal investigations? Why? / Why not?"
+        }
+      ]
+    }
+  ]
+}

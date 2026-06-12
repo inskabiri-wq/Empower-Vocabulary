@@ -1,0 +1,967 @@
+/* ============================================================
+   TEACHER DASHBOARD v2 — Sidebar Layout + Crystal Overview
+   Sourced from the Claude Design "Teacher's Dash" handoff bundle.
+   Phase 1: Overview tab visual upgrade. Other tabs keep their
+   existing layout but render inside the new sidebar shell.
+   ============================================================ */
+
+:root {
+  --t2-bg:           #0d1117;
+  --t2-surface:      #161b22;
+  --t2-surface2:     #1c2128;
+  --t2-surface3:     #21262d;
+  --t2-border:       #30363d;
+  --t2-border-soft:  #21262d;
+  --t2-text:         #e6edf3;
+  --t2-text-muted:   #7d8590;
+  --t2-text-dim:     #484f58;
+  --t2-blue:         #3b82f6;
+  --t2-cyan:         #22d3ee;
+  --t2-green:        #22c55e;
+  --t2-amber:        #f59e0b;
+  --t2-red:          #ef4444;
+  --t2-purple:       #a855f7;
+  /* Extras used only by the per-activity color coding on the
+     popularity chart (overview-v2.js ACTIVITY_META). */
+  --t2-orange:       #fb923c;
+  --t2-sky:          #0ea5e9;
+  --t2-indigo:       #6366f1;
+  --t2-rose:         #fb7185;
+}
+
+/* When the v2 layout class is present, override the default page
+   background. Body layout becomes a flexbox so sidebar can sit
+   alongside the main content column. */
+body.t2-active {
+  background: var(--t2-bg);
+  color: var(--t2-text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* The original .container had max-width + auto margins; replace
+   with a full-width flex shell so sidebar + main content fill
+   the viewport. Scoped to v2 so non-v2 callers stay untouched. */
+body.t2-active .container {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* When mainContent is shown by config.js, render it as a flex row
+   (sidebar + main column). NOTE: no !important — we let the inline
+   style="display: none" win during the loading phase, otherwise the
+   loading spinner and the unpopulated overview render side-by-side.
+   config.js sets `style.display = 'flex'` after data loads. */
+body.t2-active #mainContent {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+body.t2-active #mainContent[style*="display: block"] {
+  /* Belt-and-braces: if any legacy code path sets display:block on
+     mainContent, force it back to flex so the sidebar layout holds. */
+  display: flex !important;
+}
+
+/* Loading + access-denied screens are siblings of #mainContent inside
+   the now-flex .container. They were block-styled originally and just
+   centered themselves on the page; let them fill the flex row so they
+   stay visually centered while their sibling #mainContent is hidden. */
+body.t2-active .loading,
+body.t2-active .access-denied {
+  flex: 1;
+  width: 100%;
+  height: 100vh;
+  background: var(--t2-bg);
+}
+
+/* ============================================================
+   SIDEBAR NAV
+   200px fixed-width column, GitHub-dark surface, gradient logo
+   tile, badge support on items, profile chip pinned to bottom.
+   ============================================================ */
+.t2-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--t2-surface);
+  border-right: 1px solid var(--t2-border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 12px;
+  gap: 2px;
+  /* 100vh on iOS Safari includes the area BEHIND the URL/tab bar,
+     which means the brand at the top can be clipped above the actual
+     visible viewport when the address bar is shown. 100dvh tracks the
+     visible area dynamically; the vh fallback keeps older browsers OK. */
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+}
+
+.t2-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 4px 20px;
+}
+.t2-brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  color: #ffffff;          /* SVG inside uses currentColor */
+}
+.t2-brand-logo > [data-icon] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+.t2-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.t2-brand-text .top    { font-size: 13px; font-weight: 700; color: var(--t2-text); }
+.t2-brand-text .bottom { font-size: 11px; color: var(--t2-text-muted); margin-top: -2px; }
+
+.t2-sidebar-section-lbl {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--t2-text-dim);
+  letter-spacing: 1px;
+  padding: 0 12px 6px;
+  text-transform: uppercase;
+}
+
+.t2-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--t2-text-muted);
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+  background: transparent;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 13px;
+  position: relative;
+}
+.t2-nav-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--t2-text);
+}
+.t2-nav-item.active {
+  background: rgba(59, 130, 246, 0.09);
+  color: var(--t2-blue);
+  border-left-color: var(--t2-blue);
+  font-weight: 600;
+}
+.t2-nav-item .ico {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 0;
+}
+.t2-nav-item .ico svg { display: block; }
+.t2-nav-item .label { flex: 1; }
+.t2-nav-item .badge {
+  background: var(--t2-red);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.t2-sidebar-spacer { flex: 1; }
+
+.t2-sidebar-profile {
+  border-top: 1px solid var(--t2-border);
+  margin-top: 12px;
+  padding-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.t2-profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.t2-profile-meta { min-width: 0; }
+.t2-profile-meta .name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--t2-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.t2-profile-meta .role {
+  font-size: 10px;
+  color: var(--t2-text-muted);
+}
+
+/* ============================================================
+   MAIN CONTENT COLUMN — header + tab content
+   ============================================================ */
+.t2-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--t2-bg);
+}
+
+.t2-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.t2-page-header h1 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--t2-text);
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+.t2-page-header .sub {
+  font-size: 12px;
+  color: var(--t2-text-muted);
+  margin-top: 2px;
+}
+.t2-page-header .sub .alert-callout {
+  color: var(--t2-amber);
+  font-weight: 600;
+}
+.t2-header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.t2-period-select {
+  background: var(--t2-surface);
+  border: 1px solid var(--t2-border);
+  color: var(--t2-text-muted);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.t2-btn {
+  background: transparent;
+  border: 1px solid var(--t2-border);
+  color: var(--t2-text-muted);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.t2-btn [data-icon] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+.t2-btn [data-icon] svg { display: block; }
+.t2-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--t2-text);
+}
+.t2-btn.solid {
+  background: var(--t2-blue);
+  color: #fff;
+  border-color: transparent;
+}
+.t2-btn.solid:hover { filter: brightness(1.1); }
+
+/* ============================================================
+   OVERVIEW TAB
+   ============================================================ */
+.t2-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Stat-card grid: 4 cards across on desktop, responsive */
+.t2-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+@media (max-width: 1100px) {
+  .t2-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .t2-stats-grid { grid-template-columns: 1fr; }
+}
+
+.t2-stat-card {
+  background: var(--t2-surface);
+  border: 1px solid var(--t2-border);
+  border-radius: 12px;
+  padding: 18px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: background 0.2s, border-color 0.2s;
+  cursor: default;
+}
+.t2-stat-card:hover { background: var(--t2-surface2); }
+.t2-stat-card.alert {
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.18);
+}
+
+.t2-stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.t2-stat-icon {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  color: var(--t2-text-muted);
+}
+.t2-stat-icon svg { display: block; }
+/* Tint the stat icon to match its card accent so the card has a
+   single coherent color story (icon + value + sparkline all align). */
+.t2-stat-card.cyan   .t2-stat-icon { color: var(--t2-cyan); }
+.t2-stat-card.purple .t2-stat-icon { color: var(--t2-purple); }
+.t2-stat-card.amber  .t2-stat-icon { color: var(--t2-amber); }
+.t2-stat-card.green  .t2-stat-icon { color: var(--t2-green); }
+.t2-stat-trend {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.t2-stat-trend.up   { color: var(--t2-green); background: rgba(34, 197, 94, 0.12); }
+.t2-stat-trend.down { color: var(--t2-red);   background: rgba(239, 68, 68, 0.12); }
+.t2-stat-trend.flat { color: var(--t2-text-muted); background: rgba(125, 133, 144, 0.10); }
+
+.t2-stat-value {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.t2-stat-label {
+  font-size: 12px;
+  color: var(--t2-text-muted);
+  font-weight: 500;
+}
+.t2-stat-sub {
+  font-size: 11px;
+  color: var(--t2-text-dim);
+  margin-top: -4px;
+}
+.t2-stat-spark {
+  height: 28px;
+  display: flex;
+  align-items: center;
+}
+.t2-stat-spark svg { display: block; }
+
+/* Per-card accent colors via class */
+.t2-stat-card.cyan   .t2-stat-value { color: var(--t2-cyan); }
+.t2-stat-card.purple .t2-stat-value { color: var(--t2-purple); }
+.t2-stat-card.amber  .t2-stat-value { color: var(--t2-amber); }
+.t2-stat-card.green  .t2-stat-value { color: var(--t2-green); }
+
+/* ============================================================
+   PANEL ROW (Level Distribution + Needs Attention split)
+   ============================================================ */
+.t2-panels-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 900px) {
+  .t2-panels-row { grid-template-columns: 1fr; }
+}
+
+.t2-panel {
+  background: var(--t2-surface);
+  border: 1px solid var(--t2-border);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.t2-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--t2-text);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.t2-panel-title [data-icon] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  color: var(--t2-text-muted);
+}
+.t2-panel-title [data-icon] svg { display: block; }
+.t2-panel.alert-tinted {
+  border-color: rgba(245, 158, 11, 0.25);
+}
+.t2-panel.alert-tinted .t2-panel-title [data-icon] {
+  color: var(--t2-amber);   /* warning panel → amber icon for affinity */
+}
+
+/* One-line subtitle that explains what a panel represents — sits
+   directly under the title, above the data viz. Keeps the header
+   approachable without making each panel verbose. */
+.t2-panel-sub {
+  font-size: 11px;
+  color: var(--t2-text-muted);
+  margin: -10px 0 14px;
+  line-height: 1.4;
+}
+
+/* ============================================================
+   ACTIVITY POPULARITY (last 7 days)
+   One row per activity with icon + name + horizontal bar + count.
+   Bar width = relative to the most-used activity (the "peak").
+   Tooltip on hover shows raw count + share-of-week.
+   ============================================================ */
+.t2-popularity { display: flex; flex-direction: column; gap: 8px; }
+
+.t2-pop-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  cursor: default;
+}
+.t2-pop-icon {
+  width: 22px;
+  font-size: 14px;
+  text-align: center;
+  flex-shrink: 0;
+  filter: grayscale(0.15);   /* slight desaturation so emojis don't shout */
+}
+.t2-pop-name {
+  flex: 0 0 110px;
+  color: var(--t2-text);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.t2-pop-track {
+  flex: 1;
+  height: 8px;
+  background: var(--t2-border-soft);
+  border-radius: 99px;
+  overflow: hidden;
+  min-width: 40px;
+}
+.t2-pop-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.t2-pop-count {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--t2-text);
+  min-width: 24px;
+  text-align: right;
+}
+.t2-popularity-empty {
+  text-align: center;
+  padding: 28px 12px;
+  color: var(--t2-text-muted);
+  font-size: 12px;
+}
+
+/* ============================================================
+   STUDENTS-TABLE ROW HIGHLIGHT
+   Used by `t2OpenStudent(uid)` when the user clicks View on a
+   Needs Attention row — switches to the Students tab, scrolls
+   the matching row into view, and pulses it briefly so the
+   teacher's eye lands on it. Two-second amber halo.
+   ============================================================ */
+@keyframes t2RowFlash {
+  0%   { background: rgba(245, 158, 11, 0.30); box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.55) inset; }
+  100% { background: transparent;              box-shadow: 0 0 0 0 transparent inset; }
+}
+body.t2-active .t2-row-highlight {
+  animation: t2RowFlash 2s ease-out forwards;
+}
+
+/* ---- Level Distribution mini-bar chart ---- */
+.t2-bars {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  height: 80px;
+  padding: 0 4px;
+}
+.t2-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  justify-content: flex-end;
+}
+.t2-bar-col .num {
+  font-size: 11px;
+  color: var(--t2-text-muted);
+  font-weight: 600;
+}
+.t2-bar-track {
+  width: 100%;
+  background: var(--t2-border);
+  border-radius: 4px;
+  height: 48px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+.t2-bar-fill {
+  width: 100%;
+  border-radius: 4px;
+  min-height: 4px;
+  transition: height 0.6s ease;
+}
+.t2-bar-col .lbl {
+  font-size: 10px;
+  color: var(--t2-text-dim);
+}
+.t2-bar-legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.t2-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+}
+.t2-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.t2-legend-item .lbl { color: var(--t2-text-muted); }
+.t2-legend-item .val { color: var(--t2-text); font-weight: 600; }
+
+/* ---- Needs Attention list ---- */
+.t2-attn-list { display: flex; flex-direction: column; gap: 6px; }
+.t2-attn-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: var(--t2-surface2);
+  border: 1px solid var(--t2-border);
+}
+.t2-attn-row.severity-critical { border-color: rgba(239, 68, 68, 0.3); }
+.t2-attn-row.severity-warning  { border-color: rgba(245, 158, 11, 0.3); }
+.t2-attn-row.severity-info     { border-color: rgba(59, 130, 246, 0.3); }
+
+.t2-attn-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  border-width: 1.5px;
+  border-style: solid;
+}
+
+.t2-attn-info { flex: 1; min-width: 0; }
+.t2-attn-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t2-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.t2-attn-issue {
+  font-size: 11px;
+  color: var(--t2-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t2-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  border-width: 1px;
+  border-style: solid;
+}
+.t2-badge.critical { color: var(--t2-red);   background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.4); }
+.t2-badge.warning  { color: var(--t2-amber); background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.4); }
+.t2-badge.info     { color: var(--t2-blue);  background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.4); }
+
+.t2-attn-action {
+  flex-shrink: 0;
+  background: transparent;
+  color: var(--t2-text-muted);
+  border: 1px solid var(--t2-border);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.t2-attn-action:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--t2-text);
+}
+
+/* Flag-for-follow-up button (Missing#3) */
+.t2-attn-flag {
+  flex-shrink: 0;
+  background: transparent;
+  color: var(--t2-text-muted);
+  border: 1px solid var(--t2-border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 13px;
+  line-height: 1;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.t2-attn-flag:hover { background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.4); }
+.t2-attn-flag.on { background: rgba(245,158,11,0.16); border-color: rgba(245,158,11,0.5); }
+
+.t2-attn-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px 20px;
+  text-align: center;
+  color: var(--t2-text-muted);
+  font-size: 13px;
+  background: var(--t2-surface2);
+  border-radius: 10px;
+  border: 1px dashed var(--t2-border);
+}
+.t2-attn-empty .ico { font-size: 24px; }
+
+/* ---- Recent Activity feed ---- */
+.t2-feed { display: flex; flex-direction: column; }
+.t2-feed-row {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--t2-border-soft);
+}
+.t2-feed-row:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.t2-feed-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.t2-feed-text {
+  font-size: 12px;
+  color: var(--t2-text);
+  line-height: 1.4;
+}
+.t2-feed-text strong { font-weight: 600; }
+.t2-feed-time {
+  font-size: 11px;
+  color: var(--t2-text-dim);
+  margin-top: 2px;
+}
+.t2-feed-empty {
+  padding: 28px 12px;
+  text-align: center;
+  color: var(--t2-text-muted);
+  font-size: 13px;
+}
+
+/* ============================================================
+   Hide the OLD top tab nav + dashboard header when v2 is on.
+   The new sidebar + page header replace them.
+   ============================================================ */
+body.t2-active .dashboard-header { display: none !important; }
+body.t2-active .tab-nav          { display: none !important; }
+
+/* The old overview-grid (4 cards) and level-distribution + alert
+   sections are replaced by the v2 overview HTML. The OLD HTML is
+   removed from the page; if any stale rule still tries to style
+   them, this is a safety net. */
+body.t2-active #tab-overview > .overview-grid,
+body.t2-active #tab-overview > .section,
+body.t2-active #tab-overview > #alertSummaryGrid,
+body.t2-active #tab-overview > #alertDetailPanel { display: none; }
+
+/* The other tabs (students/assignments/activity/admin) keep their
+   own styles. We just need them to render cleanly inside the new
+   main column — give them the same horizontal padding / max-width
+   feel by removing any lingering body-level container constraints. */
+body.t2-active .tab-content {
+  padding: 0;
+}
+
+/* ============================================================
+   STUDENT DRILL-DOWN MODAL (teacher/js/student-detail.js)
+   ============================================================ */
+.sd-overlay {
+  position: fixed; inset: 0;
+  background: rgba(8, 12, 24, 0.78);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 10000;
+  padding: 40px 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.sd-overlay.active { opacity: 1; }
+.sd-modal {
+  background: var(--t2-surface, #0f172a);
+  border: 1px solid var(--t2-border-md, rgba(255,255,255,0.08));
+  border-radius: 18px;
+  width: 100%;
+  max-width: 680px;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.6);
+  color: var(--t2-text, #f1f5f9);
+  transform: scale(0.96);
+  opacity: 0;
+  transition: transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1), opacity 0.18s;
+  overflow: hidden;
+}
+.sd-overlay.active .sd-modal { transform: scale(1); opacity: 1; }
+
+/* Head */
+.sd-modal-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 22px 24px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.16), rgba(59,130,246,0.06));
+  border-bottom: 1px solid var(--t2-border-soft, rgba(255,255,255,0.06));
+}
+.sd-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #a78bfa);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5em; font-weight: 800; color: #fff;
+  flex-shrink: 0;
+}
+.sd-head-info { flex: 1; min-width: 0; }
+.sd-name { font-size: 1.25em; font-weight: 800; }
+.sd-email { color: var(--t2-text-muted, #94a3b8); font-size: 0.85em; margin-bottom: 8px; word-break: break-all; }
+.sd-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.sd-tag {
+  font-size: 0.72em; font-weight: 700;
+  padding: 3px 9px; border-radius: 999px;
+  background: rgba(148,163,184,0.14);
+  border: 1px solid rgba(148,163,184,0.28);
+  color: #cbd5e1;
+}
+.sd-tag.active   { background: rgba(34,197,94,0.16); border-color: rgba(34,197,94,0.4); color: #86efac; }
+.sd-tag.inactive { background: rgba(148,163,184,0.12); color: #94a3b8; }
+.sd-head-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.sd-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--t2-border-md, rgba(255,255,255,0.1));
+  color: var(--t2-text, #f1f5f9);
+  border-radius: 9px; padding: 7px 12px;
+  font-family: inherit; font-size: 0.82em; font-weight: 600;
+  cursor: pointer; transition: filter 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.sd-btn:hover { filter: brightness(1.15); border-color: rgba(99,102,241,0.5); }
+.sd-close {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--t2-border-md, rgba(255,255,255,0.1));
+  color: var(--t2-text-muted, #94a3b8);
+  font-size: 1.1em; cursor: pointer;
+  transition: filter 0.15s, color 0.15s;
+}
+.sd-close:hover { filter: brightness(1.2); color: #f1f5f9; }
+
+/* Quick stats */
+.sd-quickstats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; padding: 16px 24px;
+  border-bottom: 1px solid var(--t2-border-soft, rgba(255,255,255,0.06));
+}
+.sd-qstat { text-align: center; }
+.sd-qval { font-size: 1.5em; font-weight: 800; color: #818cf8; }
+.sd-qlbl { font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--t2-text-muted, #94a3b8); margin-top: 2px; }
+
+/* Sections */
+.sd-section { padding: 16px 24px; border-bottom: 1px solid var(--t2-border-soft, rgba(255,255,255,0.06)); }
+.sd-section:last-child { border-bottom: none; }
+.sd-h { margin: 0 0 12px; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.08em; color: var(--t2-text-muted, #94a3b8); font-weight: 700; }
+.sd-count { color: #64748b; font-weight: 500; }
+
+/* Per-skill rows */
+.sd-skills { display: flex; flex-direction: column; gap: 8px; }
+.sd-skill-row { display: grid; grid-template-columns: 130px 80px 1fr 42px; align-items: center; gap: 10px; font-size: 0.88em; }
+.sd-skill-empty { grid-template-columns: 130px 1fr; color: var(--t2-text-muted, #94a3b8); opacity: 0.6; }
+.sd-skill-name { font-weight: 600; }
+.sd-skill-count { color: var(--t2-text-muted, #94a3b8); font-size: 0.9em; }
+.sd-skill-none { color: var(--t2-text-muted, #94a3b8); font-size: 0.85em; font-style: italic; }
+.sd-skill-bar { height: 8px; background: rgba(148,163,184,0.15); border-radius: 999px; overflow: hidden; }
+.sd-skill-fill { height: 100%; border-radius: 999px; transition: width 0.4s; }
+.sd-skill-pct { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* Assignments */
+.sd-assigns { display: flex; flex-direction: column; gap: 6px; }
+.sd-assign-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; background: rgba(255,255,255,0.025); border: 1px solid var(--t2-border-soft, rgba(255,255,255,0.06)); border-radius: 8px; font-size: 0.88em; }
+.sd-assign-title { font-weight: 600; min-width: 0; }
+.sd-assign-meta { color: var(--t2-text-muted, #94a3b8); font-weight: 400; }
+.sd-chip { font-size: 0.78em; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+.sd-chip.done    { background: rgba(34,197,94,0.16); color: #86efac; }
+.sd-chip.prog    { background: rgba(245,158,11,0.16); color: #fcd34d; }
+.sd-chip.overdue { background: rgba(239,68,68,0.16); color: #fca5a5; }
+.sd-chip.none    { background: rgba(148,163,184,0.14); color: #94a3b8; }
+
+/* Recent sessions table */
+.sd-recent { width: 100%; border-collapse: collapse; font-size: 0.88em; }
+.sd-recent th { text-align: left; color: var(--t2-text-muted, #94a3b8); font-weight: 600; font-size: 0.85em; padding: 4px 8px; border-bottom: 1px solid var(--t2-border-soft, rgba(255,255,255,0.06)); }
+.sd-recent td { padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.sd-empty { color: var(--t2-text-muted, #94a3b8); text-align: center; padding: 14px; font-size: 0.9em; }
+
+@media (max-width: 560px) {
+  .sd-quickstats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .sd-skill-row { grid-template-columns: 110px 1fr 38px; }
+  .sd-skill-count { display: none; }
+  .sd-modal-head { flex-wrap: wrap; }
+}
+
+/* Students table rows read as clickable now that they open the drill-down. */
+body.t2-active .students-table tbody tr { cursor: pointer; }
+body.t2-active .students-table tbody tr:hover td { background: rgba(99,102,241,0.06); }
+
+/* ============================================================
+   DEADLINE CALENDAR (teacher/js/dashboard-extras.js)
+   ============================================================ */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.cal-head { margin-bottom: 6px; }
+.cal-dow {
+  text-align: center;
+  font-size: 0.72em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--t2-text-muted, #94a3b8);
+  padding: 4px 0;
+}
+.cal-cell {
+  min-height: 78px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--t2-border-soft, rgba(255,255,255,0.06));
+  border-radius: 8px;
+  padding: 5px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+}
+.cal-cell.cal-empty { background: transparent; border-color: transparent; }
+.cal-cell.cal-has { border-color: rgba(99,102,241,0.3); }
+.cal-cell.cal-today { border-color: rgba(99,102,241,0.7); box-shadow: 0 0 0 1px rgba(99,102,241,0.4) inset; }
+.cal-day { font-size: 0.78em; font-weight: 700; color: var(--t2-text-muted, #94a3b8); }
+.cal-cell.cal-today .cal-day { color: #a5b4fc; }
+.cal-chip {
+  font-size: 0.68em;
+  background: rgba(99,102,241,0.16);
+  border: 1px solid rgba(99,102,241,0.32);
+  color: #c7d2fe;
+  border-radius: 5px;
+  padding: 1px 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cal-more { font-size: 0.66em; color: var(--t2-text-muted, #94a3b8); padding-left: 4px; }
+
+@media (max-width: 640px) {
+  .cal-cell { min-height: 56px; padding: 3px 4px; }
+  .cal-chip { font-size: 0.6em; }
+  .cal-dow { font-size: 0.62em; }
+}

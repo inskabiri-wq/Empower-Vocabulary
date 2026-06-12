@@ -1,0 +1,91 @@
+ID: a1-r3
+LEVEL: A1
+TITLE: A1 Reading 3 — Life Above Ground
+SUBTITLE: One passage · Gaps, MCQ, headings, vocabulary
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Life Above Ground
+
+PASSAGE:
+Welcome to the home of Julia Hill! Julia is a young woman. *She* is from Seattle. *She* is 25 years old, and she has two brothers, aged 12 and 16. *They* live in Seattle with their parents but she lives in a large redwood tree in California. {gap:1} *Her* *home* is over 600 years old.
+
+Julia is a member of Greenpeace and she wants to save trees and forests in the world because trees *produce* oxygen and they clean the air. They are very important for the future of Earth. {gap:2} However, a company called Axe Inc. wants to cut them down but the company can't cut down this tree because Julia lives in it!
+
+What does Julia do every day? She gets up early. The mornings are cold, so she gets dressed fast. She combs her hair and washes her face. Then she eats her breakfast. After breakfast, Julia *checks* her mailbox and reads her mails. She *receives* a lot of letters every day. {gap:3} In the afternoon, she exercises. She goes jogging and climbs around in the tall tree. After that, she takes a shower and talks to many people on her cell phone. Sometimes people come and visit her and they bring fresh water, food, and clothes. Julia goes to sleep at 9:00 p.m. Julia lives in the tree for 738 days. Life in the tree is difficult. In winter, it snows, and it's very windy. Sometimes Julia is *scared*, because she lives alone in the tree but she doesn't want to give up her fight and come down.
+
+Finally, the company says, "we aren't going to cut down the trees." Julia is ready to come down from the tree. {gap:4} She has a message for every man, woman, and child: Love the trees. Care for our earth.
+
+# GAPS
+LABEL: Part A
+INSTRUCTIONS: Match the sentences (a-f) with the gaps (1-4). There are two extra sentences.
+a: Mostly, they are from people who are passionate about nature.
+b: However, it is not one of those tree houses you can see around the neighbourhood.
+c: Some news reporters try to visit her in this interesting house.
+d: Julia's house is one of those trees that give us a clean air to breathe in.
+e: She is proud to accomplish such a big success on her own.
+f: She stays in the tree all day to protest the company.
+ANSWERS: 1=b, 2=d, 3=a, 4=e
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Skim through the text and circle the best answer. Which option summarises the text the best?
+1. The text is best summarised as:
+   a) Julia is a very sensitive person.
+   b) Julia calls people to protect the trees and forests.
+   c) Julia likes to live in nature.
+   d) Julia doesn't like winter days.
+   ANSWER: b
+
+# HEADINGS
+LABEL: Part C
+INSTRUCTIONS: Match the paragraphs with the headings. There is one extra.
+A: Julia's message for the world
+B: Julia's daily routine
+C: Julia's work life
+D: Julia & her family
+E: Julia, the environmentalist
+ANSWERS: 1=D, 2=E, 3=B, 4=A
+
+# MCQ
+LABEL: Part D (vocabulary in context)
+INSTRUCTIONS: Choose the best option for the bolded words.
+1. "produce" (paragraph 2) is a:
+   a) noun
+   b) verb
+   c) adjective
+   ANSWER: b
+2. "produce" (paragraph 2) means:
+   a) work
+   b) eat
+   c) make
+   ANSWER: c
+3. "check" (paragraph 3) is a:
+   a) noun
+   b) verb
+   c) adjective
+   ANSWER: b
+4. "check" (paragraph 3) means:
+   a) look at
+   b) wake up
+   c) go out
+   ANSWER: a
+5. "receive" (paragraph 3) is a:
+   a) noun
+   b) verb
+   c) adjective
+   ANSWER: b
+6. "receive" (paragraph 3) means:
+   a) do
+   b) draw
+   c) get
+   ANSWER: c
+7. "scared" (paragraph 3) is a/an:
+   a) noun
+   b) verb
+   c) adjective
+   ANSWER: c
+8. "scared" (paragraph 3) means:
+   a) afraid
+   b) happy
+   c) hungry
+   ANSWER: a

@@ -1,0 +1,111 @@
+ID: a1-r4
+LEVEL: A1
+TITLE: A1 Reading 4 — People in Big Cities
+SUBTITLE: One passage · Gaps, MCQ, reference, fill-in
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: People in Big Cities
+
+PASSAGE:
+People in big cities often come from different places. {gap:1} People move to cities to get jobs or to find a better life, and many of them come from other countries. *They* often bring their culture, music and food with them. Visitors to London are often surprised to see so many Indian shops and restaurants, but over a million Indians live in the UK. {gap:2}
+
+Many European cities have large numbers of immigrants. There are Portuguese people in Paris and Turkish workers in Frankfurt. *They* are mostly there from the 1960s and 70s. But American cities have a very long tradition of new citizens from foreign countries. For example, San Francisco has more Chinese people than any city outside Asia. {gap:3} The city is famous for its Chinese restaurants. And New York, of course, is well known for its British and Irish citizens. *The city* has an Irish newspaper and its most important holiday is St Patrick's Day — the national day of Ireland. {gap:4} There are many Koreans from the 1980s and 90s in the US, especially in Los Angeles. In fact there is a large area in the center of Los Angeles that is called "Korea town".
+
+# GAPS
+LABEL: Part A
+INSTRUCTIONS: Match the sentences (a-f) with the gaps (1-4). There are two extra sentences.
+a: There are many reasons for such a change in their lives.
+b: Korean people are one of the late immigrants in the country, maybe even after 2000's.
+c: It is a good example to see that people from different countries can get along and celebrate things together.
+d: San Francisco is well known for the number of Japanese people that live in there.
+e: Most of the citizens are used to seeing and meeting Chinese people at work or in social events.
+f: These places are so popular that sometimes people fly overseas to taste their food.
+ANSWERS: 1=a, 2=c, 3=f, 4=b
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Read the text and answer the question.
+1. The best title for the text is __________.
+   a) London
+   b) Modern Cities
+   c) Old Cities
+   d) Modern Countries
+   ANSWER: b
+
+# MCQ
+LABEL: Part C
+INSTRUCTIONS: Choose the correct answer.
+1. People move to cities because __________.
+   a) they want to find good jobs
+   b) the cities are big
+   c) they like tourism
+   d) big cities are crowded
+   ANSWER: a
+2. Immigrants to big cities bring their __________ with them.
+   a) newspapers
+   b) traditional food
+   c) music, food and culture
+   d) musical instruments
+   ANSWER: c
+3. There are a lot of Indian restaurants in London because __________.
+   a) India is near London
+   b) London has many Indian people
+   c) British people like Indian food
+   d) Indian food is cheap
+   ANSWER: b
+4. There are more Chinese immigrants in __________ than any country outside Asia.
+   a) Germany
+   b) France
+   c) China
+   d) the USA
+   ANSWER: d
+5. St Patrick's Day is a/an __________.
+   a) British holiday
+   b) Turkish holiday
+   c) Irish holiday
+   d) Indian holiday
+   ANSWER: c
+6. 1980s means __________.
+   a) from 1980 to 1989
+   b) 1980
+   c) 1980, 1981, 1982
+   d) 1980 and 1990
+   ANSWER: a
+
+# REFERENCE
+LABEL: Part D
+INSTRUCTIONS: Choose the correct answer.
+1. "They" in paragraph 1 refers to __________.
+   a) countries
+   b) people
+   c) cities
+   d) jobs
+   ANSWER: b
+2. "They" in paragraph 2 refers to __________.
+   a) European cities
+   b) Portuguese people
+   c) immigrants
+   d) Turkish workers
+   ANSWER: c
+3. "The city" in paragraph 2 refers to __________.
+   a) San Francisco
+   b) New York
+   c) Ireland
+   d) Britain
+   ANSWER: b
+
+# SHORTANSWER
+LABEL: Part E
+INSTRUCTIONS: Fill in the blanks with the correct words from the box (citizens / immigrants / culture / foreign / holidays / national).
+1. In France, there are a lot of French __________.
+   ANSWER: citizens
+2. __________ have a different culture and music.
+   ANSWER: Immigrants
+3. They have a different __________ and music.
+   ANSWER: culture
+4. Sometimes they speak a __________ language.
+   ANSWER: foreign
+5. Immigrants may have different __________.
+   ANSWER: holidays
+6. The __________ holiday of France is an important day for everyone.
+   ANSWER: national

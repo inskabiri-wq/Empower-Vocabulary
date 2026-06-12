@@ -1,0 +1,212 @@
+ID: a1-r9
+LEVEL: A1
+TITLE: A1 Reading 9 — Immigrant Stories
+SUBTITLE: One passage · Word forms, fill-in, matching, MCQ, vocab, reference, sentence-insert, T/F
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Immigrant Stories
+
+PASSAGE:
+Immigrants in London. Why are they in London? Are they happy to live here? Do they plan to stay? Read their stories and find the answers!
+
+Story 1: Sun Yun Wing
+
+My name is Sun Yun Wing. I am from a small town near Hong Kong. In 1960, there weren't many jobs *there*. There were many *opportunities* in England. So, I came to London. I was 20 years old.
+
+There were many problems at first. The English language was hard for me, and the weather was cold and rainy. I was *lonely* because my family wasn't with me, but there were good things about living in London. There were many jobs with good *pay*.
+
+My first job was in a Chinese restaurant. Now, I have my own restaurant. I work there with my wife. She is also Chinese. Her English is good. She talks to the *customers*. I am the chef. *We* work very hard.
+
+{gap:1} We have three children. They have good jobs. They do not want to go and live in Hong Kong. My wife and I don't know anyone in Hong Kong now. Our life is here. This is our home.
+
+Story 2: Bashar Ali
+
+{gap:2} My name is Bashar Ali. I am from a small town in Bangladesh. I came to England in 1980 with my wife and two small children. I was 25 years old. There were many jobs in England. It was the best way to *support* my family.
+
+My first job in England was in a factory. At night, I went to school. There were classes in English and business. I was happy to be a student. There were no opportunities for me to go to school in my hometown in Bangladesh.
+
+Now, I have my own business. I sell clothing from Bangladesh. My business is very *successful*. I have *several* clothing stores.
+
+I try to help my people. In London, I hold English classes at my stores for the Bangladeshi *community*. I send money to my relatives and my town in Bangladesh. I support a children's language school *there*.
+
+I have good children. *They* work in my company. They keep Bangladeshi ways in their families. They have success in England, but they are still Bangladeshi in their hearts.
+
+Story 3: Apara Asuquo
+
+My name is Apara Asuquo. I am from Nigeria. I came to London in 2003 with my husband. I was 45 years old. My husband works for an *international* bank here in London. There was an office of the same bank in Nigeria. We came here for his career.
+
+I was a businesswoman in my country. Here, there were no good jobs for me. After two years, my husband said, "This is a different country. This is your new life. You need to start from the beginning again." Now, I am an office worker. The pay isn't very good, but I like the people.
+
+{gap:3} Our children go to university in England. My husband and I plan to return to Nigeria, but our children plan to stay here. There are many opportunities for them here. It is always sad to say goodbye, but for my husband and me, Nigeria is our home.
+
+# SHORTANSWER
+LABEL: Part A
+INSTRUCTIONS: Write the correct form of the words in parentheses.
+1. The firemen were __________ in putting out the fire. (SUCCESS)
+   ANSWER: successful
+2. Students in that school also need financial support to compete __________. (INTERNATIONAL)
+   ANSWER: internationally
+3. __________ should apply to the immigration office first. (IMMIGRATE)
+   ANSWER: immigrants
+
+# SHORTANSWER
+LABEL: Part B
+INSTRUCTIONS: Fill in the blanks with the words from the box. One word is EXTRA. [Box: lonely, career, customers, opportunity, pay]
+1. The store held a special sale for its __________.
+   ANSWER: customers
+2. This exam is a great __________ to pass my class.
+   ANSWER: opportunity
+3. My grandma is not very happy with her __________ life. She misses my grandpa a lot.
+   ANSWER: lonely
+4. Mary wants to have a __________ as a pilot. She likes flying.
+   ANSWER: career
+5. My brother got his final __________ in that company last week.
+   ANSWER: pay
+
+# MCQ
+LABEL: Part C
+INSTRUCTIONS: Match the information to the people. There is an extra item.
+1. Apara Asuquo:
+   a) "Home is not the place you were born; it is where you live."
+   b) "Sometimes, being away is a better way to help people you like."
+   c) "Leaving your own country because of your children's future is necessary."
+   d) "Leaving your home country is never a good idea."
+   ANSWER: c
+2. Bashar Ali:
+   a) "Home is not the place you were born; it is where you live."
+   b) "Sometimes, being away is a better way to help people you like."
+   c) "Leaving your own country because of your children's future is necessary."
+   d) "Leaving your home country is never a good idea."
+   ANSWER: b
+3. Sun Yun Wing:
+   a) "Home is not the place you were born; it is where you live."
+   b) "Sometimes, being away is a better way to help people you like."
+   c) "Leaving your own country because of your children's future is necessary."
+   d) "Leaving your home country is never a good idea."
+   ANSWER: a
+
+# MCQ
+LABEL: Part D
+INSTRUCTIONS: Answer the questions about the people you have just read about.
+1. Sun Yun Wing __________.
+   a) came to England to study.
+   b) was happy to be away from his family.
+   c) now works for a Chinese restaurant.
+   d) is now wealthy.
+   ANSWER: d
+2. Sun Yun Wing __________.
+   a) works in his own restaurant with his wife and children.
+   b) still misses Hong Kong.
+   c) doesn't work much because he owns the restaurant.
+   d) considers England as his home.
+   ANSWER: d
+3. Bashar Ali __________.
+   a) got married in England in 1980.
+   b) came to England to study.
+   c) makes clothes in England and sells them in Bangladesh.
+   d) teaches English to Bangladeshi kids.
+   ANSWER: b
+4. Bashar Ali __________.
+   a) still has social connections with his people.
+   b) makes a lot of money from language courses.
+   c) is worried that his children will forget their origins.
+   d) has a children's language school in England.
+   ANSWER: a
+5. Apara Asuquo __________.
+   a) met her husband after she visited England in 2003.
+   b) worked in an office back in Nigeria.
+   c) found a different job in England.
+   d) makes much more money in England.
+   ANSWER: c
+6. Apara Asuquo __________.
+   a) immigrated for her career.
+   b) and her husband don't want to be away from their home country anymore.
+   c) doesn't want her children to come to Nigeria.
+   d) is sure that she will feel lonely in Nigeria.
+   ANSWER: b
+
+# MCQ
+LABEL: Part E (vocabulary in context)
+INSTRUCTIONS: Guess the meaning of the words from the context.
+1. The word "opportunities" (paragraph 2) means __________.
+   a) problems
+   b) controls
+   c) possibilities
+   d) seekers
+   ANSWER: c
+2. The word "support" (paragraph 6) means __________.
+   a) help
+   b) report
+   c) surprise
+   d) cheat
+   ANSWER: a
+3. The word "several" (paragraph 8) means __________.
+   a) different
+   b) few
+   c) many
+   d) couple
+   ANSWER: b
+4. The word "community" (paragraph 9) means __________.
+   a) people
+   b) classes
+   c) individual
+   d) places
+   ANSWER: a
+5. The word "international" (paragraph 11) means __________.
+   a) city
+   b) local
+   c) global
+   d) village
+   ANSWER: c
+
+# MCQ
+LABEL: Part E (reference)
+INSTRUCTIONS: Circle the best option for what the words refer to.
+1. The word "there" (paragraph 2) refers to:
+   a) England
+   b) London
+   c) Hong Kong
+   d) a small town in London
+   ANSWER: c
+2. The word "we" (paragraph 4) refers to:
+   a) Chinese people
+   b) Sun Yun and his children
+   c) Sun Yun and his wife
+   d) Sun Yun and the chef
+   ANSWER: c
+3. The word "there" (paragraph 9) refers to:
+   a) Bangladesh
+   b) England
+   c) stores
+   d) London
+   ANSWER: a
+4. The word "they" (paragraph 10) refers to:
+   a) families
+   b) successful children
+   c) Bashar Ali's children
+   d) Bangladeshi children working for Bashar Ali
+   ANSWER: c
+
+# GAPS
+LABEL: Part F
+INSTRUCTIONS: Read the sentences below and match them to the gaps in the passage.
+a: My wife and I are thankful for the good things here. We have a restaurant and we made friends here. The city started feeling like home.
+b: In my early days in England, life wasn't easy. I didn't know how to live here. But I was looking for a job.
+c: The reason is our children see a future for themselves here. Here is not like my hometown.
+ANSWERS: 1=a, 2=b, 3=c
+
+# TRUEFALSE
+LABEL: Part G
+INSTRUCTIONS: Choose True or False for each statement.
+1. Sun Yun Wing's wife works as a chef in his restaurant.
+   ANSWER: F
+2. Sun Yun Wing's children want to go back and live in Hong Kong.
+   ANSWER: F
+3. Bashar Ali actively supports his Bangladeshi community in London by holding English classes.
+   ANSWER: T
+4. Bashar Ali and his family are connected to their Bangladeshi heritage and traditions.
+   ANSWER: T
+5. Apara Asuquo couldn't find any job in London.
+   ANSWER: F
+6. Apara Asuquo and her family decided to stay in London.
+   ANSWER: F

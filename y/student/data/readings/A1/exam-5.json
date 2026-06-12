@@ -1,0 +1,230 @@
+{
+  "id": "a1-r5",
+  "level": "A1",
+  "title": "A1 Reading 5 — My Day",
+  "subtitle": "One passage · True/False, MCQ, writing",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "My Day",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">I'm a shop assistant in a big electronics shop. My day starts at half past six when I get up and take a shower. Then I have breakfast at quarter past seven and I leave home at quarter to eight. I walk to the bus stop and I wait for the bus. The shop opens at half past eight and I start work. I sell TVs, DVDs and music systems. I like my job. It's interesting and I talk to a lot of people. I have lunch at half past twelve and I leave work at half past five. I usually play football with friends for about an hour. I have dinner at seven o'clock and I watch TV or listen to CDs in the evening. I go to bed at eleven o'clock.</p>",
+      "sections": [
+        {
+          "id": "truefalse",
+          "type": "mcq",
+          "label": "Part A",
+          "instructions": "Choose True or False for the following sentences.",
+          "items": [
+            {
+              "id": "tf1",
+              "question": "His day starts at half past six.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf2",
+              "question": "He has a wash every morning.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf3",
+              "question": "The shop opens at 8:15.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf4",
+              "question": "He works in an electronics shop.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf5",
+              "question": "He doesn't like his job.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf6",
+              "question": "His job is interesting.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf7",
+              "question": "He leaves work at 5:30.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf8",
+              "question": "He visits his friends in the evening.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Circle the correct answer.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "He has breakfast __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "at work"
+                },
+                {
+                  "id": "b",
+                  "text": "at home"
+                },
+                {
+                  "id": "c",
+                  "text": "on the bus"
+                },
+                {
+                  "id": "d",
+                  "text": "in a cafe"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "He goes to work __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "on foot"
+                },
+                {
+                  "id": "b",
+                  "text": "by car"
+                },
+                {
+                  "id": "c",
+                  "text": "by bus"
+                },
+                {
+                  "id": "d",
+                  "text": "by subway"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "He goes to bed __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "before 10 o'clock"
+                },
+                {
+                  "id": "b",
+                  "text": "before 12 o'clock"
+                },
+                {
+                  "id": "c",
+                  "text": "at 10 o'clock"
+                },
+                {
+                  "id": "d",
+                  "text": "at 12 o'clock"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "writing",
+          "type": "writing",
+          "label": "Part C",
+          "instructions": "Tell your friend about your daily routine.",
+          "prompt": "What do you do every day? Write about your daily routine (at least 50 words).",
+          "minWords": 50
+        }
+      ]
+    }
+  ]
+}

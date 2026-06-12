@@ -1,0 +1,256 @@
+{
+  "id": "b1-r1",
+  "level": "B1",
+  "title": "B1 Reading 1 — Making a Difference",
+  "subtitle": "One passage · Sentence-insert, MCQ, vocabulary",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Making a Difference",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Growing up in rural Malawi, Africa, William Kamkwamba learned to accept that life was hard. He lived with his parents and seven sisters in a small brick house without electricity or running water. <span class=\"rd-gap\" data-gap=\"1\"></span> Like most boys in his village, William was expected to assist his parents on the family farm, as well as <strong>keep up with</strong> his school work. Each night, like most Malawians, his family went to bed early because the kerosene oil that they needed to light the lamps was costly.</p><p class=\"rd-para\" data-para=\"2\">A terrible drought in 2000 left many Malawians hungry, and William's family was no exception. <span class=\"rd-gap\" data-gap=\"2\"></span> In 2003, at the age of 13, William and many other children were forced to <strong>drop out of</strong> school when their parents could no longer afford the tuition. William had to work even harder to help his family, but he was not ready to give up his education. He was hardworking, ambitious and committed. <span class=\"rd-gap\" data-gap=\"3\"></span> He went to the local library and took out some books to study. One book, called Using Energy, <strong>sparked</strong> William's interest in science and gave him an idea that significantly changed his future.</p><p class=\"rd-para\" data-para=\"3\">In the book, William found a picture of a windmill, and a brief description of how it could be used to generate electricity from wind. He knew that there was plenty of wind in his village, and realized that if he could build a windmill like that, he could give his family and the people in his village a much better life. <span class=\"rd-gap\" data-gap=\"4\"></span> There was just one problem. The book did not explain how to build a windmill.</p><p class=\"rd-para\" data-para=\"4\">William's incredible ambition and determination showed what happened over the next year. He began to collect any kinds of materials that he thought were useful such as scraps of wood, broken bicycles, old shoes. Then he started to build a windmill next to his family's house. He <strong>endured</strong> many challenges and failures. <span class=\"rd-gap\" data-gap=\"5\"></span> Other people in his village called him crazy and said his idea would never work. Finally, at the age of 14, William completed his first windmill. When they saw electric lights and heard the sound of the music on the radio coming from William's house, the village people came running. He managed to do it. William Kamkwamba was able to find a way to capture the wind.</p><p class=\"rd-para\" data-para=\"5\">Kamkwamba's autobiography, The Boy Who Harnessed the Wind, tells the story of how the rest of the world came to know about his achievements. <span class=\"rd-gap\" data-gap=\"6\"></span> With the help of international supporters, his village now has clean running water, solar powered lighting, and electric power. As a result of his actions, Kamkwamba was invited to study engineering at Dartmouth College, one of the top-ranking universities in the U.S. He also travels the world and gives talks about how he made his dream a reality.</p>",
+      "sections": [
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part A",
+          "instructions": "Match the sentences with the gaps. There are TWO extra sentences.",
+          "options": [
+            {
+              "id": "a",
+              "text": "His hardworking, ambitious and committed attitude made him do something for his education and future career."
+            },
+            {
+              "id": "b",
+              "text": "It is admirable that William is determined to continue his education despite the difficult economic conditions."
+            },
+            {
+              "id": "c",
+              "text": "Because of that, living was difficult and significant adjustments to daily life were required."
+            },
+            {
+              "id": "d",
+              "text": "This could lead to improved access to electricity for lighting, cooking, and powering other household appliances."
+            },
+            {
+              "id": "e",
+              "text": "Building a windmill was requiring a combination of technical skills, knowledge of engineering and construction, and persistence."
+            },
+            {
+              "id": "f",
+              "text": "The economic downturn made it harder for people to afford basic needs such as housing, education, food, and healthcare."
+            },
+            {
+              "id": "g",
+              "text": "He demonstrated that even with limited resources, it is possible to create positive change and improve the lives of others."
+            },
+            {
+              "id": "h",
+              "text": "So, tasks such as cooking and heating needed to be done using alternative methods."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "c"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "f"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "a"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "d"
+            },
+            {
+              "id": "5",
+              "label": "Gap 5",
+              "answer": "e"
+            },
+            {
+              "id": "6",
+              "label": "Gap 6",
+              "answer": "g"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Circle the best choice according to the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "According to paragraph 1, William __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "always complained about his life"
+                },
+                {
+                  "id": "b",
+                  "text": "had a difficult childhood"
+                },
+                {
+                  "id": "c",
+                  "text": "was an irresponsible child"
+                },
+                {
+                  "id": "d",
+                  "text": "refused to help his parents"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m2",
+              "question": "According to paragraph 1, William's family went to bed early because __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "they always felt tired since they worked on farms"
+                },
+                {
+                  "id": "b",
+                  "text": "they did not have any lamps"
+                },
+                {
+                  "id": "c",
+                  "text": "the oil that they used to light the lamps was expensive"
+                },
+                {
+                  "id": "d",
+                  "text": "they did not want William to be late to school"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m3",
+              "question": "What do you understand from the following line? \"A terrible drought in 2000 left many Malawians hungry, and William's family was no exception.\" (paragraph 2 line 1)",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Many Malawians including William's family left Malawi after the drought."
+                },
+                {
+                  "id": "b",
+                  "text": "Like other Malawians, William's family was exposed to hunger."
+                },
+                {
+                  "id": "c",
+                  "text": "Only William's family had severe problems because of the drought."
+                },
+                {
+                  "id": "d",
+                  "text": "William's family was not affected by the drought."
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m4",
+              "question": "According to paragraph 3, __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "William learned to build a windmill from a book"
+                },
+                {
+                  "id": "b",
+                  "text": "the wind in William's village was not enough to build a windmill"
+                },
+                {
+                  "id": "c",
+                  "text": "the information in the book about the windmill inspired William"
+                },
+                {
+                  "id": "d",
+                  "text": "William's book about how to build a windmill couldn't give his family a better life"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m5",
+              "question": "Which of the following is TRUE according to paragraph 4?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "He managed to build a windmill after several failures."
+                },
+                {
+                  "id": "b",
+                  "text": "William could only find broken materials to build a windmill."
+                },
+                {
+                  "id": "c",
+                  "text": "People in his village always supported him."
+                },
+                {
+                  "id": "d",
+                  "text": "It took him almost two years to complete his first windmill."
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part C (vocabulary)",
+          "instructions": "Find a word or phrase which matches each meaning.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"to manage to do as much or as well as other people\" (paragraph 1):",
+              "answer": "keep up with",
+              "acceptable": [
+                "keep up with",
+                "keep up"
+              ]
+            },
+            {
+              "id": "sa2",
+              "definition": "\"to leave a school before your course has finished\" (paragraph 2):",
+              "answer": "drop out of",
+              "acceptable": [
+                "drop out of",
+                "drop out"
+              ]
+            },
+            {
+              "id": "sa3",
+              "definition": "\"to make someone feel interested\" (paragraph 2):",
+              "answer": "spark",
+              "acceptable": [
+                "spark",
+                "sparked"
+              ]
+            },
+            {
+              "id": "sa4",
+              "definition": "\"to experience something difficult, painful, unpleasant\" (paragraph 4):",
+              "answer": "endure",
+              "acceptable": [
+                "endure",
+                "endured"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

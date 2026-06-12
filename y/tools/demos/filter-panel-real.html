@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Real filter panel preview</title>
+<link rel="stylesheet" href="../../student/css/styles.css" />
+<link rel="stylesheet" href="../../student/css/extra.css" />
+<style>
+  body { background: #0b1220; padding: 40px; font-family: 'Nunito', sans-serif; color: #f1f5f9; margin: 0; }
+  .viewer { max-width: 340px; margin: 0 auto; }
+  .title { font-size: 14px; color: #94a3b8; margin-bottom: 16px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .spacer { height: 20px; }
+  .compare-lbl { font-size: 11px; color: #64748b; margin: 30px 0 8px; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; }
+</style>
+</head>
+<body>
+<div id="menuScreen">
+  <div class="viewer">
+    <div class="title">Variant A applied · your palette</div>
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">
+        <span class="icon">📚</span>
+        Select Content
+      </div>
+
+      <div class="sel-group">
+        <div class="sel-lbl">Book</div>
+        <div class="sel-opts" id="bookPills">
+          <div class="sel-opt active" data-value="empower">Empower</div>
+          <div class="sel-opt" data-value="gateway">Gateway</div>
+        </div>
+      </div>
+
+      <div class="sel-group">
+        <div class="sel-lbl">Level</div>
+        <div class="sel-opts" id="levelPills">
+          <div class="sel-opt active" data-value="A2">A2</div>
+          <div class="sel-opt" data-value="B1">B1</div>
+          <div class="sel-opt" data-value="B1+">B1+</div>
+          <div class="sel-opt" data-value="B2">B2</div>
+        </div>
+      </div>
+
+      <div class="sel-group">
+        <div class="sel-lbl">Unit</div>
+        <div class="sel-opts" id="unitPills">
+          <div class="sel-opt active" data-value="all">All</div>
+          <div class="sel-opt" data-value="1">U1</div>
+          <div class="sel-opt" data-value="2">U2</div>
+          <div class="sel-opt" data-value="3">U3</div>
+          <div class="sel-opt" data-value="4">U4</div>
+          <div class="sel-opt" data-value="5">U5</div>
+          <div class="sel-opt" data-value="6">U6</div>
+          <div class="sel-opt" data-value="7">U7</div>
+          <div class="sel-opt" data-value="8">U8</div>
+          <div class="sel-opt" data-value="9">U9</div>
+          <div class="sel-opt" data-value="10">U10</div>
+          <div class="sel-opt" data-value="11">U11</div>
+          <div class="sel-opt" data-value="12">U12</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // radio-style within each group for demo
+  document.querySelectorAll('.sel-opts').forEach(g => {
+    g.addEventListener('click', e => {
+      const btn = e.target.closest('.sel-opt');
+      if (!btn) return;
+      g.querySelectorAll('.sel-opt').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

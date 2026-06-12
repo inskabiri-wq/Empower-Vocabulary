@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Heist | Empower Lab</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css">
+<!-- Shared classroom styles first so the heist overrides win where
+     needed. Brings .music-control, .player-card, etc. into scope. -->
+<link rel="stylesheet" href="classroom/css/styles.css">
+<link rel="stylesheet" href="classroom/css/heist.css">
+</head>
+<body class="heist">
+
+<!-- Background music control — mirrors the Vocab Race classroom -->
+<div class="music-control">
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Play / pause music">🎵</button>
+  <button class="music-btn" onclick="nextTrack()" title="Next track">🎶</button>
+  <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" onchange="setVolume(this.value)">
+</div>
+
+<audio id="bgMusic" preload="none"></audio>
+
+<div class="heist-shell">
+
+  <div class="heist-top">
+    <div class="heist-brand">
+      <span class="logo">🦹</span>
+      <span>The Heist</span>
+    </div>
+    <div class="heist-coins" id="coinsBadge" style="display:none;">💸 0</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       JOIN — code + name
+       ════════════════════════════════════════════════════ -->
+  <div id="view-join" class="heist-join">
+    <h2>Join a game</h2>
+    <p style="color:var(--heist-text-mut); margin-top:-6px;">Ask your teacher for the room code.</p>
+    <div class="heist-field" style="margin-bottom:10px;">
+      <label for="codeInput">Room code</label>
+      <input id="codeInput" class="heist-input" type="text" maxlength="4"
+             style="text-transform:uppercase; font-family:JetBrains Mono; font-size:1.3em; letter-spacing:0.18em; text-align:center;"
+             placeholder="ABCD">
+    </div>
+    <div class="heist-field" style="margin-bottom:14px;">
+      <label for="nameInput">Your name</label>
+      <input id="nameInput" class="heist-input" type="text" maxlength="24" placeholder="e.g. Alex">
+    </div>
+    <button id="joinBtn" class="heist-btn primary" style="width:100%;">
+      Join the heist
+    </button>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       PASSWORD — pick a word as your vault password
+       ════════════════════════════════════════════════════ -->
+  <div id="view-password" class="heist-join" style="display:none; max-width: 560px;">
+    <h2>🔒 Pick your vault password</h2>
+    <p style="color:var(--heist-text-mut); margin-top:-6px;">
+      Pick one word. <strong>Remember it</strong> — other players will try to guess it from a hint to steal your coins.
+    </p>
+    <div id="pwGrid" class="pw-grid"></div>
+    <div style="display:flex; gap:8px; justify-content:flex-end;">
+      <button id="pwConfirmBtn" class="heist-btn primary">Lock my vault →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       WAIT — password set, waiting for teacher to start
+       ════════════════════════════════════════════════════ -->
+  <div id="view-wait" class="heist-join" style="display:none;">
+    <h2>✓ Vault locked</h2>
+    <p style="color:var(--heist-text-mut);">
+      Waiting for the teacher to start the heist. Sit tight.
+    </p>
+    <div style="text-align:center; font-size:3em; margin:20px 0;">⏳</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       PLAY — two-panel layout: earn (left), heist (right)
+       ════════════════════════════════════════════════════ -->
+  <div id="view-play" style="display:none;">
+    <div id="myVaultBar" style="display:none;background:linear-gradient(135deg,rgba(245,158,11,0.18),rgba(59,130,246,0.12));border:1px solid rgba(245,158,11,0.4);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:0.95em;text-align:center;">
+      🔑 Your secret vault password: <strong id="myVaultWord" style="color:#fbbf24;letter-spacing:0.04em;font-size:1.1em;">…</strong>
+      <span style="display:block;font-size:0.78em;opacity:0.7;margin-top:2px;">remember it, it changes if someone cracks your vault</span>
+    </div>
+    <div class="heist-play">
+
+      <div class="heist-pane">
+        <h3>💰 Earn</h3>
+        <div class="earn-stem" id="earnStem">Loading…</div>
+        <div class="earn-opts" id="earnOpts"></div>
+        <div class="earn-feedback" id="earnFeedback"></div>
+      </div>
+
+      <div class="heist-pane">
+        <h3>🦹 Vaults · Tap to crack</h3>
+        <div class="vault-list" id="vaultList"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       DONE — final standings
+       ════════════════════════════════════════════════════ -->
+  <div id="view-done" style="display:none;">
+    <div class="heist-results">
+      <h2>🏁 Heist Complete</h2>
+      <div style="font-size:2.6em; font-weight:800; color:var(--heist-gold-2); margin:14px 0 4px;" id="finalCoins">💸 0</div>
+      <div style="color:var(--heist-text-mut); margin-bottom:20px;">
+        You finished <strong style="color:var(--heist-text);" id="finalRank">#?</strong>
+      </div>
+      <h3 style="margin-top:24px; color:var(--heist-text-mut); font-weight:700; letter-spacing:0.1em; text-transform:uppercase; font-size:0.85em;">Top 10</h3>
+      <div id="finalList" style="text-align:left; max-width:380px; margin:12px auto 0;"></div>
+
+      <!-- Exit affordances. Two paths: back to the classroom-mode picker
+           (a logged-in student lands on student-dashboard.html; an
+           anonymous join doesn't have a meaningful home, so we send
+           them to classroom-student.html where they can join another
+           game). The buttons keep their visual hierarchy: leaderboard
+           is the focus, exits are quiet pills below. -->
+      <div style="margin-top: 26px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+        <a href="classroom-student.html" class="heist-btn"
+           style="text-decoration:none; min-width:180px;">
+          ➕ Join another game
+        </a>
+        <a href="student-dashboard.html" class="heist-btn primary"
+           style="text-decoration:none; min-width:180px;">
+          🏠 Back to dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase + app scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="classroom/js/refresh-guard.js"></script>
+<!-- Grammar question bank — used when the host picked grammar coin questions. -->
+<script src="student/js/skills/grammar-content.js?v=10"></script>
+<script src="classroom/js/heist-student.js"></script>
+
+</body>
+</html>

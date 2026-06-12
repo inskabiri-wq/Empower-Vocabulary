@@ -1,0 +1,325 @@
+{
+  "id": "b1-r3",
+  "level": "B1",
+  "title": "B1 Reading 3 — Who Owns English?",
+  "subtitle": "One passage · Sentence-insert, headings, MCQ, reference, vocab",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Who Owns English?",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">More people speak English than any other language, but according to English language expert David Crystal, non-native speakers now outnumber native speakers by three to one. \"There's never been a language before that is spoken more as a second language than a first,\" he says. At the end of last year, the number of adult English speakers in Asia reached 350 million. And according to the British Council, in ten years' time 2 billion people will study English and about half the world's population will speak it.</p><p class=\"rd-para\" data-para=\"2\">Why such enthusiasm for English? In a word, jobs. \"We always tell students they need two things to succeed — English and computers,\" says Chetan Kumar, manager of a language school in Delhi. For the middle classes in India, English can mean a stable job in a call centre. And the story is the same in other parts of the world. <span class=\"rd-gap\" data-gap=\"1\"></span> Many other multinational companies, like Samsung and L.G. Philips, have started moving towards an English-only email <strong>policy</strong>. Technology is a big factor in all this change — 80% of the world's electronic information is in English. <span class=\"rd-gap\" data-gap=\"2\"></span></p><p class=\"rd-para\" data-para=\"3\">The way that people study English is also changing. In South Korea, for example, the national government has built English immersion schools all over the country, where teenagers live in an all-English environment for up to four weeks at a time. In these 'English villages,' students check into their accommodation, go shopping, order food, go to the bank, take cooking classes or acting lessons — all in English. <span class=\"rd-gap\" data-gap=\"3\"></span> And <strong>they</strong> seem to enjoy the experience — when we visited one drama class, a student was <strong>pretending</strong> to be the film star Orlando Bloom, and the whole class had lots of fun.</p><p class=\"rd-para\" data-para=\"4\">So, what exactly is immersion? Whenever someone fully involves himself in one area, this is considered an immersion experience. <span class=\"rd-gap\" data-gap=\"4\"></span> When learning a foreign language through immersion, students use only that language in the classroom. One step further is studying in the country where people speak that language. <span class=\"rd-gap\" data-gap=\"5\"></span> Many study programs at universities across Europe offer the opportunity to spend a semester in the USA so that students can learn English faster.</p><p class=\"rd-para\" data-para=\"5\">However, these new English speakers aren't just learning the language — they're changing <strong>it</strong>. <span class=\"rd-gap\" data-gap=\"6\"></span> There are hundreds of different types of English in the world today, such as 'Hinglish', the Indian mix of Hindi and English. People invent new words every day all over the world. They also <strong>expand</strong> the existing English vocabulary. For example, the word 'friend' is not only a noun now — it has become a verb, too, in the <strong>context</strong> of social media. It means 'to add someone to your contact list on social media.' As David Crystal says, \"No one owns English now. What happens to it is on the shoulders of all of us.\"</p>",
+      "sections": [
+        {
+          "id": "gaps",
+          "type": "match-gaps",
+          "label": "Part A",
+          "instructions": "Match the sentences with the gaps. There are TWO extra sentences.",
+          "options": [
+            {
+              "id": "a",
+              "text": "This allows for effective communication and collaboration among staff who may not speak the same native language."
+            },
+            {
+              "id": "b",
+              "text": "At a Toyota factory in the Czech Republic, English is the working language of the Japanese, French and Czech staff."
+            },
+            {
+              "id": "c",
+              "text": "The idea behind this approach is to expose students to real-life situations where they would need to use the language."
+            },
+            {
+              "id": "d",
+              "text": "As non-native speakers, they may introduce new words, phrases, and grammar structures, and may also use the language in new and different ways."
+            },
+            {
+              "id": "e",
+              "text": "Studying in a foreign country is considered to be the ultimate form of language immersion, as students are fully immersed in the culture and language."
+            },
+            {
+              "id": "f",
+              "text": "The goal of these programs is to help students to improve their English skills and become more confident in their ability to communicate in English."
+            },
+            {
+              "id": "g",
+              "text": "It often implies a sense of being fully surrounded by and involved in the subject of focus."
+            },
+            {
+              "id": "h",
+              "text": "English is widely spoken and used as a common language in many industries and businesses around the world."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "label": "Gap 1",
+              "answer": "b"
+            },
+            {
+              "id": "2",
+              "label": "Gap 2",
+              "answer": "a"
+            },
+            {
+              "id": "3",
+              "label": "Gap 3",
+              "answer": "c"
+            },
+            {
+              "id": "4",
+              "label": "Gap 4",
+              "answer": "g"
+            },
+            {
+              "id": "5",
+              "label": "Gap 5",
+              "answer": "e"
+            },
+            {
+              "id": "6",
+              "label": "Gap 6",
+              "answer": "d"
+            }
+          ]
+        },
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part B",
+          "instructions": "Match the headings with the paragraphs.",
+          "options": [
+            {
+              "id": "A",
+              "text": "An English speaking world"
+            },
+            {
+              "id": "B",
+              "text": "The definition of immersion"
+            },
+            {
+              "id": "C",
+              "text": "Learn English 24 hours a day"
+            },
+            {
+              "id": "D",
+              "text": "A changing language"
+            },
+            {
+              "id": "E",
+              "text": "A passport to employment"
+            }
+          ],
+          "items": [
+            {
+              "id": "p1",
+              "label": "Paragraph 1",
+              "answer": "A"
+            },
+            {
+              "id": "p2",
+              "label": "Paragraph 2",
+              "answer": "E"
+            },
+            {
+              "id": "p3",
+              "label": "Paragraph 3",
+              "answer": "C"
+            },
+            {
+              "id": "p4",
+              "label": "Paragraph 4",
+              "answer": "B"
+            },
+            {
+              "id": "p5",
+              "label": "Paragraph 5",
+              "answer": "D"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part C",
+          "instructions": "Read the article again and answer the questions below.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "What is TRUE according to Paragraph 1?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "There are now more non-native English speakers than natives."
+                },
+                {
+                  "id": "b",
+                  "text": "There are 350 million English people in Asia."
+                },
+                {
+                  "id": "c",
+                  "text": "There are 2 billion people in the world who study English."
+                },
+                {
+                  "id": "d",
+                  "text": "There will be fewer non-native speakers of English in ten years."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m2",
+              "question": "What is TRUE according to Paragraph 2?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "You can become a manager in India if you learn English."
+                },
+                {
+                  "id": "b",
+                  "text": "The Czech workers at Toyota use English to communicate."
+                },
+                {
+                  "id": "c",
+                  "text": "People at Samsung and similar companies only speak in English."
+                },
+                {
+                  "id": "d",
+                  "text": "80% of emails at Samsung and LG.Philips is written in English."
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m3",
+              "question": "How do South-Korean students learn English according to Paragraph 3?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "They spend some time in an English-speaking country."
+                },
+                {
+                  "id": "b",
+                  "text": "They attend four-week programs in their native language."
+                },
+                {
+                  "id": "c",
+                  "text": "They use only English for four weeks in real-life situations."
+                },
+                {
+                  "id": "d",
+                  "text": "They focus on acting lessons and having fun in class."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m4",
+              "question": "What is FALSE according to Paragraph 4?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Immersion learning allows you to use your native language."
+                },
+                {
+                  "id": "b",
+                  "text": "Some European universities offer study-abroad programs."
+                },
+                {
+                  "id": "c",
+                  "text": "Immersion may include travelling outside your country."
+                },
+                {
+                  "id": "d",
+                  "text": "Students learn faster when everyone around them uses English."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "Why does the author say \"they're changing it\" in Paragraph 5?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Because lots of people use new words on social media."
+                },
+                {
+                  "id": "b",
+                  "text": "Because there are some new types of English in India."
+                },
+                {
+                  "id": "c",
+                  "text": "Because some words change their form through time."
+                },
+                {
+                  "id": "d",
+                  "text": "Because people add to the language by creating new words."
+                }
+              ],
+              "answer": "d"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part D (reference)",
+          "instructions": "Find what these words refer to.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"they\" (Paragraph 3):",
+              "answer": "students",
+              "acceptable": [
+                "students",
+                "the students"
+              ]
+            },
+            {
+              "id": "sa2",
+              "definition": "\"it\" (Paragraph 5):",
+              "answer": "English",
+              "acceptable": [
+                "English",
+                "the language"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shortanswer2",
+          "type": "find-word",
+          "label": "Part E (vocabulary)",
+          "instructions": "Find the words in the text that match the meanings.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"a rule or principle of a company or organisation\" (paragraph 2):",
+              "answer": "policy"
+            },
+            {
+              "id": "sa2",
+              "definition": "\"behaving in a way to make something look true when it's not\" (paragraph 3):",
+              "answer": "pretending",
+              "acceptable": [
+                "pretending",
+                "pretend"
+              ]
+            },
+            {
+              "id": "sa3",
+              "definition": "\"to increase something in size, number or importance\" (paragraph 5):",
+              "answer": "expand"
+            },
+            {
+              "id": "sa4",
+              "definition": "\"the situation, events or information that are related to something and that help you understand it\" (paragraph 5):",
+              "answer": "context"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

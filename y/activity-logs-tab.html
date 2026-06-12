@@ -1,0 +1,140 @@
+<!-- ============================================
+     ACTIVITY LOGS TAB - Admin Only
+     Add this inside the main content area of teacher-dashboard.html
+     After the other tab-content divs
+     ============================================ -->
+
+<!-- Tab Button - Add to tab-nav (only visible for admin) -->
+<!--
+<button class="tab-btn" onclick="switchTab('activityLogs')" data-tab="activityLogs" id="activityLogsTabBtn" style="display: none;">
+  <span>📊</span> Activity Logs <span class="badge" style="background: #ef4444;">Admin</span>
+</button>
+-->
+
+<!-- Tab Content: Activity Logs -->
+<div id="tab-activityLogs" class="tab-content">
+  <div class="activity-log-container">
+    
+    <!-- Header with Stats -->
+    <div class="activity-log-header">
+      <div class="activity-log-title">
+        <h2>📊 Activity Logs</h2>
+        <span class="admin-badge">👑 Admin Only</span>
+      </div>
+      <div class="activity-stats-row">
+        <div class="activity-stat-box">
+          <div class="activity-stat-value" id="activityStatToday">0</div>
+          <div class="activity-stat-label">Today</div>
+        </div>
+        <div class="activity-stat-box">
+          <div class="activity-stat-value" id="activityStatWeek">0</div>
+          <div class="activity-stat-label">This Week</div>
+        </div>
+        <div class="activity-stat-box">
+          <div class="activity-stat-value" id="activityStatMonth">0</div>
+          <div class="activity-stat-label">This Month</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="activity-filters">
+      <div class="activity-filter-group">
+        <label>Role</label>
+        <select class="activity-filter-select" id="activityFilterRole">
+          <option value="">All Roles</option>
+        </select>
+      </div>
+      
+      <div class="activity-filter-group">
+        <label>Category</label>
+        <select class="activity-filter-select" id="activityFilterCategory">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+      
+      <div class="activity-filter-group">
+        <label>Activity Type</label>
+        <select class="activity-filter-select" id="activityFilterType">
+          <option value="">All Activities</option>
+        </select>
+      </div>
+      
+      <div class="activity-filter-group">
+        <label>From Date</label>
+        <input type="date" class="activity-filter-input" id="activityFilterDateFrom">
+      </div>
+      
+      <div class="activity-filter-group">
+        <label>To Date</label>
+        <input type="date" class="activity-filter-input" id="activityFilterDateTo">
+      </div>
+      
+      <div class="activity-filter-group" style="flex: 1;">
+        <label>Search</label>
+        <input type="text" class="activity-search-input" id="activitySearchInput" placeholder="Search by name, email, or activity...">
+      </div>
+      
+      <div class="activity-filter-buttons">
+        <button class="activity-filter-btn primary" onclick="ActivityAdmin.applyFilters()">
+          🔍 Filter
+        </button>
+        <button class="activity-filter-btn secondary" onclick="ActivityAdmin.clearFilters()">
+          ↺ Clear
+        </button>
+        <button class="activity-filter-btn export" onclick="ActivityAdmin.exportToExcel()">
+          📥 Export Excel
+        </button>
+      </div>
+    </div>
+    
+    <!-- Logs List -->
+    <div class="activity-logs-wrapper">
+      <!-- Loading Overlay -->
+      <div class="activity-logs-loader" id="activityLogsLoader" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading activity logs...</p>
+      </div>
+      
+      <!-- Logs Container -->
+      <div class="activity-logs-list" id="activityLogsList">
+        <!-- Populated by JS -->
+        <div class="activity-empty-state">
+          <div class="activity-empty-icon">📊</div>
+          <h3>Loading Activity Logs...</h3>
+          <p>Please wait while we fetch the data.</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Load More -->
+    <div class="activity-load-more">
+      <button class="activity-load-more-btn" id="activityLoadMoreBtn" onclick="ActivityAdmin.loadMore()" style="display: none;">
+        Load More Logs
+      </button>
+    </div>
+    
+  </div>
+</div>
+
+<!-- ============================================
+     REQUIRED SCRIPTS - Add before closing </body>
+     ============================================ -->
+<!--
+<script src="vendor/xlsx/xlsx.full.min.js"></script>
+<script src="activity-tracker/js/activity-config.js"></script>
+<script src="activity-tracker/js/activity-logger.js"></script>
+<script src="activity-tracker/js/activity-admin.js"></script>
+<link rel="stylesheet" href="activity-tracker/css/activity-tracker.css">
+-->
+
+<!-- ============================================
+     INITIALIZATION - Add to your existing script
+     ============================================ -->
+<!--
+// In your loadDashboard() or after auth check:
+if (isAdmin()) {
+  document.getElementById('activityLogsTabBtn').style.display = 'flex';
+  ActivityAdmin.init();
+}
+-->

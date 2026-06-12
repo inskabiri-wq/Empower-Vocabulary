@@ -1,0 +1,210 @@
+{
+  "id": "a2-r6",
+  "level": "A2",
+  "title": "A2 Reading 6 — Super Couples",
+  "subtitle": "One passage · MCQ, vocab, reference",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Super Couples",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Marie and Pierre Curie</p><p class=\"rd-para\" data-para=\"2\">When Marie Sklodowska was 24, she left Poland and moved to Paris. While she was studying at the Sorbonne, she met physicist Pierre Curie. She was planning to <strong>return</strong> to Poland after her studies, but the two scientists fell in love and got married. While <strong>they</strong> were raising their daughters, they were also doing research on radioactivity. In 1903, the couple won the Nobel Prize in physics. Then, in 1906, a horse-drawn carriage hit and killed Pierre while he was walking. Marie suffered from her loss for a while. After Marie <strong>recovered</strong> from the shock, she continued their work. In 1911, she received her second Nobel Prize.</p><p class=\"rd-para\" data-para=\"3\">Gloria and Emilio Estefan</p><p class=\"rd-para\" data-para=\"4\">CONGA! In 1985, millions of people were listening to this hit song. <strong>It</strong> made singer Gloria Estefan and bandleader Emilio Estefan international stars. Gloria was born in Cuba and she was only 16 months old when she and her family moved to the USA. By that time, she was already showing her musical <strong>talent</strong>. She met Emilio when she was 17. Soon after, she joined <strong>his</strong> group. The couple married a few years later. <strong>They</strong> were enjoying their success in the music business when Gloria broke her back in a traffic accident in 1990. She recovered and went on to win many awards for her Spanish and English songs.</p><p class=\"rd-para\" data-para=\"5\">Ekaterina Gordeeva and Sergei Grinkov</p><p class=\"rd-para\" data-para=\"6\">She was only 11 and he was only 15 when their coaches brought <strong>them</strong> together as skating partners. Off the ice, Sergei wasn't paying much attention to \"Katia\". However, that changed in 1988 when the pair won their first Olympic gold medal for the former Soviet Union. World-famous skaters Ekaterina Gordeeva and Sergei Grinkov thrilled their fans when they married two years later. A baby girl and another Olympic gold medal followed. Their lives seemed perfect. Then, one day Sergei collapsed while <strong>they</strong> were practising. He died an hour later. Today Gordeeva is remarried and has a new skating partner.</p>",
+      "sections": [
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part A",
+          "instructions": "Answer the questions according to the text.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Which of the following is TRUE about Marie and Pierre Curie?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "They returned to Poland after they met."
+                },
+                {
+                  "id": "b",
+                  "text": "They won two Nobel Prizes for their work."
+                },
+                {
+                  "id": "c",
+                  "text": "They met when she was a student at the Sorbonne."
+                },
+                {
+                  "id": "d",
+                  "text": "They took a break from work to raise their children."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "Which of the following is FALSE about Gloria and Emilio Estefan?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Gloria had a talent for music even when she was a baby."
+                },
+                {
+                  "id": "b",
+                  "text": "Gloria and Emilio became famous with the song, Conga."
+                },
+                {
+                  "id": "c",
+                  "text": "Gloria continued to be successful after her accident."
+                },
+                {
+                  "id": "d",
+                  "text": "Gloria moved to the States at the age of 16 with her family."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m3",
+              "question": "According to paragraph 3, Ekaterina __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "fell in love with Sergei when they met"
+                },
+                {
+                  "id": "b",
+                  "text": "stopped her skating career after Sergei died"
+                },
+                {
+                  "id": "c",
+                  "text": "had a baby after winning a second gold medal"
+                },
+                {
+                  "id": "d",
+                  "text": "married again after the death of Sergei"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m4",
+              "question": "The word \"thrill\" is closest in meaning to __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "invite"
+                },
+                {
+                  "id": "b",
+                  "text": "understand"
+                },
+                {
+                  "id": "c",
+                  "text": "decide"
+                },
+                {
+                  "id": "d",
+                  "text": "excite"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m5",
+              "question": "The word \"seem\" is closest in meaning to __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "perform"
+                },
+                {
+                  "id": "b",
+                  "text": "appear"
+                },
+                {
+                  "id": "c",
+                  "text": "find"
+                },
+                {
+                  "id": "d",
+                  "text": "hope"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part B (vocabulary)",
+          "instructions": "Find a word in the passage that matches each meaning.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "Find a word in paragraph 1 which means \"go back\":",
+              "answer": "return"
+            },
+            {
+              "id": "sa2",
+              "definition": "Find a word in paragraph 1 which means \"get well\":",
+              "answer": "recovered",
+              "acceptable": [
+                "recovered",
+                "recover"
+              ]
+            },
+            {
+              "id": "sa3",
+              "definition": "Find a word in paragraph 2 which means \"a natural ability to do something well\":",
+              "answer": "talent"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer2",
+          "type": "find-word",
+          "label": "Part C (reference)",
+          "instructions": "Find what these words refer to.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"they\" (paragraph 1):",
+              "answer": "Marie and Pierre"
+            },
+            {
+              "id": "sa2",
+              "definition": "\"It\" (paragraph 2):",
+              "answer": "the hit song Conga",
+              "acceptable": [
+                "the hit song Conga",
+                "Conga",
+                "hit song"
+              ]
+            },
+            {
+              "id": "sa3",
+              "definition": "\"his\" (paragraph 2):",
+              "answer": "Emilio's"
+            },
+            {
+              "id": "sa4",
+              "definition": "\"They\" (paragraph 2):",
+              "answer": "Gloria and Emilio"
+            },
+            {
+              "id": "sa5",
+              "definition": "\"them\" (paragraph 3):",
+              "answer": "Ekaterina and Sergei"
+            },
+            {
+              "id": "sa6",
+              "definition": "\"they\" (paragraph 3):",
+              "answer": "Ekaterina and Sergei"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

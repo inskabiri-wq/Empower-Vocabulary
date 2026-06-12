@@ -1,0 +1,476 @@
+EMOJI ICON INVENTORY  (237 unique, 1835 total uses)
+
+→  x329   [app.html, assignments/js/exam-form.js, assignments/js/exam-registry.js, assignments/js/form-validation.js +52 more]
+        e.g. <button class="next-btn" id="choiceNext" onclick="nextChoice()">Next Word →</but…
+←  x58    [app.html, assignments/js/student-picker.js, assignments/js/teacher-assignments.js, classroom-heist-teacher.html +15 more]
+        e.g. <button class="back-btn" onclick="backToMenu()">← Back to Menu</button>
+✓  x53    [app.html, assignments/js/student-assignments.js, assignments/js/writing-submissions-view.js, classroom-heist-student.html +19 more]
+        e.g. <div class="icon">✓</div>
+📖  x46    [app.html, assignments/js/exam-form.js, assignments/js/skill-registry.js, assignments/js/student-assignments.js +19 more]
+        e.g. <div class="label">📖 Studied</div>
+🚀  x39    [assignments/js/student-assignments.js, classroom-student.html, classroom-teacher.html, classroom-trust-student.html +5 more]
+        e.g. 🚀 Join Game
+📋  x36    [activity-tracker/js/activity-config.js, assignments/js/student-assignments.js, assignments/js/teacher-assignments.js, assignments/js/writing-submissions-view.js +12 more]
+        e.g. 📋 Copy Code
+📊  x35    [activity-logs-tab.html, activity-tracker/js/activity-config.js, app.html, assignments/js/grading-stats.js +12 more]
+        e.g. <span>📊</span> Activity Logs <span class="badge" style="background: #ef4444;">Ad…
+🎧  x34    [assignments/js/exam-form.js, assignments/js/skill-registry.js, assignments/js/teacher-assignments.js, classroom-listening-student.html +14 more]
+        e.g. <span class="logo">🎧</span>
+⚠  x28    [assignments/js/grading-stats.js, assignments/js/teacher-assignments.js, assignments/js/writing-submissions-view.js, classroom-teacher.html +16 more]
+        e.g. <div class="confirm-modal-icon" id="confirmModalIcon">⚠️</div>
+✅  x27    [activity-tracker/js/activity-config.js, assignments/js/grading-stats.js, assignments/js/student-assignments.js, assignments/js/teacher-assignments.js +15 more]
+        e.g. <span class="listening-chip">✅ <span id="liveSubmittedCount">0</span> / <span id…
+✍  x26    [activity-tracker/js/activity-config.js, app.html, assignments/js/skill-registry.js, assignments/js/student-assignments.js +10 more]
+        e.g. <div class="icon">✍️</div>
+🎯  x26    [activity-tracker/js/activity-config.js, assignments/js/grading-stats.js, assignments/js/student-assignments.js, assignments/js/teacher-assignments.js +12 more]
+        e.g. 🎯 Join another game
+🔄  x26    [activity-tracker/js/activity-config.js, assignments/js/student-assignments.js, assignments/js/writing-submissions-view.js, classroom-student.html +7 more]
+        e.g. 🔄 Play Again
+📝  x25    [activity-tracker/js/activity-config.js, assignments/js/grading-stats.js, assignments/js/student-assignments.js, assignments/js/teacher-assignments.js +10 more]
+        e.g. if (!exam)  { AppDialog.alert('Pick an exam first.', { title: 'Missing exam', ic…
+✕  x22    [assignments/js/grading-stats.js, assignments/js/student-assignments.js, assignments/js/writing-annotations.js, assignments/js/writing-submissions-view.js +10 more]
+        e.g. ✕ Leave Session
+📚  x21    [app.html, assignments/js/skill-registry.js, assignments/js/teacher-assignments.js, classroom/js/reading-student.js +11 more]
+        e.g. <h1>📚 Empower Lab</h1>
+🔒  x20    [classroom-heist-student.html, classroom-heist-teacher.html, classroom/js/heist-student.js, classroom/js/heist-teacher.js +10 more]
+        e.g. <h2>🔒 Pick your vault password</h2>
+›  x19    [classroom-heist-teacher.html, classroom-listening-teacher.html, classroom-reading-teacher.html, classroom-trust-teacher.html +2 more]
+        e.g. into a different app. The breadcrumb "Classroom Mode › The
+‰  x19    [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+👑  x18    [activity-logs-tab.html, activity-tracker/js/activity-config.js, student-dashboard.html, student/js/avatar.js +6 more]
+        e.g. <span class="admin-badge">👑 Admin Only</span>
+👥  x18    [assignments/js/teacher-assignments.js, assignments/js/writing-submissions-view.js, classroom-heist-teacher.html, classroom-listening-teacher.html +9 more]
+        e.g. <h3 class="players-count">👥 Players: <span id="rosterCount">0</span></h3>
+†  x18    [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+™  x18    [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+✏  x17    [activity-tracker/js/activity-config.js, assignments/js/skill-registry.js, assignments/js/teacher-assignments.js, classroom/js/reading-student.js +8 more]
+        e.g. <div class="icon" aria-hidden="true">✏️</div>
+🔥  x16    [app.html, assignments/js/student-assignments.js, classroom/js/trust-teacher.js, student-dashboard.html +1 more]
+        e.g. <div class="label">🔥 Streak</div>
+🦊  x16    [classroom/js/heist-student.js, classroom/js/heist-teacher.js, student-dashboard.html, student/js/avatar.js]
+        e.g. <span class="avatar-emoji" id="avatarPreviewEmoji">🦊</span>
+„  x16    [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+🔊  x15    [app.html, classroom/js/heist-student.js, classroom/js/heist-teacher.js, classroom/js/listening-student.js +7 more]
+        e.g. <span id="soundIcon">🔊</span> Sound
+🏫  x15    [activity-tracker/js/activity-config.js, app.html, assignments/js/grading-stats.js, assignments/js/teacher-assignments.js +8 more]
+        e.g. document.getElementById('userRole').textContent = userData.role === 'teacher' ? …
+🗑  x15    [activity-tracker/js/activity-config.js, assignments/js/teacher-assignments.js, assignments/js/writing-annotations.js, classroom-teacher.html +6 more]
+        e.g. <button class="btn btn-secondary" id="skipDownloadBtn">🗑️ Delete & Continue</but…
+‡  x15    [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+‚  x15    [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+🎵  x14    [classroom-heist-student.html, classroom-heist-teacher.html, classroom-student.html, classroom-teacher.html +10 more]
+        e.g. <button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Play / pa…
+🛰  x14    [classroom-trust-student.html, classroom-trust-teacher.html, classroom/js/trust-student.js, classroom/js/trust-teacher.js]
+        e.g. <div style="font-size:3em; margin-bottom: 14px;">🛰️</div>
+‹  x14    [teacher/js/dashboard-extras.js, vendor/xlsx/xlsx.full.min.js]
+        e.g. <button type="button" class="t2-btn" id="calPrevBtn" style="padding:4px 10px;">‹…
+👨  x13    [activity-tracker/js/activity-config.js, app.html, assignments/js/teacher-assignments.js, classroom-heist-teacher.html +6 more]
+        e.g. document.getElementById('userRole').textContent = userData.role === 'teacher' ? …
+🏁  x13    [activity-tracker/js/activity-config.js, classroom-heist-student.html, classroom-listening-student.html, classroom-listening-teacher.html +8 more]
+        e.g. <h2>🏁 Heist Complete</h2>
+📘  x13    [assignments/js/student-assignments.js, assignments/js/teacher-assignments.js, classroom/js/reading-student.js, classroom/js/reading-teacher.js +5 more]
+        e.g. <option value="empower">📘 Empower</option>
+📗  x13    [assignments/js/student-assignments.js, assignments/js/teacher-assignments.js, classroom/js/reading-student.js, classroom/js/reading-teacher.js +5 more]
+        e.g. <option value="gateway">📗 Gateway</option>
+🎭  x12    [classroom-trust-student.html, classroom-trust-teacher.html, classroom/js/trust-student.js, classroom/js/trust-teacher.js]
+        e.g. <span style="font-size:1.2em;">🎭</span>
+👁  x12    [activity-tracker/js/activity-config.js, assignments/js/teacher-assignments.js, classroom/js/listening-teacher.js, classroom/js/reading-teacher.js +5 more]
+        e.g. <button type="button" class="toggle-password" onclick="togglePassword('newPasswo…
+🎤  x12    [assignments/js/skill-registry.js, classroom/js/listening-student.js, classroom/js/listening-teacher.js, student-dashboard.html +6 more]
+        e.g. <div class="icon" aria-hidden="true">🎤</div>
+✗  x11    [app.html, classroom-reading-student.html, classroom-teacher.html, classroom/js/listening-student.js +4 more]
+        e.g. showFeedback('incorrect', '✗ Wrong');
+↔  x10    [app.html, classroom/js/heist-student.js, student-dashboard.html, student/js/reading-exam.js +2 more]
+        e.g. <p>Word ↔ Definition</p>
+🎓  x10    [activity-tracker/js/activity-config.js, app.html, assignments/js/writing-submissions-view.js, student/js/progress.js +2 more]
+        e.g. document.getElementById('userRole').textContent = userData.role === 'teacher' ? …
+❌  x10    [activity-tracker/js/activity-admin.js, activity-tracker/js/activity-config.js, assignments/js/teacher-assignments.js, assignments/js/writing-submissions-view.js +4 more]
+        e.g. <div class="activity-empty-icon">❌</div>
+🔬  x9     [classroom-trust-student.html, classroom-trust-teacher.html, classroom/js/trust-student.js, classroom/js/trust-teacher.js +1 more]
+        e.g. <h3>🔬 Investigation</h3>
+📥  x8     [activity-logs-tab.html, activity-tracker/js/activity-config.js, classroom-heist-teacher.html, classroom-teacher.html +2 more]
+        e.g. 📥 Export Excel
+🚪  x8     [activity-tracker/js/activity-config.js, app.html, classroom/js/refresh-guard.js, student-dashboard.html +1 more]
+        e.g. <button class="btn-icon btn-logout" onclick="logout()">🚪 Logout</button>
+🎉  x8     [app.html, assignments/js/teacher-assignments.js, classroom-student.html, student-dashboard.html +4 more]
+        e.g. <div class="icon">🎉</div>
+🏦  x8     [classroom-heist-student.html, classroom-heist-teacher.html, classroom-teacher.html]
+        e.g. <span class="logo">🏦</span>
+🏠  x8     [classroom-heist-student.html, classroom-listening-student.html, classroom-reading-student.html, classroom-teacher.html +2 more]
+        e.g. 🏠 Back to dashboard
+🏆  x8     [assignments/js/student-assignments.js, classroom-heist-teacher.html, classroom-student.html, classroom-teacher.html +3 more]
+        e.g. <h2>🏆 Heist Complete</h2>
+🚨  x8     [classroom-trust-student.html, classroom-trust-teacher.html, classroom/js/heist-student.js, classroom/js/trust-student.js +1 more]
+        e.g. 🚨 Call emergency meeting
+👤  x8     [activity-tracker/js/activity-admin.js, activity-tracker/js/activity-config.js, assignments/js/teacher-assignments.js, index.html +2 more]
+        e.g. <span class="input-icon">👤</span>
+🧩  x8     [student-dashboard.html, student/js/progress.js, teacher/js/activity.js, teacher/js/overview-v2.js]
+        e.g. <div class="icon game-badge" style="background:rgba(16,185,129,0.18);border-colo…
+🔍  x7     [activity-logs-tab.html, assignments/js/student-picker.js, assignments/js/teacher-assignments.js, student-dashboard.html +3 more]
+        e.g. 🔍 Filter
+🇹  x7     [app.html, student-dashboard.html, student/js/games.js, student/js/pronunciation.js]
+        e.g. 🇹🇷 Turkish (A2)
+🇷  x7     [app.html, student-dashboard.html, student/js/games.js, student/js/pronunciation.js]
+        e.g. 🇹🇷 Turkish (A2)
+🔗  x7     [app.html, teacher-dashboard.html, teacher/js/activity.js, teacher/js/overview-v2.js]
+        e.g. <div class="icon">🔗</div>
+📤  x7     [activity-tracker/js/activity-config.js, classroom-listening-student.html, classroom-reading-student.html, classroom/js/listening-teacher.js +1 more]
+        e.g. 📤 Submit all answers
+🎮  x7     [activity-tracker/js/activity-config.js, assignments/js/teacher-assignments.js, classroom-student.html, classroom-teacher.html +2 more]
+        e.g. <span style="font-size: 1.5rem;">🎮</span>
+💾  x7     [assignments/js/writing-submissions-view.js, classroom-teacher.html, student-dashboard.html, teacher-dashboard.html +1 more]
+        e.g. <div style="font-size:2.5em; margin-bottom:12px;">💾</div>
+↑  x7     [student-dashboard.html, teacher/js/overview-v2.js, vendor/xlsx/xlsx.full.min.js]
+        e.g. <span class="vg-must-change">must change ↑</span>
+🖊  x7     [assignments/js/exam-form.js, assignments/js/teacher-assignments.js, assignments/js/writing-form.js, teacher-dashboard.html +1 more]
+        e.g. <h3 style="position: sticky; top: 0; background: inherit; padding-bottom: 8px; m…
+✨  x7     [assignments/js/grading-stats.js, assignments/js/student-assignments.js, classroom/js/trust-student.js, teacher/js/overview-v2.js]
+        e.g. <div style="font-size: 2em; margin-bottom: 8px;">✨</div>
+★  x7     [assignments/js/student-assignments.js, vendor/xlsx/xlsx.full.min.js]
+        e.g. //     The text becomes "★" in that pending=0 + unseen case so the chip
+↓  x7     [student/js/games.js, teacher/js/overview-v2.js, vendor/xlsx/xlsx.full.min.js]
+        e.g. //                ↓ student picks "order"
+⭐  x6     [app.html, classroom/js/trust-student.js, student-dashboard.html, student/js/avatar.js +1 more]
+        e.g. <div class="label">⭐ Best</div>
+🔁  x6     [classroom-heist-teacher.html, classroom-listening-teacher.html, classroom-reading-teacher.html, classroom-trust-teacher.html +1 more]
+        e.g. 🔁 Run another round
+🔓  x6     [classroom-listening-student.html, classroom-listening-teacher.html, classroom-reading-student.html, classroom-reading-teacher.html +2 more]
+        e.g. <div style="font-size:2.6em; margin-bottom: 6px;">🔓</div>
+💥  x6     [classroom-trust-student.html, classroom/js/trust-student.js, classroom/js/trust-teacher.js]
+        e.g. 💥 Sabotage <strong id="sabCharges" style="margin-left: 4px;">0</strong> left
+⚙  x6     [activity-tracker/js/activity-config.js, student-dashboard.html, student/js/reading-exam.js, writing-exam.html]
+        e.g. <h2 class="modal-title">⚙️ Settings</h2>
+🕊  x6     [classroom/js/trust-student.js, classroom/js/trust-teacher.js]
+        e.g. <div class="ava">🕊️</div>
+―  x6     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+🕵  x5     [classroom-heist-teacher.html, classroom-trust-student.html, classroom-trust-teacher.html, classroom/js/trust-teacher.js]
+        e.g. <div style="font-size: 1.6em; margin-bottom: 4px;">🕵️</div>
+📱  x5     [classroom-heist-teacher.html, classroom-listening-teacher.html, classroom-reading-teacher.html, classroom-teacher.html +1 more]
+        e.g. <div class="session-qr-label">📱 Scan with phone camera to join</div>
+🙈  x5     [classroom-listening-teacher.html, classroom-reading-teacher.html, classroom/js/listening-teacher.js, classroom/js/reading-teacher.js +1 more]
+        e.g. <span id="eyesIcon">🙈</span><span id="eyesLabel">Show answers</span>
+👻  x5     [classroom-trust-student.html, classroom/js/trust-student.js, classroom/js/trust-teacher.js]
+        e.g. <div class="ghost-icon-mini">👻</div>
+🗣  x5     [student-dashboard.html, teacher/js/activity.js, teacher/js/overview-v2.js]
+        e.g. <div class="icon game-badge" style="background:rgba(14,165,233,0.18);border-colo…
+📈  x5     [teacher-dashboard.html, teacher/js/overview-v2.js]
+        e.g. <span>📈</span> Activity
+📉  x5     [classroom/js/trust-student.js, classroom/js/trust-teacher.js, teacher-dashboard.html]
+        e.g. <div class="icon">📉</div>
+📅  x5     [activity-tracker/js/activity-admin.js, assignments/js/student-assignments.js, assignments/js/teacher-assignments.js]
+        e.g. <span class="meta-item">📅 ${timestamp.toLocaleDateString('en-GB', { day: '2-digi…
+💬  x5     [assignments/js/student-assignments.js, assignments/js/writing-annotations.js, assignments/js/writing-submissions-view.js, student/js/writing-exam.js]
+        e.g. 💬 Teacher's comment
+🎙  x5     [classroom/js/listening-student.js, classroom/js/listening-teacher.js, student/js/progress.js, student/js/pronunciation.js]
+        e.g. const AVATARS = ['🎧','🎶','🎵','🎤','📻','🔉','🔊','🎼','🎙️','📢','📣'];
+♂  x5     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+♀  x5     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+′  x5     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+☆  x5     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+※  x5     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+🎁  x4     [classroom-trust-student.html, classroom/js/trust-student.js, classroom/js/trust-teacher.js]
+        e.g. 🎁 Donate
+📧  x4     [index.html, teacher/js/admin.js]
+        e.g. <div style="font-weight:600; color:#f8fafc; margin-bottom:6px;">📧 Verify your em…
+🐼  x4     [classroom/js/heist-student.js, student-dashboard.html, student/js/avatar.js]
+        e.g. <div class="avatar-option" data-avatar="panda" data-emoji="🐼" data-color="#4caf5…
+🦁  x4     [classroom/js/heist-student.js, student-dashboard.html, student/js/avatar.js]
+        e.g. <div class="avatar-option" data-avatar="lion" data-emoji="🦁" data-color="#ff9800…
+🦉  x4     [classroom/js/heist-student.js, student-dashboard.html, student/js/avatar.js]
+        e.g. <div class="avatar-option" data-avatar="owl" data-emoji="🦉" data-color="#795548"…
+🦄  x4     [classroom/js/heist-student.js, student-dashboard.html, student/js/avatar.js]
+        e.g. <div class="avatar-option" data-avatar="unicorn" data-emoji="🦄" data-color="#e91…
+🐧  x4     [classroom/js/heist-student.js, student-dashboard.html, student/js/avatar.js]
+        e.g. <div class="avatar-option" data-avatar="penguin" data-emoji="🐧" data-color="#374…
+👾  x4     [classroom/js/trust-student.js, student-dashboard.html, student/js/avatar.js]
+        e.g. <div class="avatar-option locked" data-avatar="alien" data-emoji="👾" data-color=…
+💎  x4     [student-dashboard.html, student/js/avatar.js, student/js/progress.js]
+        e.g. <div class="avatar-option locked" data-avatar="diamond" data-emoji="💎" data-colo…
+⚡  x4     [classroom/js/trust-student.js, classroom/js/trust-teacher.js, student-dashboard.html, teacher/js/overview-v2.js]
+        e.g. <span class="achievement-icon">⚡</span>
+🥇  x4     [classroom/js/listening-teacher.js, classroom/js/reading-teacher.js, classroom/js/teacher.js, classroom/js/trust-teacher.js]
+        e.g. <div class="stat-tile"><div class="stat-num">${top ? Math.round(top.score || 0) …
+🔀  x4     [teacher/js/activity.js, teacher/js/overview-v2.js]
+        e.g. { value: 'order',           label: '🔀 Word Order' },
+‥  x4     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+″  x4     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+🌟  x3     [app.html, classroom/js/trust-student.js, student/js/games.js]
+        e.g. if (percent >= 90) message = '🌟 Outstanding! You mastered this set!';
+📺  x3     [classroom-listening-teacher.html, classroom-reading-teacher.html, classroom/js/reading-teacher.js]
+        e.g. <span class="listening-chip projector-safe" id="projectorSafeChip">📺 Projector-s…
+🔑  x3     [activity-tracker/js/activity-config.js, classroom-listening-teacher.html, classroom-reading-teacher.html]
+        e.g. <summary>🔑 Answer key (host only)</summary>
+🌙  x3     [classroom/js/trust-student.js, student-dashboard.html, student/js/ui.js]
+        e.g. <span class="setting-icon" id="themeIcon">🌙</span>
+🦋  x3     [student-dashboard.html, student/js/avatar.js]
+        e.g. <div class="avatar-option" data-avatar="butterfly" data-emoji="🦋" data-color="#9…
+🐬  x3     [student-dashboard.html, student/js/avatar.js]
+        e.g. <div class="avatar-option" data-avatar="dolphin" data-emoji="🐬" data-color="#028…
+🐲  x3     [student-dashboard.html, student/js/avatar.js]
+        e.g. <div class="avatar-option" data-avatar="dragon" data-emoji="🐲" data-color="#2e7d…
+🐱  x3     [student-dashboard.html, student/js/avatar.js]
+        e.g. <div class="avatar-option" data-avatar="cat" data-emoji="🐱" data-color="#ff7043"…
+🔡  x3     [student-dashboard.html, student/js/progress.js]
+        e.g. <div class="icon game-badge" style="background:rgba(244,63,94,0.18);border-color…
+💡  x3     [student-dashboard.html, student/js/progress.js, teacher/js/admin.js]
+        e.g. <button class="hint-btn" id="spellingHintBtn" onclick="showSpellingHint()">💡 Let…
+🕐  x3     [activity-tracker/js/activity-admin.js, teacher-dashboard.html]
+        e.g. <div class="icon">🕐</div>
+📭  x3     [activity-tracker/js/activity-admin.js, teacher-dashboard.html]
+        e.g. <div class="icon">📭</div>
+📌  x3     [activity-tracker/js/activity-config.js, student/js/games.js]
+        e.g. return this.labels[type] || { text: type, icon: '📌', category: 'other' };
+📎  x3     [assignments/js/student-assignments.js, assignments/js/writing-submissions-view.js, student/js/writing-exam.js]
+        e.g. 📎 Open rubric file →
+⭕  x3     [assignments/js/teacher-assignments.js, teacher/js/student-detail.js]
+        e.g. <span class="summary-icon">⭕</span>
+📢  x3     [classroom/js/listening-student.js, classroom/js/listening-teacher.js, student/js/pronunciation.js]
+        e.g. const AVATARS = ['🎧','🎶','🎵','🎤','📻','🔉','🔊','🎼','🎙️','📢','📣'];
+❓  x3     [classroom/js/listening-teacher.js, classroom/js/reading-teacher.js, student/js/pronunciation.js]
+        e.g. <div class="stat-tile"><div class="stat-num">${totalQ}</div><div class="stat-lbl…
+👀  x3     [classroom/js/trust-student.js, classroom/js/trust-teacher.js, student/js/auth.js]
+        e.g. `👀 ${targetName} hasn't been spotted contributing recently.`,
+👋  x3     [index/js/main.js, teacher/js/overview-v2.js]
+        e.g. <div style="font-size: 2.5em; margin-bottom: 10px;">👋</div>
+🚩  x3     [teacher/js/confusing-pairs.js, teacher/js/overview-v2.js]
+        e.g. <div class="av-cp-title">🚩 Confusing word pairs</div>
+↖  x3     [vendor/xlsx/xlsx.full.min.js]
+        e.g. }t[153]="����������������������������������������������������������������橜橝橞機橠橢橣…
+↗  x3     [vendor/xlsx/xlsx.full.min.js]
+        e.g. }t[153]="����������������������������������������������������������������橜橝橞機橠橢橣…
+↘  x3     [vendor/xlsx/xlsx.full.min.js]
+        e.g. }t[153]="����������������������������������������������������������������橜橝橞機橠橢橣…
+↙  x3     [vendor/xlsx/xlsx.full.min.js]
+        e.g. }t[153]="����������������������������������������������������������������橜橝橞機橠橢橣…
+↺  x2     [activity-logs-tab.html, teacher-dashboard.html]
+        e.g. ↺ Clear
+🔇  x2     [app.html, student/js/ui.js]
+        e.g. icon.textContent = '🔇';
+👏  x2     [app.html, student/js/games.js]
+        e.g. else if (percent >= 70) message = '👏 Great job! Keep practicing!';
+💪  x2     [app.html, student/js/games.js]
+        e.g. else if (percent >= 50) message = '💪 Good effort! Try again to improve!';
+💰  x2     [classroom-heist-student.html, classroom-heist-teacher.html]
+        e.g. <h3>💰 Earn</h3>
+📦  x2     [classroom-teacher.html]
+        e.g. if (!pack) { AppDialog.alert('Pick a hint pack first.', { title: 'Missing pack',…
+🔐  x2     [activity-tracker/js/activity-config.js, reset-password.html]
+        e.g. <div class="reset-icon">🔐</div>
+🗺  x2     [student-dashboard.html]
+        e.g. <h2 class="modal-title">🗺️ Quest Board</h2>
+🇺  x2     [student-dashboard.html, student/js/pronunciation.js]
+        e.g. <button class="accent-btn active" id="accentUS" onclick="setAccent('US')">🇺🇸 Ame…
+🇸  x2     [student-dashboard.html, student/js/pronunciation.js]
+        e.g. <button class="accent-btn active" id="accentUS" onclick="setAccent('US')">🇺🇸 Ame…
+🇬  x2     [student-dashboard.html, student/js/pronunciation.js]
+        e.g. <button class="accent-btn" id="accentUK" onclick="setAccent('UK')">🇬🇧 British</b…
+🇧  x2     [student-dashboard.html, student/js/pronunciation.js]
+        e.g. <button class="accent-btn" id="accentUK" onclick="setAccent('UK')">🇬🇧 British</b…
+➕  x2     [activity-tracker/js/activity-config.js, teacher-dashboard.html]
+        e.g. <span>➕</span> New Assignment
+ℹ  x2     [teacher-dashboard.html, teacher/js/modals.js]
+        e.g. <div id="messageIcon" style="font-size: 3em; margin-bottom: 16px;">ℹ️</div>
+🚧  x2     [student/js/ui.js, teacher-dashboard.html]
+        e.g. <div style="font-size: 3em; text-align: center; margin-bottom: 8px;" id="comingS…
+⬇  x2     [assignments/js/grading-stats.js, teacher/js/admin.js]
+        e.g. ⬇ Export CSV
+🐢  x2     [classroom/js/heist-student.js, classroom/js/trust-teacher.js]
+        e.g. const AVATARS = ['🦊','🐯','🐼','🐧','🦁','🐸','🐙','🦉','🐢','🐝','🐳','🦄','🐺','🐰','🦝'];
+🎶  x2     [classroom/js/listening-student.js, classroom/js/listening-teacher.js]
+        e.g. const AVATARS = ['🎧','🎶','🎵','🎤','📻','🔉','🔊','🎼','🎙️','📢','📣'];
+📻  x2     [classroom/js/listening-student.js, classroom/js/listening-teacher.js]
+        e.g. const AVATARS = ['🎧','🎶','🎵','🎤','📻','🔉','🔊','🎼','🎙️','📢','📣'];
+🔉  x2     [classroom/js/listening-student.js, classroom/js/listening-teacher.js]
+        e.g. const AVATARS = ['🎧','🎶','🎵','🎤','📻','🔉','🔊','🎼','🎙️','📢','📣'];
+🎼  x2     [classroom/js/listening-student.js, classroom/js/listening-teacher.js]
+        e.g. const AVATARS = ['🎧','🎶','🎵','🎤','📻','🔉','🔊','🎼','🎙️','📢','📣'];
+📣  x2     [classroom/js/listening-student.js, classroom/js/listening-teacher.js]
+        e.g. const AVATARS = ['🎧','🎶','🎵','🎤','📻','🔉','🔊','🎼','🎙️','📢','📣'];
+📓  x2     [classroom/js/reading-student.js, classroom/js/reading-teacher.js]
+        e.g. const AVATARS = ['📖','📚','📝','✏️','📓','📔','📕','📗','📘','📙','📰','🔖','📑'];
+📔  x2     [classroom/js/reading-student.js, classroom/js/reading-teacher.js]
+        e.g. const AVATARS = ['📖','📚','📝','✏️','📓','📔','📕','📗','📘','📙','📰','🔖','📑'];
+📕  x2     [classroom/js/reading-student.js, classroom/js/reading-teacher.js]
+        e.g. const AVATARS = ['📖','📚','📝','✏️','📓','📔','📕','📗','📘','📙','📰','🔖','📑'];
+📙  x2     [classroom/js/reading-student.js, classroom/js/reading-teacher.js]
+        e.g. const AVATARS = ['📖','📚','📝','✏️','📓','📔','📕','📗','📘','📙','📰','🔖','📑'];
+📰  x2     [classroom/js/reading-student.js, classroom/js/reading-teacher.js]
+        e.g. const AVATARS = ['📖','📚','📝','✏️','📓','📔','📕','📗','📘','📙','📰','🔖','📑'];
+🔖  x2     [classroom/js/reading-student.js, classroom/js/reading-teacher.js]
+        e.g. const AVATARS = ['📖','📚','📝','✏️','📓','📔','📕','📗','📘','📙','📰','🔖','📑'];
+📑  x2     [classroom/js/reading-student.js, classroom/js/reading-teacher.js]
+        e.g. const AVATARS = ['📖','📚','📝','✏️','📓','📔','📕','📗','📘','📙','📰','🔖','📑'];
+🥈  x2     [classroom/js/teacher.js, classroom/js/trust-teacher.js]
+        e.g. const medals = ['🥇', '🥈', '🥉'];
+🥉  x2     [classroom/js/teacher.js, classroom/js/trust-teacher.js]
+        e.g. const medals = ['🥇', '🥈', '🥉'];
+🎴  x2     [student/js/progress.js]
+        e.g. 'match': '🎴',
+🍎  x2     [student/js/pronunciation.js]
+        e.g. // 🍎 Apple Premium / Enhanced — macOS & iOS Safari ship these
+📐  x2     [teacher/js/assignments-overview.js]
+        e.g. const skillIcons = { writing:'✍️', reading:'📖', listening:'🎧', vocabulary:'📚', g…
+🏛  x2     [teacher/js/organizations.js]
+        e.g. <h2 class="section-title" style="margin:0;">🏛 Organizations</h2>
+‐  x2     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+⇒  x2     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+⇔  x2     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+♭  x2     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+♪  x2     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+‵  x2     [vendor/xlsx/xlsx.full.min.js]
+        e.g. }t[153]="����������������������������������������������������������������橜橝橞機橠橢橣…
+‎  x2     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+‏  x2     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+⁄  x2     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+🔤  x1     [student-dashboard.html]
+        e.g. <h2>🔤 Unscramble</h2>
+⚔  x1     [student-dashboard.html]
+        e.g. <div class="diff-icon">⚔️</div>
+💀  x1     [student-dashboard.html]
+        e.g. <div class="diff-icon">💀</div>
+🧪  x1     [teacher-dashboard.html]
+        e.g. <a href="student-dashboard.html" class="more-menu-item">🧪 Empower Lab</a>
+💻  x1     [activity-tracker/js/activity-admin.js]
+        e.g. <span class="meta-item">💻 ${log.device || 'Unknown'} • ${log.browser || 'Unknown…
+🔧  x1     [activity-tracker/js/activity-config.js]
+        e.g. system_settings_changed: { text: 'System Settings Changed', icon: '🔧', category:…
+📩  x1     [assignments/js/student-assignments.js]
+        e.g. 📩 Contact your teacher
+↩  x1     [assignments/js/student-assignments.js]
+        e.g. if (status === 'returned') return { label: '↩ Returned',  bg: 'rgba(245,158,11,0…
+📄  x1     [assignments/js/writing-submissions-view.js]
+        e.g. <span style="font-size: 1.5em;">📄</span>
+🔴  x1     [assignments/js/writing-submissions-view.js]
+        e.g. <span style="margin-left:auto; color: var(--text-muted); font-size: 0.85em;">🔴 L…
+🐯  x1     [classroom/js/heist-student.js]
+        e.g. const AVATARS = ['🦊','🐯','🐼','🐧','🦁','🐸','🐙','🦉','🐢','🐝','🐳','🦄','🐺','🐰','🦝'];
+🐸  x1     [classroom/js/heist-student.js]
+        e.g. const AVATARS = ['🦊','🐯','🐼','🐧','🦁','🐸','🐙','🦉','🐢','🐝','🐳','🦄','🐺','🐰','🦝'];
+🐙  x1     [classroom/js/heist-student.js]
+        e.g. const AVATARS = ['🦊','🐯','🐼','🐧','🦁','🐸','🐙','🦉','🐢','🐝','🐳','🦄','🐺','🐰','🦝'];
+🐝  x1     [classroom/js/heist-student.js]
+        e.g. const AVATARS = ['🦊','🐯','🐼','🐧','🦁','🐸','🐙','🦉','🐢','🐝','🐳','🦄','🐺','🐰','🦝'];
+🐳  x1     [classroom/js/heist-student.js]
+        e.g. const AVATARS = ['🦊','🐯','🐼','🐧','🦁','🐸','🐙','🦉','🐢','🐝','🐳','🦄','🐺','🐰','🦝'];
+🐺  x1     [classroom/js/heist-student.js]
+        e.g. const AVATARS = ['🦊','🐯','🐼','🐧','🦁','🐸','🐙','🦉','🐢','🐝','🐳','🦄','🐺','🐰','🦝'];
+🐰  x1     [classroom/js/heist-student.js]
+        e.g. const AVATARS = ['🦊','🐯','🐼','🐧','🦁','🐸','🐙','🦉','🐢','🐝','🐳','🦄','🐺','🐰','🦝'];
+🦝  x1     [classroom/js/heist-student.js]
+        e.g. const AVATARS = ['🦊','🐯','🐼','🐧','🦁','🐸','🐙','🦉','🐢','🐝','🐳','🦄','🐺','🐰','🦝'];
+♾  x1     [classroom/js/listening-teacher.js]
+        e.g. replayPolicy === 'unlimited' ? '♾️ Unlimited replays available.' :
+🎚  x1     [classroom/js/listening-teacher.js]
+        e.g. '🎚️ Teacher-controlled playback.'
+🟢  x1     [classroom/js/teacher.js]
+        e.g. document.getElementById('sessionStatus').innerHTML = '<span style="color: var(--…
+👽  x1     [classroom/js/trust-student.js]
+        e.g. const AVATARS = ['🚀','🛰️','👽','🌙','⭐','💫','🪐','🌌','🌠','👾','🛸','🌟','✨','🌑','☄️'];
+💫  x1     [classroom/js/trust-student.js]
+        e.g. const AVATARS = ['🚀','🛰️','👽','🌙','⭐','💫','🪐','🌌','🌠','👾','🛸','🌟','✨','🌑','☄️'];
+🪐  x1     [classroom/js/trust-student.js]
+        e.g. const AVATARS = ['🚀','🛰️','👽','🌙','⭐','💫','🪐','🌌','🌠','👾','🛸','🌟','✨','🌑','☄️'];
+🌌  x1     [classroom/js/trust-student.js]
+        e.g. const AVATARS = ['🚀','🛰️','👽','🌙','⭐','💫','🪐','🌌','🌠','👾','🛸','🌟','✨','🌑','☄️'];
+🌠  x1     [classroom/js/trust-student.js]
+        e.g. const AVATARS = ['🚀','🛰️','👽','🌙','⭐','💫','🪐','🌌','🌠','👾','🛸','🌟','✨','🌑','☄️'];
+🛸  x1     [classroom/js/trust-student.js]
+        e.g. const AVATARS = ['🚀','🛰️','👽','🌙','⭐','💫','🪐','🌌','🌠','👾','🛸','🌟','✨','🌑','☄️'];
+🌑  x1     [classroom/js/trust-student.js]
+        e.g. const AVATARS = ['🚀','🛰️','👽','🌙','⭐','💫','🪐','🌌','🌠','👾','🛸','🌟','✨','🌑','☄️'];
+☄  x1     [classroom/js/trust-student.js]
+        e.g. const AVATARS = ['🚀','🛰️','👽','🌙','⭐','💫','🪐','🌌','🌠','👾','🛸','🌟','✨','🌑','☄️'];
+✉  x1     [index/js/auth.js]
+        e.g. { title: 'Resend verification', password: true, okLabel: 'Resend', icon: '✉️' })…
+👍  x1     [student/js/games.js]
+        e.g. const msg = pct >= 90 ? '🌟 Outstanding!' : pct >= 70 ? '👏 Great job!' : pct >= 5…
+🌱  x1     [student/js/progress.js]
+        e.g. 1: { title: 'Beginner', icon: '🌱' },
+🔱  x1     [student/js/progress.js]
+        e.g. 10: { title: 'Grandmaster', icon: '🔱' }
+⬜  x1     [student/js/progress.js]
+        e.g. <span class="qc-challenge-check">${done ? '✅' : '⬜'}</span>
+🌍  x1     [student/js/pronunciation.js]
+        e.g. voice.lang.startsWith('en') ? '🌍 EN' : '❓';
+🤖  x1     [student/js/pronunciation.js]
+        e.g. // 🤖 Penalize the robotic legacy SAPI voices on Windows
+⚑  x1     [student/js/reading-exam.js]
+        e.g. // Inline SVG icons (instead of unicode ⚑ / ✎) keep both buttons
+✎  x1     [student/js/reading-exam.js]
+        e.g. // Inline SVG icons (instead of unicode ⚑ / ✎) keep both buttons
+↻  x1     [student/js/reading-exam.js]
+        e.g. <button class="rd-tool-btn" id="rd-retake-btn" title="Retake (resets answers)">↻…
+☀  x1     [student/js/ui.js]
+        e.g. icon.textContent = isLight ? '☀️' : '🌙';
+✔  x1     [student/js/ui.js]
+        e.g. msg.textContent = correct ? '✔' : '✗';
+📂  x1     [teacher/js/admin.js]
+        e.g. <div class="av-detail-label">📂 Module</div>
+🗓  x1     [teacher/js/dashboard-extras.js]
+        e.g. <h2 class="section-title">🗓️ Deadline Calendar</h2>
+⚐  x1     [teacher/js/overview-v2.js]
+        e.g. onclick="t2ToggleFlag('${escapeHtml(r.student.id)}')">${isFlagged ? '🚩' : '⚐'}</…
+🖨  x1     [teacher/js/student-detail.js]
+        e.g. <button type="button" class="sd-btn" id="sdPrintBtn" title="Print / Save as PDF"…
+‗  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+♯  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+‖  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. }t[153]="����������������������������������������������������������������橜橝橞機橠橢橣…
+☉  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. }t[153]="����������������������������������������������������������������橜橝橞機橠橢橣…
+♤  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+♠  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+♡  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+♥  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+♧  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+♣  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+♨  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+☏  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+☎  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+☜  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+☞  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+↕  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+♩  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+♬  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+‧  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…
+‌  x1     [vendor/xlsx/xlsx.full.min.js]
+        e.g. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmn…

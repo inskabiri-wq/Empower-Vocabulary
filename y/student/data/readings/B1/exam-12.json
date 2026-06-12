@@ -1,0 +1,563 @@
+{
+  "id": "b1-r12",
+  "level": "B1",
+  "title": "B1 Reading 12 — Stress in the Workplace",
+  "subtitle": "One passage · Headings, True/False, MCQ, vocab, reference",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Stress in the Workplace",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Three out of every four American workers describe their work as stressful. Occupational stress has been defined as a \"global problem\" by the United Nations' International Labor Organization. There are a lot of physical effects of <strong>this</strong> problem. In addition to this, the economic consequences of this global problem are also alarming. Workplace stress costs U.S. employers $200 billion per year in absenteeism, lower productivity, staff turnover, medical insurance and other stress-related expenses.</p><p class=\"rd-para\" data-para=\"2\">Of course, stress is a factor in everyone's life, particularly during major events such as marriage, divorce or buying a home. But many of the most stressful events are related to the workplace: fear of losing your job, changes in your post, changes in financial status, having new responsibilities, having trouble with the boss, variations in work hours or conditions, and vacation dates.</p><p class=\"rd-para\" data-para=\"3\">Surprisingly, stress is not always a bad thing. It can increase creativity and productivity. According to Robert Ostermann, professor of psychology at FDU's Teaneck-Hackensack Campus, \"No one reaches <strong>peak</strong> performance without being stressed, whether an athlete, an office worker or a manager.\" The problem <strong>occurs</strong> when stress is so significant.</p><p class=\"rd-para\" data-para=\"4\">Ostermann has found that sources of stress change in different professions. For factory workers, stress often is related directly to the work situation, such as dealing with dangerous heavy equipment or working in an uncomfortable environment. In contrast, office workers are more likely to experience stress related inter-personal relationships on the job. \"People pressures\" such as unclear supervision, tension among team members and fear of dislike can cause stress.</p><p class=\"rd-para\" data-para=\"5\">\"For many people the <strong>core</strong> of their social life is the people whom they work with,\" explains Ostermann. \"Most people take it personally, but work is not a social situation. When you begin to get some things that are not exactly the qualities of good relationships — such as rumors and power plays among <strong>executives</strong> who are competing for the next promotion — the amount of stress that you get increases.\"</p><p class=\"rd-para\" data-para=\"6\">Occupational stress is not related only to what goes on at work. Conflicts between the demands of the workplace and of home life are increasingly common. One can be stressed when there is an unbalance between family life and work life. According to a survey of the U.S. Department of Labor, 10% of people who are married or living with children under 18 experience <strong>severe</strong> work-family conflict.</p><p class=\"rd-para\" data-para=\"7\">In the current \"information age\" things move faster than ever before with faxes and instant e-mail messages. In some professions people may face more stress due to the fast changes in technology. For example: \"Airline pilots are flying more complicated planes, carrying more people under more pressing time demands and with much more airport traffic than ever before,\" Ostermann says. Technology in automation has allowed employers to get rid of many jobs. <strong>This</strong> causes a fear of being replaced by a machine, and those who keep their jobs must take further education and training. They tend to have a higher level of responsibility, and thus <strong>it</strong> causes greater stress on them.</p><p class=\"rd-para\" data-para=\"8\">\"Other managerial changes,\" <strong>he</strong> adds, \"especially increased use of part-timers, administrative changes, increased diversity and adjustments in salaries,\" lead to increased levels of job insecurity. \"Now only about half of managers and employees comment that they feel safe in their jobs, 20 years ago this rate was about 80%.\"</p><p class=\"rd-para\" data-para=\"9\">A particularly alarming cause of stress is <strong>aggression</strong> or violence in the workplace. It is estimated by the U.S. Justice Department that each year more than a million people are the victims of violence at work. Aggressive behavior in the workplace ranges from the few \"serious instances of physical assault\" to the more common 'passive' forms of aggression, such as not sharing the information with other workers, not answering the phone calls and being late to meetings. Although these passive-aggressive behaviours seem to be not very disturbing, Ostermann notes that \"when <strong>they</strong> are constantly repeated, they can result in great psychological harm and loss of personal and organizational productivity.\"</p><p class=\"rd-para\" data-para=\"10\">The physical consequences of excessive stress have long been recognized — from heart attacks and strokes to ulcers and other gastrointestinal disorders. Psychologically, stress can lead to depression, anxiety and even panic attacks. 60% of lost workdays each year can be attributed to stress. In addition, an estimated 75 to 90% of visits to health care providers are due to stress-related conditions, costing employers in increased health care costs. Stress also can have a direct effect on the way people handle their jobs. Employees under stress may make more mistakes, have trouble concentrating, become disorganized, become angry or just stop caring about their work. The Wall Street Journal reported that one third of people surveyed considered quitting their jobs because of stress and 14% actually <strong>did it</strong>.</p><p class=\"rd-para\" data-para=\"11\">Many people look for help to solve their problems about stress, and employers are responding. \"We look for support systems, things that will balance the stress,\" comments Ostermann. Options include flexible work weeks and telecommuting opportunities. On the physical side, some organizations provide health clubs where employees can work out and keep fit and cafeterias where workers can choose from a healthy range of meals. Most <strong>corporations</strong> make counseling readily available.</p><p class=\"rd-para\" data-para=\"12\">Handling stress, however, is a very individual matter. Alice Mills, co-director of counseling services in the Teaneck-Hackensack Campus Wellness Center, suggests several ways individuals can deal with stress. \"The first step is to analyze the situation to determine what is causing the stress and what techniques might best suit the individual,\" she says. Mills notes that there are many relaxation skills including the use of music, meditation, aerobic exercise, muscle relaxation and imagery. Many of these techniques can be learned through books and video- and audiotapes such as those that the Wellness Center makes available to students, faculty and staff through <strong>its</strong> stress lab. Another important way to combat stress is to sharpen one's communication skills. \"You need to learn how to speak about your own needs and wants and how to give positive and negative feedback to others,\" Mills explains. And, perhaps most importantly, \"Take care of yourself.\"</p>",
+      "sections": [
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part A",
+          "instructions": "Match the main ideas with the paragraphs. There is ONE EXTRA idea.",
+          "options": [
+            {
+              "id": "A",
+              "text": "Changes in management system can lead to stress"
+            },
+            {
+              "id": "B",
+              "text": "Ways of helping workers who have stress"
+            },
+            {
+              "id": "C",
+              "text": "Changes due to advances in technology may result in stress"
+            },
+            {
+              "id": "D",
+              "text": "Violence in the office can cause stress"
+            },
+            {
+              "id": "E",
+              "text": "Personal relationships in an office can be another cause of stress"
+            },
+            {
+              "id": "F",
+              "text": "Family life can also contribute to the stress in work life"
+            },
+            {
+              "id": "G",
+              "text": "Causes of stress can alter in different occupations"
+            }
+          ],
+          "items": [
+            {
+              "id": "p4",
+              "label": "Paragraph 7",
+              "answer": "G"
+            },
+            {
+              "id": "p5",
+              "label": "Paragraph 8",
+              "answer": "E"
+            },
+            {
+              "id": "p6",
+              "label": "Paragraph 9",
+              "answer": "F"
+            },
+            {
+              "id": "p7",
+              "label": "Paragraph 7",
+              "answer": "C"
+            },
+            {
+              "id": "p8",
+              "label": "Paragraph 8",
+              "answer": "A"
+            },
+            {
+              "id": "p9",
+              "label": "Paragraph 9",
+              "answer": "D"
+            }
+          ]
+        },
+        {
+          "id": "truefalse",
+          "type": "mcq",
+          "label": "Part B",
+          "instructions": "Choose True or False for each statement.",
+          "items": [
+            {
+              "id": "tf1",
+              "question": "Occupational stress affects the majority of American workers.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "tf2",
+              "question": "The United Nations' International Labor Organization has classified workplace stress as a top-priority issue.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf3",
+              "question": "The economic consequences of workplace stress include only absenteeism and lower productivity.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf4",
+              "question": "Stress is primarily related to external factors like job loss and financial changes.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf5",
+              "question": "Stress always has a negative impact on performance, according to Robert Ostermann.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf6",
+              "question": "Stress is mainly related to physical working conditions for office workers.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf7",
+              "question": "The \"information age\" has generally reduced stress levels for workers.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf8",
+              "question": "Job insecurity is decreasing among managers and employees in the current work environment.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf9",
+              "question": "Workplace aggression is primarily limited to physical assaults.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "tf10",
+              "question": "The majority of lost workdays each year can be attributed to stress-related causes.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "True"
+                },
+                {
+                  "id": "b",
+                  "text": "False"
+                }
+              ],
+              "answer": "a"
+            }
+          ]
+        },
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part C",
+          "instructions": "Choose the best answer for the following questions.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "Which of the following is NOT an effect of workplace stress?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "not going to work"
+                },
+                {
+                  "id": "b",
+                  "text": "leaving the job"
+                },
+                {
+                  "id": "c",
+                  "text": "becoming less productive"
+                },
+                {
+                  "id": "d",
+                  "text": "having medical insurance"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m2",
+              "question": "According to paragraph 2, changes in work hours or conditions __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "are examples of workplace related stressful events"
+                },
+                {
+                  "id": "b",
+                  "text": "are less stress causing events than having trouble with the boss"
+                },
+                {
+                  "id": "c",
+                  "text": "cause employees to get divorced"
+                },
+                {
+                  "id": "d",
+                  "text": "are not considered as major stressful events"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m3",
+              "question": "According to Robert Ostermann, __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "people should never get stressed at workplace"
+                },
+                {
+                  "id": "b",
+                  "text": "an athlete cannot reach his peak performance if he is stressed"
+                },
+                {
+                  "id": "c",
+                  "text": "people can benefit from stress as well"
+                },
+                {
+                  "id": "d",
+                  "text": "when stress is significant, medical support becomes necessary"
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m4",
+              "question": "In paragraph 4, what does the writer mean with the phrase \"people pressures\"?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "It is the number of people working in a company; if it is too high, you have people pressure."
+                },
+                {
+                  "id": "b",
+                  "text": "If there are not enough people to do a job, employees get stressed."
+                },
+                {
+                  "id": "c",
+                  "text": "If people do not know how to use complex equipments, it can cause stress."
+                },
+                {
+                  "id": "d",
+                  "text": "It is the effect of other people's behaviour and feelings which causes stress."
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m5",
+              "question": "Which one is FALSE? Because of advanced technology, __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "workers need to keep up with the fast changes"
+                },
+                {
+                  "id": "b",
+                  "text": "only people who know how to use machines will be hired"
+                },
+                {
+                  "id": "c",
+                  "text": "people need to learn how to use more complicated machines"
+                },
+                {
+                  "id": "d",
+                  "text": "in some sectors, machines will replace workers"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m6",
+              "question": "Which one is an example of passive form of violence?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "When you are physically attacked by someone, you shouldn't fight back; instead you should report it to the police."
+                },
+                {
+                  "id": "b",
+                  "text": "If your colleague does not inform you about the meeting time on purpose, this is considered as violence."
+                },
+                {
+                  "id": "c",
+                  "text": "If the boss shouts at the employees in a meeting, this can be considered as passive violence."
+                },
+                {
+                  "id": "d",
+                  "text": "When aggressive behaviour becomes disturbing, you should not stay passive."
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m7",
+              "question": "\"60% of lost workdays each year can be attributed to stress.\" What do you understand from this statement?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Many people work less or do not work at all because of stress."
+                },
+                {
+                  "id": "b",
+                  "text": "Many people decide to quit their jobs when they are on holidays."
+                },
+                {
+                  "id": "c",
+                  "text": "Many people do not go to work because of stress."
+                },
+                {
+                  "id": "d",
+                  "text": "Many people do not want to have variations in their work days."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m8",
+              "question": "According to Alice Mills, __________.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "if there is no stress, there is no productivity"
+                },
+                {
+                  "id": "b",
+                  "text": "having good communication skills is a way to fight with stress"
+                },
+                {
+                  "id": "c",
+                  "text": "companies cannot deal with all the employees at the same time"
+                },
+                {
+                  "id": "d",
+                  "text": "employees should attend courses to learn relaxation skills such as mediation and aerobic exercise"
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part D (vocabulary)",
+          "instructions": "Find a word in the text which is closest in meaning to each definition.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"the highest\" (paragraph 3):",
+              "answer": "peak"
+            },
+            {
+              "id": "sa2",
+              "definition": "\"to appear\" (paragraph 3):",
+              "answer": "occur",
+              "acceptable": [
+                "occur",
+                "occurs"
+              ]
+            },
+            {
+              "id": "sa3",
+              "definition": "\"center\" (paragraph 5):",
+              "answer": "core"
+            },
+            {
+              "id": "sa4",
+              "definition": "\"manager\" (paragraph 5):",
+              "answer": "executives",
+              "acceptable": [
+                "executives",
+                "executive"
+              ]
+            },
+            {
+              "id": "sa5",
+              "definition": "\"very serious\" (paragraph 6):",
+              "answer": "severe"
+            },
+            {
+              "id": "sa6",
+              "definition": "\"angry or threatening\" (paragraph 9):",
+              "answer": "aggressive",
+              "acceptable": [
+                "aggressive",
+                "aggression"
+              ]
+            },
+            {
+              "id": "sa7",
+              "definition": "\"a group of companies acting together\" (paragraph 11):",
+              "answer": "corporations",
+              "acceptable": [
+                "corporations",
+                "corporation"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shortanswer2",
+          "type": "find-word",
+          "label": "Part E (reference)",
+          "instructions": "What do these words in the text refer to?",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "\"this\" (paragraph 1):",
+              "answer": "occupational stress",
+              "acceptable": [
+                "occupational stress",
+                "workplace stress"
+              ]
+            },
+            {
+              "id": "sa2",
+              "definition": "\"This\" (paragraph 7):",
+              "answer": "technology allowing employers to get rid of many jobs",
+              "acceptable": [
+                "technology allowing employers to get rid of many jobs",
+                "automation getting rid of many jobs",
+                "technology allowing employers to get rid of jobs"
+              ]
+            },
+            {
+              "id": "sa3",
+              "definition": "\"it\" (paragraph 7):",
+              "answer": "having a higher level of responsibility",
+              "acceptable": [
+                "having a higher level of responsibility",
+                "a higher level of responsibility"
+              ]
+            },
+            {
+              "id": "sa4",
+              "definition": "\"he\" (paragraph 8):",
+              "answer": "Ostermann"
+            },
+            {
+              "id": "sa5",
+              "definition": "\"they\" (paragraph 9):",
+              "answer": "passive aggressive behaviours",
+              "acceptable": [
+                "passive aggressive behaviours",
+                "passive-aggressive behaviours",
+                "these passive-aggressive behaviours"
+              ]
+            },
+            {
+              "id": "sa6",
+              "definition": "\"did it\" (paragraph 10):",
+              "answer": "quit their jobs",
+              "acceptable": [
+                "quit their jobs",
+                "quit"
+              ]
+            },
+            {
+              "id": "sa7",
+              "definition": "\"its\" (paragraph 12):",
+              "answer": "Wellness Center's",
+              "acceptable": [
+                "Wellness Center's",
+                "the Wellness Center's"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

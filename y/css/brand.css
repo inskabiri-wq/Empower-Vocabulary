@@ -1,0 +1,121 @@
+/* ════════════════════════════════════════════════════════════════
+   BRAND RESET — loaded on every page of the app.
+   ----------------------------------------------------------------
+   Single source of truth for the small, brand-wide visual rules
+   that keep the app feeling like one product across login,
+   dashboard, classroom, heist, writing, exam, and teacher views.
+
+   Rule for additions: only put things here that apply EVERYWHERE
+   and don't conflict with per-page custom styles. If a rule only
+   makes sense on the dashboard, it belongs in extra.css, not here.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Number inputs ──────────────────────────────────────────────
+   The default browser number-spinner buttons look like Windows 98
+   next to the rest of our dark-glass UI. Hide them everywhere.
+   The input is still numeric — only the visual chrome is gone.
+   • Webkit (Chrome / Edge / Safari) needs ::-webkit-*-spin-button
+     plus appearance:none on the input itself.
+   • Firefox needs -moz-appearance:textfield on the input.            */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* ── Search inputs ─────────────────────────────────────────────
+   Hide Webkit's native clear-X (looks bolted on, not branded).
+   Most pages style the surrounding wrapper; the X is the only
+   uncontrolled bit. Safe everywhere — no current search input
+   needs the native clear button. */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ── Focus-visible default ─────────────────────────────────────
+   When a control has NO custom :focus style, browsers fall back
+   to a low-contrast OS outline that's invisible against the dark
+   backgrounds. Give all unstyled focusable elements a faint indigo
+   ring so they're always visible without overriding the strong
+   per-component focus rings (those use box-shadow or a custom
+   outline-color and take precedence). */
+:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.55);
+  outline-offset: 2px;
+}
+
+/* ── Selection color ───────────────────────────────────────────
+   Default text-selection blue clashes with everything; pick a
+   subtle indigo that matches the app accent. */
+::selection {
+  background: rgba(99, 102, 241, 0.42);
+  color: #ffffff;
+}
+
+/* ── Checkboxes & radios ───────────────────────────────────────
+   Recolor every native checkbox/radio to the brand indigo so they
+   match across the whole app (login, dashboards, forms, admin).
+   `accent-color` keeps the native control's behaviour + sizing —
+   it only changes the tick/fill colour — so it CANNOT break the
+   layout of any existing checkbox, and it correctly does nothing
+   to the assignment student-picker (which hides its native input
+   and draws its own custom box). Pointer cursor + a soft indigo
+   focus ring complete the polish. */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: #6366f1;
+  cursor: pointer;
+}
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.6);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+/* The <label> beside a checkbox/radio should feel clickable too. */
+label:has(> input[type="checkbox"]),
+label:has(> input[type="radio"]) {
+  cursor: pointer;
+}
+
+/* ── Mobile accordion performance ──────────────────────────────
+   The exam / assignment accordions animate max-height (a layout
+   property that reflows every frame) inside backdrop-filter: blur
+   cards, so the blur re-renders over the moving area on every
+   frame. On phones that combination is visibly laggy. On small
+   screens we make the height change ~instant (keeping a soft
+   opacity + padding fade) and drop the per-child stagger, so
+   opening/closing is snappy with no jank. Desktop keeps the full
+   animation. !important is required to beat the more-specific
+   per-file `.is-collapsed` transitions. */
+@media (max-width: 768px) {
+  .rd-section-body, .rd-q-body,
+  .exam-section-body, .exam-item-body, .exam-q-body,
+  .asg-acc-detail {
+    transition: max-height 1ms linear,
+                padding 0.16s ease,
+                opacity 0.16s ease !important;
+  }
+  .rd-section-body > *, .rd-q-body > *,
+  .exam-section-body > *, .exam-item-body > *, .exam-q-body > * {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* The other big phone cost is backdrop-filter: blur. It re-renders on every
+     scroll frame (worst on sticky toolbars) and over the fade above. Every
+     surface in this app sits on a near-opaque background (0.72 to 0.95 alpha),
+     so the blur is decorative here; dropping it on phones removes the remaining
+     jank with almost no visual change. Desktop (>768px) keeps the frosted look. */
+  * {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}

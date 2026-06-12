@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Policy Course | Empower Lab</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Great+Vibes&display=swap" rel="stylesheet">
+<!-- Brand-wide reset first so page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css">
+<link rel="stylesheet" href="css/fsmvu-loader.css">
+<link rel="stylesheet" href="student/css/policy-course.css?v=3">
+<script src="js/app-dialog.js"></script>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="pcLoading" class="pc-center-fill">
+  <div class="fsmvu-loader fsmvu-loader--progress fsmvu-loader--white" role="status" aria-label="Loading">
+    <div class="fsmvu-ring-wrap"><span class="fsmvu-track"></span><span class="fsmvu-arc"></span><span class="fsmvu-seal"></span></div>
+  </div>
+</div>
+
+<!-- Course not active for this student -->
+<div id="pcInactive" class="pc-center-fill" style="display:none;">
+  <div class="pc-inactive-card">
+    <div style="font-size:2.6em;">🔒</div>
+    <h2 data-i18n="inactiveTitle">The course is not open yet</h2>
+    <p data-i18n="inactiveBody">Your teacher has not activated the Policy Course for your class yet. Check back later.</p>
+    <a class="pc-btn pc-btn-primary" href="student-dashboard.html" data-i18n="backToDash">Back to dashboard</a>
+  </div>
+</div>
+
+<!-- Main app -->
+<div id="pcApp" style="display:none;">
+
+  <header class="pc-header">
+    <a class="pc-back" href="student-dashboard.html">&#8592; <span data-i18n="dash">Dashboard</span></a>
+    <div class="pc-header-title">
+      <span class="pc-header-icon">🎓</span>
+      <span id="pcCourseTitle">Policy Course</span>
+    </div>
+    <div class="pc-header-right">
+      <button type="button" class="pc-lang" id="pcLangBtn" title="Language">EN / TR</button>
+      <span class="pc-student-chip" id="pcStudentChip"></span>
+    </div>
+  </header>
+
+  <!-- OVERVIEW: module map -->
+  <main id="pcOverview" class="pc-wrap" style="display:none;">
+    <p class="pc-intro" id="pcIntro"></p>
+    <div class="pc-progressbar"><div class="pc-progressbar-fill" id="pcProgressFill"></div></div>
+    <div class="pc-progress-label" id="pcProgressLabel"></div>
+    <div id="pcModuleList" class="pc-module-list"></div>
+  </main>
+
+  <!-- LESSON READER (also used for restudy + final review) -->
+  <main id="pcLesson" class="pc-wrap" style="display:none;">
+    <div class="pc-lesson-top">
+      <button type="button" class="pc-btn pc-btn-ghost" id="pcLessonExit">&#8592; <span data-i18n="exit">Exit</span></button>
+      <div class="pc-step-label" id="pcStepLabel"></div>
+    </div>
+    <div class="pc-lesson-card">
+      <h2 id="pcLessonTitle"></h2>
+      <div id="pcLessonBody" class="pc-lesson-body"></div>
+    </div>
+    <div class="pc-lesson-nav">
+      <button type="button" class="pc-btn pc-btn-ghost" id="pcLessonPrev" data-i18n="back">Back</button>
+      <button type="button" class="pc-btn pc-btn-primary" id="pcLessonNext" data-i18n="next">Next</button>
+    </div>
+  </main>
+
+  <!-- QUIZ / FINAL EXAM -->
+  <main id="pcQuiz" class="pc-wrap" style="display:none;">
+    <div class="pc-lesson-top">
+      <button type="button" class="pc-btn pc-btn-ghost" id="pcQuizExit">&#8592; <span data-i18n="exit">Exit</span></button>
+      <div class="pc-quiz-meta">
+        <span class="pc-step-label" id="pcQuizProgress"></span>
+        <span class="pc-lives" id="pcLives"></span>
+      </div>
+    </div>
+    <div class="pc-quiz-card">
+      <div class="pc-quiz-title" id="pcQuizTitle"></div>
+      <div class="pc-quiz-q" id="pcQuizQ"></div>
+      <div class="pc-quiz-opts" id="pcQuizOpts"></div>
+      <div id="pcQuizFeedback"></div>
+    </div>
+  </main>
+
+  <!-- RESULT (pass / fail / ban) -->
+  <main id="pcResult" class="pc-wrap" style="display:none;">
+    <div class="pc-result-card" id="pcResultCard"></div>
+  </main>
+
+  <!-- CERTIFICATE -->
+  <main id="pcCertificate" class="pc-wrap" style="display:none;">
+    <div class="pc-cert-actions">
+      <button type="button" class="pc-btn pc-btn-ghost" id="pcCertBack">&#8592; <span data-i18n="backToCourse">Back to course</span></button>
+      <button type="button" class="pc-btn pc-btn-primary" onclick="window.print()" data-i18n="printCert">Print / Save as PDF</button>
+    </div>
+    <!-- Landscape certificate matching the department's printed
+         Certificate of Participation: blue gradient frame, thin double
+         silver inner frame, department lockup, script calligraphy
+         heading + name, italic statement, gold seal, signature block. -->
+    <div class="pc-cert" id="pcCertSheet">
+      <div class="pc-cert-frame">
+        <div class="pc-cert-inner">
+
+          <div class="pc-cert-dept">
+            <img src="/fsm-logo.png" alt="" class="pc-cert-deptlogo">
+            <div class="pc-cert-deptnames">
+              <div class="pc-cert-dept-tr">YABANCI DİLLER BÖLÜMÜ</div>
+              <div class="pc-cert-dept-en">FOREIGN LANGUAGES DEPARTMENT</div>
+            </div>
+          </div>
+
+          <h1 class="pc-cert-script" data-i18n="certHeading">Certificate of Completion</h1>
+          <div class="pc-cert-presented" data-i18n="certPresented">This certificate is proudly presented to</div>
+          <div class="pc-cert-name-script" id="pcCertName"></div>
+          <p class="pc-cert-statement" id="pcCertStatement"></p>
+
+          <div class="pc-cert-bottom">
+            <div class="pc-cert-sign">
+              <div class="pc-cert-signname" id="pcCertSignName"></div>
+              <div class="pc-cert-signtitle" id="pcCertSignTitle"></div>
+            </div>
+            <div class="pc-cert-sealwrap">
+              <img src="/fsmvu-seal.png" alt="" class="pc-cert-sealimg">
+            </div>
+            <div class="pc-cert-meta">
+              <div><span data-i18n="certId">Certificate ID</span>: <strong id="pcCertId"></strong></div>
+              <div><span data-i18n="certDate">Date</span>: <strong id="pcCertDate"></strong></div>
+              <div><span data-i18n="certScore">Final score</span>: <strong id="pcCertScore"></strong></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="student/js/policy-course-content.js?v=4"></script>
+<script src="student/js/course-target.js?v=2"></script>
+<script src="student/js/policy-course.js?v=4"></script>
+</body>
+</html>

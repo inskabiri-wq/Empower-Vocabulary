@@ -1,0 +1,259 @@
+{
+  "id": "b2-r13",
+  "level": "B2",
+  "title": "B2 Reading 13 — Why Do People Buy?",
+  "subtitle": "One passage · MCQ, short-answer, headings",
+  "timeLimitMin": 20,
+  "passages": [
+    {
+      "passageNumber": 1,
+      "title": "Why Do People Buy?",
+      "introHtml": "",
+      "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Why do people buy? Why do people choose to buy certain products? These are important questions for businesses and <strong>manufacturers</strong> (producers). One of the reasons is advertising. Manufacturers know that effective advertisements sell products. They have studied the psychology of advertising and buying and they understand people's behaviour in the <strong>marketplace</strong>. Manufacturers analyse the business of selling and buying all the time. This is called \"market research\". They know all the different reasons that <strong>influence</strong> a consumer's <strong>purchase</strong>, in other words, buying. <strong>They</strong> believe that only some of the reasons for buying are logical; most of the reasons are emotional.</p><p class=\"rd-para\" data-para=\"2\">The business of selling in the marketplace is competitive. Manufacturers compete for special <strong>display</strong> places so that their products can be seen by the shoppers. In stores like \"Migros\", manufacturers want to have the eye-level display places because many shoppers do not generally buy products from the top or bottom shelves. The shopper is always in a <strong>hurry</strong> and, therefore, s/he buys the products that s/he can reach easily. On television, examples of special display places include advertisements during major sports events like the World Cup, the Olympics, etc. Manufacturers pay a lot of money to advertise their products on television because millions of people watch these games. The Internet is another special display opportunity for advertisers. Manufacturers put their advertisements on the Internet because it is not very expensive. A computer user who is looking for information about a special plant may see advertisements for flowers on the screen next to the information. Or, a sports fan who is looking for the scores of a game may see advertisements for sports equipment. These advertisements are clever and entertaining and like other kinds of advertising, they influence people and make them buy.</p><p class=\"rd-para\" data-para=\"3\">Manufacturers and store owners use their knowledge of why people buy. For example, they know the difference between \"decision buying\" and \"<strong>impulse</strong> buying\". They encourage impulse buying. For example, near the entrance of many shops and supermarkets, there are large shelves with many products on them. These can be books, magazines, newspapers, candy, gum, etc. Shoppers may think that they have shopped well and bought everything on the shopping list. However, when they see the products on these shelves, their eyes move over the attractive displays of candy or the colourful pictures of the magazines. At this point, shoppers are helpless; they suddenly buy something extra. That is exactly what the store owner and the manufacturer want to see: they expect the consumer to buy for an emotional reason.</p><p class=\"rd-para\" data-para=\"4\">Buying candy which is near the entrance of a supermarket is an example of an emotional purchase. However, many purchases are just the opposite. They are logical. Logical buyers usually think about the economy and buy cheaper products, but sometimes advertisements can change their minds. For example, fifteen-year-old Jonathan chooses the expensive athletic shoes that he sees on a basketball star in a television advertisement. Jonathan feels like the sports hero with those shoes. The shopper wants to copy the athlete by using the same product, so he buys the product although it is expensive. His decision to buy is emotional and not logical.</p><p class=\"rd-para\" data-para=\"5\">Sometimes people have other reasons for buying. People buy things to get the attention of other people. Buying a particular car or a large television set, for example, means that the person can afford to buy it and perhaps the person is rich. Other things that people buy are for pleasure, for example, tickets to a sports event, a movie or a concert. Of course, people buy most things because they need them, but advertisements can change shoppers' decisions. Everyone needs food, but advertising might determine the kind of food that a person buys. Finally, as consumers, people should know what they need before they go shopping. They shouldn't allow advertisements to affect their decisions. If people follow this rule, they will be better shoppers.</p>",
+      "sections": [
+        {
+          "id": "mcq",
+          "type": "mcq",
+          "label": "Part A",
+          "instructions": "Circle the correct answer.",
+          "items": [
+            {
+              "id": "m1",
+              "question": "What is the main idea of the text?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "People always buy things that they don't need."
+                },
+                {
+                  "id": "b",
+                  "text": "Shoppers prefer products that are used by famous people."
+                },
+                {
+                  "id": "c",
+                  "text": "There are many factors that influence a consumer's decision to buy."
+                },
+                {
+                  "id": "d",
+                  "text": "Shoppers always give importance to advertisements when they buy something."
+                }
+              ],
+              "answer": "c"
+            },
+            {
+              "id": "m2",
+              "question": "Manufacturers can understand a person's shopping behaviour _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "with the help of market research"
+                },
+                {
+                  "id": "b",
+                  "text": "by analysing different advertisements"
+                },
+                {
+                  "id": "c",
+                  "text": "by watching the advertisements on TV"
+                },
+                {
+                  "id": "d",
+                  "text": "by giving them surveys from time to time"
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m3",
+              "question": "Manufacturers put their advertisements on the Internet because ___.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "they think it is the best place to advertise their products"
+                },
+                {
+                  "id": "b",
+                  "text": "they attract people's attention more than any other display places"
+                },
+                {
+                  "id": "c",
+                  "text": "shoppers mostly do online shopping"
+                },
+                {
+                  "id": "d",
+                  "text": "it is a cheaper form of advertisement"
+                }
+              ],
+              "answer": "d"
+            },
+            {
+              "id": "m4",
+              "question": "\"At this point, shoppers are helpless.\" This sentence means _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "Shoppers buy extra things which are not on their shopping list."
+                },
+                {
+                  "id": "b",
+                  "text": "No one helps shoppers when they are buying something."
+                },
+                {
+                  "id": "c",
+                  "text": "Shoppers buy something after careful thought."
+                },
+                {
+                  "id": "d",
+                  "text": "Shoppers think that everything they have bought is necessary for them."
+                }
+              ],
+              "answer": "a"
+            },
+            {
+              "id": "m5",
+              "question": "In order to influence consumers, manufacturers _____.",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "often lower their products' prices"
+                },
+                {
+                  "id": "b",
+                  "text": "use famous people in their advertisements"
+                },
+                {
+                  "id": "c",
+                  "text": "give ordinary people a lot of money to advertise their products"
+                },
+                {
+                  "id": "d",
+                  "text": "put their products on top shelves in the supermarkets"
+                }
+              ],
+              "answer": "b"
+            },
+            {
+              "id": "m6",
+              "question": "Who is a better shopper?",
+              "options": [
+                {
+                  "id": "a",
+                  "text": "A person who buys what s/he sees immediately."
+                },
+                {
+                  "id": "b",
+                  "text": "A person who only buys what s/he needs."
+                },
+                {
+                  "id": "c",
+                  "text": "A person who only buys cheap products."
+                },
+                {
+                  "id": "d",
+                  "text": "A person who compares the prices of products in different shops."
+                }
+              ],
+              "answer": "b"
+            }
+          ]
+        },
+        {
+          "id": "shortanswer",
+          "type": "find-word",
+          "label": "Part B",
+          "instructions": "Fill in the blanks with between 1-4 words from the text.",
+          "items": [
+            {
+              "id": "sa1",
+              "definition": "The concept called _________ defines the analysis done by the companies and the producers to sell and buy.",
+              "answer": "Market research"
+            },
+            {
+              "id": "sa2",
+              "definition": "The platform to show their products is a reason for companies to _________ since it is important for the consumers to see them.",
+              "answer": "compete"
+            },
+            {
+              "id": "sa3",
+              "definition": "With certain tricks such as having items near the entrance _______ consumers to buy more than necessary.",
+              "answer": "encourage"
+            },
+            {
+              "id": "sa4",
+              "definition": "Purchasing something that is economical and practical instead of buying something for its brand is __________.",
+              "answer": "logical"
+            },
+            {
+              "id": "sa5",
+              "definition": "Due to the advertisements, buyers can change __________.",
+              "answer": "decisions",
+              "acceptable": [
+                "decisions",
+                "minds"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "headings",
+          "type": "match-headings",
+          "label": "Part C",
+          "instructions": "Match the headings with their paragraphs. There is ONE extra heading.",
+          "options": [
+            {
+              "id": "A",
+              "text": "The Battle for Shopper Attention: A Marketing Tug-of-War"
+            },
+            {
+              "id": "B",
+              "text": "Psychology of Arts and Its Importance in Marketing of Tourism"
+            },
+            {
+              "id": "C",
+              "text": "Decoding the Enigmatic Art of Consumer Motivation"
+            },
+            {
+              "id": "D",
+              "text": "Unveiling the Hidden Motivations: Beyond Basic Needs"
+            },
+            {
+              "id": "E",
+              "text": "Temptation at the Threshold: The Allure of Impulse Buying"
+            },
+            {
+              "id": "F",
+              "text": "The Paradoxical Power of Persuasion: Rationalising Emotional Choices"
+            }
+          ],
+          "items": [
+            {
+              "id": "p1",
+              "label": "Paragraph 1",
+              "answer": "C"
+            },
+            {
+              "id": "p2",
+              "label": "Paragraph 2",
+              "answer": "A"
+            },
+            {
+              "id": "p3",
+              "label": "Paragraph 3",
+              "answer": "E"
+            },
+            {
+              "id": "p4",
+              "label": "Paragraph 4",
+              "answer": "F"
+            },
+            {
+              "id": "p5",
+              "label": "Paragraph 5",
+              "answer": "D"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+ID: b1-r2
+LEVEL: B1
+TITLE: B1 Reading 2 — I Love Me
+SUBTITLE: One passage · Sentence-insert, MCQ, vocabulary, reference
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: I Love Me
+
+PASSAGE:
+Narcissus was the name of a young man in Greek mythology. According to the story, he was very proud of *his* own good looks and this angered the gods. One day, as he was passing by a pool of water, he saw his own reflection in *it* and stopped to admire himself. {gap:1} The gods cursed him for his vanity, so he instantly fell in love with his own reflection in the pool. Unable to leave the pool and his own reflection, he died there, and later became a flower by the pool. Today, there is a mental illness named for Narcissus. It is called "narcissistic personality disorder." People with this disorder have great love for themselves, and this coincides with a strong need to be admired by others.
+
+Most people who have a narcissistic personality are very ordinary people. However, *they* think of themselves as being very important and special. {gap:2} They expect other people to give them constant attention and to obey their commands. In a restaurant, for example, a narcissist might expect to be seated immediately. *He* might demand a better table, a special salad, or a sharper knife. Narcissists demand attention from everyone, including their family, friends, colleagues, and even strangers. At the same time, narcissists can also demonstrate great charm. They smile and flirt. They gossip and tell jokes. They generate excitement with their lively chatter. They like to talk about themselves and often dominate the conversation with stories about their exploits. In these stories they tend to greatly exaggerate their talents and personal achievements.
+
+In fact, when narcissists describe their achievements, they are likely to be lying. Lying is typical behavior for a narcissist, who often tries to impress people with false claims about things he owns or people he knows. {gap:3} Perhaps he will claim to be friends with the mayor and the police chief and the bank president. This kind of talk seems to reflect great self-esteem. However, psychiatrists suggest that this behavior results from a great fear of failure and the subsequent shame it would bring. Some say that narcissism results if parents do not comfort young children when they have been disappointed or have failed at something. The children view this as punishment and try to avoid future failure. As a result, *they* never learn to deal with disappointment or failure.
+
+Other therapists have a slightly different theory. *They* believe that a narcissistic personality arises when parents try to protect children from disappointment and failure by satisfying all of *their* demands. {gap:4} Narcissists do not see other people as human beings but rather as objects that have no feelings or needs of their own. A narcissist believes that the role of other people is to satisfy his needs and to admire him. For this reason, a narcissist seldom has truly close friends. Instead he surrounds himself with people he considers worthy of his greatness.
+
+Oddly, the narcissist's traits that we find so annoying in ordinary people are the same traits that attract us to many entertainers and professional athletes. A recent study found that celebrities as a group are more narcissistic than other people. It also suggests that it is not fame that makes celebrities narcissistic; it is the other way around. *They* were first narcissistic and were then drawn to careers that would earn them admiration from others. {gap:5} However, they may also exploit the media to get attention, and in turn, the media exploits them. For example, celebrities usually wear flashy clothes and date other gorgeous people. They may marry and divorce again and again. They often buy expensive sports cars and drive too fast. Whatever they do, the media reports it because the *uninhibited* behavior and dynamic personalities of celebrities makes them seem exciting, and of course the media also makes a big profit out of this situation.
+
+All of us have some narcissism, and that's a good thing. {gap:6} Self-love is what motivates people to *nourish* and protect *their* bodies, to improve their minds, to learn new skills, and to discover the world in which they live. It is also what gives people the self-confidence they need to share a relationship with others and the ambition to reach for success. However, the self-love of *those* with a serious narcissistic behavior disorder is so excessive that it *overshadows* everything else in their lives, and overall can be a damaging psychological trait.
+
+# GAPS
+LABEL: Part A
+INSTRUCTIONS: Match the sentences with the gaps. There are TWO extra sentences.
+a: As a result, they often try to exploit others.
+b: Children who are spoiled may come to believe that they are special and should be treated differently than others.
+c: For example, a narcissist may brag that his golf clubs are identical to the ones used by Tiger Woods.
+d: Having a positive self-image and believing in one's own abilities can be important for achieving goals.
+e: Narcissus was so captivated by his own reflection that he couldn't look away.
+f: This generates in the children a lifelong pattern of expecting that they will always get what they want.
+g: They often believe they are superior to others, and may have a strong sense of entitlement.
+h: The applause of their fans is a positive message that they are loved and admired.
+ANSWERS: 1=e, 2=a, 3=c, 4=f, 5=h, 6=d
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Choose the best answer for each, according to the text.
+1. According to paragraph 2, which of the following is FALSE about narcissists?
+   a) They try to attract attention all the time.
+   b) Narcissists are not generally extraordinary people.
+   c) They want other people to do what they want.
+   d) They accept their mental illness.
+   ANSWER: d
+2. According to paragraph 3, why do narcissists tend to tell lies while telling about their achievements?
+   a) They have a high opinion of themselves.
+   b) They like gossiping.
+   c) They try to influence people.
+   d) They enjoy disappointing others.
+   ANSWER: c
+3. According to paragraph 3, what do psychiatrists suggest parents with young children to do?
+   a) They should regularly give their children medicine.
+   b) Parents should avoid arguing with young children who have the symptoms of narcissism.
+   c) Parents should punish young children when they fail.
+   d) Parents should try to comfort their young children when they fail at something.
+   ANSWER: d
+4. According to paragraph 4, why do narcissists not have truly close friends?
+   a) They think that people should always meet their needs and admire them.
+   b) They always try to protect people around them when they fail to do something.
+   c) They do not try to comfort people around them.
+   d) They easily get disappointed when they cannot do something.
+   ANSWER: a
+5. According to paragraph 5, what does a recent study suggest about celebrities who are narcissists?
+   a) Narcissist celebrities are annoying people.
+   b) Famous people's fame makes them narcissist.
+   c) They are also narcissists as much as others.
+   d) They were narcissists before becoming famous.
+   ANSWER: d
+6. What does the writer think about having some self-love?
+   a) He believes that it might damage the person.
+   b) He thinks it's good.
+   c) He doesn't think people need it to improve themselves.
+   d) He states that it is amazing.
+   ANSWER: b
+
+# MCQ
+LABEL: Part C (vocabulary)
+INSTRUCTIONS: Guess the meaning of the words or phrases from the text.
+1. The word "uninhibited" in paragraph 5 means:
+   a) free and relaxed
+   b) careful and cautious
+   c) shy and modest
+   d) formal and professional
+   ANSWER: a
+2. The word "nourish" in paragraph 6 means:
+   a) neglect
+   b) take care of
+   c) admire
+   d) impress
+   ANSWER: b
+3. The word "overshadows" in paragraph 6 means:
+   a) dominates
+   b) protects
+   c) avoids
+   d) discovers
+   ANSWER: a
+
+# MCQ
+LABEL: Part D (reference)
+INSTRUCTIONS: What do the underlined words refer to in the text?
+1. "his" (paragraph 1):
+   a) name's
+   b) Narcissus'
+   c) story's
+   d) Greek Mythology's
+   ANSWER: b
+2. "it" (paragraph 1):
+   a) a pool of water
+   b) good look
+   c) reflection
+   d) God
+   ANSWER: a
+3. "they" (paragraph 2):
+   a) special people
+   b) most people who have a narcissistic personality
+   c) important people
+   d) ordinary people
+   ANSWER: b
+4. "He" (paragraph 2):
+   a) A friend
+   b) A colleague
+   c) A narcissist
+   d) A stranger
+   ANSWER: c
+5. "they" (paragraph 3):
+   a) future failures
+   b) narcissists
+   c) parents
+   d) the children
+   ANSWER: d
+6. "They" (paragraph 4):
+   a) children
+   b) parents
+   c) narcissists
+   d) (other) therapists
+   ANSWER: d
+7. "their" (paragraph 4):
+   a) children's
+   b) parents'
+   c) therapists'
+   d) narcissists'
+   ANSWER: a
+8. "They" (paragraph 5):
+   a) Entertainers
+   b) Professional athletes
+   c) People
+   d) Celebrities
+   ANSWER: d
+9. "their" (paragraph 6):
+   a) skills'
+   b) people's
+   c) narcissists'
+   d) minds'
+   ANSWER: b
+10. "those" (paragraph 6):
+    a) minds
+    b) bodies
+    c) people
+    d) others
+    ANSWER: c

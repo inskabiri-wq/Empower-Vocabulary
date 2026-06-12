@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Heist · Teacher | Empower Lab</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css">
+<!-- Load the shared classroom stylesheet FIRST so the heist-specific
+     overrides in heist.css win where needed (vault list, modals, etc.).
+     The lobby's code-display + QR-card reuse the EXACT classes from
+     styles.css so the visual is identical to the Vocab Race lobby. -->
+<link rel="stylesheet" href="classroom/css/styles.css">
+<link rel="stylesheet" href="classroom/css/heist.css">
+</head>
+<body class="heist">
+
+<!-- PRE-PAINT SYNC: there are now only TWO legitimate entry states:
+     1. ?auto=1 → show the "Setting up the heist…" placeholder
+        immediately, then auto-create + jump to lobby.
+     2. No ?auto=1 → the teacher hit this URL directly (legacy
+        bookmark or mid-flight refresh). Redirect to the unified
+        Classroom Mode picker right away — synchronously, before
+        anything paints. This guarantees zero flash of any stale
+        view, and removes the visual inconsistency of a duplicate
+        gold-themed setup form. -->
+<script>
+  (function () {
+    try {
+      var auto = new URLSearchParams(location.search).get('auto') === '1';
+      if (!auto) {
+        // No payload to act on — bounce to the picker BEFORE any
+        // HTML below this script paints. replace() so the back
+        // button still does the right thing.
+        window.location.replace('classroom-teacher.html');
+        return;
+      }
+      // ?auto=1 path: mark the doc so the inline <style> below picks
+      // the auto-creating view as the first paint.
+      document.documentElement.setAttribute('data-heist-view', 'auto-creating');
+    } catch (_) { /* old browser without URLSearchParams — fall back to JS path */ }
+  })();
+</script>
+
+<style>
+  html[data-heist-view="auto-creating"] #view-auto-creating { display: block !important; }
+</style>
+
+<!-- Background music control — same UI + behaviour as the Vocab Race
+     classroom so the two game modes feel like one app. Buttons use
+     inline onclick → functions are exposed on `window` from heist-teacher.js. -->
+<div class="music-control">
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Play / pause music">🎵</button>
+  <button class="music-btn" onclick="nextTrack()" title="Next track">🎶</button>
+  <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" onchange="setVolume(this.value)">
+</div>
+
+<!-- Hidden audio element backing the music control -->
+<audio id="bgMusic" preload="none"></audio>
+
+<div class="heist-shell">
+
+  <!-- Top bar matches the existing classroom-teacher.html header shape
+       (👨‍🏫 + "Hello, name" + Dashboard + Logout) so a teacher
+       toggling between the two games doesn't feel like they jumped
+       into a different app. The breadcrumb "Classroom Mode › The
+       Heist" makes the hierarchy explicit: this is still classroom
+       mode, just a different game inside it. -->
+  <div class="heist-top">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <span style="font-size:1.4rem;">👨‍🏫</span>
+      <div style="display:flex; align-items:baseline; gap:8px;">
+        <a href="classroom-teacher.html" id="backToClassroom"
+           style="color:var(--heist-text-mut); text-decoration:none; font-weight:600;">
+          Classroom Mode
+        </a>
+        <span style="color:var(--heist-text-mut);">›</span>
+        <strong>The Heist</strong>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span style="color:var(--heist-text-mut); font-size:0.9em;">Hello, <span id="teacherName">…</span></span>
+      <a href="teacher-dashboard.html" id="backToDashboard" class="heist-btn" style="text-decoration:none; padding: 7px 14px; font-size:0.85em;">← Dashboard</a>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       VIEW 0: AUTO-CREATING — flashed for the half-second
+       between landing here from classroom-teacher.html and
+       the lobby actually appearing. Without this view the
+       teacher sees the setup form flash, which is ugly.
+       ════════════════════════════════════════════════════ -->
+  <div id="view-auto-creating" style="display:none;">
+    <div class="heist-lobby" style="text-align:center; padding:60px 28px;">
+      <div style="font-size:3em; margin-bottom:14px; animation: pulse 1.2s ease-in-out infinite;">🦹</div>
+      <h2 style="margin:0 0 8px;">Setting up the heist…</h2>
+      <p style="color:var(--heist-text-mut); margin:0;">
+        Generating a 4-letter code and locking the vaults.
+      </p>
+    </div>
+    <style>
+      @keyframes pulse { 0%,100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.08); opacity: 1; } }
+    </style>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       VIEW 1: SETUP — host configures the new room
+       (Standalone fallback; the inline form on classroom-teacher.html
+       is the primary path. This still works for legacy bookmarks.)
+       ════════════════════════════════════════════════════ -->
+  <div id="view-lobby-setup" style="display:none;">
+
+    <!-- Hero card — explains the game with three "how it plays" steps
+         so a teacher who's never seen this game understands the mechanic
+         before they fill out the form. -->
+    <div style="background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(239,68,68,0.06));
+                border: 1px solid rgba(245,158,11,0.3);
+                border-radius: 18px; padding: 28px; margin-bottom: 18px;
+                position: relative; overflow: hidden;">
+      <!-- Decorative vault badge in the corner -->
+      <div style="position:absolute; top: -20px; right: -20px; font-size: 9em; opacity: 0.06;">🦹</div>
+      <div style="position:relative;">
+        <h1 style="margin:0 0 6px; font-size: 1.8em; letter-spacing: -0.02em;
+                   background: linear-gradient(135deg, var(--heist-gold-2), var(--heist-red));
+                   -webkit-background-clip: text; background-clip: text;
+                   -webkit-text-fill-color: transparent;">
+          Run a Heist
+        </h1>
+        <p style="color: var(--heist-text-mut); margin: 0 0 22px; max-width: 640px;">
+          Students answer vocab questions to earn coins, then race to crack each other's vault passwords
+          using Taboo-style hints. The pile builds — and so do the targets on each player's back.
+        </p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--heist-border);
+                      border-radius: 12px; padding: 12px 14px;">
+            <div style="font-size: 1.6em; margin-bottom: 4px;">💰</div>
+            <div style="font-weight: 700; margin-bottom: 2px;">Earn</div>
+            <div style="font-size: 0.85em; color: var(--heist-text-mut); line-height: 1.4;">
+              Correct vocab answer = coins in your vault.
+            </div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--heist-border);
+                      border-radius: 12px; padding: 12px 14px;">
+            <div style="font-size: 1.6em; margin-bottom: 4px;">🔒</div>
+            <div style="font-weight: 700; margin-bottom: 2px;">Lock</div>
+            <div style="font-size: 0.85em; color: var(--heist-text-mut); line-height: 1.4;">
+              Each player picks a vocab word as their vault password.
+            </div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--heist-border);
+                      border-radius: 12px; padding: 12px 14px;">
+            <div style="font-size: 1.6em; margin-bottom: 4px;">🕵️</div>
+            <div style="font-weight: 700; margin-bottom: 2px;">Crack</div>
+            <div style="font-size: 0.85em; color: var(--heist-text-mut); line-height: 1.4;">
+              Pay a fee, guess from a Taboo hint, steal half their stash.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Setup form -->
+    <div class="heist-lobby">
+      <h2 style="margin: 0 0 4px; font-size: 1.15em;">Set up the room</h2>
+      <p style="color:var(--heist-text-mut); margin: 0 0 18px; font-size: 0.92em;">
+        Defaults are tuned for a 10-minute session with ~20 students. Tweak to taste.
+      </p>
+
+      <div class="heist-form">
+        <div class="heist-field">
+          <label for="packSelect">Hint pack</label>
+          <select id="packSelect" class="heist-select"></select>
+        </div>
+        <div class="heist-field">
+          <label for="duration">Game length (min)</label>
+          <input id="duration" class="heist-input" type="number" min="2" max="30" value="10">
+        </div>
+        <div class="heist-field">
+          <label for="questionReward">Reward per correct answer</label>
+          <input id="questionReward" class="heist-input" type="number" min="1" max="100" value="10">
+        </div>
+        <div class="heist-field">
+          <label for="heistFee">Heist attempt fee</label>
+          <input id="heistFee" class="heist-input" type="number" min="1" max="200" value="30">
+        </div>
+      </div>
+
+      <button id="createBtn" class="heist-btn primary" style="font-size: 1.05em; padding: 14px 28px;">
+        🦹 Create the room
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       VIEW 2: WAITING — code displayed, roster fills, host
+       starts the game once every student has set a password
+       ════════════════════════════════════════════════════ -->
+  <div id="view-lobby-waiting" style="display:none;">
+    <!-- Lobby panel now uses the EXACT structure as Vocab Race's lobby
+         (.session-code-display + .session-qr-card from styles.css) so
+         the two game modes' lobbies are visually identical. Teachers
+         switching between games don't need to re-learn the layout. -->
+    <div class="container">
+      <div class="card">
+
+        <!-- Big code block, dashed border, copy button (Vocab-Race style) -->
+        <div class="session-code-display">
+          <div class="session-code-label">Session Code</div>
+          <div class="session-code" id="roomCode">----</div>
+          <div class="session-code-hint">Share this code with your students</div>
+          <button class="btn btn-secondary" style="margin-top: 16px;"
+                  onclick="(function(b){const c=document.getElementById('roomCode').textContent;navigator.clipboard.writeText(c).then(()=>{const t=b.textContent;b.textContent='✓ Copied!';setTimeout(()=>b.textContent=t,2000);});})(this)">
+            📋 Copy Code
+          </button>
+        </div>
+
+        <!-- QR card — separate, like Vocab Race -->
+        <div class="session-qr-card">
+          <div class="session-qr-tile">
+            <img id="qrImg" alt="Scan to join this session" width="220" height="220">
+          </div>
+          <div class="session-qr-label">📱 Scan with phone camera to join</div>
+        </div>
+
+        <!-- Hidden join link — kept in DOM for the host JS but not
+             prominently displayed; the QR and code above are the
+             primary affordances. -->
+        <a id="joinUrl" target="_blank" rel="noopener" style="display:none;">join link</a>
+
+        <!-- Status line, mirrors the Vocab Race "Level | Words | Time" row -->
+        <div id="sessionInfo" style="text-align: center; color: var(--text-secondary, #94a3b8); margin-bottom: 18px;">
+          The Heist · Lock your vaults
+        </div>
+
+        <!-- Players section — reuses the Vocab Race `.players-section` -->
+        <div class="players-section">
+          <div class="players-header">
+            <h3 class="players-count">👥 Players: <span id="rosterCount">0</span></h3>
+          </div>
+          <div class="players-grid" id="roster">
+            <p style="color: var(--text-muted, #6b7280); text-align: center; padding: 20px; grid-column: 1/-1;">
+              Waiting for students to join…
+            </p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+          <button id="startBtn" class="btn btn-success btn-large" disabled style="flex:1;">
+            ▶️ Waiting for players…
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       VIEW 3: LIVE — referee dashboard (board + event log)
+       ════════════════════════════════════════════════════ -->
+  <div id="view-live" style="display:none;">
+
+    <!-- Live-game header. The code + QR stay visible THROUGHOUT the
+         game so late-joining students can still scan or type the code
+         (a student showing up 3 minutes in can hop on without
+         interrupting the host). Click the QR to enlarge for the room. -->
+    <div class="heist-top" style="margin-top:14px; flex-wrap:wrap; gap:12px;">
+      <div style="display:flex; gap:14px; align-items:center;">
+        <button type="button" id="liveQrToggle"
+                title="Show full-size QR for late joiners"
+                style="background:#fff; padding:4px; border-radius:8px; line-height:0;
+                       border:1px solid var(--heist-border); cursor:pointer;">
+          <img id="liveQrImg" alt="Scan to join" width="48" height="48" style="display:block;">
+        </button>
+        <div style="line-height: 1.3;">
+          <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+                      color: var(--heist-text-mut); font-weight: 700;">Join code</div>
+          <div style="font-family: JetBrains Mono; font-weight: 800; font-size: 1.4em;
+                      letter-spacing: 0.1em; color: var(--heist-gold-2);" id="liveCode">----</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; margin-left:auto;">
+        <div class="heist-timer" id="timer">--:--</div>
+        <button id="endBtn" class="heist-btn danger">End game</button>
+      </div>
+    </div>
+
+    <!-- Full-screen QR overlay (shown when host clicks the small QR
+         above) — gives the projector audience a giant scannable target
+         so a student at the back of the room can join without walking up. -->
+    <div id="liveQrOverlay" style="display:none; position:fixed; inset:0;
+         background:rgba(0,0,0,0.85); z-index:300; align-items:center;
+         justify-content:center; padding:20px; cursor:pointer;">
+      <div style="text-align:center; color:#fff;">
+        <div style="background:#fff; padding:18px; border-radius:18px;
+                    display:inline-block; line-height:0;">
+          <img id="liveQrBig" alt="Scan to join" width="380" height="380" style="display:block;">
+        </div>
+        <div style="margin-top: 16px; font-size: 1.3em; font-weight: 700;">
+          Join code: <span id="liveQrCode" style="font-family:JetBrains Mono; color:var(--heist-gold-2);">----</span>
+        </div>
+        <div style="margin-top: 8px; color: var(--heist-text-mut);">
+          Tap anywhere to close.
+        </div>
+      </div>
+    </div>
+
+    <div class="heist-live-board">
+      <h3 style="margin:0 0 12px;">Live leaderboard</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Player</th><th>Coins</th>
+            <th>Answered</th><th>Hacks</th><th>Hacked</th>
+          </tr>
+        </thead>
+        <tbody id="liveBoard"></tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-bottom:8px;">Event log</h3>
+    <div class="heist-event-log" id="eventLog">
+      <div class="event" style="color:var(--heist-text-mut);">Waiting for action…</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       Themed confirm modal — replaces browser confirm(), keeps
+       the dark cyber-bank aesthetic.
+       ════════════════════════════════════════════════════ -->
+  <div id="heistConfirm" class="heist-modal-bg" style="display:none;">
+    <div class="heist-modal" role="dialog" aria-modal="true" style="max-width:380px;">
+      <h3 style="margin-top:0;" id="heistConfirmTitle">Are you sure?</h3>
+      <p style="color:var(--heist-text-mut); margin: 0 0 18px;" id="heistConfirmMsg">
+        This action cannot be undone.
+      </p>
+      <div class="heist-modal-actions">
+        <button type="button" class="heist-btn" id="heistConfirmCancel">Cancel</button>
+        <button type="button" class="heist-btn danger" id="heistConfirmOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       VIEW 4: RESULTS — podium + full per-player analysis
+       Teacher needs to see exactly who did what, not just a
+       final coin count. Three blocks here:
+         1. Podium (top 3 visually)
+         2. Per-player breakdown table with all counters
+         3. Full hack log (every attempted heist, success or fail)
+       ════════════════════════════════════════════════════ -->
+  <div id="view-results" style="display:none;">
+    <div class="heist-results">
+      <h2>🏆 Heist Complete</h2>
+      <div class="heist-podium" id="podium"></div>
+
+      <!-- Per-player breakdown — sortable table the teacher can scan
+           at a glance. Counters come straight off the player docs the
+           referee updated during play. -->
+      <h3 style="margin-top: 30px; margin-bottom: 12px; text-align:left;
+                 color: var(--heist-text-mut); font-weight:700;
+                 letter-spacing:0.12em; text-transform:uppercase; font-size:0.85em;">
+        Per-player breakdown
+      </h3>
+      <div style="overflow-x:auto;">
+        <table class="heist-results-table" style="width:100%; border-collapse:collapse; text-align:left; font-size:0.92em;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--heist-border); color: var(--heist-text-mut);">
+              <th style="padding:8px 10px;">#</th>
+              <th style="padding:8px 10px;">Player</th>
+              <th style="padding:8px 10px;" title="Final balance">Coins</th>
+              <th style="padding:8px 10px;" title="Total coins earned from correct answers">Earned</th>
+              <th style="padding:8px 10px;" title="Coins successfully stolen from others">Stolen</th>
+              <th style="padding:8px 10px;" title="Questions answered correctly / total">Answers</th>
+              <th style="padding:8px 10px;" title="Accuracy on vocab questions">Acc.</th>
+              <th style="padding:8px 10px;" title="Successful hacks / attempts">Hacks</th>
+              <th style="padding:8px 10px;" title="Times this player's vault was cracked">Hacked</th>
+            </tr>
+          </thead>
+          <tbody id="perPlayerBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Hack log — chronological, every attempt resolved. -->
+      <h3 style="margin-top: 28px; margin-bottom: 12px; text-align:left;
+                 color: var(--heist-text-mut); font-weight:700;
+                 letter-spacing:0.12em; text-transform:uppercase; font-size:0.85em;">
+        Hack log <span id="hackLogCount" style="font-weight:400; color:var(--heist-text-mut); letter-spacing:0;"></span>
+      </h3>
+      <div id="hackLog" style="text-align:left; max-height:300px; overflow-y:auto;
+                               background: rgba(0,0,0,0.2); border: 1px solid var(--heist-border);
+                               border-radius: 12px; padding: 8px 12px;">
+        <div style="color: var(--heist-text-mut); padding: 10px; font-size: 0.9em;">No heists attempted in this game.</div>
+      </div>
+
+      <!-- Action bar -->
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:24px; flex-wrap:wrap;">
+        <button id="downloadResultsBtn" class="heist-btn"
+                title="Download a CSV of the per-player breakdown">
+          📥 Download CSV
+        </button>
+        <button id="newGameBtn" class="heist-btn primary">
+          🔁 Run another round
+        </button>
+        <a href="classroom-teacher.html" class="heist-btn"
+           style="text-decoration:none;">
+          ← Back to Classroom
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase + app scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="classroom/js/heist-teacher.js"></script>
+
+<!-- Mirror liveCode badge into the live header (set once code exists) -->
+<script>
+  (function () {
+    const obs = new MutationObserver(() => {
+      const c = document.getElementById('roomCode')?.textContent;
+      const lc = document.getElementById('liveCode');
+      if (lc && c) lc.textContent = c;
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      const target = document.getElementById('roomCode');
+      if (target) obs.observe(target, { childList: true, characterData: true, subtree: true });
+    });
+  })();
+</script>
+</body>
+</html>

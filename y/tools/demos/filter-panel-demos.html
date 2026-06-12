@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Filter panel — demo variants</title>
+<style>
+  :root {
+    /* palette */
+    --bg-0: #0a0f1a;
+    --bg-1: #111827;
+    --bg-2: #1a2332;
+    --bg-3: #24334a;
+    --stroke: #2a3445;
+    --fg-0: #f1f5f9;
+    --fg-1: #cbd5e1;
+    --fg-2: #94a3b8;
+    --fg-3: #64748b;
+    --accent: #14b8a6;
+    --accent-soft: rgba(20, 184, 166, 0.35);
+    --accent-2: #f59e0b;
+    --danger: #f87171;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 40px 24px 80px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(20,184,166,0.04), transparent 60%),
+      radial-gradient(1000px 500px at 90% 10%, rgba(99,102,241,0.04), transparent 60%),
+      var(--bg-0);
+    color: var(--fg-0);
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .lede {
+    color: var(--fg-2);
+    margin: 0 auto 40px;
+    max-width: 1200px;
+    font-size: 14px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .demo {
+    background: var(--bg-1);
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .demo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--stroke);
+  }
+  .demo-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--fg-0);
+  }
+  .demo-tag {
+    font-size: 11px;
+    color: var(--fg-3);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .demo-body {
+    padding: 4px 0;
+  }
+
+  .panel-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .panel-heading svg {
+    width: 16px;
+    height: 16px;
+  }
+  .panel-heading-text {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-1);
+  }
+
+  .group {
+    margin-bottom: 18px;
+  }
+  .group:last-child { margin-bottom: 0; }
+  .group-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--fg-3);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* VARIANT A — Refined Pills                                              */
+  /* ────────────────────────────────────────────────────────────────────── */
+  .va .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .va .units {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .va .units .pill.all {
+    grid-column: 1 / 2;
+    position: relative;
+  }
+  .va .units .pill.all::after {
+    content: "";
+    position: absolute;
+    right: -5px;
+    top: 20%;
+    bottom: 20%;
+    width: 1px;
+    background: var(--stroke);
+  }
+  .va .pill {
+    height: 36px;
+    padding: 0 14px;
+    min-width: 40px;
+    border-radius: 999px;
+    background: var(--bg-2);
+    color: var(--fg-1);
+    border: 1px solid transparent;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 120ms ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .va .pill:hover {
+    background: var(--bg-3);
+    color: var(--fg-0);
+  }
+  .va .pill[aria-pressed="true"] {
+    background: var(--accent);
+    color: #001014;
+    font-weight: 600;
+    box-shadow: 0 0 0 2px var(--accent-soft), 0 4px 12px -4px rgba(20,184,166,0.5);
+  }
+  .va .pill:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* VARIANT B — Underline / Tab-style                                      */
+  /* ────────────────────────────────────────────────────────────────────── */
+  .vb .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    border-bottom: 1px solid var(--stroke);
+    padding-bottom: 2px;
+  }
+  .vb .pill {
+    height: 32px;
+    padding: 0 4px;
+    background: none;
+    border: none;
+    color: var(--fg-2);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    position: relative;
+    transition: color 120ms ease;
+  }
+  .vb .pill::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -3px;
+    height: 2px;
+    background: transparent;
+    border-radius: 2px;
+    transition: background 120ms ease;
+  }
+  .vb .pill:hover { color: var(--fg-0); }
+  .vb .pill[aria-pressed="true"] {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .vb .pill[aria-pressed="true"]::after {
+    background: var(--accent);
+  }
+  .vb .pill:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* VARIANT C — Outlined / Mono                                            */
+  /* ────────────────────────────────────────────────────────────────────── */
+  .vc .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .vc .units {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  .vc .pill {
+    height: 32px;
+    padding: 0 10px;
+    min-width: 44px;
+    background: transparent;
+    color: var(--fg-2);
+    border: 1px solid var(--stroke);
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 120ms ease;
+  }
+  .vc .pill:hover {
+    border-color: var(--fg-3);
+    color: var(--fg-0);
+  }
+  .vc .pill[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #001014;
+    font-weight: 700;
+  }
+  .vc .pill:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* VARIANT D — Compact segmented                                          */
+  /* ────────────────────────────────────────────────────────────────────── */
+  .vd .segment {
+    display: inline-flex;
+    background: var(--bg-2);
+    border: 1px solid var(--stroke);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .vd .pills.books, .vd .pills.levels {
+    /* use segmented look */
+  }
+  .vd .pill {
+    height: 28px;
+    padding: 0 12px;
+    border: none;
+    background: transparent;
+    color: var(--fg-2);
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inherit;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 120ms ease;
+  }
+  .vd .pill:hover { color: var(--fg-0); }
+  .vd .pill[aria-pressed="true"] {
+    background: var(--bg-0);
+    color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent-soft);
+  }
+  /* for units, fall back to the chip style */
+  .vd .units {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .vd .pill.u {
+    height: 30px;
+    padding: 0 10px;
+    min-width: 38px;
+    background: var(--bg-2);
+    color: var(--fg-1);
+    border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+  }
+  .vd .pill.u[aria-pressed="true"] {
+    background: var(--accent);
+    color: #001014;
+    box-shadow: none;
+    font-weight: 700;
+  }
+  .vd .pill.u.all {
+    background: transparent;
+    border: 1px dashed var(--stroke);
+    color: var(--fg-1);
+    font-family: inherit;
+  }
+  .vd .pill.u.all[aria-pressed="true"] {
+    background: transparent;
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .vd .pill:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* VARIANT E — Layered card                                               */
+  /* ────────────────────────────────────────────────────────────────────── */
+  .ve .panel {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    border-radius: 10px;
+    padding: 4px;
+  }
+  .ve .group {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: start;
+    gap: 16px;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--stroke);
+  }
+  .ve .group:last-child { border-bottom: none; }
+  .ve .group-label {
+    margin: 4px 0 0;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    color: var(--fg-3);
+    align-self: start;
+  }
+  .ve .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .ve .pill {
+    height: 30px;
+    padding: 0 12px;
+    background: var(--bg-2);
+    color: var(--fg-1);
+    border: 1px solid var(--stroke);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 120ms ease;
+  }
+  .ve .pill:hover { border-color: var(--fg-3); color: var(--fg-0); }
+  .ve .pill[aria-pressed="true"] {
+    background: rgba(20, 184, 166, 0.12);
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .ve .pill:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* VARIANT F — Lozenge with counters                                      */
+  /* ────────────────────────────────────────────────────────────────────── */
+  .vf .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .vf .units {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+  .vf .pill {
+    position: relative;
+    height: 40px;
+    padding: 0 14px;
+    min-width: 48px;
+    background: var(--bg-2);
+    color: var(--fg-1);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 120ms ease;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+  .vf .pill-label {
+    line-height: 1;
+  }
+  .vf .pill-count {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--fg-3);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    line-height: 1;
+  }
+  .vf .pill:hover {
+    background: var(--bg-3);
+    color: var(--fg-0);
+  }
+  .vf .pill:hover .pill-count { color: var(--fg-2); }
+  .vf .pill[aria-pressed="true"] {
+    background: var(--accent);
+    color: #001014;
+    font-weight: 700;
+  }
+  .vf .pill[aria-pressed="true"] .pill-count {
+    color: rgba(0, 16, 20, 0.6);
+  }
+  .vf .pill:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .note {
+    font-size: 11px;
+    color: var(--fg-3);
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--stroke);
+    line-height: 1.5;
+  }
+  .note strong { color: var(--fg-1); font-weight: 600; }
+
+  footer {
+    max-width: 1200px;
+    margin: 60px auto 0;
+    padding: 24px;
+    background: var(--bg-1);
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    color: var(--fg-2);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  footer strong { color: var(--fg-0); }
+  footer code {
+    background: var(--bg-2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--accent);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+</style>
+</head>
+<body>
+
+<h1>Filter panel — 6 demo variants</h1>
+<p class="lede">Same data (BOOK / LEVEL / UNIT), six different visual treatments. All are keyboard-accessible, hover/focus states work. Pick one and I'll apply it to your real panel. Selections are interactive — click around.</p>
+
+<div class="grid">
+
+  <!-- ───────── VARIANT A ───────── -->
+  <div class="demo va">
+    <div class="demo-header">
+      <div class="demo-title">A · Refined Pills</div>
+      <div class="demo-tag">baseline+</div>
+    </div>
+    <div class="demo-body">
+      <div class="panel-heading">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent)">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span class="panel-heading-text">Select Content</span>
+      </div>
+      <div class="group">
+        <span class="group-label">Book</span>
+        <div class="pills" role="group">
+          <button class="pill" aria-pressed="true">Empower</button>
+          <button class="pill" aria-pressed="false">Gateway</button>
+        </div>
+      </div>
+      <div class="group">
+        <span class="group-label">Level</span>
+        <div class="pills" role="group">
+          <button class="pill" aria-pressed="true">A2</button>
+          <button class="pill" aria-pressed="false">B1</button>
+          <button class="pill" aria-pressed="false">B1+</button>
+          <button class="pill" aria-pressed="false">B2</button>
+        </div>
+      </div>
+      <div class="group">
+        <span class="group-label">Unit</span>
+        <div class="units" role="group">
+          <button class="pill all" aria-pressed="true">All</button>
+          <button class="pill" aria-pressed="false">U1</button>
+          <button class="pill" aria-pressed="false">U2</button>
+          <button class="pill" aria-pressed="false">U3</button>
+          <button class="pill" aria-pressed="false">U4</button>
+          <button class="pill" aria-pressed="false">U5</button>
+          <button class="pill" aria-pressed="false">U6</button>
+          <button class="pill" aria-pressed="false">U7</button>
+          <button class="pill" aria-pressed="false">U8</button>
+          <button class="pill" aria-pressed="false">U9</button>
+          <button class="pill" aria-pressed="false">U10</button>
+          <button class="pill" aria-pressed="false">U11</button>
+          <button class="pill" aria-pressed="false">U12</button>
+        </div>
+      </div>
+      <p class="note"><strong>When to pick:</strong> closest to your current look. Selected state now pops (brighter teal, subtle halo). "All" is separated by a hairline. Clean and friendly.</p>
+    </div>
+  </div>
+
+  <!-- ───────── VARIANT B ───────── -->
+  <div class="demo vb">
+    <div class="demo-header">
+      <div class="demo-title">B · Underline tabs</div>
+      <div class="demo-tag">editorial</div>
+    </div>
+    <div class="demo-body">
+      <div class="panel-heading">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--fg-1)">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span class="panel-heading-text">Select Content</span>
+      </div>
+      <div class="group">
+        <span class="group-label">Book</span>
+        <div class="pills" role="group">
+          <button class="pill" aria-pressed="true">Empower</button>
+          <button class="pill" aria-pressed="false">Gateway</button>
+        </div>
+      </div>
+      <div class="group">
+        <span class="group-label">Level</span>
+        <div class="pills" role="group">
+          <button class="pill" aria-pressed="true">A2</button>
+          <button class="pill" aria-pressed="false">B1</button>
+          <button class="pill" aria-pressed="false">B1+</button>
+          <button class="pill" aria-pressed="false">B2</button>
+        </div>
+      </div>
+      <div class="group">
+        <span class="group-label">Unit</span>
+        <div class="pills" role="group">
+          <button class="pill" aria-pressed="true">All</button>
+          <button class="pill" aria-pressed="false">U1</button>
+          <button class="pill" aria-pressed="false">U2</button>
+          <button class="pill" aria-pressed="false">U3</button>
+          <button class="pill" aria-pressed="false">U4</button>
+          <button class="pill" aria-pressed="false">U5</button>
+          <button class="pill" aria-pressed="false">U6</button>
+          <button class="pill" aria-pressed="false">U7</button>
+          <button class="pill" aria-pressed="false">U8</button>
+          <button class="pill" aria-pressed="false">U9</button>
+          <button class="pill" aria-pressed="false">U10</button>
+          <button class="pill" aria-pressed="false">U11</button>
+          <button class="pill" aria-pressed="false">U12</button>
+        </div>
+      </div>
+      <p class="note"><strong>When to pick:</strong> for a lighter, more editorial feel. No chrome. Selected = teal text + underline. Very unobtrusive. Trade-off: touch targets are smaller.</p>
+    </div>
+  </div>
+
+  <!-- ───────── VARIANT C ───────── -->
+  <div class="demo vc">
+    <div class="demo-header">
+      <div class="demo-title">C · Outlined mono</div>
+      <div class="demo-tag">terminal</div>
+    </div>
+    <div class="demo-body">
+      <div class="panel-heading">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--fg-1)">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span class="panel-heading-text">Select Content</span>
+      </div>
+      <div class="group">
+        <span class="group-label">Book</span>
+        <div class="pills" role="group">
+          <button class="pill" aria-pressed="true">Empower</button>
+          <button class="pill" aria-pressed="false">Gateway</button>
+        </div>
+      </div>
+      <div class="group">
+        <span class="group-label">Level</span>
+        <div class="pills" role="group">
+          <button class="pill" aria-pressed="true">A2</button>
+          <button class="pill" aria-pressed="false">B1</button>
+          <button class="pill" aria-pressed="false">B1+</button>
+          <button class="pill" aria-pressed="false">B2</button>
+        </div>
+      </div>
+      <div class="group">
+        <span class="group-label">Unit</span>
+        <div class="units" role="group">
+          <button class="pill" aria-pressed="true">All</button>
+          <button class="pill" aria-pressed="false">U1</button>
+          <button class="pill" aria-pressed="false">U2</button>
+          <button class="pill" aria-pressed="false">U3</button>
+          <button class="pill" aria-pressed="false">U4</button>
+          <button class="pill" aria-pressed="false">U5</button>
+          <button class="pill" aria-pressed="false">U6</button>
+          <button class="pill" aria-pressed="false">U7</button>
+          <button class="pill" aria-pressed="false">U8</button>
+          <button class="pill" aria-pressed="false">U9</button>
+          <button class="pill" aria-pressed="false">U10</button>
+          <button class="pill" aria-pressed="false">U11</button>
+          <button class="pill" aria-pressed="false">U12</button>
+        </div>
+      </div>
+      <p class="note"><strong>When to pick:</strong> for a technical / academic vibe. Monospace aligns all unit codes perfectly (U1, U10, U12 same width). Outlined, lean, no visual noise. Feels "correct."</p>
+    </div>
+  </div>
+
+  <!-- ───────── VARIANT D ───────── -->
+  <div class="demo vd">
+    <div class="demo-header">
+      <div class="demo-title">D · Segmented control</div>
+      <div class="demo-tag">apple-ish</div>
+    </div>
+    <div class="demo-body">
+      <div class="panel-heading">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--fg-1)">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span class="panel-heading-text">Select Content</span>
+      </div>
+      <div class="group">
+        <span class="group-label">Book</span>
+        <div class="segment" role="group">
+          <button class="pill" aria-pressed="true">Empower</button>
+          <button class="pill" aria-pressed="false">Gateway</button>
+        </div>
+      </div>
+      <div class="group">
+        <span class="group-label">Level</span>
+        <div class="segment" role="group">
+          <button class="pill" aria-pressed="true">A2</button>
+          <button class="pill" aria-pressed="false">B1</button>
+          <button class="pill" aria-pressed="false">B1+</button>
+          <button class="pill" aria-pressed="false">B2</button>
+        </div>
+      </div>
+      <div class="group">
+        <span class="group-label">Unit</span>
+        <div class="units" role="group">
+          <button class="pill u all" aria-pressed="true">All</button>
+          <button class="pill u" aria-pressed="false">U1</button>
+          <button class="pill u" aria-pressed="false">U2</button>
+          <button class="pill u" aria-pressed="false">U3</button>
+          <button class="pill u" aria-pressed="false">U4</button>
+          <button class="pill u" aria-pressed="false">U5</button>
+          <button class="pill u" aria-pressed="false">U6</button>
+          <button class="pill u" aria-pressed="false">U7</button>
+          <button class="pill u" aria-pressed="false">U8</button>
+          <button class="pill u" aria-pressed="false">U9</button>
+          <button class="pill u" aria-pressed="false">U10</button>
+          <button class="pill u" aria-pressed="false">U11</button>
+          <button class="pill u" aria-pressed="false">U12</button>
+        </div>
+      </div>
+      <p class="note"><strong>When to pick:</strong> for small exclusive-choice groups (Book, Level). The segment visually says "pick one." Units stay as chips since 13 options won't fit in a segment.</p>
+    </div>
+  </div>
+
+  <!-- ───────── VARIANT E ───────── -->
+  <div class="demo ve">
+    <div class="demo-header">
+      <div class="demo-title">E · Label-left card</div>
+      <div class="demo-tag">compact</div>
+    </div>
+    <div class="demo-body">
+      <div class="panel-heading">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--fg-1)">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span class="panel-heading-text">Select Content</span>
+      </div>
+      <div class="panel">
+        <div class="group">
+          <span class="group-label">Book</span>
+          <div class="pills" role="group">
+            <button class="pill" aria-pressed="true">Empower</button>
+            <button class="pill" aria-pressed="false">Gateway</button>
+          </div>
+        </div>
+        <div class="group">
+          <span class="group-label">Level</span>
+          <div class="pills" role="group">
+            <button class="pill" aria-pressed="true">A2</button>
+            <button class="pill" aria-pressed="false">B1</button>
+            <button class="pill" aria-pressed="false">B1+</button>
+            <button class="pill" aria-pressed="false">B2</button>
+          </div>
+        </div>
+        <div class="group">
+          <span class="group-label">Unit</span>
+          <div class="pills" role="group">
+            <button class="pill" aria-pressed="true">All</button>
+            <button class="pill" aria-pressed="false">U1</button>
+            <button class="pill" aria-pressed="false">U2</button>
+            <button class="pill" aria-pressed="false">U3</button>
+            <button class="pill" aria-pressed="false">U4</button>
+            <button class="pill" aria-pressed="false">U5</button>
+            <button class="pill" aria-pressed="false">U6</button>
+            <button class="pill" aria-pressed="false">U7</button>
+            <button class="pill" aria-pressed="false">U8</button>
+            <button class="pill" aria-pressed="false">U9</button>
+            <button class="pill" aria-pressed="false">U10</button>
+            <button class="pill" aria-pressed="false">U11</button>
+            <button class="pill" aria-pressed="false">U12</button>
+          </div>
+        </div>
+      </div>
+      <p class="note"><strong>When to pick:</strong> labels sit left of each row — very compact vertically. Selected uses translucent teal tint (less shouty than solid fill). Great for settings-like screens.</p>
+    </div>
+  </div>
+
+  <!-- ───────── VARIANT F ───────── -->
+  <div class="demo vf">
+    <div class="demo-header">
+      <div class="demo-title">F · Chips with counts</div>
+      <div class="demo-tag">informative</div>
+    </div>
+    <div class="demo-body">
+      <div class="panel-heading">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent)">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span class="panel-heading-text">Select Content</span>
+      </div>
+      <div class="group">
+        <span class="group-label">Book</span>
+        <div class="pills" role="group">
+          <button class="pill" aria-pressed="true"><span class="pill-label">Empower</span><span class="pill-count">312</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">Gateway</span><span class="pill-count">248</span></button>
+        </div>
+      </div>
+      <div class="group">
+        <span class="group-label">Level</span>
+        <div class="pills" role="group">
+          <button class="pill" aria-pressed="true"><span class="pill-label">A2</span><span class="pill-count">82</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">B1</span><span class="pill-count">96</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">B1+</span><span class="pill-count">74</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">B2</span><span class="pill-count">60</span></button>
+        </div>
+      </div>
+      <div class="group">
+        <span class="group-label">Unit</span>
+        <div class="units" role="group">
+          <button class="pill" aria-pressed="true"><span class="pill-label">All</span><span class="pill-count">82</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">U1</span><span class="pill-count">7</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">U2</span><span class="pill-count">8</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">U3</span><span class="pill-count">6</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">U4</span><span class="pill-count">9</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">U5</span><span class="pill-count">7</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">U6</span><span class="pill-count">8</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">U7</span><span class="pill-count">6</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">U8</span><span class="pill-count">7</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">U9</span><span class="pill-count">7</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">U10</span><span class="pill-count">6</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">U11</span><span class="pill-count">6</span></button>
+          <button class="pill" aria-pressed="false"><span class="pill-label">U12</span><span class="pill-count">5</span></button>
+        </div>
+      </div>
+      <p class="note"><strong>When to pick:</strong> adds a tiny counter under each pill (number of vocab items). Users can skip empty units or jump to the biggest one. Best info-density.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>Try them live.</strong> Click any pill — the selection updates within each group (radio behavior). Tab through to see keyboard focus rings. Hover for hover states.
+  <br><br>
+  <strong>Which one do you want?</strong> Reply with "A", "B", "C", "D", "E", or "F" (or a combo like "A for book/level, F for unit") and I'll apply it to your real app.
+</footer>
+
+<script>
+  // Radio-style toggling within each button group
+  document.querySelectorAll('[role="group"]').forEach(group => {
+    group.addEventListener('click', e => {
+      const btn = e.target.closest('button.pill');
+      if (!btn) return;
+      group.querySelectorAll('button.pill').forEach(p => p.setAttribute('aria-pressed', 'false'));
+      btn.setAttribute('aria-pressed', 'true');
+    });
+  });
+</script>
+
+</body>
+</html>

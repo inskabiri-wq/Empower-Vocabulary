@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reading Exam | Empower Lab</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/brand.css">
+<link rel="stylesheet" href="classroom/css/styles.css">
+<link rel="stylesheet" href="classroom/css/reading.css">
+</head>
+<body class="reading">
+
+<div class="reading-shell">
+
+  <!-- Top bar -->
+  <div class="reading-top">
+    <div class="reading-brand">
+      <span class="logo">📖</span>
+      <span>Reading Exam</span>
+    </div>
+    <!-- Identity strip — shown once joined (avatar + name + status). -->
+    <div id="myIdStrip" class="reading-id-strip" style="display:none; margin:0;"></div>
+  </div>
+
+  <!-- ════════ VIEW: Join (code + name) ════════ -->
+  <div id="view-join" style="display:none;">
+    <div class="reading-pane" style="max-width: 420px; margin: 40px auto;">
+      <h2 style="margin: 0 0 6px;">Join the exam</h2>
+      <p style="color: var(--r-text-mut); margin: 0 0 18px;">Get the code from your teacher.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div>
+          <label style="font-size: 0.78em; font-weight: 700; letter-spacing: 0.08em;
+                       text-transform: uppercase; color: var(--r-text-mut); display:block; margin-bottom: 4px;"
+                 for="codeInput">Room code</label>
+          <input id="codeInput" type="text" maxlength="4"
+                 style="width: 100%; background: var(--r-surface-2);
+                        border: 1.5px solid var(--r-border); color: var(--r-text);
+                        padding: 14px 16px; border-radius: 10px; font-family: JetBrains Mono;
+                        font-size: 1.4em; letter-spacing: 0.2em; text-align: center;
+                        text-transform: uppercase;"
+                 placeholder="ABCD">
+        </div>
+        <div>
+          <label style="font-size: 0.78em; font-weight: 700; letter-spacing: 0.08em;
+                       text-transform: uppercase; color: var(--r-text-mut); display:block; margin-bottom: 4px;"
+                 for="nameInput">Your name</label>
+          <input id="nameInput" type="text" maxlength="24"
+                 style="width: 100%; background: var(--r-surface-2);
+                        border: 1.5px solid var(--r-border); color: var(--r-text);
+                        padding: 12px 14px; border-radius: 10px; font-family: inherit;
+                        font-size: 1em;"
+                 placeholder="e.g. Maya">
+        </div>
+        <button type="button" id="joinBtn" class="reading-btn primary" style="width: 100%;">
+          📖 Join exam
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ VIEW: Waiting for start ════════ -->
+  <div id="view-waiting" style="display:none;">
+    <div class="reading-pane" style="max-width: 420px; margin: 40px auto; text-align:center;">
+      <div style="font-size:3em; margin-bottom: 14px;">📖</div>
+      <h2 style="margin:0 0 8px;">Ready to read</h2>
+      <p style="color: var(--r-text-mut);">
+        Look at the board for the passage. Wait for your teacher to start the exam.
+      </p>
+    </div>
+  </div>
+
+  <!-- ════════ VIEW: Exam (questions only — NO PASSAGE) ════════
+       This is the heart of the no-leak design:
+         • NO passage text anywhere on this view (it's on the board).
+         • Selected options use brand violet — never green/red.
+         • No ✓/✗ feedback on tap.
+         • No running score.
+         • No sounds, no animations on correctness.
+         • Students can change any answer until they tap Submit.
+       ════════════════════════════════════════════════════════════ -->
+  <div id="view-exam" style="display:none;">
+    <div class="reading-exam-pane">
+
+      <div class="exam-head">
+        <div class="exam-head-row">
+          <h2 id="examTitle" style="margin:0;">Exam</h2>
+          <span class="reading-chip" id="examTimer" style="display:none;">⏱ <span id="examTimerVal">--:--</span></span>
+        </div>
+        <div id="examInstructions" style="color: var(--r-text-mut); font-size: 0.9em; margin-top: 6px;">
+          Look at the board for the passage. Pick or type your answers below.
+        </div>
+        <div class="exam-progress">
+          <span id="answeredCount">0</span> / <span id="totalCount">0</span> answered
+        </div>
+      </div>
+
+      <!-- Sections + items are rendered here by reading-student.js.
+           Each section has a label header and a list of items. Items
+           render type-appropriate inputs (radio for MCQ, text for
+           find-word, select for match-gaps / match-headings). -->
+      <div id="examSections" class="exam-sections"></div>
+
+      <div class="exam-footer">
+        <button type="button" id="submitBtn" class="reading-btn primary" style="width: 100%;">
+          📤 Submit all answers
+        </button>
+        <p style="color: var(--r-text-mut); font-size: 0.78em; margin: 10px 0 0; text-align: center;">
+          You can change any answer before you submit. After submit, you'll see your score — but not which questions you got right or wrong, until your teacher reveals them.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ VIEW: Submitted (score only, no breakdown) ════════
+       This is intentionally minimal. The student sees their raw
+       score and a "Waiting for teacher to reveal" line. They cannot
+       reconstruct the answer key from this view.
+       ════════════════════════════════════════════════════════════ -->
+  <div id="view-submitted" style="display:none;">
+    <div class="reading-pane" style="max-width: 480px; margin: 40px auto; text-align:center;">
+      <div style="font-size:3.6em; margin-bottom: 8px;">📤</div>
+      <h2 style="margin: 0 0 6px;">Submitted</h2>
+      <p style="color: var(--r-text-mut); margin: 0 0 22px;">
+        Your answers are locked in. Good luck!
+      </p>
+
+      <div class="score-card">
+        <div class="score-label">Your score</div>
+        <div class="score-value"><span id="finalScore">0</span> <span class="score-of">/ <span id="finalTotal">0</span></span></div>
+        <div class="score-percent" id="finalPercent">—</div>
+      </div>
+
+      <p style="color: var(--r-text-mut); margin: 22px 0 0; font-size: 0.9em;">
+        Wait for your teacher to release the per-question breakdown.<br>
+        Discuss your answers with classmates in the meantime.
+      </p>
+    </div>
+  </div>
+
+  <!-- ════════ VIEW: Revealed (per-question breakdown) ════════
+       Only reachable when the teacher hits "Reveal answers" AND the
+       session was configured with discussion phase = yes. Otherwise
+       the student stays on view-submitted forever (or until done).
+       ════════════════════════════════════════════════════════════ -->
+  <div id="view-revealed" style="display:none;">
+    <div class="reading-pane" style="max-width: 720px; margin: 30px auto;">
+      <div style="text-align:center; margin-bottom: 22px;">
+        <div style="font-size:2.6em; margin-bottom: 6px;">🔓</div>
+        <h2 style="margin: 0 0 6px;">Answers revealed</h2>
+        <div class="score-card" style="display:inline-flex; margin-top: 14px;">
+          <div>
+            <div class="score-label">Your score</div>
+            <div class="score-value"><span id="revealScore">0</span> <span class="score-of">/ <span id="revealTotal">0</span></span></div>
+            <div class="score-percent" id="revealPercent">—</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="color: var(--r-text-mut); font-size: 0.85em; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin: 18px 0 12px;">
+        Question-by-question
+      </h3>
+      <div id="revealList" class="reveal-list"></div>
+
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:24px; flex-wrap:wrap;">
+        <a href="classroom-student.html" class="reading-btn" style="text-decoration:none;">➕ Join another</a>
+        <a href="student-dashboard.html" class="reading-btn primary" style="text-decoration:none;">🏠 Back to dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ VIEW: Done (exam closed before reveal) ════════ -->
+  <div id="view-done" style="display:none;">
+    <div class="reading-pane" style="max-width: 420px; margin: 40px auto; text-align:center;">
+      <div style="font-size:3em; margin-bottom: 14px;">🏁</div>
+      <h2 style="margin:0 0 8px;">Exam closed</h2>
+      <p style="color: var(--r-text-mut);">
+        Your teacher ended the session before revealing the answers. Ask them for your breakdown after class.
+      </p>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:24px; flex-wrap:wrap;">
+        <a href="classroom-student.html" class="reading-btn" style="text-decoration:none;">➕ Join another</a>
+        <a href="student-dashboard.html" class="reading-btn primary" style="text-decoration:none;">🏠 Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Themed confirm modal — for Submit -->
+<div id="readingConfirm" class="modal-overlay" style="display:none;">
+  <div class="modal-content" style="max-width: 380px; border-color: rgba(251, 113, 133, 0.35) !important;">
+    <h3 class="modal-title" id="readingConfirmTitle">Submit?</h3>
+    <p class="modal-message" id="readingConfirmMsg">Once you submit, you cannot change your answers.</p>
+    <div class="modal-buttons">
+      <button type="button" class="modal-btn modal-btn-cancel" id="readingConfirmCancel">Cancel</button>
+      <button type="button" class="modal-btn modal-btn-confirm" id="readingConfirmOk">Submit</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="classroom/js/refresh-guard.js"></script>
+<script src="classroom/js/reading-student.js"></script>
+
+</body>
+</html>

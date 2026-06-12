@@ -1,0 +1,97 @@
+ID: a2-r10
+LEVEL: A2
+TITLE: A2 Reading 10 — Pablo Picasso
+SUBTITLE: One passage · Headings, ordering, sentence-insert, MCQ, vocab, reference
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Pablo Picasso
+
+PASSAGE:
+Pablo Picasso was an artist. He is famous for inventing new and very different ways to paint. Picasso was born on October 25, 1881, in Malaga, Spain. *His* father was also an artist. When he was young, Picasso studied art with his father and at art schools in Malaga and then in Barcelona. In 1897, he went to the Royal Academy in Madrid, but left and went home to Barcelona.
+
+In Barcelona, he became part of a group of artists and writers. {gap:1} After 1904, he lived in France most of the time.
+
+During his long life, Picasso painted in many different ways. From 1901 to 1904, he did most of his paintings in blue. *This* is called his Blue Period. {gap:2}
+
+In 1907, he *invented* a new kind of painting called cubism. He painted people and object figures as geometrical forms, such as cubes. At first, most people did not like *this* new type of painting, but it slowly became more popular. In 1937, Picasso painted Guernica, one of his most famous cubist paintings. {gap:3}
+
+Picasso worked on many other new types of paintings, but he was also a sculptor and a designer. In 1917, he designed the set and the costumes for a ballet. {gap:4} Picasso was very poor when he was a young artist, but he became *wealthy* and very famous. He was married twice and had four children. He died at age 91 in Antibes, France, on April 8, 1973.
+
+# HEADINGS
+LABEL: Part A
+INSTRUCTIONS: Match the headings with the paragraphs. There is ONE extra heading.
+A: His new kind of invention on painting
+B: His past occupations
+C: His school life
+D: His awards and certificates
+E: Colorful periods in his painting life
+F: How his traveling life started
+ANSWERS: 1=C, 2=F, 3=E, 4=A, 5=B
+
+# SHORTANSWER
+LABEL: Part B
+INSTRUCTIONS: Read the text very carefully and put the events in order (write 1–8).
+1. He painted most of his paintings in blue.
+   ANSWER: 3
+2. He wrote a play and two books of poetry.
+   ANSWER: 8
+3. He designed the set and the costumes for a ballet.
+   ANSWER: 6
+4. He lived in France most of the time.
+   ANSWER: 4
+5. He invented a new kind of painting called Cubism.
+   ANSWER: 5
+6. He went to a Royal Academy.
+   ANSWER: 1
+7. He painted his masterpiece, Guernica.
+   ANSWER: 7
+8. He began to travel to Paris.
+   ANSWER: 2
+
+# GAPS
+LABEL: Part C
+INSTRUCTIONS: Read the text and complete the gaps with the correct sentences. There is ONE extra sentence.
+a: Picasso began to travel to Paris in 1900 to meet and work with other young artists.
+b: Pablo Picasso's father was an artist in his own right, earning a living painting birds.
+c: In the 1940s, he wrote a play and two books of poetry.
+d: The painting is now considered to be a masterpiece.
+e: From 1904 to 1906, he used mostly red and pink, which is called his Pink Period.
+ANSWERS: 1=a, 2=e, 3=d, 4=c
+
+# MCQ
+LABEL: Part D
+INSTRUCTIONS: Read the questions and choose the correct option.
+1. As an artist, Pablo Picasso is famous for __________.
+   a) designing costumes.
+   b) inventing new ways of painting.
+   c) organizing colorful shows.
+   d) writing poetry books.
+   ANSWER: b
+2. He began to spend a lot of time in France because __________.
+   a) he had to look after his father.
+   b) his school was there.
+   c) he met and worked with other young artists there.
+   d) he met his wife in Paris.
+   ANSWER: c
+3. According to the text, which information is TRUE about cubism?
+   a) Cubism is a new kind of sculpture.
+   b) Cubism became very popular as soon as it appeared.
+   c) People and objects are in geometrical forms in Cubism.
+   d) There were two periods in Picasso's Cubism; Blue and Pink Periods.
+   ANSWER: c
+
+# SHORTANSWER
+LABEL: Part E (reference and vocabulary)
+INSTRUCTIONS: Answer the following questions.
+1. What does "his" refer to in paragraph 1?
+   ANSWER: Pablo's / Picasso's / Pablo Picasso's
+2. What does "this" refer to in paragraph 3?
+   ANSWER: he did most of his paintings in blue / Blue Period / painting in blue
+3. What does "this" refer to in paragraph 4?
+   ANSWER: He painted people and object figures as geometrical forms / cubism / the new kind of painting called cubism
+4. Find the word in paragraph 4 that means "create or make something new":
+   ANSWER: invent / invented
+5. Find the word in paragraph 4 that means "a piece of art done with very great skill":
+   ANSWER: masterpiece
+6. Find the word in paragraph 5 that means "rich":
+   ANSWER: wealthy

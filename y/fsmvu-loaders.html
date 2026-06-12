@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FSMVÜ Seal — Loader Animations</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="stylesheet" href="css/fsmvu-loader.css">
+<style>
+  html,body{margin:0;min-height:100%;}
+  body{
+    background:#efece8; color:#1b1418;
+    font-family:Georgia,'Times New Roman',serif;
+    padding:48px 24px 72px;
+  }
+  .head{max-width:1040px;margin:0 auto 34px;}
+  .head h1{font-size:30px;margin:0 0 8px;letter-spacing:.01em;}
+  .head p{margin:0;color:rgba(40,30,28,.6);font-style:italic;font-size:15px;line-height:1.55;max-width:680px;}
+  .grid{
+    max-width:1040px;margin:0 auto;
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:26px;
+  }
+  .card{border-radius:16px;overflow:hidden;box-shadow:0 10px 34px -16px rgba(0,0,0,.4);}
+  .art{
+    height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:22px;position:relative;overflow:hidden;
+  }
+  .name{
+    padding:13px 16px;background:#fff;border-top:1px solid rgba(0,0,0,.06);
+    font-size:13px;letter-spacing:.06em;color:#5a4a4e;
+  }
+  .cap{font-size:12px;letter-spacing:.32em;text-transform:uppercase;font-style:italic;}
+  .cap.dark{color:rgba(255,255,255,.55);}
+  .cap.light{color:rgba(40,30,28,.45);}
+  .foot{max-width:1040px;margin:38px auto 0;color:rgba(40,30,28,.5);font-size:13px;line-height:1.6;font-style:italic;}
+  .foot code{font-family:ui-monospace,Menlo,Consolas,monospace;font-style:normal;background:rgba(0,0,0,.05);padding:1px 6px;border-radius:5px;}
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>FSMVÜ Seal · Loader Animations</h1>
+    <p>Six stately, crimson-true motion directions — true to the original mark.
+       Wired into Empower Lab's loading screens via <code>css/fsmvu-loader.css</code>.</p>
+  </div>
+
+  <div class="grid">
+    <!-- 01 Ring Rotation · LIGHT -->
+    <div class="card"><div class="art" style="background:#f7f3ee">
+      <div class="fsmvu-loader fsmvu-loader--rotate">
+        <span class="fsmvu-seal fsmvu-ring"></span><span class="fsmvu-seal fsmvu-emblem"></span>
+      </div>
+      <div class="cap light">Loading</div>
+    </div><div class="name">01 · Ring Rotation</div></div>
+
+    <!-- 02 Breathe · PARCHMENT (default loader) -->
+    <div class="card"><div class="art" style="background:#efe7da">
+      <div class="fsmvu-loader"></div>
+      <div class="cap light">Please wait</div>
+    </div><div class="name">02 · Breathe&nbsp;&nbsp;<small>(default <code style="font-style:normal">.fsmvu-loader</code>)</small></div></div>
+
+    <!-- 03 Shimmer Sweep · INK -->
+    <div class="card"><div class="art" style="background:#171318">
+      <div class="fsmvu-loader fsmvu-loader--shimmer"><span class="fsmvu-gloss"></span></div>
+      <div class="cap dark">Loading</div>
+    </div><div class="name">03 · Shimmer Sweep</div></div>
+
+    <!-- 04 Draw-On · LIGHT -->
+    <div class="card"><div class="art" style="background:#f7f3ee">
+      <div class="fsmvu-loader fsmvu-loader--draw"></div>
+      <div class="cap light">Preparing</div>
+    </div><div class="name">04 · Draw-On</div></div>
+
+    <!-- 05 Scale + Fade · INK -->
+    <div class="card"><div class="art" style="background:#1c1013">
+      <div class="fsmvu-loader fsmvu-loader--splash"></div>
+      <div class="cap dark">Welcome</div>
+    </div><div class="name">05 · Scale + Fade</div></div>
+
+    <!-- 06 Progress Ring · PARCHMENT -->
+    <div class="card"><div class="art" style="background:#efe7da">
+      <div class="fsmvu-loader fsmvu-loader--progress">
+        <div class="fsmvu-ring-wrap">
+          <span class="fsmvu-track"></span><span class="fsmvu-arc"></span><span class="fsmvu-seal"></span>
+        </div>
+      </div>
+      <div class="fsmvu-dots"><i></i><i></i><i></i></div>
+    </div><div class="name">06 · Progress Ring</div></div>
+  </div>
+
+  <div class="foot">
+    Drop-in: <code>&lt;div class="fsmvu-loader"&gt;&lt;/div&gt;</code> replaces the old
+    <code>&lt;div class="spinner"&gt;</code>. Programmatic full-screen:
+    <code>FSMVULoader.show({variant:'progress', label:'Loading'})</code> →
+    <code>FSMVULoader.hide()</code>.
+  </div>
+</body>
+</html>

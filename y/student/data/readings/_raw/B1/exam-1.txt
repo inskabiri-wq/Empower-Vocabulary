@@ -1,0 +1,77 @@
+ID: b1-r1
+LEVEL: B1
+TITLE: B1 Reading 1 — Making a Difference
+SUBTITLE: One passage · Sentence-insert, MCQ, vocabulary
+TIME_LIMIT_MIN: 20
+
+PASSAGE_TITLE: Making a Difference
+
+PASSAGE:
+Growing up in rural Malawi, Africa, William Kamkwamba learned to accept that life was hard. He lived with his parents and seven sisters in a small brick house without electricity or running water. {gap:1} Like most boys in his village, William was expected to assist his parents on the family farm, as well as *keep up with* his school work. Each night, like most Malawians, his family went to bed early because the kerosene oil that they needed to light the lamps was costly.
+
+A terrible drought in 2000 left many Malawians hungry, and William's family was no exception. {gap:2} In 2003, at the age of 13, William and many other children were forced to *drop out of* school when their parents could no longer afford the tuition. William had to work even harder to help his family, but he was not ready to give up his education. He was hardworking, ambitious and committed. {gap:3} He went to the local library and took out some books to study. One book, called Using Energy, *sparked* William's interest in science and gave him an idea that significantly changed his future.
+
+In the book, William found a picture of a windmill, and a brief description of how it could be used to generate electricity from wind. He knew that there was plenty of wind in his village, and realized that if he could build a windmill like that, he could give his family and the people in his village a much better life. {gap:4} There was just one problem. The book did not explain how to build a windmill.
+
+William's incredible ambition and determination showed what happened over the next year. He began to collect any kinds of materials that he thought were useful such as scraps of wood, broken bicycles, old shoes. Then he started to build a windmill next to his family's house. He *endured* many challenges and failures. {gap:5} Other people in his village called him crazy and said his idea would never work. Finally, at the age of 14, William completed his first windmill. When they saw electric lights and heard the sound of the music on the radio coming from William's house, the village people came running. He managed to do it. William Kamkwamba was able to find a way to capture the wind.
+
+Kamkwamba's autobiography, The Boy Who Harnessed the Wind, tells the story of how the rest of the world came to know about his achievements. {gap:6} With the help of international supporters, his village now has clean running water, solar powered lighting, and electric power. As a result of his actions, Kamkwamba was invited to study engineering at Dartmouth College, one of the top-ranking universities in the U.S. He also travels the world and gives talks about how he made his dream a reality.
+
+# GAPS
+LABEL: Part A
+INSTRUCTIONS: Match the sentences with the gaps. There are TWO extra sentences.
+a: His hardworking, ambitious and committed attitude made him do something for his education and future career.
+b: It is admirable that William is determined to continue his education despite the difficult economic conditions.
+c: Because of that, living was difficult and significant adjustments to daily life were required.
+d: This could lead to improved access to electricity for lighting, cooking, and powering other household appliances.
+e: Building a windmill was requiring a combination of technical skills, knowledge of engineering and construction, and persistence.
+f: The economic downturn made it harder for people to afford basic needs such as housing, education, food, and healthcare.
+g: He demonstrated that even with limited resources, it is possible to create positive change and improve the lives of others.
+h: So, tasks such as cooking and heating needed to be done using alternative methods.
+ANSWERS: 1=c, 2=f, 3=a, 4=d, 5=e, 6=g
+
+# MCQ
+LABEL: Part B
+INSTRUCTIONS: Circle the best choice according to the text.
+1. According to paragraph 1, William __________.
+   a) always complained about his life
+   b) had a difficult childhood
+   c) was an irresponsible child
+   d) refused to help his parents
+   ANSWER: b
+2. According to paragraph 1, William's family went to bed early because __________.
+   a) they always felt tired since they worked on farms
+   b) they did not have any lamps
+   c) the oil that they used to light the lamps was expensive
+   d) they did not want William to be late to school
+   ANSWER: c
+3. What do you understand from the following line? "A terrible drought in 2000 left many Malawians hungry, and William's family was no exception." (paragraph 2 line 1)
+   a) Many Malawians including William's family left Malawi after the drought.
+   b) Like other Malawians, William's family was exposed to hunger.
+   c) Only William's family had severe problems because of the drought.
+   d) William's family was not affected by the drought.
+   ANSWER: b
+4. According to paragraph 3, __________.
+   a) William learned to build a windmill from a book
+   b) the wind in William's village was not enough to build a windmill
+   c) the information in the book about the windmill inspired William
+   d) William's book about how to build a windmill couldn't give his family a better life
+   ANSWER: c
+5. Which of the following is TRUE according to paragraph 4?
+   a) He managed to build a windmill after several failures.
+   b) William could only find broken materials to build a windmill.
+   c) People in his village always supported him.
+   d) It took him almost two years to complete his first windmill.
+   ANSWER: a
+
+# SHORTANSWER
+LABEL: Part C (vocabulary)
+INSTRUCTIONS: Find a word or phrase which matches each meaning.
+1. "to manage to do as much or as well as other people" (paragraph 1):
+   ANSWER: keep up with / keep up
+2. "to leave a school before your course has finished" (paragraph 2):
+   ANSWER: drop out of / drop out
+3. "to make someone feel interested" (paragraph 2):
+   ANSWER: spark / sparked
+4. "to experience something difficult, painful, unpleasant" (paragraph 4):
+   ANSWER: endure / endured
