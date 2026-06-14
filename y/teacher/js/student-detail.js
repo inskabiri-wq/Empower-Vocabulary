@@ -116,6 +116,27 @@
     return { sessions, totalSessions, avgScore, words: words.size, bySkill, assignments, lastActive };
   }
 
+  // ── Per-question answer detail (QA #4) ─────────────────────
+  // Grammar stores its detail on the completion doc (comp.answers);
+  // reading/listening store it on the session doc (s.answers). Both share
+  // the uniform shape { skill, items:[{q,a,correct,ok}] }. Rendered as an
+  // inline expandable panel inside this modal (no nested dialog).
+  let _ansSeq = 0;
+  function _answerItemsHtml(answers) {
+    const items = (answers && Array.isArray(answers.items)) ? answers.items : [];
+    if (!items.length) return '<div style="padding:8px 12px;color:#94a3b8;font-size:0.85em;">No itemised answers were recorded for this attempt.</div>';
+    const correct = items.filter(it => it.ok).length;
+    const head = '<div style="font-size:0.78em;color:#94a3b8;margin:0 0 8px;font-weight:700;">' + correct + ' / ' + items.length + ' correct</div>';
+    const rows = items.map(it =>
+      '<div style="border-left:3px solid ' + (it.ok ? '#22c55e' : '#ef4444') + ';padding:6px 10px;margin:0 0 6px;background:rgba(148,163,184,0.06);border-radius:0 6px 6px 0;">' +
+        '<div style="font-size:0.85em;color:var(--text-primary,#e6edf3);margin-bottom:2px;">' + _esc(it.q || '') + '</div>' +
+        '<div style="font-size:0.82em;color:' + (it.ok ? '#34d399' : '#f87171') + ';">' + (it.ok ? '✓ ' : '✗ ') + _esc(String(it.a == null ? '—' : (it.a || '—'))) +
+          (it.ok ? '' : ' <span style="color:#94a3b8;">&rarr; correct: <strong style="color:#cbd5e1;">' + _esc(String(it.correct || '')) + '</strong></span>') +
+        '</div>' +
+      '</div>').join('');
+    return '<div style="padding:10px 12px;">' + head + rows + '</div>';
+  }
+
   // ── Build the modal markup ─────────────────────────────────
   function _renderModalInner(student, p) {
     const initials = (student.name || student.email || '?').trim().charAt(0).toUpperCase();
@@ -154,10 +175,12 @@
       ? p.assignments.map(({ a, comp, deadline, status }) => {
           const score = (comp && typeof comp.bestScore === 'number') ? ` · ${comp.bestScore}%` : '';
           const due = deadline ? deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—';
-          return `<div class="sd-assign-row">
-            <div class="sd-assign-title">${_esc(a.title || 'Untitled')}<span class="sd-assign-meta"> · due ${due}${score}</span></div>
+          const hasAns = comp && comp.answers && Array.isArray(comp.answers.items) && comp.answers.items.length;
+          const aid = 'a' + (_ansSeq++);
+          return `<div class="sd-assign-row"${hasAns ? ` data-ans="${aid}" style="cursor:pointer;"` : ''}>
+            <div class="sd-assign-title">${_esc(a.title || 'Untitled')}<span class="sd-assign-meta"> · due ${due}${score}</span>${hasAns ? ' <span style="color:#60a5fa;font-size:0.82em;font-weight:700;">🔍 answers</span>' : ''}</div>
             ${STATUS_CHIP[status] || ''}
-          </div>`;
+          </div>${hasAns ? `<div id="sdAnsRow-${aid}" style="display:none;">${_answerItemsHtml(comp.answers)}</div>` : ''}`;
         }).join('')
       : '<div class="sd-empty">No assignments target this student.</div>';
 
@@ -175,11 +198,13 @@
           const pctColor = (typeof s.percentage === 'number')
             ? (s.percentage >= 80 ? '#22c55e' : s.percentage >= 50 ? '#f59e0b' : '#ef4444')
             : '#94a3b8';
-          return `<tr>
+          const hasAns = s.answers && Array.isArray(s.answers.items) && s.answers.items.length;
+          const aid = 's' + (_ansSeq++);
+          return `<tr${hasAns ? ` data-ans="${aid}" style="cursor:pointer;"` : ''}>
             <td>${_esc(ds)}</td>
-            <td>${_esc(label)}</td>
+            <td>${_esc(label)}${hasAns ? ' <span style="color:#60a5fa;font-size:0.82em;">🔍 answers</span>' : ''}</td>
             <td style="color:${pctColor}; font-weight:600;">${pct}</td>
-          </tr>`;
+          </tr>${hasAns ? `<tr id="sdAnsRow-${aid}" style="display:none;"><td colspan="3" style="padding:0;">${_answerItemsHtml(s.answers)}</td></tr>` : ''}`;
         }).join('')
       : '<tr><td colspan="3" class="sd-empty">No sessions yet.</td></tr>';
 
@@ -263,6 +288,15 @@
     bg.querySelector('#sdCloseBtn').addEventListener('click', close);
     bg.addEventListener('click', (e) => { if (e.target === bg) close(); });
     bg.querySelector('#sdPrintBtn').addEventListener('click', () => printStudentReport(student, p));
+    // QA #4: clicking an assignment/session row that has itemised answers
+    // toggles an inline panel showing each question, the student's answer,
+    // and the correct answer.
+    bg.querySelectorAll('[data-ans]').forEach((el) => {
+      el.addEventListener('click', () => {
+        const panel = bg.querySelector('#sdAnsRow-' + el.getAttribute('data-ans'));
+        if (panel) panel.style.display = (panel.style.display === 'none' ? '' : 'none');
+      });
+    });
   }
 
   // ── Missing#4: printable PDF report ────────────────────────

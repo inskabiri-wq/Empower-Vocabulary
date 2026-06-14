@@ -316,6 +316,21 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ── certificates collection — fact-check records ──
+    // One doc per issued certificate, keyed by the certificate code
+    // (certId). Written by the student when they earn the certificate so
+    // a teacher (or anyone signed in) can later confirm a code + name.
+    // Read-only after creation: immutable, admin-only delete. Holds only
+    // name + course + date + score, no sensitive data.
+    match /certificates/{certId} {
+      allow read: if isAuth();
+      allow create: if isAuth() &&
+        request.resource.data.uid == request.auth.uid &&
+        request.resource.data.certId == certId;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
     // ── activityLogs collection ──
     match /activityLogs/{logId} {
       // Real users (verified FSM, teacher, admin) can log their own activity.

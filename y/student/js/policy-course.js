@@ -296,7 +296,9 @@
   //   link:  { url, label: {en,tr} }               -> external link
   function youTubeEmbed(url) {
     const m = String(url || '').match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
-    return m ? ('https://www.youtube.com/embed/' + m[1]) : null;
+    // youtube-nocookie (privacy-enhanced) is less likely to be blocked by
+    // browser tracking-prevention or privacy extensions than youtube.com.
+    return m ? ('https://www.youtube-nocookie.com/embed/' + m[1]) : null;
   }
   function lessonMediaHtml(ls) {
     let extra = '';
@@ -307,9 +309,15 @@
     }
     if (ls.video) {
       const emb = youTubeEmbed(ls.video);
-      extra += emb
-        ? '<div class="pc-video"><iframe src="' + esc(emb) + '" title="Lesson video" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>'
-        : '<p><a class="pc-ext-link" href="' + esc(ls.video) + '" target="_blank" rel="noopener">&#9654; ' + (lang === 'tr' ? 'Videoyu izle' : 'Watch the video') + '</a></p>';
+      if (emb) {
+        extra += '<div class="pc-video"><iframe src="' + esc(emb) + '" title="Lesson video" allow="accelerometer; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe></div>';
+        // Always offer a direct link too: if the embed is blocked (tracking
+        // prevention, a privacy/ad extension, or a network firewall on
+        // YouTube), the student can still open the video in a new tab.
+        extra += '<p class="pc-video-fallback"><a class="pc-ext-link" href="' + esc(ls.video) + '" target="_blank" rel="noopener">&#9654; ' + (lang === 'tr' ? 'Video açılmıyor mu? YouTube\'da izleyin' : "Video not loading? Watch on YouTube") + '</a></p>';
+      } else {
+        extra += '<p><a class="pc-ext-link" href="' + esc(ls.video) + '" target="_blank" rel="noopener">&#9654; ' + (lang === 'tr' ? 'Videoyu izle' : 'Watch the video') + '</a></p>';
+      }
     }
     if (ls.link && ls.link.url) {
       extra += '<p><a class="pc-ext-link" href="' + esc(ls.link.url) + '" target="_blank" rel="noopener">&#128279; ' + esc(L(ls.link.label) || ls.link.url) + '</a></p>';
@@ -430,18 +438,38 @@
     };
     const patch = (c.testKey === 'final') ? { finalExam: node } : { modules: { [c.testKey]: node } };
     let earnedCert = false;
+    let newCertId = null, newCertName = null;
     if (c.testKey === 'final' && !(progress && progress.certificate && progress.certificate.certId)) {
       earnedCert = true;
+      newCertId = 'EL-' + (user.uid || 'X').slice(0, 6).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+      newCertName = (userDoc && (userDoc.name || userDoc.displayName)) || user.displayName || user.email || 'Student';
       patch.certificate = {
-        certId: 'EL-' + (user.uid || 'X').slice(0, 6).toUpperCase() + '-' + Date.now().toString(36).toUpperCase(),
+        certId: newCertId,
         earnedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        name: (userDoc && (userDoc.name || userDoc.displayName)) || user.displayName || user.email || 'Student',
+        name: newCertName,
         score: c.correct,
         total: c.questions.length
       };
     }
     if (!progress || !progress.startedAt) patch.startedAt = firebase.firestore.FieldValue.serverTimestamp();
     await saveProgress(patch);
+    // Public verification record, keyed by the certificate code, so a
+    // teacher can later fact-check a code + name (see /certificates rule).
+    // Non-fatal: the certificate still works from courseProgress if this fails.
+    if (earnedCert && newCertId) {
+      try {
+        await db.collection('certificates').doc(newCertId).set({
+          certId: newCertId,
+          uid: user.uid,
+          name: newCertName,
+          courseId: COURSE.id || 'ai-guidelines',
+          courseName: L(COURSE.certificate && COURSE.certificate.courseName) || 'AI Use Guidelines',
+          score: c.correct,
+          total: c.questions.length,
+          earnedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (e) { console.warn('certificate record write failed', e); }
+    }
     await reloadProgress();
     $('pcResultCard').innerHTML = `
       <div class="pc-result-icon">🎉</div>
@@ -483,10 +511,21 @@
       .map(p => esc(p.replace('{year}', academicYearOf(when))))
       .join(courseHtml);
 
-    const signNameEl = $('pcCertSignName');
-    if (signNameEl) signNameEl.textContent = COURSE.certificate.signName || '';
-    const signTitleEl = $('pcCertSignTitle');
-    if (signTitleEl) signTitleEl.textContent = L(COURSE.certificate.signTitle) || '';
+    // Signatories: a row of signature columns (name + title), built from
+    // certificate.signatories. Falls back to the legacy single sign fields.
+    const signRow = $('pcCertSignRow');
+    if (signRow) {
+      const sigs = Array.isArray(COURSE.certificate.signatories) && COURSE.certificate.signatories.length
+        ? COURSE.certificate.signatories
+        : [{ name: COURSE.certificate.signName || '', title: COURSE.certificate.signTitle || { en: '', tr: '' } }];
+      signRow.innerHTML = sigs.map(s =>
+        '<div class="pc-cert-sig">' +
+          '<div class="pc-cert-sig-script">' + esc(s.name || '') + '</div>' +
+          '<div class="pc-cert-sig-line"></div>' +
+          '<div class="pc-cert-sig-name">' + esc(s.name || '') + '</div>' +
+          '<div class="pc-cert-sig-title">' + esc(L(s.title) || '') + '</div>' +
+        '</div>').join('');
+    }
 
     $('pcCertScore').textContent = (cert.score != null ? cert.score + ' / ' + cert.total : '');
     $('pcCertDate').textContent = when.toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' });

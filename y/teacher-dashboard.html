@@ -1571,6 +1571,25 @@
           </div>
         </div>
         <div id="pcAdminBody" style="display:none;"></div>
+
+        <!-- Fact-check: confirm a certificate a student presents, by its
+             printed code + name. Looks up the /certificates record. -->
+        <div id="pcVerifyBox" style="margin-top:18px; padding:16px; border:1px solid rgba(148,163,184,0.2); border-radius:12px; background:rgba(148,163,184,0.05);">
+          <h3 style="margin:0 0 4px; font-size:0.95em; font-weight:800; color:var(--text-primary,#e6edf3);">🔎 Fact-check a certificate</h3>
+          <p style="margin:0 0 12px; font-size:0.8em; color:var(--text-muted,#94a3b8);">A student brings you a certificate? Type the name and the code printed on it to confirm it was really issued here.</p>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end;">
+            <label style="display:flex; flex-direction:column; gap:4px; font-size:0.78em; color:var(--text-muted,#94a3b8); flex:1 1 200px;">
+              Name on the certificate
+              <input type="text" id="pcVerifyName" placeholder="e.g. Ayşe Yılmaz" autocomplete="off" style="padding:8px 10px; border-radius:8px; border:1px solid rgba(148,163,184,0.35); background:rgba(2,6,23,0.35); color:var(--text-primary,#e6edf3); font-size:0.95em;">
+            </label>
+            <label style="display:flex; flex-direction:column; gap:4px; font-size:0.78em; color:var(--text-muted,#94a3b8); flex:1 1 200px;">
+              Certificate code
+              <input type="text" id="pcVerifyCode" placeholder="e.g. EL-AB12CD-LZ9Q3K" autocomplete="off" style="padding:8px 10px; border-radius:8px; border:1px solid rgba(148,163,184,0.35); background:rgba(2,6,23,0.35); color:var(--text-primary,#e6edf3); font-size:0.95em; text-transform:uppercase;">
+            </label>
+            <button type="button" class="t2-btn" id="pcVerifyBtn">Check</button>
+          </div>
+          <div id="pcVerifyResult" style="margin-top:12px; font-size:0.88em;"></div>
+        </div>
       </div>
     </div>
 
@@ -2636,8 +2655,8 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- Grammar assignment: content (levels/topics) + form. Mirrors exam-form.js. -->
 <script src="student/js/skills/grammar-content.js?v=10"></script>
 <!-- Policy mini course: content (module count for the panel) + teacher admin panel. -->
-<script src="student/js/policy-course-content.js?v=4"></script>
-<script src="teacher/js/policy-course-admin.js?v=4"></script>
+<script src="student/js/policy-course-content.js?v=7"></script>
+<script src="teacher/js/policy-course-admin.js?v=7"></script>
 <script src="teacher/js/feature-activation.js?v=2"></script>
 <script src="assignments/js/grammar-form.js"></script>
 <!-- Writing feedback v2: comment bank (data) + annotation engine.

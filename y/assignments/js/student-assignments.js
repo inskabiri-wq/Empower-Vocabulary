@@ -1208,16 +1208,16 @@ function checkMyAssignmentStatus(assignment) {
 // MARK ASSIGNMENT AS COMPLETED
 // Call this when a student completes an assignment with 100%
 // ============================================
-async function markAssignmentCompleted(assignmentId, score) {
+async function markAssignmentCompleted(assignmentId, score, detail) {
   const user = auth.currentUser;
   if (!user) return;
-  
+
   try {
     const docId = `${user.uid}_${assignmentId}`;
     const existingDoc = await db.collection('assignmentCompletions').doc(docId).get();
     const existingData = existingDoc.exists ? existingDoc.data() : { attempts: 0, bestScore: 0 };
-    
-    await db.collection('assignmentCompletions').doc(docId).set({
+
+    const payload = {
       odUserId: user.uid,
       assignmentId: assignmentId,
       completed: score >= 100,
@@ -1225,7 +1225,18 @@ async function markAssignmentCompleted(assignmentId, score) {
       bestScore: Math.max(existingData.bestScore || 0, score),
       lastAttempt: firebase.firestore.FieldValue.serverTimestamp(),
       completedAt: score >= 100 ? firebase.firestore.FieldValue.serverTimestamp() : null
-    }, { merge: true });
+    };
+    // Per-question detail so teachers can see WHICH items the student missed
+    // (QA #4). Uniform shape across skills: { skill, items:[{q,a,correct,ok}] }.
+    // Only attached when the runner provides it (vocab calls without it).
+    if (detail && Array.isArray(detail.items)) {
+      payload.answers = {
+        skill: detail.skill || null,
+        items: detail.items,
+        scoredPct: typeof score === 'number' ? score : null
+      };
+    }
+    await db.collection('assignmentCompletions').doc(docId).set(payload, { merge: true });
     
     console.log('Assignment completion recorded:', { assignmentId, score });
     
@@ -1591,15 +1602,36 @@ async function startAssignment(assignmentId) {
     window.location.href = `writing-exam.html?assignmentId=${encodeURIComponent(assignmentId)}`;
     return;
   }
-  if (sk === 'reading') {
-    // Route to the Reading skill home; the student picks the matching
-    // exam manually (the assignment row already shows which one to pick).
-    // A dedicated reading-exam-auto-launcher is a future enhancement.
-    window.location.hash = '#reading';
-    return;
-  }
-  if (sk === 'listening') {
-    window.location.hash = '#listening';
+  if (sk === 'reading' || sk === 'listening') {
+    // Land on the skill home first: a single screen swap that back-nav.js
+    // tracks (setting location.hash directly used to desync the back-stack
+    // and trigger the "Leaving so soon?" logout modal). The home is also the
+    // safe fallback if the deep-link below can't find the exam.
+    const screenId = (sk === 'reading') ? 'readingScreen' : 'listeningScreen';
+    if (typeof window.openSkill === 'function') {
+      window.openSkill({ id: sk, screen: screenId });
+    } else if (typeof showScreen === 'function' && document.getElementById(screenId)) {
+      showScreen(screenId);
+    } else {
+      window.location.hash = '#' + sk;
+    }
+    // If the assignment names a specific exam, open it directly instead of
+    // leaving the student to hunt for it in the list.
+    const examId = assignment.examId;
+    const examLevel = assignment.examLevel || assignment.level || '';
+    if (examId) {
+      setTimeout(function () {
+        try {
+          if (sk === 'reading' && typeof window.openReadingExam === 'function') {
+            window.openReadingExam(examLevel, examId, 'untimed');
+          } else if (sk === 'listening' && typeof window.startListeningExam === 'function') {
+            window.startListeningExam(examId);
+          }
+        } catch (e) {
+          console.warn('[assignment] direct exam launch failed; staying on skill home', e);
+        }
+      }, 200);
+    }
     return;
   }
   if (sk === 'grammar') {

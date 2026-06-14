@@ -396,7 +396,16 @@
     var asgBanner = '';
     if (state.assignment && !state.assignment._recorded) {
       state.assignment._recorded = true;
-      if (typeof markAssignmentCompleted === 'function') { try { markAssignmentCompleted(state.assignment.id, 100); } catch (e) { console.warn('[grammar] completion failed', e); } }
+      if (typeof markAssignmentCompleted === 'function') {
+        try {
+          // Pass the per-question detail (already built during play) so the
+          // teacher can see which rules/items the student missed (QA #4).
+          var grItems = (state.answers || []).map(function (a) {
+            return { q: a.q, a: a.picked, correct: a.correct, ok: !!a.ok };
+          });
+          markAssignmentCompleted(state.assignment.id, 100, { skill: 'grammar', items: grItems });
+        } catch (e) { console.warn('[grammar] completion failed', e); }
+      }
       asgBanner = '<div class="gr-asg-banner done"><strong>✅ Assignment done!</strong><div>You practised the assigned grammar. It is now marked complete.</div></div>';
     }
     b.innerHTML = asgBanner +

@@ -39,9 +39,10 @@
           {
             title: { en: 'Why AI is allowed at all', tr: 'YZ neden kullanılabilir' },
             image: { url: '/Images/b475283f-6be9-4976-8474-ba8b943f5761.jpg', caption: { en: 'FSM English Preparatory Program · Educational Technologies and AI Unit', tr: 'FSM İngilizce Hazırlık Programı · Eğitim Teknolojileri ve YZ Birimi' } },
+            video: 'https://www.youtube.com/watch?v=8GrXXnSIEmQ',
             body: {
-              en: 'The use of artificial intelligence (AI) in the English Preparatory Program aims to support and enhance student learning while upholding academic integrity and ethical standards.\n\nAI tools are intended to assist learning, not replace individual effort. They may be used for generating ideas, practising language, or receiving explanations.\n\nThe final responsibility for all submitted work rests with the student.',
-              tr: 'İngilizce Hazırlık Programında yapay zekâ (YZ) kullanımının amacı, akademik dürüstlük ve etik standartlar korunarak öğrenci öğrenimini desteklemek ve geliştirmektir.\n\nYZ araçları, öğrenmeye yardımcı olmak için kullanılmalı, bireysel çabanın yerine geçmemelidir. Fikir üretmek, dil pratiği yapmak veya açıklama almak amacıyla kullanılabilir.\n\nTeslim edilen tüm çalışmaların nihai sorumluluğu öğrenciye aittir.'
+              en: 'The use of artificial intelligence (AI) in the English Preparatory Program aims to support and enhance student learning while upholding academic integrity and ethical standards.\n\nAI tools are intended to assist learning, not replace individual effort. They may be used for generating ideas, practising language, or receiving explanations.\n\nThe final responsibility for all submitted work rests with the student.\n\nThese guidelines follow international good practice on responsible AI in education: transparency about AI use, human oversight, and accountability. They reflect frameworks such as the UNESCO Recommendation on the Ethics of Artificial Intelligence and the EU AI Act.',
+              tr: 'İngilizce Hazırlık Programında yapay zekâ (YZ) kullanımının amacı, akademik dürüstlük ve etik standartlar korunarak öğrenci öğrenimini desteklemek ve geliştirmektir.\n\nYZ araçları, öğrenmeye yardımcı olmak için kullanılmalı, bireysel çabanın yerine geçmemelidir. Fikir üretmek, dil pratiği yapmak veya açıklama almak amacıyla kullanılabilir.\n\nTeslim edilen tüm çalışmaların nihai sorumluluğu öğrenciye aittir.\n\nBu kurallar, eğitimde sorumlu YZ kullanımına ilişkin uluslararası iyi uygulamaları izler: YZ kullanımında şeffaflık, insan denetimi ve hesap verebilirlik. UNESCO Yapay Zekâ Etiği Tavsiye Kararı ve AB Yapay Zekâ Yasası gibi çerçeveleri yansıtır.'
             }
           },
           {
@@ -63,62 +64,62 @@
         ],
         quiz: [
           {
-            q: { en: 'Which language must you normally use when interacting with AI tools?', tr: 'YZ araçlarıyla etkileşimde normalde hangi dil kullanılmalıdır?' },
+            q: { en: 'Which language should you normally use with AI tools?', tr: 'YZ araçlarıyla normalde hangi dili kullanmalısınız?' },
             options: [
-              { en: 'English, except limited cases needing Turkish for technical or cultural clarification', tr: 'İngilizce; teknik veya kültürel açıklama gereken sınırlı durumlar hariç' },
-              { en: 'Turkish at all times', tr: 'Her zaman Türkçe' },
-              { en: 'Any language you prefer', tr: 'İstediğiniz herhangi bir dil' },
-              { en: 'Only formal academic English with no exceptions', tr: 'İstisnasız yalnızca resmi akademik İngilizce' }
+              { en: 'English, with Turkish only for technical or cultural clarification', tr: 'İngilizce; Türkçe yalnızca teknik veya kültürel açıklama için' },
+              { en: 'Turkish for every interaction, and English only inside direct quotations', tr: 'Her etkileşimde Türkçe, İngilizce yalnızca doğrudan alıntıların içinde' },
+              { en: 'English for prompts, Turkish for the answers', tr: 'İstemler için İngilizce, yanıtlar için Türkçe' },
+              { en: 'Whichever language is fastest to type', tr: 'Yazması en hızlı olan dil hangisiyse' }
             ],
             answer: 0
           },
           {
-            q: { en: 'Which of these is an ALLOWED use of AI in coursework?', tr: 'Aşağıdakilerden hangisi ders çalışmalarında YZ\'nin İZİN VERİLEN bir kullanımıdır?' },
+            q: { en: 'Which of these is an allowed use of AI in coursework?', tr: 'Aşağıdakilerden hangisi ders çalışmasında YZ\'nin izin verilen kullanımıdır?' },
             options: [
-              { en: 'Brainstorming topics or examples', tr: 'Konu veya örnek beyin fırtınası yapmak' },
-              { en: 'Writing your whole essay', tr: 'Makalenizin tamamını yazdırmak' },
-              { en: 'Answering test questions for you', tr: 'Sınav sorularını sizin yerinize cevaplamak' },
-              { en: 'Submitting AI text without declaring it', tr: 'YZ metnini bildirmeden teslim etmek' }
+              { en: 'Brainstorming ideas and examples', tr: 'Fikir ve örnek beyin fırtınası yapmak' },
+              { en: 'Producing the final text you submit', tr: 'Teslim ettiğiniz nihai metni üretmek' },
+              { en: 'Answering questions during a test', tr: 'Sınav sırasında soruları yanıtlamak' },
+              { en: 'Replacing your own draft entirely', tr: 'Kendi taslağınızın tamamen yerine geçmek' }
             ],
             answer: 0
           },
           {
-            q: { en: 'What must accompany all AI-assisted text in assessed work?', tr: 'Değerlendirmeye tabi çalışmalardaki tüm YZ destekli metinlere ne eşlik etmelidir?' },
+            q: { en: 'What must an AI Use Note include?', tr: 'Bir YZ Kullanım Notu neyi içermelidir?' },
             options: [
-              { en: 'An AI Use Note including the original prompts', tr: 'Orijinal istemleri içeren bir YZ Kullanım Notu' },
-              { en: 'Nothing, if the text is short', tr: 'Metin kısaysa hiçbir şey' },
-              { en: 'A verbal mention to a classmate', tr: 'Bir sınıf arkadaşına sözlü olarak söylemek' },
-              { en: 'A photo of your screen', tr: 'Ekranınızın bir fotoğrafı' }
+              { en: 'The original prompts you used', tr: 'Kullandığınız orijinal istemleri' },
+              { en: 'A word count of the AI text', tr: 'YZ metninin kelime sayısını' },
+              { en: 'The name of the AI tool only', tr: 'Yalnızca YZ aracının adını' },
+              { en: 'Your estimated final grade', tr: 'Tahmini final notunuzu' }
             ],
             answer: 0
           },
           {
-            q: { en: 'When is work considered AI-written?', tr: 'Bir çalışma ne zaman YZ ile yazılmış sayılır?' },
+            q: { en: 'When is work counted as "AI-written"?', tr: 'Bir çalışma ne zaman "YZ ile yazılmış" sayılır?' },
             options: [
-              { en: 'When AI provides more than two consecutive sentences or the outline of the full task', tr: 'YZ art arda iki cümleden fazlasını veya tüm görevin taslağını sağladığında' },
-              { en: 'When AI explains one grammar rule', tr: 'YZ tek bir dilbilgisi kuralını açıkladığında' },
-              { en: 'When you brainstorm a topic with AI', tr: 'YZ ile bir konu üzerinde beyin fırtınası yaptığınızda' },
-              { en: 'Work can never be considered AI-written', tr: 'Bir çalışma asla YZ ile yazılmış sayılmaz' }
+              { en: 'When AI gives more than two consecutive sentences or the task outline', tr: 'YZ art arda ikiden fazla cümle veya görev taslağı verdiğinde' },
+              { en: 'When AI corrects one spelling mistake or rewrites a sentence for clarity', tr: 'YZ bir yazım hatasını düzelttiğinde veya bir cümleyi netlik için yeniden yazdığında' },
+              { en: 'When AI suggests one synonym for a word', tr: 'YZ bir kelime için tek bir eşanlamlı önerdiğinde' },
+              { en: 'When AI explains a grammar rule to you', tr: 'YZ size bir dilbilgisi kuralını açıkladığında' }
             ],
             answer: 0
           },
           {
-            q: { en: 'You edited a sentence that AI wrote for you. What is the rule?', tr: 'YZ\'nin sizin için yazdığı bir cümleyi düzenlediniz. Kural nedir?' },
+            q: { en: 'You edited a sentence that AI wrote. What is the rule?', tr: 'YZ\'nin yazdığı bir cümleyi düzenlediniz. Kural nedir?' },
             options: [
-              { en: 'It must still be acknowledged as AI-assisted', tr: 'Yine de YZ destekli olarak belirtilmelidir' },
-              { en: 'Editing makes it fully your own work', tr: 'Düzenleme onu tamamen sizin çalışmanız yapar' },
-              { en: 'You can remove it from the AI Use Note', tr: 'YZ Kullanım Notu\'ndan çıkarabilirsiniz' },
-              { en: 'Only the first word needs declaring', tr: 'Sadece ilk kelimenin bildirilmesi gerekir' }
+              { en: 'It still counts as AI-assisted and must be declared', tr: 'Yine de YZ destekli sayılır ve belirtilmelidir' },
+              { en: 'It becomes completely your own work and needs no AI note', tr: 'Tamamen sizin çalışmanız olur ve YZ notuna gerek kalmaz' },
+              { en: 'Only the unedited parts must be declared', tr: 'Sadece düzenlenmemiş kısımlar belirtilmelidir' },
+              { en: 'It no longer belongs in the AI Use Note', tr: 'Artık YZ Kullanım Notu\'na ait değildir' }
             ],
             answer: 0
           },
           {
-            q: { en: 'You lost the AI prompts you used. What must you do?', tr: 'Kullandığınız YZ istemlerini kaybettiniz. Ne yapmalısınız?' },
+            q: { en: 'You deleted the prompts you used with AI. You should...', tr: 'YZ ile kullandığınız istemleri sildiniz. Şunu yapmalısınız...' },
             options: [
-              { en: 'Re-create them and label them "re-created" in the AI Use Note', tr: 'Yeniden oluşturup YZ Kullanım Notu\'nda "yeniden oluşturuldu" olarak işaretlemek' },
-              { en: 'Say nothing and hope nobody asks', tr: 'Hiçbir şey söylememek ve kimsenin sormamasını ummak' },
-              { en: 'Delete the AI-assisted parts secretly', tr: 'YZ destekli kısımları gizlice silmek' },
-              { en: 'Ask a friend to share their prompts', tr: 'Bir arkadaştan istemlerini paylaşmasını istemek' }
+              { en: 're-create them and label them "re-created"', tr: 'yeniden oluşturup "yeniden oluşturuldu" olarak işaretlemek' },
+              { en: 'leave that part of the note blank', tr: 'notun o kısmını boş bırakmak' },
+              { en: 'submit the work without the note', tr: 'çalışmayı notsuz teslim etmek' },
+              { en: 'copy a classmate\'s prompts and submit them as your own', tr: 'bir arkadaşın istemlerini kopyalayıp kendinizinmiş gibi sunmak' }
             ],
             answer: 0
           }
@@ -150,52 +151,52 @@
         ],
         quiz: [
           {
-            q: { en: 'Complete promise 1: "AI can help me but will not..."', tr: 'Söz 1\'i tamamlayın: "YZ bana yardımcı olabilir ancak..."' },
+            q: { en: 'How much of your work may AI create?', tr: 'Çalışmanızın ne kadarını YZ üretebilir?' },
             options: [
-              { en: 'create most of my work', tr: 'çalışmamın çoğunu üretmeyecek' },
-              { en: 'answer my questions', tr: 'sorularımı cevaplamayacak' },
-              { en: 'explain grammar to me', tr: 'bana dilbilgisi açıklamayacak' },
-              { en: 'help me brainstorm', tr: 'beyin fırtınasında yardım etmeyecek' }
+              { en: 'Not most of it; the work stays mine', tr: 'Çoğunu değil; çalışma benim kalır' },
+              { en: 'Most of it, if I edit afterwards', tr: 'Çoğunu, sonradan düzenlersem' },
+              { en: 'The parts I find too difficult', tr: 'Zor bulduğum kısımları' },
+              { en: 'My whole first draft', tr: 'Tüm ilk taslağımı' }
             ],
             answer: 0
           },
           {
-            q: { en: 'Whose voice and style must your submitted work keep?', tr: 'Teslim ettiğiniz çalışma kimin sesini ve tarzını korumalıdır?' },
+            q: { en: 'Whose voice and style should your submitted work keep?', tr: 'Teslim ettiğiniz çalışma kimin sesini ve tarzını korumalıdır?' },
             options: [
-              { en: 'My own', tr: 'Benim kendi sesimi ve tarzımı' },
-              { en: 'The AI\'s', tr: 'YZ\'nin' },
-              { en: 'My teacher\'s', tr: 'Öğretmenimin' },
-              { en: 'A famous writer\'s', tr: 'Ünlü bir yazarın' }
+              { en: 'My own voice and style', tr: 'Kendi sesimi ve tarzımı' },
+              { en: 'The AI\'s polished style', tr: 'YZ\'nin parlak tarzını' },
+              { en: 'A model essay\'s style', tr: 'Örnek bir makalenin tarzını' },
+              { en: 'My teacher\'s writing style', tr: 'Öğretmenimin yazım tarzını' }
             ],
             answer: 0
           },
           {
-            q: { en: 'According to the promises, claiming AI\'s work as your own is...', tr: 'Sözlere göre, YZ\'nin çalışmasını kendinize mal etmek...' },
+            q: { en: 'Claiming AI\'s work as your own is...', tr: 'YZ\'nin çalışmasını kendinize mal etmek...' },
             options: [
               { en: 'plagiarism', tr: 'intihaldir' },
-              { en: 'good time management', tr: 'iyi zaman yönetimidir' },
-              { en: 'acceptable if edited', tr: 'düzenlenirse kabul edilebilirdir' },
-              { en: 'teamwork', tr: 'takım çalışmasıdır' }
+              { en: 'acceptable time-saving', tr: 'kabul edilebilir bir zaman tasarrufudur' },
+              { en: 'allowed with a note', tr: 'bir notla serbesttir' },
+              { en: 'fine for drafts only', tr: 'sadece taslaklar için uygundur' }
             ],
             answer: 0
           },
           {
-            q: { en: 'What is the correct order of working, according to promise 7?', tr: 'Söz 7\'ye göre doğru çalışma sırası nedir?' },
+            q: { en: 'In what order should you work (promise 7)?', tr: 'Hangi sırayla çalışmalısınız (Söz 7)?' },
             options: [
-              { en: 'Write my own draft first, then receive assistance with AI', tr: 'Önce kendi taslağımı yazmak, sonra yapay zekâdan yardım almak' },
-              { en: 'Let AI write the draft, then edit it', tr: 'Taslağı YZ\'ye yazdırmak, sonra düzenlemek' },
-              { en: 'Ask AI for the full text, then translate it', tr: 'YZ\'den tam metni isteyip sonra çevirmek' },
-              { en: 'Copy a classmate\'s draft first', tr: 'Önce bir sınıf arkadaşının taslağını kopyalamak' }
+              { en: 'My own draft first, AI help afterwards', tr: 'Önce kendi taslağım, sonra YZ yardımı' },
+              { en: 'AI draft first, then I edit it', tr: 'Önce YZ taslağı, sonra ben düzenlerim' },
+              { en: 'AI and I take turns writing alternate paragraphs', tr: 'YZ ve ben sırayla, dönüşümlü olarak paragraf yazarız' },
+              { en: 'AI outlines, then I fill it in', tr: 'YZ taslak çıkarır, sonra ben doldururum' }
             ],
             answer: 0
           },
           {
-            q: { en: 'What should you do with AI suggestions, according to promise 8?', tr: 'Söz 8\'e göre YZ önerileriyle ne yapmalısınız?' },
+            q: { en: 'What should you do with AI\'s suggestions (promise 8)?', tr: 'YZ\'nin önerileriyle ne yapmalısınız (Söz 8)?' },
             options: [
-              { en: 'Think critically about them and decide what to keep', tr: 'Eleştirel olarak değerlendirip neyin kalacağına kendim karar vermek' },
-              { en: 'Accept all of them without reading', tr: 'Okumadan hepsini kabul etmek' },
-              { en: 'Reject all of them automatically', tr: 'Hepsini otomatik olarak reddetmek' },
-              { en: 'Forward them to the teacher', tr: 'Öğretmene iletmek' }
+              { en: 'Judge each one and decide what to keep', tr: 'Her birini değerlendirip neyin kalacağına karar vermek' },
+              { en: 'Accept every suggestion as correct', tr: 'Her öneriyi doğru kabul etmek' },
+              { en: 'Reject every suggestion on principle', tr: 'İlke olarak her öneriyi reddetmek' },
+              { en: 'Pass the suggestions to the teacher', tr: 'Önerileri öğretmene iletmek' }
             ],
             answer: 0
           }
@@ -235,62 +236,62 @@
         ],
         quiz: [
           {
-            q: { en: 'Can AI write your whole essay?', tr: 'YZ tüm makalenizi yazabilir mi?' },
+            q: { en: 'Can AI write your whole essay for grading?', tr: 'YZ, notlandırılmak üzere tüm makalenizi yazabilir mi?' },
             options: [
-              { en: 'No. It results in a grade of 0 and a warning', tr: 'Hayır. 0 not ve uyarı ile sonuçlanır' },
-              { en: 'Yes, if it is short', tr: 'Evet, kısaysa' },
-              { en: 'Yes, at the weekend', tr: 'Evet, hafta sonları' },
-              { en: 'Yes, if you edit one sentence', tr: 'Evet, bir cümleyi düzenlerseniz' }
+              { en: 'No; it scores 0 and brings a warning', tr: 'Hayır; 0 alır ve uyarı getirir' },
+              { en: 'Yes, if you shorten it afterwards', tr: 'Evet, sonradan kısaltırsanız' },
+              { en: 'Yes, for low-weighted tasks', tr: 'Evet, düşük ağırlıklı görevlerde' },
+              { en: 'Yes, if you name the AI tool', tr: 'Evet, YZ aracını belirtirseniz' }
             ],
             answer: 0
           },
           {
             q: { en: 'Can you use AI during a test?', tr: 'Sınav sırasında YZ kullanabilir misiniz?' },
             options: [
-              { en: 'No. Tests must show your own ability', tr: 'Hayır. Sınavlar kendi yeteneğinizi göstermelidir' },
-              { en: 'Yes, for difficult questions only', tr: 'Evet, sadece zor sorularda' },
-              { en: 'Yes, with an AI Use Note', tr: 'Evet, YZ Kullanım Notu ile' },
-              { en: 'Yes, in the last ten minutes', tr: 'Evet, son on dakikada' }
+              { en: 'No; tests must show your own ability', tr: 'Hayır; sınavlar kendi yeteneğinizi göstermelidir' },
+              { en: 'Yes, but only for the hardest questions on the test', tr: 'Evet, ancak yalnızca testteki en zor sorularda' },
+              { en: 'Yes, if you add an AI Use Note', tr: 'Evet, bir YZ Kullanım Notu eklerseniz' },
+              { en: 'Yes, for spelling checks only', tr: 'Evet, sadece yazım denetiminde' }
             ],
             answer: 0
           },
           {
-            q: { en: 'What happens if you forget to declare your AI use?', tr: 'YZ kullanımınızı bildirmeyi unutursanız ne olur?' },
+            q: { en: 'You forgot to declare your AI use. What happens?', tr: 'YZ kullanımını bildirmeyi unuttunuz. Ne olur?' },
             options: [
-              { en: 'The work is not graded until it is declared', tr: 'Bildirilene kadar çalışma notlandırılmaz' },
-              { en: 'Nothing happens', tr: 'Hiçbir şey olmaz' },
-              { en: 'You automatically pass', tr: 'Otomatik olarak geçersiniz' },
-              { en: 'You get a higher grade', tr: 'Daha yüksek not alırsınız' }
+              { en: 'It is not graded until you declare it', tr: 'Siz bildirene kadar notlandırılmaz' },
+              { en: 'The grade simply drops by ten percent automatically', tr: 'Not otomatik olarak yüzde on oranında düşer' },
+              { en: 'Nothing about the grade changes', tr: 'Notla ilgili hiçbir şey değişmez' },
+              { en: 'The deadline is extended for you', tr: 'Teslim tarihi sizin için uzatılır' }
             ],
             answer: 0
           },
           {
-            q: { en: 'AI gives you an offensive or inappropriate answer. What should you do?', tr: 'YZ size uygunsuz veya saldırgan bir cevap verdi. Ne yapmalısınız?' },
+            q: { en: 'AI gives an offensive or inappropriate answer. You should...', tr: 'YZ uygunsuz veya saldırgan bir yanıt verdi. Şunu yapmalısınız...' },
             options: [
-              { en: 'Do not use it and inform your instructor immediately', tr: 'Kullanmayın ve hemen öğretim görevlisine bildirin' },
-              { en: 'Use it anyway if it is helpful', tr: 'Faydalıysa yine de kullanın' },
-              { en: 'Share it with your classmates', tr: 'Sınıf arkadaşlarınızla paylaşın' },
-              { en: 'Argue with the AI', tr: 'YZ ile tartışın' }
+              { en: 'not use it and tell your instructor', tr: 'kullanmamak ve öğretim görevlinize söylemek' },
+              { en: 'use it but soften the wording', tr: 'kullanmak ama ifadeyi yumuşatmak' },
+              { en: 'report it to the AI company', tr: 'YZ şirketine bildirmek' },
+              { en: 'share it so others can avoid it', tr: 'başkaları kaçınsın diye paylaşmak' }
             ],
             answer: 0
           },
           {
-            q: { en: 'In group work, how is each member\'s contribution marked in the shared AI Use Note?', tr: 'Grup çalışmasında her üyenin katkısı ortak YZ Kullanım Notu\'nda nasıl belirtilir?' },
+            q: { en: 'In group work, how is each member\'s contribution marked?', tr: 'Grup çalışmasında her üyenin katkısı nasıl belirtilir?' },
             options: [
-              { en: 'With their initials', tr: 'Baş harfleriyle' },
-              { en: 'With photographs', tr: 'Fotoğraflarla' },
-              { en: 'It is not marked at all', tr: 'Hiç belirtilmez' },
-              { en: 'Only the leader is named', tr: 'Sadece lider belirtilir' }
+              { en: 'With each member\'s initials', tr: 'Her üyenin baş harfleriyle' },
+              { en: 'With one signature for the group', tr: 'Grup için tek bir imzayla' },
+              { en: 'By word count per member', tr: 'Üye başına kelime sayısıyla' },
+              { en: 'The leader alone signs it', tr: 'Yalnızca lider imzalar' }
             ],
             answer: 0
           },
           {
-            q: { en: 'A group member cannot explain the AI-generated content in the work. What may happen?', tr: 'Bir grup üyesi çalışmadaki YZ üretimi içeriği açıklayamıyor. Ne olabilir?' },
+            q: { en: 'A member cannot explain the AI content in the work. What may happen?', tr: 'Bir üye çalışmadaki YZ içeriğini açıklayamıyor. Ne olabilir?' },
             options: [
               { en: 'The grade may be adjusted', tr: 'Not değiştirilebilir' },
-              { en: 'Nothing can happen', tr: 'Hiçbir şey olmaz' },
-              { en: 'The group gets a bonus', tr: 'Grup bonus alır' },
-              { en: 'Only the teacher is responsible', tr: 'Sadece öğretmen sorumludur' }
+              { en: 'The whole group fails automatically', tr: 'Tüm grup otomatik olarak kalır' },
+              { en: 'Nothing changes about the grade', tr: 'Notla ilgili hiçbir şey değişmez' },
+              { en: 'Only that member is praised', tr: 'Sadece o üye övülür' }
             ],
             answer: 0
           }
@@ -322,52 +323,52 @@
         ],
         quiz: [
           {
-            q: { en: 'What happens after a FIRST violation of the AI rules?', tr: 'YZ kurallarının İLK ihlalinden sonra ne olur?' },
+            q: { en: 'What is the outcome of a first violation?', tr: 'İlk ihlalin sonucu nedir?' },
             options: [
-              { en: 'The work is returned for revision or integrity review', tr: 'Çalışma revizyon veya dürüstlük incelemesi için iade edilir' },
-              { en: 'Immediate course failure', tr: 'Anında ders başarısızlığı' },
-              { en: 'Nothing at all', tr: 'Hiçbir şey olmaz' },
-              { en: 'A fine must be paid', tr: 'Para cezası ödenir' }
+              { en: 'The work is returned for revision or review', tr: 'Çalışma revizyon veya inceleme için iade edilir' },
+              { en: 'The student immediately fails the entire course', tr: 'Öğrenci anında tüm dersten kalmış sayılır' },
+              { en: 'A fine is added to tuition', tr: 'Öğrenim ücretine ceza eklenir' },
+              { en: 'The account is suspended for a week', tr: 'Hesap bir hafta askıya alınır' }
             ],
             answer: 0
           },
           {
-            q: { en: 'What is the consequence of a SECOND violation?', tr: 'İKİNCİ ihlalin sonucu nedir?' },
+            q: { en: 'What is the consequence of a second violation?', tr: 'İkinci ihlalin sonucu nedir?' },
             options: [
               { en: 'Grade 0 and a written warning', tr: '0 not ve yazılı uyarı' },
-              { en: 'Only a friendly reminder', tr: 'Sadece dostça bir hatırlatma' },
-              { en: 'Extra homework', tr: 'Ekstra ödev' },
-              { en: 'A two-day suspension', tr: 'İki gün uzaklaştırma' }
+              { en: 'A verbal reminder from the teacher', tr: 'Öğretmenden sözlü bir hatırlatma' },
+              { en: 'Extra practice tasks to complete', tr: 'Tamamlanacak ek pratik görevleri' },
+              { en: 'A one-week class suspension', tr: 'Bir haftalık sınıf uzaklaştırması' }
             ],
             answer: 0
           },
           {
             q: { en: 'Repeated use of AI in tests can lead to...', tr: 'Sınavlarda tekrarlanan YZ kullanımı şuna yol açabilir...' },
             options: [
-              { en: 'an integrity review, probation, or course failure', tr: 'dürüstlük incelemesi, uyarı veya ders başarısızlığı' },
-              { en: 'a better seat in class', tr: 'sınıfta daha iyi bir yer' },
-              { en: 'a make-up exam', tr: 'telafi sınavı' },
-              { en: 'no consequence after the first warning', tr: 'ilk uyarıdan sonra hiçbir yaptırım' }
+              { en: 'an integrity review, probation, or course failure', tr: 'dürüstlük incelemesi, şartlı durum veya ders başarısızlığı' },
+              { en: 'a simple make-up test scheduled the following week', tr: 'ertesi hafta için planlanan basit bir telafi sınavı' },
+              { en: 'losing ten percent of the grade', tr: 'notun yüzde onunu kaybetme' },
+              { en: 'no action after the first warning', tr: 'ilk uyarıdan sonra işlem yapılmaması' }
             ],
             answer: 0
           },
           {
-            q: { en: 'Where are serious or repeated cases of misuse referred?', tr: 'Ciddi veya tekrarlanan ihlaller nereye sevk edilir?' },
+            q: { en: 'Serious or repeated misuse is referred to...', tr: 'Ciddi veya tekrarlanan ihlal şuraya sevk edilir...' },
             options: [
-              { en: 'The University Academic Integrity and Discipline Board', tr: 'Üniversite Akademik Dürüstlük ve Disiplin Kurulu\'na' },
-              { en: 'The student council', tr: 'Öğrenci konseyine' },
-              { en: 'The cafeteria committee', tr: 'Yemekhane komisyonuna' },
-              { en: 'No one; they are ignored', tr: 'Hiçbir yere; görmezden gelinir' }
+              { en: 'the Academic Integrity and Discipline Board', tr: 'Akademik Dürüstlük ve Disiplin Kurulu\'na' },
+              { en: 'the elected student representative council only', tr: 'yalnızca seçilmiş öğrenci temsilcileri konseyine' },
+              { en: 'the teacher\'s department head only', tr: 'yalnızca öğretmenin bölüm başkanına' },
+              { en: 'the program\'s social committee', tr: 'programın sosyal komitesine' }
             ],
             answer: 0
           },
           {
-            q: { en: 'Under which policy is AI misuse handled?', tr: 'YZ\'nin yanlış kullanımı hangi politika kapsamında değerlendirilir?' },
+            q: { en: 'Which policy governs AI misuse?', tr: 'YZ\'nin yanlış kullanımını hangi politika yönetir?' },
             options: [
               { en: 'The Academic Integrity Policy', tr: 'Akademik Dürüstlük Politikası' },
-              { en: 'The library policy', tr: 'Kütüphane politikası' },
-              { en: 'The attendance policy', tr: 'Devam politikası' },
-              { en: 'The dress code', tr: 'Kıyafet yönetmeliği' }
+              { en: 'The student attendance policy', tr: 'Öğrenci devam politikası' },
+              { en: 'The library lending policy', tr: 'Kütüphane ödünç verme politikası' },
+              { en: 'The campus conduct timetable', tr: 'Kampüs davranış çizelgesi' }
             ],
             answer: 0
           }
@@ -380,102 +381,102 @@
       title: { en: 'Final Exam', tr: 'Final Sınavı' },
       questions: [
         {
-          q: { en: 'What is the purpose of AI use in the English Preparatory Program?', tr: 'İngilizce Hazırlık Programında YZ kullanımının amacı nedir?' },
+          q: { en: 'Maria used AI to brainstorm and to rephrase two sentences, then edited them. At submission she must...', tr: 'Maria, beyin fırtınası ve iki cümleyi yeniden ifade etmek için YZ kullandı, sonra düzenledi. Teslimde şunu yapmalı...' },
           options: [
-            { en: 'To support learning while upholding academic integrity, not to replace individual effort', tr: 'Akademik dürüstlüğü koruyarak öğrenmeyi desteklemek; bireysel çabanın yerine geçmek değil' },
-            { en: 'To write assignments faster', tr: 'Ödevleri daha hızlı yazmak' },
-            { en: 'To replace teachers', tr: 'Öğretmenlerin yerini almak' },
-            { en: 'To shorten lessons', tr: 'Dersleri kısaltmak' }
+            { en: 'highlight those parts and add an AI Use Note with the prompts', tr: 'o kısımları vurgulayıp istemlerle birlikte bir YZ Kullanım Notu eklemek' },
+            { en: 'quietly delete the two edited sentences before handing the work in', tr: 'çalışmayı teslim etmeden önce düzenlenen iki cümleyi sessizce silmek' },
+            { en: 'do nothing, because she edited them', tr: 'düzenlediği için hiçbir şey yapmamak' },
+            { en: 'mention it only if the teacher asks', tr: 'sadece öğretmen sorarsa belirtmek' }
           ],
           answer: 0
         },
         {
-          q: { en: 'Who carries the final responsibility for all submitted work?', tr: 'Teslim edilen tüm çalışmaların nihai sorumluluğu kime aittir?' },
+          q: { en: 'During a timed writing exam, a student quietly opens an AI app to check grammar. This is...', tr: 'Süreli bir yazma sınavında bir öğrenci dilbilgisi kontrolü için sessizce bir YZ uygulaması açıyor. Bu...' },
           options: [
-            { en: 'The student', tr: 'Öğrenciye' },
-            { en: 'The AI tool', tr: 'YZ aracına' },
-            { en: 'The instructor', tr: 'Öğretim görevlisine' },
-            { en: 'The university board', tr: 'Üniversite kuruluna' }
+            { en: 'a violation: grade 0 and a formal warning', tr: 'bir ihlaldir: 0 not ve resmi uyarı' },
+            { en: 'allowed, because it is only grammar', tr: 'serbesttir, çünkü sadece dilbilgisi' },
+            { en: 'allowed if declared after the exam', tr: 'sınavdan sonra bildirilirse serbesttir' },
+            { en: 'a small issue with no consequence', tr: 'yaptırımı olmayan küçük bir konudur' }
           ],
           answer: 0
         },
         {
-          q: { en: 'Which of these is NOT an allowed use of AI?', tr: 'Aşağıdakilerden hangisi YZ\'nin izin verilen bir kullanımı DEĞİLDİR?' },
+          q: { en: 'AI-assisted work turns out to contain a factual error. Who is responsible?', tr: 'YZ destekli bir çalışmada olgusal bir hata çıkıyor. Kim sorumludur?' },
           options: [
-            { en: 'Having AI write the final text you submit for grading', tr: 'Notlandırılacak nihai metni YZ\'ye yazdırmak' },
-            { en: 'Generating ideas', tr: 'Fikir üretmek' },
-            { en: 'Practising language skills', tr: 'Dil becerilerini geliştirmek' },
-            { en: 'Receiving grammar explanations', tr: 'Dilbilgisi açıklamaları almak' }
+            { en: 'The student who submitted it', tr: 'Onu teslim eden öğrenci' },
+            { en: 'The AI tool that produced it', tr: 'Onu üreten YZ aracı' },
+            { en: 'The teacher who set the task', tr: 'Görevi veren öğretmen' },
+            { en: 'No one, since AI made the error', tr: 'Hiç kimse, çünkü hatayı YZ yaptı' }
           ],
           answer: 0
         },
         {
-          q: { en: 'What must an AI Use Note include?', tr: 'Bir YZ Kullanım Notu neyi içermelidir?' },
+          q: { en: 'AI supplied the outline for a student\'s entire essay. Under the rules the work is...', tr: 'YZ, bir öğrencinin tüm makalesinin taslağını sağladı. Kurallara göre çalışma...' },
           options: [
-            { en: 'The original prompts used with the AI', tr: 'YZ ile kullanılan orijinal istemleri' },
-            { en: 'Your exam timetable', tr: 'Sınav programınızı' },
-            { en: 'Your student card number only', tr: 'Sadece öğrenci kart numaranızı' },
-            { en: 'The names of your classmates', tr: 'Sınıf arkadaşlarınızın isimlerini' }
+            { en: 'treated as AI-written and must be declared', tr: 'YZ ile yazılmış sayılır ve belirtilmelidir' },
+            { en: 'still fully the student\'s own work', tr: 'hâlâ tamamen öğrencinin kendi çalışmasıdır' },
+            { en: 'perfectly acceptable as long as you edit it afterwards', tr: 'sonradan düzenlediğiniz sürece tamamen kabul edilebilirdir' },
+            { en: 'only a problem if it is graded', tr: 'sadece notlandırılırsa sorundur' }
           ],
           answer: 0
         },
         {
-          q: { en: 'AI gave you more than two consecutive sentences that you used. The work is now considered...', tr: 'YZ\'nin verdiği art arda ikiden fazla cümleyi kullandınız. Çalışma artık şöyle sayılır...' },
+          q: { en: 'A group submits one essay. How should their AI use be recorded?', tr: 'Bir grup tek bir makale teslim ediyor. YZ kullanımları nasıl kaydedilmeli?' },
           options: [
-            { en: 'AI-written, and this must be declared in the AI Use Note', tr: 'YZ ile yazılmış; bu durum YZ Kullanım Notu\'nda belirtilmelidir' },
-            { en: 'Completely your own work', tr: 'Tamamen sizin çalışmanız' },
-            { en: 'Group work', tr: 'Grup çalışması' },
-            { en: 'Ungradeable forever', tr: 'Sonsuza dek notlandırılamaz' }
+            { en: 'One shared note, initialled per member', tr: 'Üye başına paraflanmış tek ortak not' },
+            { en: 'A separate private note from each member', tr: 'Her üyeden ayrı bir özel not' },
+            { en: 'Just the group leader signs one note', tr: 'Sadece grup lideri tek bir notu imzalar' },
+            { en: 'No note is needed for group work', tr: 'Grup çalışması için nota gerek yoktur' }
           ],
           answer: 0
         },
         {
-          q: { en: 'According to your promises, what comes FIRST?', tr: 'Sözlerinize göre ÖNCE ne gelir?' },
+          q: { en: 'A student deleted the AI chat before submitting. They should...', tr: 'Bir öğrenci teslimden önce YZ sohbetini sildi. Şunu yapmalı...' },
           options: [
-            { en: 'Writing my own draft; AI assistance comes afterwards', tr: 'Kendi taslağımı yazmak; YZ yardımı sonra gelir' },
-            { en: 'Asking AI for a full draft', tr: 'YZ\'den tam taslak istemek' },
-            { en: 'Copying the textbook', tr: 'Ders kitabını kopyalamak' },
-            { en: 'Writing the AI Use Note', tr: 'YZ Kullanım Notu\'nu yazmak' }
+            { en: 're-create the prompts and mark them "re-created"', tr: 'istemleri yeniden oluşturup "yeniden oluşturuldu" olarak işaretlemek' },
+            { en: 'submit with no prompts attached', tr: 'hiç istem eklemeden teslim etmek' },
+            { en: 'ask the AI to recover the old chat', tr: 'YZ\'den eski sohbeti kurtarmasını istemek' },
+            { en: 'leave the AI Use Note completely empty this one time', tr: 'bu sefer YZ Kullanım Notu\'nu tamamen boş bırakmak' }
           ],
           answer: 0
         },
         {
-          q: { en: 'Claiming AI\'s work as your own is...', tr: 'YZ\'nin çalışmasını kendinize mal etmek...' },
+          q: { en: 'Which use keeps a human properly in control of the work?', tr: 'Hangi kullanım, çalışmanın kontrolünü gereği gibi insanda tutar?' },
           options: [
-            { en: 'plagiarism', tr: 'intihaldir' },
-            { en: 'efficiency', tr: 'verimliliktir' },
-            { en: 'allowed once per term', tr: 'dönemde bir kez serbesttir' },
-            { en: 'only a problem in exams', tr: 'sadece sınavlarda sorundur' }
+            { en: 'AI explains a rule; the student writes the answer', tr: 'YZ bir kuralı açıklar; öğrenci cevabı yazar' },
+            { en: 'AI writes the whole answer; the student just submits it', tr: 'YZ tüm cevabı yazar; öğrenci yalnızca teslim eder' },
+            { en: 'AI takes the test; the student watches', tr: 'YZ sınava girer; öğrenci izler' },
+            { en: 'AI grades the work; the student accepts it', tr: 'YZ çalışmayı puanlar; öğrenci kabul eder' }
           ],
           answer: 0
         },
         {
-          q: { en: 'Using AI in a test results in...', tr: 'Sınavda YZ kullanmak şununla sonuçlanır...' },
+          q: { en: 'The main reason students must declare AI use is to protect...', tr: 'Öğrencilerin YZ kullanımını bildirmesinin asıl nedeni şunu korumaktır...' },
           options: [
-            { en: 'grade 0 and a formal warning', tr: '0 not ve resmi uyarı' },
-            { en: 'a retake next week', tr: 'gelecek hafta telafi' },
-            { en: 'half marks', tr: 'yarım puan' },
-            { en: 'no consequence', tr: 'hiçbir yaptırım yok' }
+            { en: 'transparency and academic integrity', tr: 'şeffaflık ve akademik dürüstlük' },
+            { en: 'the speed of their submissions', tr: 'teslimlerinin hızı' },
+            { en: 'the AI company\'s reputation', tr: 'YZ şirketinin itibarı' },
+            { en: 'their classmates\' privacy', tr: 'sınıf arkadaşlarının gizliliği' }
           ],
           answer: 0
         },
         {
-          q: { en: 'In group work with AI, every member must write a short...', tr: 'YZ ile grup çalışmasında her üye kısa bir ... yazmalıdır.' },
+          q: { en: 'It is a student\'s second AI violation. What is the expected outcome?', tr: 'Bir öğrencinin ikinci YZ ihlali. Beklenen sonuç nedir?' },
           options: [
-            { en: '"learning line" describing their use of AI', tr: 'YZ kullanımını açıklayan "öğrenme satırı"' },
-            { en: 'poem about teamwork', tr: 'takım çalışması hakkında şiir' },
-            { en: 'apology letter', tr: 'özür mektubu' },
-            { en: 'list of excuses', tr: 'bahane listesi' }
+            { en: 'Grade 0 and a written warning', tr: '0 not ve yazılı uyarı' },
+            { en: 'Only the work returned to revise', tr: 'Sadece çalışmanın düzeltmeye iade edilmesi' },
+            { en: 'Immediate referral to the discipline board', tr: 'Doğrudan disiplin kuruluna sevk' },
+            { en: 'A reminder with no grade change', tr: 'Not değişmeden bir hatırlatma' }
           ],
           answer: 0
         },
         {
-          q: { en: 'Serious or repeated misuse of AI is referred to...', tr: 'Ciddi veya tekrarlanan YZ ihlalleri nereye sevk edilir?' },
+          q: { en: 'Which statement best matches the spirit of these guidelines?', tr: 'Hangi ifade bu kuralların ruhuna en uygundur?' },
           options: [
-            { en: 'the University Academic Integrity and Discipline Board', tr: 'Üniversite Akademik Dürüstlük ve Disiplin Kurulu\'na' },
-            { en: 'the sports committee', tr: 'spor komitesine' },
-            { en: 'the canteen staff', tr: 'kantin personeline' },
-            { en: 'other students', tr: 'diğer öğrencilere' }
+            { en: 'AI assists my learning; the thinking stays mine', tr: 'YZ öğrenmeme yardım eder; düşünme bana aittir' },
+            { en: 'AI does the work; I check it looks right', tr: 'YZ işi yapar; ben doğru görünüyor mu bakarım' },
+            { en: 'AI is banned from every part of my studies', tr: 'YZ çalışmalarımın her kısmında yasaktır' },
+            { en: 'AI use is fine if nobody finds out', tr: 'Kimse öğrenmezse YZ kullanımı sorun değildir' }
           ],
           answer: 0
         }
@@ -491,8 +492,13 @@
         en: "For having successfully completed the {course} course and passed the final examination in the English Preparatory Programme's {year} academic year.",
         tr: "İngilizce Hazırlık Programı'nın {year} akademik yılında {course} kursunu başarıyla tamamlayıp final sınavını geçtiği için."
       },
-      signName: 'Alireza Shahin KABIRIASLIFAR',
-      signTitle: { en: 'AI Course Advisor', tr: 'YZ Kursu Danışmanı' }
+      // Official signatories printed across the bottom of the cert.
+      signatories: [
+        { name: 'Koray TUNÇ', title: { en: 'Head of Department', tr: 'Bölüm Başkanı' } },
+        { name: 'Zeynep Bilgehan CAN', title: { en: 'Assistant Head of Department · Academic', tr: 'Bölüm Başkan Yardımcısı · Akademik' } },
+        { name: 'Derya ÖZDEMİR', title: { en: 'Program Coordinator', tr: 'Program Koordinatörü' } },
+        { name: 'Alireza KABIRI', title: { en: 'EdTech and AI Coordinator', tr: 'Eğitim Teknolojileri ve Yapay Zekâ Koordinatörü' } }
+      ]
     }
   };
 })();

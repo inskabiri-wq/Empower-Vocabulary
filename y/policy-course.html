@@ -9,7 +9,7 @@
 <!-- Brand-wide reset first so page styles win conflicts. -->
 <link rel="stylesheet" href="css/brand.css">
 <link rel="stylesheet" href="css/fsmvu-loader.css">
-<link rel="stylesheet" href="student/css/policy-course.css?v=3">
+<link rel="stylesheet" href="student/css/policy-course.css?v=7">
 <script src="js/app-dialog.js"></script>
 </head>
 <body>
@@ -120,17 +120,14 @@
           <p class="pc-cert-statement" id="pcCertStatement"></p>
 
           <div class="pc-cert-bottom">
-            <div class="pc-cert-sign">
-              <div class="pc-cert-signname" id="pcCertSignName"></div>
-              <div class="pc-cert-signtitle" id="pcCertSignTitle"></div>
-            </div>
             <div class="pc-cert-sealwrap">
               <img src="/fsmvu-seal.png" alt="" class="pc-cert-sealimg">
             </div>
+            <div class="pc-cert-signrow" id="pcCertSignRow"></div>
             <div class="pc-cert-meta">
-              <div><span data-i18n="certId">Certificate ID</span>: <strong id="pcCertId"></strong></div>
-              <div><span data-i18n="certDate">Date</span>: <strong id="pcCertDate"></strong></div>
-              <div><span data-i18n="certScore">Final score</span>: <strong id="pcCertScore"></strong></div>
+              <span data-i18n="certId">Certificate ID</span>: <strong id="pcCertId"></strong>
+              &nbsp;·&nbsp; <span data-i18n="certDate">Date</span>: <strong id="pcCertDate"></strong>
+              &nbsp;·&nbsp; <span data-i18n="certScore">Final score</span>: <strong id="pcCertScore"></strong>
             </div>
           </div>
 
@@ -144,8 +141,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="student/js/policy-course-content.js?v=4"></script>
+<script src="student/js/policy-course-content.js?v=7"></script>
 <script src="student/js/course-target.js?v=2"></script>
-<script src="student/js/policy-course.js?v=4"></script>
+<script src="student/js/policy-course.js?v=7"></script>
 </body>
 </html>

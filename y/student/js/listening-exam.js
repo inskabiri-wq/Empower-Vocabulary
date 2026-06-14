@@ -598,6 +598,7 @@ function submitListeningExam() {
   const exam = currentExam;
   let totalCorrect = 0;
   let totalQuestions = 0;
+  const liItems = [];   // per-question detail for the teacher drill-down (QA #4)
 
   exam.sections.forEach((section) => {
     section.questions.forEach((q) => {
@@ -616,6 +617,12 @@ function submitListeningExam() {
         : userAnswer === q.answer;
 
       if (correct) totalCorrect++;
+      liItems.push({
+        q: (q.text || q.prompt || q.question || q.q || q.id || ''),
+        a: userAnswer,
+        correct: (q.answer == null ? '' : String(q.answer)),
+        ok: !!correct
+      });
 
       const qEl = document.querySelector(`.exam-q[data-id="${q.id}"]`);
       if (qEl) {
@@ -688,13 +695,13 @@ function submitListeningExam() {
   }
 
   // ── Track to Firebase ──
-  logListeningExamSession(totalCorrect, totalQuestions, pct);
+  logListeningExamSession(totalCorrect, totalQuestions, pct, liItems);
 
   resultsArea.scrollIntoView({ behavior: 'smooth' });
 }
 
 // ─── Firebase Session Logging ────────────────────────────────────────────────
-async function logListeningExamSession(correct, total, pct) {
+async function logListeningExamSession(correct, total, pct, items) {
   // Phase F: preview mode — teacher is just inspecting the exam,
   // don't pollute their session history or trigger XP / activity logs.
   if (window.__previewMode) {
@@ -724,6 +731,7 @@ async function logListeningExamSession(correct, total, pct) {
       correctAnswers: correct,
       totalQuestions: total,
       wordsLearned: [],
+      answers: { skill: 'listening', items: items || [] },   // per-question detail (QA #4)
       ...scope,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });

@@ -1167,6 +1167,21 @@
       // (see Phase B in DEPLOY.md). studentScopeFields() lives in
       // y/student/js/auth.js — exposed via window.
       const scope = (typeof studentScopeFields === 'function') ? studentScopeFields() : { studentClass:'', studentLevel:'', studentModule:'' };
+      // Per-question detail for the teacher answer drill-down (QA #4):
+      // flatten passages → sections → items into one uniform array.
+      const rdItems = [];
+      (result.perPassage || []).forEach(function (p) {
+        (p.sections || []).forEach(function (s) {
+          (s.items || []).forEach(function (it) {
+            rdItems.push({
+              q: it.label || it.itemId || '',
+              a: (it.userAns == null ? '' : String(it.userAns)),
+              correct: (it.correctAns == null ? '' : String(it.correctAns)),
+              ok: !!it.isRight
+            });
+          });
+        });
+      });
       await db.collection('sessions').add({
         userId:        auth.currentUser.uid,
         userName:      auth.currentUser.displayName || auth.currentUser.email || 'Student',
@@ -1186,6 +1201,7 @@
         autoSubmitted: !!viaTimer,                              // true if timer ran out
         tabSwitches:   state.tabSwitches || 0,                  // lockdown breach count
         wordsLearned:  [],
+        answers:       { skill: 'reading', items: rdItems },    // per-question detail (QA #4)
         ...scope,                                               // studentClass / studentLevel / studentModule
         createdAt:     firebase.firestore.FieldValue.serverTimestamp()
       });

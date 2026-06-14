@@ -254,6 +254,54 @@
       </table></div>`;
   }
 
+  // ── Fact-check a certificate (by code + name) ──────────────
+  // Tolerant name compare: trim, collapse spaces, Turkish-aware lower.
+  function normName(s) { return String(s || '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('tr'); }
+
+  async function verifyCertificate() {
+    const out = $('pcVerifyResult');
+    if (!out) return;
+    const code = String(($('pcVerifyCode') || {}).value || '').trim().toUpperCase();
+    const typedName = String(($('pcVerifyName') || {}).value || '').trim();
+    if (!code) { out.innerHTML = '<span style="color:#fbbf24;">Enter the certificate code printed on the document.</span>'; return; }
+    out.innerHTML = '<span style="color:var(--text-muted,#94a3b8);">Checking...</span>';
+
+    let rec = null;
+    try {
+      const snap = await db.collection('certificates').doc(code).get();
+      if (snap.exists) rec = snap.data();
+    } catch (e) { console.warn('cert verify get', e); }
+    // Fallback: scan courseProgress for certs issued before the
+    // /certificates collection existed (or if that write failed).
+    if (!rec) {
+      try {
+        const qs = await db.collection('courseProgress').limit(500).get();
+        qs.forEach(d => {
+          if (rec) return;
+          const p = d.data();
+          if (p.certificate && String(p.certificate.certId || '').toUpperCase() === code) {
+            rec = { name: p.certificate.name || p.userName, score: p.certificate.score,
+                    total: p.certificate.total, earnedAt: p.certificate.earnedAt,
+                    courseName: 'AI Use Guidelines' };
+          }
+        });
+      } catch (e) { console.warn('cert verify scan', e); }
+    }
+
+    if (!rec) {
+      out.innerHTML = '<div style="padding:10px 12px; border-radius:8px; background:rgba(248,113,113,0.12); color:#f87171; font-weight:700;">✗ No certificate found with code <strong>' + esc(code) + '</strong>. It was not issued here.</div>';
+      return;
+    }
+    const when = (rec.earnedAt && typeof rec.earnedAt.toDate === 'function') ? rec.earnedAt.toDate().toLocaleDateString() : '';
+    const details = esc(rec.name || '?') + ' · ' + esc(rec.courseName || 'AI Use Guidelines') +
+      (when ? ' · ' + esc(when) : '') + (rec.score != null ? ' · ' + rec.score + '/' + rec.total : '');
+    if (!typedName || normName(typedName) === normName(rec.name)) {
+      out.innerHTML = '<div style="padding:10px 12px; border-radius:8px; background:rgba(16,185,129,0.12); color:#34d399; font-weight:700;">✓ Genuine certificate.<div style="font-weight:600; color:var(--text-primary,#e6edf3); margin-top:4px;">' + details + '</div></div>';
+    } else {
+      out.innerHTML = '<div style="padding:10px 12px; border-radius:8px; background:rgba(251,191,36,0.12); color:#fbbf24; font-weight:700;">⚠ This code is real, but it was issued to a different name. The name on the document may have been altered.<div style="font-weight:600; color:var(--text-primary,#e6edf3); margin-top:4px;">On record: ' + details + '</div><div style="margin-top:2px; color:var(--text-muted,#94a3b8);">You typed: ' + esc(typedName) + '</div></div>';
+    }
+  }
+
   // ── Boot ───────────────────────────────────────────────────
   function init() {
     if (typeof db === 'undefined' || typeof auth === 'undefined') { setTimeout(init, 400); return; }
@@ -262,6 +310,12 @@
     if (!tBtn || !cBtn) return;
     tBtn.addEventListener('click', toggleActive);
     cBtn.addEventListener('click', loadCompletions);
+    const vBtn = $('pcVerifyBtn');
+    if (vBtn) vBtn.addEventListener('click', verifyCertificate);
+    const vCode = $('pcVerifyCode');
+    if (vCode) vCode.addEventListener('keydown', e => { if (e.key === 'Enter') verifyCertificate(); });
+    const vName = $('pcVerifyName');
+    if (vName) vName.addEventListener('keydown', e => { if (e.key === 'Enter') verifyCertificate(); });
     const saveBtn = $('caSaveBtn');
     if (saveBtn) saveBtn.addEventListener('click', saveActivation);
     const waitAuth = () => {
