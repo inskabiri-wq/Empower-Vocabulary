@@ -72,7 +72,11 @@
     }
     const btn = $('pcAdminToggleBtn');
     if (btn) {
-      btn.style.display = '';
+      // Activation / deactivation is admin-only. Teachers still see the status
+      // pill and their class's completions, but not the toggle. (Firestore
+      // rules also reject non-admin writes to settings/policyCourse.)
+      var admin = (typeof isAdmin === 'function') && isAdmin();
+      btn.style.display = admin ? '' : 'none';
       btn.textContent = (cfg && cfg.active) ? 'Deactivate' : 'Activate';
     }
   }
@@ -208,11 +212,18 @@
     let rows = [];
     try {
       const snap = await db.collection('courseProgress').limit(500).get();
-      snap.forEach(d => rows.push(d.data()));
+      snap.forEach(d => { const r = d.data(); r._uid = d.id; rows.push(r); });
     } catch (e) {
       console.error('courseProgress load', e);
       body.innerHTML = '<p style="color:#f87171; padding:10px 2px;">Could not load completions: ' + esc(e.message) + '</p>';
       return;
+    }
+    // Scope to the teacher's own students. Admin sees everyone; a teacher only
+    // sees completions for students in their (already class-scoped) roster, so
+    // the summary counts and the table reflect just their class.
+    if (!(typeof isAdmin === 'function' && isAdmin())) {
+      const mine = new Set(studentList().map(s => s.id));
+      rows = rows.filter(r => mine.has(r._uid));
     }
     const totalMods = COURSE.modules.length;
     rows.sort((a, b) => String(a.userName || '').localeCompare(String(b.userName || '')));

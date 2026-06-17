@@ -719,8 +719,15 @@ body {
 @media (max-width: 480px) {
   body {
     padding: 12px;
+    /* The Register and Google "complete profile" forms are taller than a phone
+       viewport. The base `overflow:hidden` + vertical centering hid the bottom
+       fields and the Complete Registration button with no way to scroll. Pin to
+       the top and allow vertical scrolling so the whole form is reachable.
+       (overflow-x stays hidden via the html,body rule.) */
+    align-items: flex-start;
+    overflow-y: auto;
   }
-  
+
   .login-card {
     padding: 28px 20px;
     border-radius: 20px;

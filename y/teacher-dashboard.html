@@ -263,6 +263,23 @@
    Scoped under .av-root which lives inside #tab-admin > #teachersList.
    No selectors leak outside the admin tab.
    ============================================================ */
+/* The Admin tab cards were GitHub-gray while every other tab uses the BLUE
+   brand palette (styles.css --bg-*). Re-point the t2 tokens to the brand
+   colors, scoped to #tab-admin, so the Teachers panel AND the Feature /
+   Content / Organization sub-panels (which read these tokens) turn blue and
+   match the Overview and Students cards. Accents (blue/green) already align. */
+#tab-admin {
+  --t2-bg:          #0a0f1a;
+  --t2-surface:     #152035;
+  --t2-surface2:    #1c2a42;
+  --t2-surface3:    #22304d;
+  --t2-border:      rgba(59,130,246,0.20);
+  --t2-border-soft: rgba(59,130,246,0.12);
+  --t2-text:        #f8fafc;
+  --t2-text-muted:  #94a3b8;
+  --t2-text-dim:    #64748b;
+}
+
 .av-root {
   /* --av-* are aliases of the dashboard v2 palette so the Admin tab
      stays in sync with the Overview tab. The single source of truth
@@ -288,7 +305,7 @@
   gap: 16px;
   max-width: 1380px;
   margin: 0 auto;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
   color: var(--av-text);
 }
 
@@ -1126,6 +1143,12 @@
       <div class="t2-sidebar-spacer"></div>
 
       <div class="t2-sidebar-section-lbl">Account</div>
+      <!-- Classroom widgets launcher — sits above Empower Lab. Clicking it
+           floats a small popover (Class Timer, more later). Wired by
+           js/widgets-tray.js, which binds to this #wtSidebarBtn. -->
+      <button type="button" class="t2-nav-item" id="wtSidebarBtn" title="Classroom widgets">
+        <span class="ico" style="font-size:18px;line-height:1;">🧰</span><span class="label">Widgets</span>
+      </button>
       <!-- Was "Word Lab" → student-dashboard.html#vocabulary, which deep-linked
            teachers into the Vocabulary screen and felt like a dead-end. Now
            points at the hub root so teachers land on the full skill picker
@@ -1136,7 +1159,8 @@
       <a class="t2-nav-item" href="classroom-teacher.html" style="text-decoration:none">
         <span class="ico" data-icon="gamepad"></span><span class="label">Classroom</span>
       </a>
-      <button type="button" class="t2-nav-item" onclick="exportToCSV()">
+      <!-- Export Report is admin-only (revealed in config.js isAdmin() block). -->
+      <button type="button" class="t2-nav-item" id="exportReportNav" style="display:none" onclick="exportToCSV()">
         <span class="ico" data-icon="download"></span><span class="label">Export Report</span>
       </button>
       <button type="button" class="t2-nav-item" onclick="openLogoutModal()">
@@ -1192,7 +1216,7 @@
           <div class="more-menu-dropdown" id="moreMenuDropdown">
             <a href="student-dashboard.html" class="more-menu-item">🧪 Empower Lab</a>
             <a href="classroom-teacher.html" class="more-menu-item">🎮 Classroom Mode</a>
-            <button class="more-menu-item" onclick="exportToCSV(); closeMoreMenu()">📥 Export Report</button>
+            <button class="more-menu-item" id="exportReportMore" style="display:none" onclick="exportToCSV(); closeMoreMenu()">📥 Export Report</button>
           </div>
         </div>
         <button class="btn btn-secondary" onclick="openLogoutModal()">🚪 Logout</button>
@@ -1644,6 +1668,50 @@
       <span id="totalTeachers" hidden>0</span>
       <span id="totalClasses"  hidden>0</span>
 
+      <!-- ════ Admin sub-tabs ════ De-crowd the Admin tab: only one of
+           Teachers / Features / Content / Organizations shows at a time.
+           Toggles the existing panels by id, so each panel's own JS
+           (admin.js, feature-activation.js, content-controls.js,
+           org-admin.js) is untouched. -->
+      <style>
+        #adminSubNav { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px; }
+        #adminSubNav .admin-subtab { cursor:pointer; font-family:inherit; font-weight:800; font-size:13px;
+          padding:8px 16px; border-radius:999px; border:1px solid var(--t2-border,#30363d);
+          background:transparent; color:var(--t2-text-muted,#7d8590); }
+        #adminSubNav .admin-subtab:hover { color:var(--t2-text,#e6edf3); border-color:var(--t2-text-muted,#7d8590); }
+        #adminSubNav .admin-subtab.active { color:#fff; background:#2563eb; border-color:#2563eb; }
+        /* When shown alone, drop the big stacking top-margins. */
+        #tab-admin.adminsub-on #featureActivationPanel,
+        #tab-admin.adminsub-on #contentControlsPanel,
+        #tab-admin.adminsub-on #orgAdminPanel { margin-top:0 !important; }
+      </style>
+      <div id="adminSubNav">
+        <button type="button" class="admin-subtab active" data-target="teachersList">👩‍🏫 Teachers</button>
+        <button type="button" class="admin-subtab" data-target="featureActivationPanel">🎛️ Features</button>
+        <button type="button" class="admin-subtab" data-target="contentControlsPanel">🗂️ Content</button>
+        <button type="button" class="admin-subtab" data-target="orgAdminPanel">🏢 Organizations</button>
+      </div>
+      <script>
+        (function () {
+          var IDS = ['teachersList', 'featureActivationPanel', 'contentControlsPanel', 'orgAdminPanel'];
+          function show(target) {
+            IDS.forEach(function (id) { var el = document.getElementById(id); if (el) el.style.display = (id === target) ? '' : 'none'; });
+            document.querySelectorAll('#adminSubNav .admin-subtab').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-target') === target); });
+          }
+          function init() {
+            var nav = document.getElementById('adminSubNav'), tab = document.getElementById('tab-admin');
+            if (!nav) return;
+            if (tab) tab.classList.add('adminsub-on');
+            nav.addEventListener('click', function (e) {
+              var b = e.target.closest ? e.target.closest('.admin-subtab') : null;
+              if (b) show(b.getAttribute('data-target'));
+            });
+            show('teachersList');
+          }
+          if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+        })();
+      </script>
+
       <!-- Admin section v2 mounts here; see teacher/js/admin.js -->
       <div id="teachersList"></div>
 
@@ -1654,12 +1722,40 @@
            Stored in settings/featureToggles (missing key = active).
            Styled with the admin v2 (t2) tokens so it matches the page.
            Logic: teacher/js/feature-activation.js. -->
-      <div id="featureActivationPanel" style="max-width: 1380px; margin: 26px auto 0; font-family: 'Segoe UI', system-ui, sans-serif;">
-        <h2 style="font-size: 17px; font-weight: 800; letter-spacing: -0.4px; color: var(--t2-text, #e6edf3); margin: 0;">🎛️ Feature Activation</h2>
+      <div id="featureActivationPanel" style="max-width: 1380px; margin: 26px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;">
+        <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">🎛️ Feature Activation</h2>
         <p style="font-size: 12px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 14px;">
           Switch student hub features on or off for this organization. Deactivated tiles stay visible to students as "Not activated"; nothing is deleted and progress is kept.
         </p>
         <div id="featureToggleList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(235px, 1fr)); gap: 14px;">
+          <p style="color: var(--t2-text-muted, #7d8590); font-size: 12px;">Loading...</p>
+        </div>
+      </div>
+
+      <!-- ════ Content controls (admin only) ════
+           Per-item "hide from practice" for reading + listening exams
+           (assignment-only material), and the grammar question count.
+           Stored in settings/contentControls. Logic: teacher/js/content-controls.js. -->
+      <div id="contentControlsPanel" style="max-width: 1380px; margin: 34px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;">
+        <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">🗂️ Content controls</h2>
+        <p style="font-size: 12px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 14px;">
+          Hide specific reading exams, listening exams or grammar topics from free practice so students only meet them in a graded assignment. Browse by level using the tabs. Nothing is deleted, and assignments always work even when content is hidden from practice.
+        </p>
+        <div id="contentControlsBody">
+          <p style="color: var(--t2-text-muted, #7d8590); font-size: 12px;">Loading...</p>
+        </div>
+      </div>
+
+      <!-- ════ Organizations (admin only) ════
+           Which email domains may register, and which may host teacher
+           accounts. Read by the sign-up gate (org-registry.js). Stored in
+           settings/organizations. Logic: teacher/js/org-admin.js. -->
+      <div id="orgAdminPanel" style="max-width: 1380px; margin: 34px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;">
+        <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">🏢 Organizations</h2>
+        <p style="font-size: 12px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 14px;">
+          Control which email domains can register, and which can host teacher accounts. The sign-up page checks this list. FSM domains stay allowed even if removed (safety fallback).
+        </p>
+        <div id="orgAdminBody">
           <p style="color: var(--t2-text-muted, #7d8590); font-size: 12px;">Loading...</p>
         </div>
       </div>
@@ -2132,6 +2228,21 @@
       <div id="grammarTopicsBox" style="border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; max-height: 360px; overflow-y: auto;">
         <p style="color: var(--text-muted); font-size: 0.9em; margin: 0;">Pick a level first.</p>
       </div>
+    </div>
+
+    <div class="assignment-form-group">
+      <label>Questions per drill
+        <span style="font-weight: normal; color: var(--text-muted); font-size: 0.85em;">(leave on Default to use the organization setting)</span>
+      </label>
+      <select id="grammarQuestionCount" style="width: 100%;">
+        <option value="">Default (organization setting)</option>
+        <option value="5">5 questions</option>
+        <option value="8">8 questions</option>
+        <option value="10">10 questions</option>
+        <option value="12">12 questions</option>
+        <option value="15">15 questions</option>
+        <option value="20">20 questions</option>
+      </select>
     </div>
 
     <div class="assignment-form-row">
@@ -2626,8 +2737,9 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="teacher/js/confusing-pairs.js"></script>
 <!-- Phase H - dynamic email-domain authorization. Must load BEFORE
      admin.js so the live /settings/organizations snapshot is already
-     streaming when that module renders. (Admin UI for editing this list
-     was removed; manage allowed domains in firestore.rules directly.) -->
+     streaming when that module renders. The admin UI for editing this
+     list lives in the Admin tab (#orgAdminPanel, teacher/js/org-admin.js)
+     and writes settings/organizations. -->
 <script src="index/js/org-registry.js"></script>
 <script src="teacher/js/admin.js"></script>
 <!-- Skill registry MUST load before teacher-assignments.js so the
@@ -2656,8 +2768,10 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="student/js/skills/grammar-content.js?v=10"></script>
 <!-- Policy mini course: content (module count for the panel) + teacher admin panel. -->
 <script src="student/js/policy-course-content.js?v=7"></script>
-<script src="teacher/js/policy-course-admin.js?v=7"></script>
+<script src="teacher/js/policy-course-admin.js?v=9"></script>
 <script src="teacher/js/feature-activation.js?v=2"></script>
+<script src="teacher/js/content-controls.js?v=3"></script>
+<script src="teacher/js/org-admin.js?v=1"></script>
 <script src="assignments/js/grammar-form.js"></script>
 <!-- Writing feedback v2: comment bank (data) + annotation engine.
      Must load BEFORE writing-submissions-view.js so the grading view
@@ -2717,5 +2831,8 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script src="/pwa-register.js"></script>
+<script>window.CLASS_TIMER_NO_FAB = true;</script>
+<script src="js/classroom-timer.js?v=3"></script>
+<script src="js/widgets-tray.js?v=2"></script>
 </body>
 </html>

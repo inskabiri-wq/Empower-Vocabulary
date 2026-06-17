@@ -25,6 +25,15 @@
   var THRESHOLD = 60;
   var PROG_KEY  = 'gr_prog_v1';
 
+  // Cross-device progress, read from the student's Firestore sessions (the same
+  // place the grammar games already write to and the teacher dashboard reads).
+  // Grammar used to track the map from localStorage ONLY, so the Quest Board
+  // "caught nothing" when the play lived in Firestore / on another device. We
+  // now load it once and MERGE with localStorage. Keyed by level|u<unit>|game.
+  var grRemote = null;   // { 'A2|u3|choice': {best, done}, ... }
+  var grStats  = null;   // overall { accuracy, best, challengesDone, totalQ, games }
+  var grLoaded = false, grLoading = false;
+
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function body() { return document.getElementById('grammarBody'); }
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -39,18 +48,73 @@
   function loadProg() { try { return JSON.parse(localStorage.getItem(PROG_KEY) || '{}'); } catch (_) { return {}; } }
   function saveProg(p) { try { localStorage.setItem(PROG_KEY, JSON.stringify(p)); } catch (_) {} }
   function pkey(level, unit, game) { return level + '|u' + unit + '|' + game; }
-  function getProg(level, unit, game) { return loadProg()[pkey(level, unit, game)] || { best: 0, done: false }; }
+  // Merge localStorage (this device) with the Firestore-backed remote cache.
+  function getProg(level, unit, game) {
+    var k = pkey(level, unit, game);
+    var local = loadProg()[k] || { best: 0, done: false };
+    var remote = (grRemote && grRemote[k]) || { best: 0, done: false };
+    return { best: Math.max(local.best || 0, remote.best || 0), done: !!(local.done || remote.done) };
+  }
   function recordProg(level, unit, game, pct) {
     var p = loadProg(), k = pkey(level, unit, game), prev = p[k] || { best: 0, done: false };
     p[k] = { best: Math.max(prev.best, pct), done: prev.done || pct >= THRESHOLD };
     saveProg(p);
+    // Mirror into the in-memory remote cache so the map + header react instantly
+    // (exact figures refresh from Firestore on the next load).
+    if (grRemote) {
+      var rprev = grRemote[k] || { best: 0, done: false }, wasDone = rprev.done;
+      grRemote[k] = { best: Math.max(rprev.best || 0, pct), done: rprev.done || pct >= THRESHOLD };
+      if (grStats) {
+        grStats.best = Math.max(grStats.best || 0, pct);
+        if (!wasDone && pct >= THRESHOLD) grStats.challengesDone = (grStats.challengesDone || 0) + 1;
+      }
+    }
+  }
+
+  // Build the remote cache + overall stats from a list of session docs.
+  function buildRemote(list) {
+    var remote = {}, accSum = 0, accCnt = 0, best = 0, doneCh = {}, totalQ = 0, games = 0;
+    (list || []).forEach(function (s) {
+      var act = String(s.activity || '');
+      if (s.skill !== 'grammar' && act.indexOf('grammar-') !== 0) return;
+      var game = act.indexOf('grammar-') === 0 ? act.slice(8) : (s.game || '');
+      var lvl = s.level || '', unit = (s.unit == null ? 'all' : String(s.unit)), pct = Number(s.percentage || 0);
+      games++; accSum += pct; accCnt++; if (pct > best) best = pct;
+      totalQ += Number(s.totalQuestions || s.total || 0);
+      var k = pkey(lvl, unit, game), prev = remote[k] || { best: 0, done: false };
+      remote[k] = { best: Math.max(prev.best, pct), done: prev.done || pct >= THRESHOLD };
+      if (pct >= THRESHOLD) doneCh[k] = true;
+    });
+    grRemote = remote;
+    grStats = { accuracy: accCnt ? Math.round(accSum / accCnt) : 0, best: best,
+      challengesDone: Object.keys(doneCh).length, totalQ: totalQ, games: games };
+    grLoaded = true;
+  }
+
+  // Load grammar sessions from Firestore once, then run `after` (re-render).
+  function ensureGrammarProgress(after) {
+    if (grLoaded) { if (after) after(); return; }
+    if (grLoading) return;   // a load is already in flight; its callback re-renders
+    grLoading = true;
+    function finish() { grLoading = false; if (after) after(); }
+    try {
+      if (typeof auth === 'undefined' || !auth.currentUser || typeof db === 'undefined') { buildRemote([]); finish(); return; }
+      db.collection('sessions').where('userId', '==', auth.currentUser.uid).get()
+        .then(function (snap) { buildRemote(snap.docs.map(function (d) { return d.data(); })); })
+        .catch(function () { buildRemote([]); })
+        .then(finish);
+    } catch (e) { buildRemote([]); finish(); }
   }
 
   // Topics in a (level, unit), optionally limited to the assignment's topics.
   function unitTopics(level, unit) {
     var asg = state.assignment;
     return (DATA.byLevel[level] || []).filter(function (t) {
-      return unitOf(t) === unit && (!asg || asg.topicIds.indexOf(t.id) !== -1);
+      // In free practice, drop topics an admin hid (Content controls). In an
+      // assignment we use the assigned topic list, so a hidden-but-assigned
+      // topic still appears.
+      var hiddenInPractice = !asg && typeof window.isPracticeHidden === 'function' && window.isPracticeHidden('grammar', t.id);
+      return unitOf(t) === unit && (!asg || asg.topicIds.indexOf(t.id) !== -1) && !hiddenInPractice;
     });
   }
   function poolFor(level, unit, game) {
@@ -143,7 +207,14 @@
       '</div>';
     }).join('');
 
-    return { cards: cards, units: units, gamesDone: gamesDone, gamesTotal: gamesTotal, totalQ: totalQ, mastered: mastered, best: best, accuracy: accCount ? Math.round(accSum / accCount) : 0 };
+    // Prefer the Firestore-backed aggregate (grStats) for the headline numbers
+    // so they reflect ALL grammar play (including "all units" sessions), not
+    // just the per-unit cards. Falls back to the per-unit loop when no remote.
+    var localBest = best, localAcc = accCount ? Math.round(accSum / accCount) : 0;
+    return { cards: cards, units: units, gamesDone: gamesDone, gamesTotal: gamesTotal, totalQ: totalQ, mastered: mastered,
+      best: Math.max(localBest, (grStats && grStats.best) || 0),
+      accuracy: (grStats && grStats.games) ? grStats.accuracy : localAcc,
+      challengesDone: (grStats && grStats.games) ? grStats.challengesDone : gamesDone };
   }
 
   // ── Menu: vocab layout (games in the centre; level/unit + map on the right) ──
@@ -151,6 +222,9 @@
     var b = body(); if (!b) return;
     syncGrammarHeader();
     state.view = 'menu';
+    // First view: pull cross-device progress from Firestore, then re-render so
+    // the donuts + headline stats reflect real play (mirrors the vocab map).
+    if (!grLoaded && !grLoading) ensureGrammarProgress(function () { if (state.view === 'menu') renderMenu(); });
     var asg = state.assignment;
     var level = asg ? asg.level : state.level;
     var info = buildUnitCards(level);
@@ -190,7 +264,7 @@
     var stats = '<div class="gr-stats">' +
       statCard('best', GR_SVG.trophy, info.mastered, 'Mastered') + statCard('streak', GR_SVG.star, info.best + '%', 'Best') +
       statCard('accuracy', GR_SVG.target, info.accuracy + '%', 'Accuracy') + statCard('words', GR_SVG.book, info.totalQ, 'Questions') +
-      statCard('sessions', GR_SVG.pad, info.gamesDone + '/' + info.gamesTotal, 'Games') + '</div>';
+      statCard('sessions', GR_SVG.pad, info.challengesDone, 'Challenges') + '</div>';
 
     var unitLabel = state.selectedUnit === 'all' ? 'all units' : ('Unit ' + state.selectedUnit);
     var unitDesc;
@@ -243,7 +317,12 @@
     var pool = poolFor(level, unit, game);
     if (!pool.length) { if (typeof AppDialog !== 'undefined') AppDialog.alert('This unit has no items for that game yet.'); return; }
     state.level = level; state.unit = unit; state.label = (unit === 'all') ? (level + ' · all units') : ('Unit ' + unit); state.game = game;
-    state.pool = shuffle(pool).slice(0, 12); state.idx = 0; state.score = 0; state.answered = false; state.answers = []; state.view = 'game';
+    // Questions per drill: an assignment may override; else the admin's
+    // global setting (Content controls); else 12. (content-controls-student.js)
+    var qCount = (state.assignment && state.assignment.questionCount > 0)
+      ? state.assignment.questionCount
+      : ((typeof window.grammarQuestionCount === 'function') ? window.grammarQuestionCount(12) : 12);
+    state.pool = shuffle(pool).slice(0, qCount); state.idx = 0; state.score = 0; state.answered = false; state.answers = []; state.view = 'game';
     renderQ();
   }
 
@@ -445,7 +524,8 @@
     var allIds = (DATA.byLevel[lvl] || []).map(function (t) { return t.id; });
     var ids = (Array.isArray(assignment.topics) && assignment.topics.length) ? assignment.topics.filter(function (id) { return allIds.indexOf(id) !== -1; }) : allIds;
     if (!ids.length) ids = allIds;
-    state.assignment = { id: assignment.id, title: assignment.title, level: lvl, topicIds: ids, _recorded: false };
+    var qc = (typeof assignment.questionCount === 'number' && assignment.questionCount > 0) ? assignment.questionCount : null;
+    state.assignment = { id: assignment.id, title: assignment.title, level: lvl, topicIds: ids, questionCount: qc, _recorded: false };
     state.level = lvl; state.view = 'menu'; state.game = null; state.unit = null; state.pool = []; state.idx = 0; state.score = 0; state.answered = false;
     if (typeof showScreen === 'function') showScreen('grammarScreen');
     renderMenu();

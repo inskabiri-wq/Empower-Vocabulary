@@ -158,6 +158,7 @@
     document.getElementById('grammarTitle').value = '';
     document.getElementById('grammarTargetType').value = 'class';
     document.getElementById('grammarDeadline').value = '';
+    var grQc = document.getElementById('grammarQuestionCount'); if (grQc) grQc.value = '';
     document.getElementById('grammarModalTitle').innerHTML = '✏️ New Grammar Assignment';
 
     if (typeof applyRoleScopeToTargetDropdown === 'function') {
@@ -244,9 +245,14 @@
       saveBtn.classList.add('saving');
     }
 
+    // Questions per drill: '' (Default) -> null -> student uses the admin's
+    // global grammar count; a number overrides it for this assignment.
+    const qcEl = document.getElementById('grammarQuestionCount');
+    const questionCount = (qcEl && qcEl.value) ? parseInt(qcEl.value, 10) : null;
+
     const data = {
       title, skill: 'grammar',
-      level, topics, topicTitles,
+      level, topics, topicTitles, questionCount,
       targetType, targetClass, targetLevel, targetModule, targetStudents,
       deadline: deadlineDate,
       teacherId: auth.currentUser.uid,
@@ -295,6 +301,8 @@
       const d = a.deadline.toDate ? a.deadline.toDate() : new Date(a.deadline);
       document.getElementById('grammarDeadline').value = d.toISOString().split('T')[0];
     }
+    var grQc = document.getElementById('grammarQuestionCount');
+    if (grQc) grQc.value = (typeof a.questionCount === 'number' && a.questionCount > 0) ? String(a.questionCount) : '';
     window.onGrammarTargetTypeChange();
     if (a.targetType === 'class' && a.targetClass) {
       document.getElementById('grammarTargetClass').value = a.targetClass;

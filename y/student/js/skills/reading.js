@@ -66,7 +66,10 @@
     if (!list) return;
     list.innerHTML = '';
 
-    const idx = (window.READINGS_INDEX && window.READINGS_INDEX[activeLevel]) || [];
+    // Hide any exams an admin marked "assignment-only" in Content controls
+    // (still launchable from an assignment via openReadingExam by id).
+    const idx = ((window.READINGS_INDEX && window.READINGS_INDEX[activeLevel]) || [])
+      .filter(meta => !(typeof window.isPracticeHidden === 'function' && window.isPracticeHidden('reading', meta.id)));
     if (!idx.length) {
       list.innerHTML = `
         <div class="rd-exam-empty">
@@ -146,6 +149,9 @@
   window.renderReadingScreen = renderReadingScreen;
 
   document.addEventListener('DOMContentLoaded', renderReadingScreen);
+  // Re-render once the admin's content controls load (async), so any
+  // assignment-only exams drop out of the practice list.
+  document.addEventListener('content-controls-ready', renderReadingScreen);
 
   // Re-render whenever the user navigates into the Reading screen,
   // so the exam index reflects any READINGS_INDEX updates and the

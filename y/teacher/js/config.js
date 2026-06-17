@@ -275,6 +275,10 @@ async function loadDashboard() {
       if (t2Admin) t2Admin.style.display = '';
       const logsSection = document.getElementById('activityLogsSection');
       if (logsSection) logsSection.style.display = 'block';
+      // Export Report is admin-only: reveal the (default-hidden) export buttons.
+      ['exportReportNav', 'exportReportMore'].forEach(function (id) {
+        var el = document.getElementById(id); if (el) el.style.display = '';
+      });
       if (typeof ActivityAdmin !== 'undefined' && typeof ActivityAdmin.init === 'function') {
         ActivityAdmin.init();
       }

@@ -287,9 +287,17 @@ function exportToCSV() {
     'Class', 
     'Module', 
     'Academic Year',
-    'Total Sessions', 
+    'Total Sessions',
     'Total Words Practiced',
     'Average Score (%)',
+    // Per-skill breakdown so grammar (and every other skill) shows up, not just
+    // the lumped totals. Two columns per skill: session count + average score.
+    'Vocabulary Sessions', 'Vocabulary Avg (%)',
+    'Reading Sessions', 'Reading Avg (%)',
+    'Listening Sessions', 'Listening Avg (%)',
+    'Writing Sessions', 'Writing Avg (%)',
+    'Grammar Sessions', 'Grammar Avg (%)',
+    'Speaking Sessions', 'Speaking Avg (%)',
     'Last Active',
     'Status',
     'Days Since Last Activity'
@@ -308,10 +316,28 @@ function exportToCSV() {
     });
     const totalWords = uniqueWords.size;
     
-    const avgScore = totalSessions > 0 
+    const avgScore = totalSessions > 0
       ? Math.round(studentSessions.reduce((sum, sess) => sum + (sess.percentage || 0), 0) / totalSessions)
       : 0;
-    
+
+    // Per-skill rollup (sessions + average), so grammar / reading / listening /
+    // writing / speaking each appear. Buckets via the shared activityToSkill map.
+    const SKILLS = ['vocabulary', 'reading', 'listening', 'writing', 'grammar', 'speaking'];
+    const bySkill = {};
+    SKILLS.forEach(k => { bySkill[k] = { n: 0, sum: 0 }; });
+    studentSessions.forEach(sess => {
+      const sk = (typeof activityToSkill === 'function') ? activityToSkill(sess.activity) : 'vocabulary';
+      if (!bySkill[sk]) bySkill[sk] = { n: 0, sum: 0 };
+      bySkill[sk].n++;
+      bySkill[sk].sum += (sess.percentage || 0);
+    });
+    const skillCells = [];
+    SKILLS.forEach(k => {
+      const b = bySkill[k];
+      skillCells.push(b.n);                                 // <Skill> Sessions
+      skillCells.push(b.n ? Math.round(b.sum / b.n) : '');  // <Skill> Avg (%)
+    });
+
     const lastLogin = s.lastLogin?.toDate ? s.lastLogin.toDate() : null;
     const lastActiveStr = lastLogin 
       ? lastLogin.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -333,6 +359,7 @@ function exportToCSV() {
       totalSessions,
       totalWords,
       avgScore,
+      ...skillCells,
       lastActiveStr,
       isActive ? 'Active' : 'Inactive',
       daysSinceActive

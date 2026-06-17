@@ -221,7 +221,7 @@ function renderStudentsTable() {
         </td>
         <td>
           <button class="action-btn-small btn-view" data-id="${student.id}" title="View full profile">👁️</button>
-          <button class="action-btn-small btn-edit" data-id="${student.id}" data-name="${escapeHtml(student.name || '')}" data-level="${escapeHtml(student.level || '')}" data-class="${escapeHtml(student.studentClass || '')}" data-module="${escapeHtml(student.module || '')}" data-year="${escapeHtml(student.academicYear || '')}" title="Edit student">🖊️</button>
+          ${isAdmin() ? `<button class="action-btn-small btn-edit" data-id="${student.id}" data-name="${escapeHtml(student.name || '')}" data-level="${escapeHtml(student.level || '')}" data-class="${escapeHtml(student.studentClass || '')}" data-module="${escapeHtml(student.module || '')}" data-year="${escapeHtml(student.academicYear || '')}" title="Edit student">🖊️</button>` : ''}
           ${(isAdmin() && isTeacherEligibleStudent(student)) ? `<button class="action-btn-small btn-promote" data-id="${student.id}" data-name="${escapeHtml(student.name || '')}" data-email="${escapeHtml(student.email || '')}" title="Promote to teacher">👑</button>` : ''}
           ${isAdmin() ? `<button class="action-btn-small btn-delete" data-id="${student.id}" data-name="${escapeHtml(student.name || student.email || '')}" title="Delete student">🗑️</button>` : ''}
         </td>

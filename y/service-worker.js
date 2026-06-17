@@ -27,7 +27,7 @@
        always network-first so pages are fresh regardless.
    ============================================================ */
 
-const CACHE_VERSION = 'v46';
+const CACHE_VERSION = 'v58';
 const CACHE_NAME = 'empower-shell-' + CACHE_VERSION;
 const CACHE_PREFIX = 'empower-shell-';
 

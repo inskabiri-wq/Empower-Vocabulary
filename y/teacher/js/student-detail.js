@@ -64,7 +64,9 @@
     choice: 'Multiple Choice', match: 'Match', fillblank: 'Fill in Blank',
     spelling: 'Spelling', reverse: 'Listening Mode', order: 'Word Order',
     pronunciation: 'Pronunciation', unscramble: 'Unscramble',
-    'listening-exam': 'Listening Exam', 'reading-exam': 'Reading Exam'
+    'listening-exam': 'Listening Exam', 'reading-exam': 'Reading Exam',
+    'grammar-choice': 'Grammar · Multiple Choice', 'grammar-fill': 'Grammar · Fill in Blank',
+    'grammar-unscramble': 'Grammar · Unscramble', grammar: 'Grammar'
   };
 
   // ── Compute everything for one student ─────────────────────
@@ -223,7 +225,7 @@
           </div>
         </div>
         <div class="sd-head-actions">
-          <button type="button" class="sd-btn" id="sdPrintBtn" title="Print / Save as PDF">🖨 Print / PDF</button>
+          ${(typeof isAdmin === 'function' && isAdmin()) ? '<button type="button" class="sd-btn" id="sdPrintBtn" title="Print / Save as PDF">🖨 Print / PDF</button>' : ''}
           <button type="button" class="sd-close" id="sdCloseBtn" aria-label="Close">✕</button>
         </div>
       </div>
@@ -287,7 +289,8 @@
 
     bg.querySelector('#sdCloseBtn').addEventListener('click', close);
     bg.addEventListener('click', (e) => { if (e.target === bg) close(); });
-    bg.querySelector('#sdPrintBtn').addEventListener('click', () => printStudentReport(student, p));
+    var _printBtn = bg.querySelector('#sdPrintBtn');   // admin-only; absent for teachers
+    if (_printBtn) _printBtn.addEventListener('click', () => printStudentReport(student, p));
     // QA #4: clicking an assignment/session row that has itemised answers
     // toggles an inline panel showing each question, the student's answer,
     // and the correct answer.
@@ -304,59 +307,128 @@
   // fires window.print(). The teacher's browser print dialog has a
   // "Save as PDF" destination — no PDF library needed.
   function printStudentReport(student, p) {
-    const w = window.open('', '_blank', 'width=820,height=1000');
-    if (!w) { AppDialog.alert('Pop-up blocked — allow pop-ups to print the report.'); return; }
+    const w = window.open('', '_blank', 'width=880,height=1000');
+    if (!w) { AppDialog.alert('Pop-up blocked - allow pop-ups to print the report.'); return; }
     const isActive = p.lastActive && (Date.now() - p.lastActive.getTime()) < 7 * 24 * 60 * 60 * 1000;
     const lastActiveStr = p.lastActive
       ? p.lastActive.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
       : 'Never';
     const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
+    // Best score per skill (the rollup only carries count + sum).
+    const bestBySkill = {};
+    p.sessions.forEach(s => {
+      const pct = (typeof s.percentage === 'number') ? s.percentage : null;
+      if (pct == null) return;
+      const sk = _skillOfActivity(s.activity);
+      if (bestBySkill[sk] == null || pct > bestBySkill[sk]) bestBySkill[sk] = pct;
+    });
+
     const skillRows = SKILL_META.map(sk => {
       const b = p.bySkill[sk.id] || { count: 0, sum: 0 };
       const avg = b.count ? Math.round(b.sum / b.count) : null;
+      const best = (bestBySkill[sk.id] != null) ? bestBySkill[sk.id] + '%' : '-';
       return `<tr>
         <td>${sk.icon} ${sk.name}</td>
-        <td style="text-align:center;">${b.count || '—'}</td>
-        <td style="text-align:center;">${avg == null ? '—' : avg + '%'}</td>
+        <td style="text-align:center;">${b.count || '-'}</td>
+        <td style="text-align:center;">${avg == null ? '-' : avg + '%'}</td>
+        <td style="text-align:center;">${best}</td>
       </tr>`;
     }).join('');
 
+    const doneCount = p.assignments.filter(x => x.status === 'done').length;
+    const STATUS_LABEL = { 'done':'Done', 'in-progress':'In progress', 'overdue':'Overdue', 'not-started':'Not started' };
     const assignRows = p.assignments.length
       ? p.assignments.map(({ a, comp, deadline, status }) => {
-          const due = deadline ? deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—';
-          const score = (comp && typeof comp.bestScore === 'number') ? comp.bestScore + '%' : '—';
-          const label = { 'done':'Done', 'in-progress':'In progress', 'overdue':'Overdue', 'not-started':'Not started' }[status];
-          return `<tr><td>${_esc(a.title || 'Untitled')}</td><td>${_esc(due)}</td><td>${_esc(label)}</td><td style="text-align:center;">${score}</td></tr>`;
+          const due = deadline ? deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-';
+          const score = (comp && typeof comp.bestScore === 'number') ? comp.bestScore + '%' : '-';
+          const skill = _esc(String(a.skill || a.type || '').replace(/^\w/, c => c.toUpperCase()));
+          return `<tr><td>${_esc(a.title || 'Untitled')}</td><td>${skill || '-'}</td><td>${_esc(due)}</td><td>${_esc(STATUS_LABEL[status] || status)}</td><td style="text-align:center;">${score}</td></tr>`;
         }).join('')
-      : '<tr><td colspan="4" style="text-align:center;color:#888;">No assignments</td></tr>';
+      : '<tr><td colspan="5" style="text-align:center;color:#888;">No assignments target this student.</td></tr>';
 
-    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Progress Report — ${_esc(student.name || 'Student')}</title>
+    // Recent sessions (newest first).
+    const sortedSessions = [...p.sessions].sort((a, b) => {
+      const da = _sessionDate(a), db = _sessionDate(b);
+      return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
+    });
+    const recentRows = sortedSessions.length
+      ? sortedSessions.slice(0, 25).map(s => {
+          const d = _sessionDate(s);
+          const ds = d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-';
+          const label = ACTIVITY_LABEL[s.activity] || s.activity || 'Session';
+          const pct = (typeof s.percentage === 'number') ? s.percentage + '%' : '-';
+          return `<tr><td>${_esc(ds)}</td><td>${_esc(label)}</td><td style="text-align:center;">${pct}</td></tr>`;
+        }).join('')
+      : '<tr><td colspan="3" style="text-align:center;color:#888;">No sessions recorded yet.</td></tr>';
+
+    // Answer review - every attempt that captured itemised answers (assignment
+    // completions first, then sessions newest-first). { q, a, correct, ok }.
+    const attempts = [];
+    p.assignments.forEach(({ a, comp }) => {
+      if (comp && comp.answers && Array.isArray(comp.answers.items) && comp.answers.items.length)
+        attempts.push({ title: a.title || 'Assignment', answers: comp.answers });
+    });
+    sortedSessions.forEach(s => {
+      const d = _sessionDate(s);
+      const ds = d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+      const title = (ACTIVITY_LABEL[s.activity] || s.activity || 'Session') + (ds ? ' · ' + ds : '');
+      if (s.answers && Array.isArray(s.answers.items) && s.answers.items.length) {
+        attempts.push({ title: title, answers: s.answers });
+      } else if (Array.isArray(s.grammarDetails) && s.grammarDetails.length) {
+        // Grammar sessions store per-question detail under grammarDetails with
+        // shape { q, picked, correct, ok }. Normalise to the report's shape.
+        const items = s.grammarDetails.map(it => ({ q: it.q, a: (it.picked != null ? it.picked : it.a), correct: it.correct, ok: !!it.ok }));
+        attempts.push({ title: title, answers: { items: items } });
+      }
+    });
+    const answerSection = attempts.length
+      ? attempts.map(at => {
+          const items = at.answers.items;
+          const correct = items.filter(it => it.ok).length;
+          const rows = items.map((it, i) => `<tr>
+            <td style="text-align:center;color:#94a3b8;">${i + 1}</td>
+            <td>${_esc(it.q || '')}</td>
+            <td style="color:${it.ok ? '#15803d' : '#b91c1c'};font-weight:600;">${_esc(it.a == null || it.a === '' ? '(blank)' : String(it.a))}</td>
+            <td>${it.ok ? '<span style="color:#15803d;">correct</span>' : _esc(String(it.correct || ''))}</td>
+          </tr>`).join('');
+          return `<div class="ans-block">
+            <div class="ans-h">${_esc(at.title)} <span class="ans-score">${correct} / ${items.length} correct</span></div>
+            <table class="ans-tbl"><thead><tr><th style="width:22px;">#</th><th>Question</th><th>Their answer</th><th>Correct answer</th></tr></thead><tbody>${rows}</tbody></table>
+          </div>`;
+        }).join('')
+      : '<p style="color:#888;font-size:13px;">No itemised answers were recorded for this student yet.</p>';
+
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Progress Report · ${_esc(student.name || 'Student')}</title>
       <style>
         * { box-sizing: border-box; }
-        body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; color: #1e293b; padding: 32px 40px; max-width: 760px; margin: 0 auto; }
+        body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; color: #1e293b; padding: 32px 40px; max-width: 820px; margin: 0 auto; }
         h1 { font-size: 22px; margin: 0 0 2px; }
         .sub { color: #64748b; font-size: 13px; margin: 0 0 18px; }
         .meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; margin-bottom: 18px; padding: 12px 16px; background: #f1f5f9; border-radius: 8px; }
         .meta b { color: #475569; }
-        .quick { display: flex; gap: 24px; margin: 14px 0 22px; }
+        .quick { display: flex; flex-wrap: wrap; gap: 22px; margin: 14px 0 22px; }
         .quick div { text-align: center; }
         .quick .v { font-size: 24px; font-weight: 800; color: #4f46e5; }
         .quick .l { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-        h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: #475569; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin: 22px 0 10px; }
+        h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: #475569; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin: 24px 0 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { text-align: left; color: #64748b; font-weight: 600; padding: 6px 8px; border-bottom: 1px solid #e2e8f0; }
-        td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; }
+        td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+        .ans-block { margin: 0 0 16px; page-break-inside: avoid; }
+        .ans-h { font-size: 13px; font-weight: 700; color: #334155; margin: 14px 0 4px; }
+        .ans-score { font-weight: 600; color: #64748b; font-size: 12px; }
+        .ans-tbl th { font-size: 11px; }
         .foot { margin-top: 28px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 10px; }
-        @media print { body { padding: 0; } @page { margin: 1.6cm; } }
+        @media print { body { padding: 0; } @page { margin: 1.5cm; } h2 { page-break-after: avoid; } }
       </style></head><body>
-      <h1>${_esc(student.name || 'Student')} — Progress Report</h1>
+      <h1>${_esc(student.name || 'Student')} · Progress Report</h1>
       <p class="sub">${_esc(student.email || '')} · Generated ${today}</p>
       <div class="meta">
-        <span><b>Class:</b> ${_esc(student.studentClass || '—')}</span>
-        <span><b>Level:</b> ${_esc(student.level || '—')}</span>
-        <span><b>Module:</b> ${_esc(student.module || '—')}</span>
-        <span><b>Year:</b> ${_esc(student.academicYear || '—')}</span>
+        <span><b>Class:</b> ${_esc(student.studentClass || '-')}</span>
+        <span><b>Level:</b> ${_esc(student.level || '-')}</span>
+        <span><b>Module:</b> ${_esc(student.module || '-')}</span>
+        <span><b>Year:</b> ${_esc(student.academicYear || '-')}</span>
         <span><b>Status:</b> ${isActive ? 'Active' : 'Inactive'}</span>
         <span><b>Last active:</b> ${_esc(lastActiveStr)}</span>
       </div>
@@ -364,12 +436,17 @@
         <div><div class="v">${p.totalSessions}</div><div class="l">Sessions</div></div>
         <div><div class="v">${p.avgScore}%</div><div class="l">Avg score</div></div>
         <div><div class="v">${p.words}</div><div class="l">Words learned</div></div>
+        <div><div class="v">${doneCount}/${p.assignments.length}</div><div class="l">Assignments done</div></div>
       </div>
       <h2>Per-skill breakdown</h2>
-      <table><thead><tr><th>Skill</th><th style="text-align:center;">Sessions</th><th style="text-align:center;">Avg score</th></tr></thead><tbody>${skillRows}</tbody></table>
+      <table><thead><tr><th>Skill</th><th style="text-align:center;">Sessions</th><th style="text-align:center;">Avg score</th><th style="text-align:center;">Best</th></tr></thead><tbody>${skillRows}</tbody></table>
       <h2>Assignments</h2>
-      <table><thead><tr><th>Assignment</th><th>Due</th><th>Status</th><th style="text-align:center;">Best</th></tr></thead><tbody>${assignRows}</tbody></table>
-      <div class="foot">Empower Lab · FSM Language Trainer — confidential student progress report</div>
+      <table><thead><tr><th>Assignment</th><th>Skill</th><th>Due</th><th>Status</th><th style="text-align:center;">Best</th></tr></thead><tbody>${assignRows}</tbody></table>
+      <h2>Recent sessions <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:12px;color:#94a3b8;">(latest ${Math.min(25, sortedSessions.length)} of ${sortedSessions.length})</span></h2>
+      <table><thead><tr><th>Date</th><th>Activity</th><th style="text-align:center;">Score</th></tr></thead><tbody>${recentRows}</tbody></table>
+      <h2>Answer review</h2>
+      ${answerSection}
+      <div class="foot">Empower Lab · FSM Language Trainer · confidential student progress report</div>
       </body></html>`);
     w.document.close();
     // Give the new window a tick to lay out before printing.

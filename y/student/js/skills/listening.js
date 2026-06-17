@@ -13,6 +13,7 @@
   const LISTENING_ACTIVITIES = [
     {
       id: 'fsmept-exam-1',
+      examId: 'sample-fsmept',         // matches EXAM_REGISTRY listening id (for hide-from-practice)
       title: 'Listening Exam 1',
       subtitle: 'FSMEPT practice',
       icon: '🎧',
@@ -26,7 +27,15 @@
     if (!grid) return;
 
     grid.innerHTML = '';
-    LISTENING_ACTIVITIES.forEach(act => {
+    // Drop exams an admin marked "assignment-only" in Content controls
+    // (still launchable from an assignment by id).
+    const visible = LISTENING_ACTIVITIES.filter(a =>
+      !(typeof window.isPracticeHidden === 'function' && window.isPracticeHidden('listening', a.examId || a.id)));
+    if (!visible.length) {
+      grid.innerHTML = '<div class="rd-exam-empty" style="grid-column:1/-1;">No listening practice is open right now. Your teacher may have reserved it for an assignment.</div>';
+      return;
+    }
+    visible.forEach(act => {
       const card = document.createElement('div');
       card.className = 'activity-card';
       card.style.background = `linear-gradient(135deg,rgba(${act.accent},0.12),rgba(${act.accent},0.05))`;
@@ -64,4 +73,7 @@
   window.renderListeningScreen = renderListeningScreen;
 
   document.addEventListener('DOMContentLoaded', renderListeningScreen);
+  // Re-render once the admin's content controls load (they arrive async,
+  // after the first paint), so a hidden exam disappears from practice.
+  document.addEventListener('content-controls-ready', renderListeningScreen);
 })();
