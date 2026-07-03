@@ -1,6 +1,6 @@
 {
   "name": "empower-vocabulary-functions",
-  "description": "Cloud Functions for Empower Vocabulary — scheduled writing-grading reminders",
+  "description": "Cloud Functions for Lingualab — scheduled writing-grading reminders",
   "scripts": {
     "lint": "echo 'no linter configured'",
     "serve": "firebase emulators:start --only functions",

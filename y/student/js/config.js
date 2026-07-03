@@ -22,11 +22,30 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// LOCAL TESTING ONLY: talk to the Firebase emulators instead of production.
+// Runs only when BOTH are true: the page is served from localhost AND the
+// tester has set localStorage.useEmulators = '1'. Production domains and
+// normal local previews are untouched. See y/tools/README-emulator-e2e.md.
+try {
+  if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') &&
+      localStorage.getItem('useEmulators') === '1') {
+    auth.useEmulator('http://127.0.0.1:9099');
+    db.useEmulator('127.0.0.1', 8080);
+    console.warn('[emulator] connected to LOCAL Auth (9099) + Firestore (8080)');
+  }
+} catch (e) { /* never block app boot */ }
+
 // DATA - Loaded from external file
 let datasets = {};
 let allBookData = {}; // Store all book datasets
 let multipleChoiceOverrides = {}; // Hand-curated multiple choice options
-let selectedBook = localStorage.getItem('selectedBook') || 'empower';
+
+// PILOT LOCK: force everyone onto the Empower book and hide the Book picker.
+// The app still selects content by book internally; students just don't see
+// or choose it. Set window.FORCE_BOOK = null to restore Gateway + the picker.
+window.FORCE_BOOK = 'empower';
+
+let selectedBook = window.FORCE_BOOK || localStorage.getItem('selectedBook') || 'empower';
 
 // Book dataset file mapping
 const bookFiles = {

@@ -3,6 +3,12 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
+  "emulators": {
+    "_comment": "LOCAL ONLY - lets `firebase emulators:start --only auth,firestore` boot both for the demo-login E2E (y/tools/README-emulator-e2e.md). Ignored by deploys.",
+    "auth": { "port": 9099 },
+    "firestore": { "port": 8080 },
+    "ui": { "enabled": true, "port": 4000 }
+  },
   "_functions_disabled_until_blaze": "When ready to enable scheduled email reminders: 1) Upgrade project to Blaze plan; 2) Restore the functions block (see functions/HOWTO-DEPLOY.md); 3) Run: cd functions && npm install && firebase deploy --only functions",
   "hosting": {
     "public": "y",

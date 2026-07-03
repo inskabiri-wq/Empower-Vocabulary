@@ -53,13 +53,21 @@ document.addEventListener('DOMContentLoaded', () => {
   loadSettings();
   initSpeech();
 
-  // Restore book selection from localStorage
-  const savedBook = localStorage.getItem('selectedBook') || 'empower';
+  // Restore book selection. The pilot lock (window.FORCE_BOOK) wins over any
+  // stored value, so a stale 'gateway' choice can never leak back in.
+  const savedBook = window.FORCE_BOOK || localStorage.getItem('selectedBook') || 'empower';
   selectedBook = savedBook; // Make sure the variable is set
 
   const bookSelect = document.getElementById('bookSelect');
   if (bookSelect) {
     bookSelect.value = savedBook;
+  }
+
+  // Pilot: only Empower is offered, so hide the whole Book picker - students
+  // should not see or choose a book. Set window.FORCE_BOOK = null to restore it.
+  if (window.FORCE_BOOK) {
+    const bookGroup = document.getElementById('bookSelGroup');
+    if (bookGroup) bookGroup.style.display = 'none';
   }
 
   populateUnitSelector();
@@ -147,7 +155,7 @@ function _injectPreviewBanner() {
     display: flex; align-items: center; justify-content: center; gap: 14px;
   `;
   b.innerHTML = `
-    <span>👁 PREVIEW MODE — Teacher view · nothing is saved</span>
+    <span>👁 PREVIEW MODE - Teacher view · nothing is saved</span>
     <button type="button" id="previewModeCloseBtn"
       style="background: rgba(255,255,255,0.20); color: white;
              border: 1px solid rgba(255,255,255,0.40);

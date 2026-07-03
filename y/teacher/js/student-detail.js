@@ -446,7 +446,7 @@
       <table><thead><tr><th>Date</th><th>Activity</th><th style="text-align:center;">Score</th></tr></thead><tbody>${recentRows}</tbody></table>
       <h2>Answer review</h2>
       ${answerSection}
-      <div class="foot">Empower Lab · FSM Language Trainer · confidential student progress report</div>
+      <div class="foot">Lingualab · FSM Language Trainer · confidential student progress report</div>
       </body></html>`);
     w.document.close();
     // Give the new window a tick to lay out before printing.

@@ -1,7 +1,7 @@
 {
-  "name": "Empower Lab",
-  "short_name": "Empower Lab",
-  "description": "FSM Language Trainer — practice English across reading, listening, writing, grammar, speaking and vocabulary, with live classroom games.",
+  "name": "Lingualab",
+  "short_name": "Lingualab",
+  "description": "Practice English across reading, listening, writing, grammar, speaking and vocabulary, with live classroom games.",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",

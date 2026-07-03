@@ -84,7 +84,27 @@
       navStack[0] = initial;
     }
     history.replaceState({ screen: initial, depth: 1 }, '', '#' + initial);
-    history.pushState({ screen: initial, depth: 1, sentinel: true }, '', '#' + initial);
+    // NOTE: mobile Chrome ignores history entries a page pushes with NO user
+    // gesture (its anti "history-trap" intervention), so a sentinel pushed here
+    // at load time is skipped and the first Back press walks straight out of the
+    // app. We arm the sentinel on the first real interaction instead, when the
+    // push is user-activated and Back is reliably trapped. Desktop is unaffected.
+    armSentinelOnFirstGesture(initial);
+  }
+
+  // Push the root sentinel on the first user gesture (see setupOnce). Any tap,
+  // touch or key press counts; capture-phase so it runs before nav click handlers.
+  function armSentinelOnFirstGesture(initial) {
+    var armed = false;
+    var events = ['pointerdown', 'touchstart', 'mousedown', 'keydown'];
+    function arm() {
+      if (armed) return;
+      armed = true;
+      events.forEach(function (e) { window.removeEventListener(e, arm, true); });
+      var top = navStack[navStack.length - 1] || initial;
+      history.pushState({ screen: top, depth: navStack.length, sentinel: true }, '', '#' + top);
+    }
+    events.forEach(function (e) { window.addEventListener(e, arm, true); });
   }
 
   // Helper: when navStack is back at the root (length 1) we need a

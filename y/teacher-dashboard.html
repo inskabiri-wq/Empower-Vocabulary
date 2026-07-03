@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Teacher Dashboard - Empower Lab</title>
+<title>Teacher Dashboard - Lingualab</title>
 <!-- PWA -->
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Empower Lab">
+<meta name="apple-mobile-web-app-title" content="Lingualab">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
@@ -1143,7 +1143,7 @@
       <div class="t2-sidebar-spacer"></div>
 
       <div class="t2-sidebar-section-lbl">Account</div>
-      <!-- Classroom widgets launcher — sits above Empower Lab. Clicking it
+      <!-- Classroom widgets launcher — sits above Lingualab. Clicking it
            floats a small popover (Class Timer, more later). Wired by
            js/widgets-tray.js, which binds to this #wtSidebarBtn. -->
       <button type="button" class="t2-nav-item" id="wtSidebarBtn" title="Classroom widgets">
@@ -1154,7 +1154,7 @@
            points at the hub root so teachers land on the full skill picker
            (Vocabulary / Reading / Listening / Writing / Speaking / Grammar). -->
       <a class="t2-nav-item" href="student-dashboard.html" style="text-decoration:none">
-        <span class="ico" data-icon="flask"></span><span class="label">Empower Lab</span>
+        <span class="ico" data-icon="flask"></span><span class="label">Lingualab</span>
       </a>
       <a class="t2-nav-item" href="classroom-teacher.html" style="text-decoration:none">
         <span class="ico" data-icon="gamepad"></span><span class="label">Classroom</span>
@@ -1214,7 +1214,7 @@
         <div class="more-menu-wrap">
           <button class="btn btn-secondary more-menu-btn" onclick="toggleMoreMenu()" title="More options">⋮</button>
           <div class="more-menu-dropdown" id="moreMenuDropdown">
-            <a href="student-dashboard.html" class="more-menu-item">🧪 Empower Lab</a>
+            <a href="student-dashboard.html" class="more-menu-item">🧪 Lingualab</a>
             <a href="classroom-teacher.html" class="more-menu-item">🎮 Classroom Mode</a>
             <button class="more-menu-item" id="exportReportMore" style="display:none" onclick="exportToCSV(); closeMoreMenu()">📥 Export Report</button>
           </div>
@@ -1523,6 +1523,7 @@
               <option value="B1">B1</option>
               <option value="B1+">B1+</option>
               <option value="B2">B2</option>
+              <option value="C1">C1</option>
             </select>
             <select class="filter-select" id="classFilter" onchange="filterStudents()">
               <option value="">All Classes</option>
@@ -1594,6 +1595,10 @@
             <button type="button" class="t2-btn" id="pcAdminCompletionsBtn">View completions</button>
           </div>
         </div>
+        <!-- Per-module activation (admin only). Deactivated modules vanish from
+             the student course AND from completion, so the certificate is earned
+             on the remaining active modules. Stored in policyCourse.hiddenModules. -->
+        <div id="pcModulesBox" style="margin-top:14px;"></div>
         <div id="pcAdminBody" style="display:none;"></div>
 
         <!-- Fact-check: confirm a certificate a student presents, by its
@@ -1683,17 +1688,19 @@
         /* When shown alone, drop the big stacking top-margins. */
         #tab-admin.adminsub-on #featureActivationPanel,
         #tab-admin.adminsub-on #contentControlsPanel,
+        #tab-admin.adminsub-on #rosterImportPanel,
         #tab-admin.adminsub-on #orgAdminPanel { margin-top:0 !important; }
       </style>
       <div id="adminSubNav">
         <button type="button" class="admin-subtab active" data-target="teachersList">👩‍🏫 Teachers</button>
         <button type="button" class="admin-subtab" data-target="featureActivationPanel">🎛️ Features</button>
         <button type="button" class="admin-subtab" data-target="contentControlsPanel">🗂️ Content</button>
+        <button type="button" class="admin-subtab" data-target="rosterImportPanel">📥 Roster import</button>
         <button type="button" class="admin-subtab" data-target="orgAdminPanel">🏢 Organizations</button>
       </div>
       <script>
         (function () {
-          var IDS = ['teachersList', 'featureActivationPanel', 'contentControlsPanel', 'orgAdminPanel'];
+          var IDS = ['teachersList', 'featureActivationPanel', 'contentControlsPanel', 'rosterImportPanel', 'orgAdminPanel'];
           function show(target) {
             IDS.forEach(function (id) { var el = document.getElementById(id); if (el) el.style.display = (id === target) ? '' : 'none'; });
             document.querySelectorAll('#adminSubNav .admin-subtab').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-target') === target); });
@@ -1743,6 +1750,60 @@
         </p>
         <div id="contentControlsBody">
           <p style="color: var(--t2-text-muted, #7d8590); font-size: 12px;">Loading...</p>
+        </div>
+      </div>
+
+      <!-- ════ Roster import (admin only) ════
+           Bulk student + teacher onboarding from two Excel/CSV sheets.
+           Parses + validates in the browser (instant dry-run), then commits
+           via the rosterImport Cloud Function (creates pre-verified accounts,
+           classes, per-module enrollments). Logic: teacher/js/roster-import.js.
+           SheetJS is lazy-loaded from teacher/js/vendor/ only when this panel
+           is opened. -->
+      <div id="rosterImportPanel" style="max-width: 1380px; margin: 26px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif; display:none;">
+        <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">📥 Roster import</h2>
+        <p style="font-size: 12px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 16px;">
+          Upload one sheet of students and one of teachers for a module. Validate first (a dry run that writes nothing) and fix any flagged rows, then commit. Accounts are created once per year and matched by email after that, so re-running a module only moves people to the new class. Nothing is ever deleted.
+        </p>
+
+        <div style="background: var(--t2-surface,#161b22); border:1px solid var(--t2-border,#30363d); border-radius:12px; padding:18px;">
+          <div style="display:flex; flex-wrap:wrap; gap:14px; margin-bottom:14px;">
+            <label style="flex:1; min-width:180px;">
+              <div style="font-size:12px; font-weight:700; color:var(--t2-text,#e6edf3); margin-bottom:5px;">Academic year</div>
+              <input id="riYear" type="text" placeholder="2026-2027" style="width:100%; box-sizing:border-box; padding:9px 11px; border:1px solid var(--t2-border,#30363d); border-radius:8px; background:var(--t2-bg,#0d1117); color:var(--t2-text,#e6edf3); font-family:inherit; font-size:13px;">
+            </label>
+            <label style="flex:1; min-width:180px;">
+              <div style="font-size:12px; font-weight:700; color:var(--t2-text,#e6edf3); margin-bottom:5px;">Module</div>
+              <input id="riModule" type="text" placeholder="e.g. 2026-M3" style="width:100%; box-sizing:border-box; padding:9px 11px; border:1px solid var(--t2-border,#30363d); border-radius:8px; background:var(--t2-bg,#0d1117); color:var(--t2-text,#e6edf3); font-family:inherit; font-size:13px;">
+            </label>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:14px; margin-bottom:16px;">
+            <label style="flex:1; min-width:220px;">
+              <div style="font-size:12px; font-weight:700; color:var(--t2-text,#e6edf3); margin-bottom:5px;">👩‍🎓 Students sheet (.xlsx / .csv)</div>
+              <input id="riStudents" type="file" accept=".xlsx,.xls,.csv" style="width:100%; box-sizing:border-box; font-size:12px; color:var(--t2-text-muted,#7d8590);">
+            </label>
+            <label style="flex:1; min-width:220px;">
+              <div style="font-size:12px; font-weight:700; color:var(--t2-text,#e6edf3); margin-bottom:5px;">👩‍🏫 Teachers sheet (.xlsx / .csv)</div>
+              <input id="riTeachers" type="file" accept=".xlsx,.xls,.csv" style="width:100%; box-sizing:border-box; font-size:12px; color:var(--t2-text-muted,#7d8590);">
+            </label>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+            <button type="button" id="riValidate" style="cursor:pointer; font-family:inherit; font-weight:800; font-size:13px; padding:9px 18px; border-radius:20px; border:1px solid #2563eb; background:rgba(37,99,235,0.14); color:#60a5fa;">Validate (dry run)</button>
+            <button type="button" id="riCommit" disabled style="cursor:not-allowed; opacity:0.5; font-family:inherit; font-weight:800; font-size:13px; padding:9px 18px; border-radius:20px; border:1px solid var(--t2-green,#22c55e); background:rgba(34,197,94,0.12); color:var(--t2-green,#22c55e);">Create / relocate accounts</button>
+            <button type="button" id="riCredsDownload" style="display:none; cursor:pointer; font-family:inherit; font-weight:700; font-size:12px; padding:8px 14px; border-radius:18px; border:1px solid var(--t2-border,#30363d); background:transparent; color:var(--t2-text-muted,#7d8590);">⬇ Download new credentials (CSV)</button>
+            <span id="riStatus" style="font-size:12px; color:var(--t2-text-muted,#7d8590);"></span>
+          </div>
+        </div>
+
+        <div id="riReport" style="margin-top:16px;"></div>
+
+        <div style="margin-top:22px; padding-top:16px; border-top:1px solid var(--t2-border,#30363d);">
+          <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+            <button type="button" id="riQrShow" style="cursor:pointer; font-family:inherit; font-weight:800; font-size:13px; padding:9px 18px; border-radius:20px; border:1px solid #2563eb; background:rgba(37,99,235,0.14); color:#60a5fa;">🔳 Show class QR codes</button>
+            <button type="button" id="riQrPrint" style="display:none; cursor:pointer; font-family:inherit; font-weight:700; font-size:12px; padding:8px 14px; border-radius:18px; border:1px solid var(--t2-border,#30363d); background:transparent; color:var(--t2-text-muted,#7d8590);">🖨️ Print all</button>
+            <span style="font-size:12px; color:var(--t2-text-muted,#7d8590);">One scannable code per class for the module above. Students scan it to confirm they are in the right class.</span>
+          </div>
+          <div id="riQr" style="margin-top:14px;"></div>
         </div>
       </div>
 
@@ -1924,6 +1985,7 @@
       <option value="B1">B1 - Intermediate</option>
       <option value="B1+">B1+ - Upper Intermediate</option>
       <option value="B2">B2 - Advanced</option>
+      <option value="C1">C1 - Proficiency</option>
     </select>
     
     <label>Class</label>
@@ -2087,6 +2149,7 @@
           <option value="B1">B1 - Intermediate</option>
           <option value="B1+">B1+ - Upper Intermediate</option>
           <option value="B2">B2 - Advanced</option>
+          <option value="C1">C1 - Proficiency</option>
         </select>
       </div>
       <div class="assignment-form-group" id="examModuleTargetGroup" style="display: none;">
@@ -2242,6 +2305,9 @@
         <option value="12">12 questions</option>
         <option value="15">15 questions</option>
         <option value="20">20 questions</option>
+        <option value="40">40 questions</option>
+        <option value="50">50 questions</option>
+        <option value="70">70 questions</option>
       </select>
     </div>
 
@@ -2267,6 +2333,7 @@
           <option value="B1">B1 - Intermediate</option>
           <option value="B1+">B1+ - Upper Intermediate</option>
           <option value="B2">B2 - Advanced</option>
+          <option value="C1">C1 - Proficiency</option>
         </select>
       </div>
       <div class="assignment-form-group" id="grammarModuleTargetGroup" style="display: none;">
@@ -2373,6 +2440,7 @@
           <option value="B1">B1 - Intermediate</option>
           <option value="B1+">B1+ - Upper Intermediate</option>
           <option value="B2">B2 - Advanced</option>
+          <option value="C1">C1 - Proficiency</option>
         </select>
       </div>
     </div>
@@ -2468,6 +2536,7 @@
           <option value="B1">B1 - Intermediate</option>
           <option value="B1+">B1+ - Upper Intermediate</option>
           <option value="B2">B2 - Advanced</option>
+          <option value="C1">C1 - Proficiency</option>
         </select>
       </div>
       <div class="assignment-form-group" id="writingModuleTargetGroup" style="display: none;">
@@ -2502,7 +2571,7 @@
       <div class="ai-tab-card">
         <div class="ai-tab-head">✨ AI correction <span class="ai-soon">PREVIEW</span></div>
         <p class="ai-tab-desc">This is the AI version of the panel you use to correct papers. It marks up a student's essay the same way you do by hand with the comment bank: the same rubric, the same style of comments and highlights, and no scores. The only difference is that the AI drafts the marking for you through the API, at the depth you choose (Light / Medium / Deep). You stay in charge: review, edit, add or delete any comment, then release it. It is a teacher tool, not an automatic grader for students. Open the working preview to see exactly how it looks.</p>
-        <a class="modal-btn modal-btn-save" href="empower-write/" target="_blank" rel="noopener" style="display:inline-block; text-decoration:none;">Open the working preview ▶</a>
+        <a class="modal-btn modal-btn-save" href="lingualab-write/" target="_blank" rel="noopener" style="display:inline-block; text-decoration:none;">Open the working preview ▶</a>
         <p class="ai-tab-note">The full working demo — pick a sample essay and a depth (Light / Medium / Deep) to see exactly what it produces. Once approved, this AI correction panel mounts right here, beside your manual comment-bank one.</p>
       </div>
     </div>
@@ -2561,6 +2630,7 @@
           <option value="B1">B1 - Intermediate</option>
           <option value="B1+">B1+ - Upper Intermediate</option>
           <option value="B2">B2 - Advanced</option>
+          <option value="C1">C1 - Proficiency</option>
         </select>
       </div>
     </div>
@@ -2624,6 +2694,7 @@
         <option value="B1">B1 - Intermediate</option>
         <option value="B1+">B1+ - Upper Intermediate</option>
         <option value="B2">B2 - Advanced</option>
+        <option value="C1">C1 - Proficiency</option>
       </select>
     </div>
 
@@ -2681,6 +2752,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js" integrity="sha384-nr3XW2E61lv+rhFoxO+G+2MytvPBcAHRBkVN+clME9hVhZBH+LxuUkYSsrIEUON+" crossorigin="anonymous"></script>
 
 <!-- SheetJS for Excel Export (self-hosted - no CSP/CDN dependency) -->
 <script src="vendor/xlsx/xlsx.full.min.js"></script>
@@ -2765,12 +2837,13 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="assignments/js/exam-form.js"></script>
 <script src="assignments/js/writing-form.js"></script>
 <!-- Grammar assignment: content (levels/topics) + form. Mirrors exam-form.js. -->
-<script src="student/js/skills/grammar-content.js?v=10"></script>
+<script src="student/js/skills/grammar-content.js?v=33"></script>
 <!-- Policy mini course: content (module count for the panel) + teacher admin panel. -->
 <script src="student/js/policy-course-content.js?v=7"></script>
-<script src="teacher/js/policy-course-admin.js?v=9"></script>
-<script src="teacher/js/feature-activation.js?v=2"></script>
-<script src="teacher/js/content-controls.js?v=3"></script>
+<script src="teacher/js/policy-course-admin.js?v=11"></script>
+<script src="teacher/js/feature-activation.js?v=5"></script>
+<script src="teacher/js/content-controls.js?v=7"></script>
+<script src="teacher/js/roster-import.js?v=5"></script>
 <script src="teacher/js/org-admin.js?v=1"></script>
 <script src="assignments/js/grammar-form.js"></script>
 <!-- Writing feedback v2: comment bank (data) + annotation engine.

@@ -1,4 +1,4 @@
-# Empower Lab — Infrastructure Budget Request
+# Lingualab — Infrastructure Budget Request
 **Scope:** 400 students + ~10 teachers, one academic year. All figures are **Google / registrar list prices in USD** (billed monthly). The platform is **already built** — this covers *running* it, not building it.
 
 ---
@@ -6,7 +6,7 @@
 ### 1 · Two web addresses (domains)
 | For | Recommended option | Cost |
 |---|---|---|
-| The **app** (Empower Lab) | **Subdomain of `fsm.edu.tr`** — e.g. `empowerlab.fsm.edu.tr`. The university already owns `fsm.edu.tr`; IT just adds one DNS record. | **$0** |
+| The **app** (Lingualab) | **Subdomain of `fsm.edu.tr`** — e.g. `empowerlab.fsm.edu.tr`. The university already owns `fsm.edu.tr`; IT just adds one DNS record. | **$0** |
 | The **FSM hub** (Google Sites) | Map a custom domain to the free Google Site — e.g. `hub.fsm.edu.tr`. Google Sites itself is free. | **$0** |
 | *If a brand‑new public domain is preferred instead* | `empowerlab.app` or `empowerlab.com.tr` | **≈ $12–15 / year each** |
 

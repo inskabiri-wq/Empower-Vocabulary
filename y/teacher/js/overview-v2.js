@@ -480,7 +480,7 @@
   // ============================================================
   // Render — Level Distribution mini-bar chart
   // ============================================================
-  const LEVELS_ORDER = ['A2', 'B1', 'B1+', 'B2'];
+  const LEVELS_ORDER = ['A2', 'B1', 'B1+', 'B2', 'C1'];
   const LEVEL_COLORS = {
     'A2':  THEME_COLORS.blue,
     'B1':  THEME_COLORS.cyan,

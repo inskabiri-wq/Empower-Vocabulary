@@ -1,12 +1,12 @@
-# Empower Lab — Project Handoff (for another Claude)
+# Lingualab — Project Handoff (for another Claude)
 
-A practical, pick-up-cold briefing for the **Empower Lab** web app. Read this top to
+A practical, pick-up-cold briefing for the **Lingualab** web app. Read this top to
 bottom before changing anything. Per-change detail lives in `.claude/checks/2026-*.md`.
 
 ---
 
 ## 1. What this is
-- **Empower Lab** — an English-learning platform for **Fatih Sultan Mehmet Vakıf Üniversitesi (FSMVÜ)**, ~**400 students**, in/near launch.
+- **Lingualab** — an English-learning platform for **Fatih Sultan Mehmet Vakıf Üniversitesi (FSMVÜ)**, ~**400 students**, in/near launch.
 - Skills hub with **7 tiles**: 📚 Vocabulary · 🎧 Listening · ✏️ Grammar · 📖 Reading · ✍️ Writing · 🎤 Speaking · 🎮 Classroom Mode.
 - Live **Classroom games**: Vocab Race, **The Heist** 🦹, **Trust No One** 🕵️, **Reading Exam**, **Listening Exam**.
 - **Assignments** system across all skills; **Writing** has teacher grading + inline annotations.

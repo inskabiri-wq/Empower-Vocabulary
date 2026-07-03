@@ -380,9 +380,11 @@
 #grammarScreen .gr-unit-desc { font-size: 0.84em; color: var(--text-secondary, #94a3b8); margin: 0 2px 12px; line-height: 1.45; }
 
 /* Header (settings + profile chip + logout) - match the vocab dashboard header */
-#grammarScreen .skill-header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+#grammarScreen .skill-header-right { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
 #grammarScreen .profile-badge { background: linear-gradient(135deg, rgba(13, 148, 136, 0.14), rgba(45, 212, 191, 0.08)); border: 1px solid rgba(13, 148, 136, 0.35); }
 #grammarScreen .header-icon-btn { background: var(--dash-elevated, #334155); border: 1px solid var(--dash-border-md, rgba(255, 255, 255, 0.13)); }
+/* Mobile stacking (Hub row / title row / left-aligned controls row) is handled
+   generically in skills.css so every skill screen matches the vocab dashboard. */
 
 /* Sidebar "Select Content" card - mirror the vocab grouped selectors */
 #grammarScreen .gr-sel-group { margin-bottom: 16px; }

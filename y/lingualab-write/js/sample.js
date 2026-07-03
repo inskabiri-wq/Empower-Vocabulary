@@ -1,5 +1,5 @@
 /* ============================================================
-   EMPOWER WRITE - seeded sample
+   LINGUALAB WRITE - seeded sample
    A realistic B1 student essay + three worked corrections
    (light / medium / deep), authored as if returned by the API.
    No scores. Estimates (CEFR / IELTS / TOEFL / rubric) are

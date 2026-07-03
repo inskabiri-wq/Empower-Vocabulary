@@ -1158,6 +1158,12 @@
   // Sum of alive-crewmate investigations vs. target × initialCrewmates.
   // If met, fire crewmate victory and flip status to finished.
   async function checkInvestigationsWin(players) {
+    // DISABLED: the mission must NOT end just because the crew answered enough
+    // questions correctly (the "first person finished all questions" ending).
+    // Trust No One now ends only when the teacher hits End mission, or via the
+    // in-game meeting/vote outcome. Investigations still earn + drive clues.
+    return;
+    /* (Original investigations-target auto-win kept below, unreachable.) */
     if (!sessionCode || winFired || !cachedSession) return;
     if (cachedSession.status === 'finished') return;
     const target  = (cachedSession.settings && cachedSession.settings.target) || 0;

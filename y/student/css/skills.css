@@ -122,6 +122,17 @@
   flex-shrink: 0;
 }
 
+/* Mobile: stack the header exactly like the vocab dashboard (.dashboard-header):
+   the back button on its own row, the title below it, and the settings / profile
+   / logout controls on a full-width row underneath, left-aligned. Same breakpoint
+   (768px) and placement as #menuScreen so every skill screen matches Vocabulary. */
+@media (max-width: 768px) {
+  .skill-header { flex-wrap: wrap; row-gap: 10px; text-align: left; }
+  .skill-header-left { width: 100%; flex-direction: column; align-items: flex-start; min-width: 0; }
+  .skill-back-btn { align-self: flex-start; margin: 0 0 8px 0; width: max-content; }
+  .skill-header-right { width: 100%; justify-content: flex-start; }
+}
+
 /* Progress badge (top-right of skill header) */
 .skill-progress-pill {
   display: inline-flex;

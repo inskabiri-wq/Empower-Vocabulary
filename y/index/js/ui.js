@@ -1,6 +1,6 @@
 /* ============================================
    UI.JS - User Interface Helper Functions
-   Empower Vocabulary Trainer
+   Lingualab
    ============================================ */
 
 /* ---------- Tab Switching ---------- */

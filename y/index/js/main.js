@@ -1,6 +1,6 @@
 /* ============================================
    STYLE 6: FLOATING CARD - Login Page JavaScript
-   Empower Vocabulary Trainer
+   Lingualab
    ============================================ */
 
 // ============================================
@@ -106,13 +106,25 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Initialize App Check
+// LOCAL TESTING ONLY: talk to the Firebase emulators instead of production.
+// Runs only when BOTH are true: the page is served from localhost AND the
+// tester has set localStorage.useEmulators = '1'. Production domains and
+// normal local previews are untouched. See y/tools/README-emulator-e2e.md.
 try {
-  const appCheck = firebase.appCheck();
-  appCheck.activate('6Lc-jS0sAAAAADZHuluoJrM8aJWCLwiJPedS8ki7', true);
-} catch (error) {
-  console.log('App Check initialization failed:', error);
-}
+  if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') &&
+      localStorage.getItem('useEmulators') === '1') {
+    auth.useEmulator('http://127.0.0.1:9099');
+    db.useEmulator('127.0.0.1', 8080);
+    console.warn('[emulator] connected to LOCAL Auth (9099) + Firestore (8080)');
+  }
+} catch (e) { /* never block app boot */ }
+
+// App Check: intentionally NOT initialized. The app-check-compat SDK is not
+// loaded on any page, so firebase.appCheck() throws and protection never
+// activated (this used to fail on every load). If bot/abuse protection is
+// wanted later, load firebase-app-check-compat.js, configure a reCAPTCHA key
+// for the live domain, and enable enforcement in the console as a deliberate,
+// tested rollout - a misconfigured App Check can block ALL traffic.
 
 // ============================================
 // GLOBAL STATE FOR GOOGLE SIGN-IN COMPLETION
@@ -222,11 +234,17 @@ async function checkIfTeacher(email) {
   }
 }
 
+// Set true while register() runs its own create -> send-verification ->
+// sign-out flow, so this handler doesn't fight it (it fires on account
+// creation, before the profile doc + verification email are done).
+let registrationInProgress = false;
+
 // ============================================
 // AUTH STATE CHANGE HANDLER
 // ============================================
 auth.onAuthStateChanged(async (user) => {
   if (user) {
+    if (registrationInProgress) return;
     // Check if this is a pending Google completion
     if (pendingGoogleUser) {
       return; // Don't redirect, waiting for form completion
@@ -242,10 +260,37 @@ auth.onAuthStateChanged(async (user) => {
     
     if (!isAllowed) {
       await auth.signOut();
-      showMessage('Access denied. Only FSM university emails are allowed.', 'error');
+      showFsmEmailPopup();
       return;
     }
-    
+
+    // Email must be verified before entering. Google sign-in is verified
+    // automatically (so it passes straight through); email/password users
+    // must click the link we email them. Re-send on each attempt so they
+    // always have a fresh one, then sign out and show a clear popup.
+    if (!user.emailVerified) {
+      // The verification email is sent once, at REGISTRATION - NOT on every
+      // login. Here we just block and explain, and offer a user-initiated
+      // resend (so a lost/expired link is recoverable without auto-spamming).
+      var resend = false;
+      if (window.AppDialog && AppDialog.confirm) {
+        try {
+          resend = await AppDialog.confirm(
+            'Please verify your email before logging in. We sent a verification link to ' +
+            (email || 'your inbox') + ' when you registered. Check your spam folder too.',
+            { title: '📧 Verify your email', okLabel: 'Resend link', cancelLabel: 'OK' });
+        } catch (_) {}
+      } else {
+        showVerifyEmailPopup(email);
+      }
+      if (resend) { await sendVerification(user); }
+      await auth.signOut();
+      if (resend && window.AppDialog && AppDialog.alert) {
+        try { AppDialog.alert('A new verification link is on its way. Open it, then log in.', { title: '📧 Link sent' }); } catch (_) {}
+      }
+      return;
+    }
+
     // Check if user document exists and has required fields
     const userRef = db.collection('users').doc(user.uid);
     const userDoc = await userRef.get();
@@ -305,7 +350,7 @@ async function checkUserRoleAndRedirect(user) {
     
     if (!isAllowed) {
       await auth.signOut();
-      showMessage('Access denied. Only FSM university emails are allowed.', 'error');
+      showFsmEmailPopup();
       return;
     }
     
@@ -341,6 +386,57 @@ async function checkUserRoleAndRedirect(user) {
 }
 
 // ============================================
+// FSM EMAIL GATE (shared by login + register)
+// ============================================
+// True when the email belongs to an allowed FSM / organization domain.
+function isFsmEmailAllowed(email) {
+  email = (email || '').toLowerCase().trim();
+  if (typeof window.OrgRegistry !== 'undefined' && window.OrgRegistry.checkEmail) {
+    try { return !!window.OrgRegistry.checkEmail(email).ok; } catch (_) {}
+  }
+  return email.endsWith('@fsm.edu.tr') || email.endsWith('@stu.fsm.edu.tr');
+}
+// Styled, app-themed popup explaining the FSM-email requirement. Falls back to
+// the inline message box if AppDialog ever fails to load.
+function showFsmEmailPopup() {
+  var msg = 'Please sign in with your FSM university email. Students use ' +
+    'name@stu.fsm.edu.tr and staff use name@fsm.edu.tr. Other addresses are not allowed.';
+  if (window.AppDialog && AppDialog.alert) { AppDialog.alert(msg, { title: '🎓 FSM email required' }); }
+  else { showMessage(msg, 'error'); }
+}
+
+// Continue URL the verification email links back to. Must be an authorized
+// domain — the app's own origin is — so it sends the user to the login page.
+function verifyActionSettings() {
+  try { return { url: window.location.origin + '/index.html', handleCodeInApp: false }; }
+  catch (_) { return undefined; }
+}
+// Send the verification email. Tries the nice continue-to-login link first; if
+// Firebase rejects the continue URL (e.g. unauthorized domain), falls back to a
+// plain verification email so the link always goes out.
+async function sendVerification(user) {
+  try { await user.sendEmailVerification(verifyActionSettings()); return true; }
+  catch (e1) {
+    try { await user.sendEmailVerification(); return true; }
+    catch (e2) { console.warn('sendEmailVerification failed:', e2); return false; }
+  }
+}
+// "We sent you a link" popup, shown right after a successful registration.
+function showCheckEmailPopup(email) {
+  var msg = 'Account created! We sent a verification link to ' + (email || 'your email') +
+    '. Open it, click the link, then come back here and log in. (Check your spam folder too.)';
+  if (window.AppDialog && AppDialog.alert) { AppDialog.alert(msg, { title: '📧 Check your email' }); }
+  else { showMessage(msg, 'success'); }
+}
+// Shown when login is attempted before the email is verified (we re-send first).
+function showVerifyEmailPopup(email) {
+  var msg = 'Please verify your email before logging in. Check your inbox (and spam) for the ' +
+    'verification link we sent when you registered.';
+  if (window.AppDialog && AppDialog.alert) { AppDialog.alert(msg, { title: '📧 Verify your email' }); }
+  else { showMessage(msg, 'error'); }
+}
+
+// ============================================
 // LOGIN
 // ============================================
 async function login() {
@@ -351,6 +447,8 @@ async function login() {
     showMessage('Please fill in all fields', 'error');
     return;
   }
+
+  if (!isFsmEmailAllowed(email)) { showFsmEmailPopup(); return; }
 
   setLoading('loginBtn', true);
 
@@ -387,6 +485,8 @@ async function register() {
     return;
   }
 
+  if (!isFsmEmailAllowed(email)) { showFsmEmailPopup(); return; }
+
   if (classNumber < 0 || classNumber > 999) {
     showMessage('Class number must be between 000 and 999', 'error');
     return;
@@ -413,6 +513,7 @@ async function register() {
   setLoading('registerBtn', true);
 
   try {
+    registrationInProgress = true;   // suppress the auth-state redirect during this flow
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     await userCredential.user.updateProfile({ displayName: name });
 
@@ -446,12 +547,17 @@ async function register() {
           A2: { studied: 0, mastered: 0 },
           B1: { studied: 0, mastered: 0 },
           'B1+': { studied: 0, mastered: 0 },
-          B2: { studied: 0, mastered: 0 }
+          B2: { studied: 0, mastered: 0 }, C1: { studied: 0, mastered: 0 }
         }
       }
     }, { merge: true });
 
-    showMessage('Account created! Redirecting...', 'success');
+    // Send the verification link, sign out, and tell them to check their inbox.
+    // They verify via the email, then log in (the dashboard gate only admits
+    // verified accounts). Their profile is already saved above.
+    await sendVerification(userCredential.user);
+    await auth.signOut();
+    showCheckEmailPopup(email);
   } catch (error) {
     console.error('Registration error:', error);
     let message = 'Registration failed. Please try again.';
@@ -459,6 +565,8 @@ async function register() {
     if (error.code === 'auth/invalid-email') message = 'Invalid email address.';
     if (error.code === 'auth/weak-password') message = 'Password is too weak.';
     showMessage(message, 'error');
+  } finally {
+    registrationInProgress = false;
     setLoading('registerBtn', false);
   }
 }
@@ -612,6 +720,7 @@ function showGoogleCompleteForm(user) {
           <option value="B1">B1 - Intermediate</option>
           <option value="B1+">B1+ - Upper Intermediate</option>
           <option value="B2">B2 - Advanced</option>
+          <option value="C1">C1 - Proficiency</option>
         </select>
       </div>
       
@@ -722,7 +831,7 @@ async function completeGoogleRegistration() {
           A2: { studied: 0, mastered: 0 },
           B1: { studied: 0, mastered: 0 },
           'B1+': { studied: 0, mastered: 0 },
-          B2: { studied: 0, mastered: 0 }
+          B2: { studied: 0, mastered: 0 }, C1: { studied: 0, mastered: 0 }
         }
       }
     }, { merge: true });

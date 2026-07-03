@@ -137,11 +137,18 @@
       bannedNow: bannedUntil > Date.now()
     };
   }
+  // Per-module deactivation (settings/policyCourse.hiddenModules). Hidden modules
+  // are dropped from the view AND from completion (unlock / total / certificate
+  // eligibility), so the course completes on the ACTIVE modules + final exam.
+  let hiddenModules = [];
+  function isModuleHidden(id) { return hiddenModules.indexOf(id) !== -1; }
+  function activeModules() { return COURSE.modules.filter(m => !isModuleHidden(m.id)); }
   function moduleUnlocked(idx) {
-    for (let i = 0; i < idx; i++) if (!testState(COURSE.modules[i].id).passed) return false;
+    const act = activeModules();
+    for (let i = 0; i < idx; i++) if (!testState(act[i].id).passed) return false;
     return true;
   }
-  function allModulesPassed() { return COURSE.modules.every(m => testState(m.id).passed); }
+  function allModulesPassed() { return activeModules().every(m => testState(m.id).passed); }
   function fmtRemaining(ms) {
     const s = Math.max(0, Math.floor(ms / 1000));
     const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
@@ -177,15 +184,16 @@
     if (banTimer) { clearInterval(banTimer); banTimer = null; }
     applyI18n();
     $('pcIntro').textContent = L(COURSE.intro);
-    const total = COURSE.modules.length;
-    const done = COURSE.modules.filter(m => testState(m.id).passed).length;
+    const act = activeModules();
+    const total = act.length;
+    const done = act.filter(m => testState(m.id).passed).length;
     const fin = testState('final');
     const pct = Math.round(((done + (fin.passed ? 1 : 0)) / (total + 1)) * 100);
     $('pcProgressFill').style.width = pct + '%';
     $('pcProgressLabel').textContent = done + ' / ' + total + ' ' + T('modulesDone') + (fin.passed ? ' · ' + T('finalExam') + ' ✓' : '');
 
     let html = '';
-    COURSE.modules.forEach((m, i) => {
+    act.forEach((m, i) => {
       const st = testState(m.id);
       const unlocked = moduleUnlocked(i);
       html += moduleCard(m.id, m.icon, L(m.title), st, unlocked, false, m.lessons.length, m.quiz.length);
@@ -546,6 +554,7 @@
       userDoc = uSnap.exists ? uSnap.data() : {};
       progress = pSnap.exists ? pSnap.data() : null;
       const cfg = cfgSnap.exists ? cfgSnap.data() : null;
+      hiddenModules = (cfg && Array.isArray(cfg.hiddenModules)) ? cfg.hiddenModules : [];
       // Assignment-style scoping (all / class / level / module / year);
       // course-target.js holds the shared check, legacy classes[] included.
       const activeForMe = (typeof window.courseActiveFor === 'function')

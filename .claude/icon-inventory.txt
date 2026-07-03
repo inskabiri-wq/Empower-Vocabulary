@@ -31,7 +31,7 @@ EMOJI ICON INVENTORY  (237 unique, 1835 total uses)
 ✕  x22    [assignments/js/grading-stats.js, assignments/js/student-assignments.js, assignments/js/writing-annotations.js, assignments/js/writing-submissions-view.js +10 more]
         e.g. ✕ Leave Session
 📚  x21    [app.html, assignments/js/skill-registry.js, assignments/js/teacher-assignments.js, classroom/js/reading-student.js +11 more]
-        e.g. <h1>📚 Empower Lab</h1>
+        e.g. <h1>📚 Lingualab</h1>
 🔒  x20    [classroom-heist-student.html, classroom-heist-teacher.html, classroom/js/heist-student.js, classroom/js/heist-teacher.js +10 more]
         e.g. <h2>🔒 Pick your vault password</h2>
 ›  x19    [classroom-heist-teacher.html, classroom-listening-teacher.html, classroom-reading-teacher.html, classroom-trust-teacher.html +2 more]
@@ -351,7 +351,7 @@ EMOJI ICON INVENTORY  (237 unique, 1835 total uses)
 💀  x1     [student-dashboard.html]
         e.g. <div class="diff-icon">💀</div>
 🧪  x1     [teacher-dashboard.html]
-        e.g. <a href="student-dashboard.html" class="more-menu-item">🧪 Empower Lab</a>
+        e.g. <a href="student-dashboard.html" class="more-menu-item">🧪 Lingualab</a>
 💻  x1     [activity-tracker/js/activity-admin.js]
         e.g. <span class="meta-item">💻 ${log.device || 'Unknown'} • ${log.browser || 'Unknown…
 🔧  x1     [activity-tracker/js/activity-config.js]

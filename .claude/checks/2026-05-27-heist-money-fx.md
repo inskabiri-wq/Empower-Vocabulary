@@ -30,7 +30,7 @@ The existing balance-chip `.bump` (scale + spin) still fires on every balance ch
 
 ## Music — why I can't use Gimkit's tracks + what to do instead
 
-Gimkit's in-game music is **copyrighted** (either their own commissioned tracks or licensed library music). Ripping those files into Empower Lab would be copyright infringement — and since you've said this is heading toward commercial use with paying customers, that's a real takedown/liability risk, not a hypothetical one. I won't pull them.
+Gimkit's in-game music is **copyrighted** (either their own commissioned tracks or licensed library music). Ripping those files into Lingualab would be copyright infringement — and since you've said this is heading toward commercial use with paying customers, that's a real takedown/liability risk, not a hypothetical one. I won't pull them.
 
 **Legal options (pick one and I'll wire it in):**
 

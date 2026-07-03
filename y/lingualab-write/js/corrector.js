@@ -1,5 +1,5 @@
 /* ============================================================
-   EMPOWER WRITE - UI engine (staging)
+   LINGUALAB WRITE - UI engine (staging)
    Renders a student essay with severity-aware highlights + a
    full-width feedback report (level estimate, vocab & grammar
    distributions, suggestions, per-criterion notes, comments,

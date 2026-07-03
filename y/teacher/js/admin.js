@@ -20,7 +20,7 @@
   'use strict';
 
   // ── Constants ────────────────────────────────────────────────
-  const LEVELS  = ['A2', 'B1', 'B1+', 'B2'];
+  const LEVELS  = ['A2', 'B1', 'B1+', 'B2', 'C1'];
   const MODULES = ['Module 1', 'Module 2', 'Module 3', 'Module 4'];
 
   // Module-private state. Re-rendered on every change.

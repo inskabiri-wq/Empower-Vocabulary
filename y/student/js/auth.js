@@ -36,6 +36,18 @@ auth.onAuthStateChanged(async (user) => {
     return;
   }
 
+  // Account gate (mirrors the login page): a deactivated or expired account
+  // must not reach the dashboard, even via a bookmarked/refreshed URL. The
+  // check fails OPEN on a transient read error, so a network blip never locks
+  // anyone out. Verification-due is NOT a block here (returns ok:true) - the
+  // verify-gate modal handles that separately.
+  if (window.AccountGate) {
+    try {
+      const gate = await window.AccountGate.check(db, user.uid);
+      if (!gate.ok) { await auth.signOut(); window.location.href = 'index.html'; return; }
+    } catch (e) { /* fail open - never block the dashboard on a gate error */ }
+  }
+
   // Log login activity (we'll skip for demo a few lines down once we know
   // their role).
   let activityLoggedHere = false;
@@ -80,7 +92,7 @@ auth.onAuthStateChanged(async (user) => {
         });
         var chipsWrap = document.getElementById('studentInfoChips');
         if (chipsWrap) chipsWrap.style.display = anyChip ? '' : 'none';
-      } catch (e) { /* non-fatal — chips just won't show */ }
+      } catch (e) { /* non-fatal - chips just won't show */ }
       if (window.isDemoUser) {
         showDemoBanner();
       } else if (typeof ActivityLogger !== 'undefined') {
@@ -129,7 +141,7 @@ async function logSessionToFirestore() {
   // Demo users don't write sessions — keeps teacher analytics clean and
   // matches what the firestore.rules already enforce on the server.
   if (window.isDemoUser) {
-    console.log('Demo mode — session not saved');
+    console.log('Demo mode - session not saved');
     return;
   }
 
@@ -267,7 +279,7 @@ function showDemoBanner() {
     'font-size:0.9em',
     'box-shadow:0 2px 8px rgba(0,0,0,0.25)'
   ].join(';');
-  bar.textContent = '👀 Demo mode — your progress isn’t saved. Expires in 7 days.';
+  bar.textContent = '👀 Demo mode - your progress isn’t saved. Expires in 7 days.';
   document.body.appendChild(bar);
   // Push page content down so the banner doesn't overlap the header.
   document.body.style.paddingTop = (parseInt(getComputedStyle(document.body).paddingTop) || 0) + 36 + 'px';

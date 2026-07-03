@@ -81,12 +81,54 @@
     }
   }
 
+  // Per-module activation (admin only). Deactivating a module drops it from the
+  // student course AND from completion (the student side filters it everywhere),
+  // so the certificate is earned on the remaining active modules.
+  function renderModuleToggles() {
+    const box = $('pcModulesBox');
+    if (!box) return;
+    const admin = (typeof isAdmin === 'function') && isAdmin();
+    const mods = COURSE.modules || [];
+    if (!admin || !mods.length) { box.innerHTML = ''; return; }
+    const hidden = (cfg && Array.isArray(cfg.hiddenModules)) ? cfg.hiddenModules : [];
+    box.innerHTML =
+      '<div style="font-size:0.8em; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted,#94a3b8); margin:0 2px 8px;">Modules (deactivate to drop from the course + certificate)</div>' +
+      mods.map(m => {
+        const off = hidden.indexOf(m.id) !== -1;
+        const name = (m.title && (m.title.en || m.title)) || m.id;
+        return '<div style="display:flex; align-items:center; gap:10px; padding:8px 12px; margin-bottom:6px; border:1px solid ' +
+          (off ? 'rgba(248,113,113,0.5)' : 'var(--border-color, rgba(59,130,246,0.25))') + '; border-radius:10px; ' + (off ? 'background:rgba(248,113,113,0.06);' : '') + '">' +
+          '<span style="font-size:18px;">' + esc(m.icon || '📘') + '</span>' +
+          '<div style="flex:1; min-width:0; font-size:0.9em; color:var(--text-primary,#e6edf3); font-weight:600;">' + esc(name) +
+            '<div style="font-size:0.78em; font-weight:600; margin-top:1px; color:' + (off ? '#f87171' : 'var(--success,#22c55e)') + ';">' + (off ? 'Deactivated' : 'Active') + '</div></div>' +
+          '<button type="button" class="pc-mod-toggle" data-mid="' + esc(m.id) + '" style="cursor:pointer; font-family:inherit; font-size:0.8em; font-weight:600; color:var(--text-muted,#94a3b8); background:transparent; border:1px solid var(--border-color, rgba(59,130,246,0.25)); border-radius:18px; padding:5px 14px;">' +
+            (off ? 'Activate' : 'Deactivate') + '</button>' +
+        '</div>';
+      }).join('');
+    box.querySelectorAll('.pc-mod-toggle').forEach(b => b.addEventListener('click', () => flipModule(b.getAttribute('data-mid'))));
+  }
+
+  async function flipModule(mid) {
+    const u = (typeof auth !== 'undefined' && auth.currentUser) || null;
+    if (!u) return;
+    cfg = cfg || {};
+    const arr = Array.isArray(cfg.hiddenModules) ? cfg.hiddenModules.slice() : [];
+    const i = arr.indexOf(mid);
+    if (i === -1) arr.push(mid); else arr.splice(i, 1);
+    cfg.hiddenModules = arr;
+    try {
+      await db.collection('settings').doc('policyCourse').set({ hiddenModules: arr, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: u.uid }, { merge: true });
+    } catch (e) { console.error('flipModule', e); if (typeof AppDialog !== 'undefined') AppDialog.alert('Could not save (admin only): ' + e.message); }
+    renderModuleToggles();
+  }
+
   async function loadConfig() {
     try {
       const snap = await db.collection('settings').doc('policyCourse').get();
       cfg = snap.exists ? snap.data() : null;
     } catch (e) { console.warn('policyCourse cfg load', e); }
     statusPill();
+    renderModuleToggles();
   }
 
   // ── Activation modal (combinable ticks) ────────────────────
@@ -97,7 +139,7 @@
   // from the roster (with a year fallback).
   const DIMS = [
     { id: 'caClasses', key: 'classes', opts: () => distinctFromStudents('studentClass') },
-    { id: 'caLevels',  key: 'levels',  opts: () => ['A2', 'B1', 'B1+', 'B2'] },
+    { id: 'caLevels',  key: 'levels',  opts: () => ['A2', 'B1', 'B1+', 'B2', 'C1'] },
     { id: 'caModules', key: 'modules', opts: () => ['Module 1', 'Module 2', 'Module 3', 'Module 4'] },
     { id: 'caYears',   key: 'years',   opts: () => { const v = distinctFromStudents('academicYear'); return v.length ? v : ['2025-2026']; } }
   ];

@@ -22,6 +22,12 @@
     { id: 'fill',       icon: '📝', name: 'Fill in the Blank', desc: 'Type the missing word' },
     { id: 'unscramble', icon: '🧩', name: 'Unscramble', desc: 'Put the words in order' }
   ];
+  // Admin can deactivate individual grammar games (settings/featureToggles.gmode_*).
+  // A deactivated game vanishes from the picker, the Quest Board challenge rows,
+  // and the per-unit progress math. A missing key means ACTIVE. Keyed gmode_* so
+  // it never collides with the vocabulary mode_* toggles.
+  function gameOn(id) { var ft = window.featureToggles || {}; return ft['gmode_' + id] !== false; }
+  function activeGames() { return GAMES.filter(function (g) { return gameOn(g.id); }); }
   var THRESHOLD = 60;
   var PROG_KEY  = 'gr_prog_v1';
 
@@ -49,11 +55,20 @@
   function saveProg(p) { try { localStorage.setItem(PROG_KEY, JSON.stringify(p)); } catch (_) {} }
   function pkey(level, unit, game) { return level + '|u' + unit + '|' + game; }
   // Merge localStorage (this device) with the Firestore-backed remote cache.
-  function getProg(level, unit, game) {
-    var k = pkey(level, unit, game);
-    var local = loadProg()[k] || { best: 0, done: false };
-    var remote = (grRemote && grRemote[k]) || { best: 0, done: false };
+  // A specific unit's progress ALSO counts the "all units" play for that game:
+  // when you practise "all units", you do see that unit's questions, so its
+  // donut should light up too (this is the "all A2 shows no map progress" fix).
+  function progAt(key) {
+    var p = loadProg();
+    var local = p[key] || { best: 0, done: false };
+    var remote = (grRemote && grRemote[key]) || { best: 0, done: false };
     return { best: Math.max(local.best || 0, remote.best || 0), done: !!(local.done || remote.done) };
+  }
+  function getProg(level, unit, game) {
+    var a = progAt(pkey(level, unit, game));
+    if (unit === 'all') return a;
+    var b = progAt(pkey(level, 'all', game));   // credit "all units" play to this unit
+    return { best: Math.max(a.best, b.best), done: a.done || b.done };
   }
   function recordProg(level, unit, game, pct) {
     var p = loadProg(), k = pkey(level, unit, game), prev = p[k] || { best: 0, done: false };
@@ -124,6 +139,7 @@
       unitTopics(level, u).forEach(function (t) {
         (t.questions || []).forEach(function (q) {
           q.ht = t.title; // grammar-point hint shown in the fill game
+          q._tid = t.id;  // topic id, so the fill clue can skip non-verb topics
           var blanks = (String(q.stem).match(/_{2,}/g) || []).length;
           if (game === 'unscramble') { if (blanks === 1 && sentenceOf(q).split(/\s+/).length <= 9) out.push(q); }
           else if (game === 'fill') { if (blanks === 1 && correctText(q).split(/\s+/).length === 1) out.push(q); }
@@ -164,13 +180,15 @@
   // ── Build the unit cards (the "map") + level stats ─────────
   function buildUnitCards(level) {
     var units = unitsAt(level);
+    var games = activeGames();
+    var gpu = games.length || 1;   // games-per-unit, guarded against /0 if all are off
     var gamesDone = 0, gamesTotal = 0, totalQ = 0, mastered = 0, best = 0, accSum = 0, accCount = 0;
     var cards = units.map(function (u) {
       var topics = unitTopics(level, u);
       var n = topics.reduce(function (s, t) { return s + (t.questions || []).length; }, 0);
       totalQ += n;
       var doneCount = 0;
-      var rows = GAMES.map(function (g) {
+      var rows = games.map(function (g) {
         var pr = getProg(level, u, g.id);
         if (pr.done) doneCount++;
         if (pr.best > 0) { accSum += pr.best; accCount++; if (pr.best > best) best = pr.best; }
@@ -181,12 +199,12 @@
           '<span class="qc-challenge-check">' + (pr.done ? '✅' : '⬜') + '</span>' +
         '</div>';
       }).join('');
-      gamesDone += doneCount; gamesTotal += GAMES.length;
-      if (doneCount === GAMES.length) mastered++;
-      var pct = Math.round(doneCount / GAMES.length * 100);
-      var color = doneCount === GAMES.length ? '#10b981' : (pct > 0 ? '#3b82f6' : '#334155');
-      var statusClass = doneCount === GAMES.length ? 'qc-complete' : (doneCount > 0 ? 'qc-active' : 'qc-new');
-      var statusLabel = doneCount === GAMES.length ? '🏆 Mastered' : (doneCount > 0 ? '📖 In Progress' : '🆕 Not Started');
+      gamesDone += doneCount; gamesTotal += games.length;
+      if (games.length && doneCount === games.length) mastered++;
+      var pct = Math.round(doneCount / gpu * 100);
+      var color = (games.length && doneCount === games.length) ? '#10b981' : (pct > 0 ? '#3b82f6' : '#334155');
+      var statusClass = (games.length && doneCount === games.length) ? 'qc-complete' : (doneCount > 0 ? 'qc-active' : 'qc-new');
+      var statusLabel = (games.length && doneCount === games.length) ? '🏆 Mastered' : (doneCount > 0 ? '📖 In Progress' : '🆕 Not Started');
       var topicLine = topics.map(function (t) { return t.title; }).join(' · ');
       var radius = 32, circ = 2 * Math.PI * radius, offset = circ - pct / 100 * circ;
       return '<div class="qc-card ' + statusClass + '">' +
@@ -200,7 +218,7 @@
             '<div class="qc-unit-words">' + n + ' questions</div>' +
             '<div class="qc-unit-topics">' + esc(topicLine) + '</div>' +
             '<div class="qc-unit-status">' + statusLabel + '</div>' +
-            '<div class="qc-quest-progress">' + doneCount + '/' + GAMES.length + ' games</div>' +
+            '<div class="qc-quest-progress">' + doneCount + '/' + games.length + ' games</div>' +
           '</div>' +
         '</div>' +
         '<div class="qc-challenges">' + rows + '</div>' +
@@ -270,11 +288,15 @@
     var unitDesc;
     if (state.selectedUnit === 'all') { unitDesc = 'All ' + info.units.length + ' units &middot; every ' + esc(level) + ' topic.'; }
     else { var _ut = unitTopics(level, state.selectedUnit).map(function (t) { return t.title; }); unitDesc = '<strong>Unit ' + state.selectedUnit + ':</strong> ' + esc(_ut.join(', ')); }
+    var grGames = activeGames();
+    var grGameGrid = grGames.length
+      ? grGames.map(function (g) {
+          return '<button type="button" class="gr-game-card" data-game="' + g.id + '"><div class="gr-game-badge">' + g.icon + '</div><h3>' + esc(g.name) + '</h3><p>' + esc(g.desc) + '</p></button>';
+        }).join('')
+      : '<div class="gr-empty">No grammar games are active right now.</div>';
     var gameCards = '<div class="gr-section-title"><span>🎮</span> Choose a game &middot; ' + esc(unitLabel) + '</div>' +
       '<div class="gr-unit-desc">' + unitDesc + '</div>' +
-      '<div class="gr-game-grid">' + GAMES.map(function (g) {
-        return '<button type="button" class="gr-game-card" data-game="' + g.id + '"><div class="gr-game-badge">' + g.icon + '</div><h3>' + esc(g.name) + '</h3><p>' + esc(g.desc) + '</p></button>';
-      }).join('') + '</div>';
+      '<div class="gr-game-grid">' + grGameGrid + '</div>';
 
     var levelPills = DATA.levels.map(function (lv) { return '<button type="button" class="gr-pill' + (lv === level ? ' active' : '') + '" data-lv="' + esc(lv) + '">' + esc(lv) + '</button>'; }).join('');
     var unitPills = '<button type="button" class="gr-pill gr-pill-u' + (state.selectedUnit === 'all' ? ' active' : '') + '" data-unit="all">All</button>' +
@@ -349,14 +371,122 @@
     return renderChoice(q);
   }
 
+  // Hints are hidden behind a button so the question is real practice; the
+  // student reveals the rule only if they choose to.
+  function hintBlock(h) {
+    if (!h) return '';
+    return '<div class="gr-hint-wrap">' +
+      '<button type="button" class="gr-hint-btn" id="grHintBtn" style="display:inline-block; background:transparent; border:1px solid rgba(127,127,127,0.35); color:inherit; opacity:0.85; border-radius:999px; padding:3px 12px; font-size:0.82em; cursor:pointer; margin:4px 0;">Show hint</button>' +
+      '<div class="gr-fill-hint" id="grHint" style="display:none;">Hint: <span class="gr-hint-word">' + esc(h) + '</span></div>' +
+      '</div>';
+  }
+  function wireHint(b) {
+    var btn = b.querySelector('#grHintBtn'); if (!btn) return;
+    btn.onclick = function () {
+      var hd = b.querySelector('#grHint'); if (!hd) return;
+      var open = hd.style.display !== 'none';
+      hd.style.display = open ? 'none' : '';
+      btn.textContent = open ? 'Show hint' : 'Hide hint';
+    };
+  }
+  // Fill in the Blank gives no options, so the typed answer can be unguessable
+  // ("which verb?"). The hint gives TWO things and never the word itself:
+  //   1. the grammar rule, and
+  //   2. a meaning clue for the verb (a definition, so the student still thinks).
+  // The clue only shows when the answer is a known lexical verb; otherwise just
+  // the rule. The glosses never contain the verb they describe.
+  var GR_IRREG = { went: 'go', gone: 'go', ate: 'eat', eaten: 'eat', bought: 'buy', saw: 'see', seen: 'see', made: 'make', took: 'take', taken: 'take', wrote: 'write', written: 'write', drank: 'drink', drunk: 'drink', gave: 'give', given: 'give', found: 'find', left: 'leave', met: 'meet', spoke: 'speak', spoken: 'speak', broke: 'break', broken: 'break', knew: 'know', known: 'know', lost: 'lose', began: 'begin', begun: 'begin', forgot: 'forget', forgotten: 'forget', drove: 'drive', driven: 'drive', flew: 'fly', flown: 'fly', swam: 'swim', sang: 'sing', ran: 'run', rode: 'ride', told: 'tell', sent: 'send', built: 'build', paid: 'pay', sold: 'sell', kept: 'keep', felt: 'feel', caught: 'catch', taught: 'teach', got: 'get', understood: 'understand', said: 'say', worn: 'wear', grown: 'grow', stolen: 'steal', lying: 'lie', won: 'win' };
+  var GR_AUX = 'is are am was were be been being has have had will would shall should can could may might must do does did to not'.split(' ').reduce(function (o, w) { o[w] = 1; return o; }, {});
+  var GR_GLOSS = {
+    go: 'move or travel to a place', live: 'have your home somewhere', play: 'take part in a game or sport', watch: 'look at something for a while',
+    study: 'learn about a subject', work: 'do your job', read: 'look at words and understand them', drink: 'take liquid into your mouth',
+    speak: 'use your voice to say a language', start: 'make something begin', teach: 'help other people learn', drive: 'control a car',
+    cook: 'prepare food with heat', walk: 'move slowly on your feet', like: 'enjoy or be fond of', eat: 'put food in your mouth',
+    buy: 'get something with money', see: 'notice with your eyes', make: 'create or build something', take: 'pick up or carry away',
+    write: 'put words on paper', give: 'hand something to a person', find: 'discover where something is', leave: 'go away from a place',
+    meet: 'come together with someone', visit: 'go to see a place or person', swim: 'move through water', sing: 'make music with your voice',
+    dance: 'move your body to music', ride: 'sit on and control a bike or horse', run: 'move quickly on your feet', listen: 'pay attention to a sound',
+    clean: 'make something tidy and free of dirt', paint: 'put colour on a surface', shop: 'buy things in stores', win: 'come first or beat the others',
+    call: 'phone or shout to someone', help: 'make things easier for someone', stay: 'remain in one place', catch: 'grab a moving thing',
+    book: 'reserve a place in advance', pass: 'succeed in an exam', finish: 'bring something to an end', arrive: 'reach a place',
+    close: 'shut something', open: 'make something no longer shut', build: 'put up a structure', lose: 'stop having something',
+    forget: 'fail to remember', begin: 'make something start', sell: 'give something for money', pay: 'give money for something',
+    send: 'make something go to someone', tell: 'give information in words', keep: 'continue to have', feel: 'sense an emotion or touch',
+    know: 'have facts in your mind', break: 'make something come apart', plan: 'decide in advance what to do', travel: 'make a journey',
+    wait: 'stay until something happens', train: 'practise for a sport or skill', save: 'keep money, or rescue', ask: 'put a question to someone',
+    practise: 'do something often to get better', join: 'become a member of a group', move: 'change place or change home', learn: 'get knowledge or a skill',
+    fly: 'travel through the air', wear: 'have clothes on your body', get: 'obtain or receive', answer: 'reply to a question',
+    remember: 'keep something in your mind', return: 'come or go back', repair: 'fix something broken', check: 'look to make sure',
+    sign: 'write your name on something', print: 'make words on paper with a machine', try: 'make an effort', use: 'put to work for a purpose',
+    relax: 'rest and become calm', sleep: 'rest with your eyes closed at night', reach: 'arrive at or stretch to', invite: 'ask someone to come',
+    own: 'have as your property', want: 'wish to have', avoid: 'keep away from', cheat: 'break the rules to win',
+    accept: 'agree to take or receive', understand: 'know the meaning of', succeed: 'do well and reach a goal', prepare: 'get ready',
+    warn: 'tell of a danger', discover: 'find for the first time', revise: 'study again before a test', invest: 'put money in for the future',
+    earn: 'get money by working', fix: 'repair, or attach firmly', stop: 'no longer move or continue', mend: 'repair something',
+    translate: 'change words into another language', service: 'check and repair a machine', copy: 'make the same again', type: 'write with a keyboard',
+    audit: 'check accounts officially', analyse: 'examine something in detail', tailor: 'adjust clothes to fit a person', review: 'look over and judge',
+    redecorate: 'paint and refit a room', redesign: 'plan the look of something again', landscape: 'shape a garden or grounds', notice: 'become aware of something',
+    lock: 'close firmly with a key', grow: 'get bigger, or raise plants', test: 'check that something works', water: 'pour water on plants',
+    turn: 'move to face another way', serve: 'give food or help to people', steal: 'take without permission', cancel: 'call off something planned',
+    plant: 'put into the ground to grow', depart: 'leave, especially a vehicle', retire: 'stop working for good', film: 'record moving pictures',
+    attend: 'go to an event', present: 'show or give something formally', settle: 'pay what is owed, or come to rest', fail: 'not succeed',
+    cycle: 'ride a bicycle', say: 'speak words aloud', lie: 'rest flat on a surface', deliver: 'take goods to a place', record: 'store sound or video'
+  };
+  // Every base a word could reduce to. We try the raw word first (so a base
+  // verb that ends in -ing like "sing" is not mangled), then each inflection
+  // rule, offering BOTH the plain strip AND the de-doubled / e-restored form,
+  // so "called"->call, "passed"->pass, "stopped"->stop, "liked"->like and
+  // "driving"->drive all resolve. grLemma keeps the first candidate we gloss.
+  function grCandidates(w) {
+    var c = [w];
+    if (GR_IRREG[w]) c.push(GR_IRREG[w]);
+    if (/ies$/.test(w)) c.push(w.slice(0, -3) + 'y');
+    if (/(ches|shes|sses|xes|zes|oes)$/.test(w)) c.push(w.slice(0, -2));
+    if (/s$/.test(w)) c.push(w.slice(0, -1));
+    if (/ied$/.test(w)) c.push(w.slice(0, -3) + 'y');
+    if (/ed$/.test(w)) { var e = w.slice(0, -2); c.push(e, e + 'e'); if (/(.)\1$/.test(e)) c.push(e.slice(0, -1)); }
+    if (/ing$/.test(w)) { var g = w.slice(0, -3); c.push(g, g + 'e'); if (/(.)\1$/.test(g)) c.push(g.slice(0, -1)); }
+    return c;
+  }
+  function grLemma(ans) {
+    var full = String(ans == null ? '' : ans).toLowerCase();
+    if (/\bgoing to\b/.test(full) || /\bused to\b/.test(full) || /\buse to\b/.test(full)) return '';  // future / habit markers, not a literal verb
+    var p = full.trim().split(/\s+/);
+    var skip = { to: 1, not: 1, up: 1, out: 1, off: 1, 'in': 1, on: 1, back: 1, down: 1, here: 1, there: 1, now: 1, him: 1, her: 1, me: 1, us: 1, them: 1, you: 1, it: 1, well: 1, hard: 1, home: 1, early: 1, late: 1 };
+    var i = p.length - 1; while (i > 0 && skip[p[i]]) i--;
+    var w = p[i]; if (!w || GR_AUX[w]) return '';
+    var cands = grCandidates(w);
+    for (var k = 0; k < cands.length; k++) { if (GR_GLOSS[cands[k]]) return cands[k]; }
+    return '';
+  }
+  // Topics whose fill answer is NOT a lexical verb (plural noun, comparative,
+  // possessive, quantifier, article...). A "the verb means" clue would be wrong
+  // or irrelevant there, so we show only the grammar rule. Matched on q._tid.
+  var GR_NONVERB_TID = /plural|comparativ|superlativ|possessiv|adv-frequency|few-little|so-such|article|a-an|some-any|much-many|quantif|demonstrat/i;
+  function fillHintBlock(q) {
+    var parts = [];
+    if (q.hint) parts.push('<b>Grammar:</b> ' + esc(q.hint));
+    var lm = (q._tid && GR_NONVERB_TID.test(q._tid)) ? '' : grLemma(correctText(q));
+    if (lm && GR_GLOSS[lm]) parts.push('<b>Clue:</b> the verb means "' + esc(GR_GLOSS[lm]) + '"');
+    // First letter of the answer - the meaning clue alone was too vague, so this
+    // narrows it down without handing over the whole word.
+    var ans = String(correctText(q) == null ? '' : correctText(q)).trim();
+    if (ans) parts.push('<b>Starts with:</b> "' + esc(ans.charAt(0).toLowerCase()) + '"');
+    if (!parts.length) parts.push('Think about which form fits the sentence.');
+    return '<div class="gr-hint-wrap">' +
+      '<button type="button" class="gr-hint-btn" id="grHintBtn" style="display:inline-block; background:transparent; border:1px solid rgba(127,127,127,0.35); color:inherit; opacity:0.85; border-radius:999px; padding:3px 12px; font-size:0.82em; cursor:pointer; margin:4px 0;">Show hint</button>' +
+      '<div class="gr-fill-hint" id="grHint" style="display:none; line-height:1.6;">' + parts.join('<br>') + '</div></div>';
+  }
+
   function renderChoice(q) {
     var b = body();
     var opts = q.options.map(function (o, i) { return '<button type="button" class="gr-opt" data-i="' + i + '">' + esc(o) + '</button>'; }).join('');
     b.innerHTML = '<div class="gr-drill">' + gameTop() +
       '<div class="gr-q-topic">' + esc(state.label) + ' · Multiple Choice</div>' +
       '<div class="gr-stem">' + esc(q.stem) + '</div>' +
+      hintBlock(q.hint) +
       '<div class="gr-opts">' + opts + '</div><div id="grTail"></div></div>';
-    wireBack();
+    wireBack(); wireHint(b);
     b.querySelectorAll('.gr-opt').forEach(function (el) {
       el.onclick = function () {
         if (state.answered) return; state.answered = true;
@@ -376,9 +506,9 @@
       '<div class="gr-q-topic">' + esc(state.label) + ' · Fill in the Blank</div>' +
       '<div class="gr-stem">' + shown + '</div>' +
       '<input type="text" class="gr-fill-input" id="grFill" placeholder="Type the missing word" autocomplete="off" autocapitalize="off" spellcheck="false">' +
-      '<div class="gr-fill-hint">Hint: <span class="gr-hint-word">' + esc(q.ht || state.label || 'Grammar') + '</span></div>' +
+      fillHintBlock(q) +
       '<div class="gr-drill-foot"><button type="button" class="gr-next" id="grCheck">Check</button></div><div id="grTail"></div></div>';
-    wireBack();
+    wireBack(); wireHint(b);
     var input = document.getElementById('grFill'); if (input) input.focus();
     function submit() {
       if (state.answered) return; var val = input.value; if (!norm(val)) return;
@@ -395,19 +525,59 @@
     if (input) input.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
   }
 
+  // Word Order tokenizer (mirrors the vocabulary Word Order mode): lowercase
+  // every word and split any trailing sentence punctuation into its OWN token.
+  // This removes the two give-aways: the capital first letter (now every bank
+  // token is lower-case) and the period stuck to the final word (now a separate
+  // floating token). The first word is re-capitalised only for display.
+  function isPunctTok(t) { return /^[.,!?;:]+$/.test(t); }
+  function orderTokens(sentence) {
+    var out = [];
+    String(sentence).split(/\s+/).filter(Boolean).forEach(function (w) {
+      var m = w.match(/^(.+?)([.,!?;:]+)$/);
+      if (m) { out.push(m[1].toLowerCase()); out.push(m[2]); }
+      else { out.push(w.toLowerCase()); }
+    });
+    return out;
+  }
+  // Display helper: capitalise the first real word in the answer row, leave the
+  // rest lower-case, never touch punctuation. Comparison stays lower-case.
+  function recaseAnswer(ans) {
+    var first = false;
+    ans.querySelectorAll('.gr-answer-token').forEach(function (el) {
+      var w = (el.getAttribute('data-w') || '').toLowerCase();
+      if (isPunctTok(w)) { el.textContent = w; return; }
+      if (!first) { el.textContent = w.charAt(0).toUpperCase() + w.slice(1); first = true; }
+      else { el.textContent = w; }
+    });
+  }
+  // Render the student's token list back as a natural sentence (for the review).
+  function naturalJoin(toks) {
+    var s = '';
+    toks.forEach(function (t, i) {
+      if (isPunctTok(t)) { s += t; }
+      else { var w = (i === 0) ? t.charAt(0).toUpperCase() + t.slice(1) : t; s += (s ? ' ' : '') + w; }
+    });
+    return s;
+  }
+
   function renderUnscramble(q) {
     var b = body();
-    var words = sentenceOf(q).split(/\s+/).filter(Boolean);
-    var order = shuffle(words.map(function (w, i) { return i; }));
-    if (words.length > 1 && order.every(function (v, i) { return v === i; })) order.reverse();
-    var bank = order.map(function (origIdx, pos) { return '<button type="button" class="gr-token" data-pos="' + pos + '" data-w="' + esc(words[origIdx]) + '">' + esc(words[origIdx]) + '</button>'; }).join('');
+    var toks = orderTokens(sentenceOf(q));
+    var order = shuffle(toks.map(function (w, i) { return i; }));
+    if (toks.length > 1 && order.every(function (v, i) { return v === i; })) order.reverse();
+    var bank = order.map(function (origIdx, pos) {
+      var t = toks[origIdx];
+      return '<button type="button" class="gr-token' + (isPunctTok(t) ? ' gr-token-punct' : '') + '" data-pos="' + pos + '" data-w="' + esc(t) + '">' + esc(t) + '</button>';
+    }).join('');
     b.innerHTML = '<div class="gr-drill">' + gameTop() +
       '<div class="gr-q-topic">' + esc(state.label) + ' · Unscramble</div>' +
       '<div class="gr-stem" style="font-size:1em;color:var(--text-secondary,#b4b4c8);">Tap the words in the right order:</div>' +
+      hintBlock(q.hint) +
       '<div class="gr-answer" id="grAns"><span class="gr-answer-hint">your sentence appears here</span></div>' +
       '<div class="gr-bank" id="grBank">' + bank + '</div>' +
       '<div class="gr-drill-foot"><button type="button" class="gr-next" id="grCheck">Check</button></div><div id="grTail"></div></div>';
-    wireBack();
+    wireBack(); wireHint(b);
     var ans = document.getElementById('grAns');
     function refreshHint() { var hint = ans.querySelector('.gr-answer-hint'); if (hint) hint.style.display = ans.querySelector('.gr-answer-token') ? 'none' : ''; }
     document.getElementById('grBank').querySelectorAll('.gr-token').forEach(function (tok) {
@@ -415,19 +585,20 @@
         if (state.answered || tok.classList.contains('placed')) return;
         tok.classList.add('placed');
         var at = document.createElement('button');
-        at.type = 'button'; at.className = 'gr-answer-token'; at.textContent = tok.getAttribute('data-w');
-        at.onclick = function () { if (state.answered) return; tok.classList.remove('placed'); at.remove(); refreshHint(); };
-        ans.appendChild(at); refreshHint();
+        at.type = 'button'; at.className = 'gr-answer-token';
+        at.setAttribute('data-w', tok.getAttribute('data-w'));
+        at.onclick = function () { if (state.answered) return; tok.classList.remove('placed'); at.remove(); recaseAnswer(ans); refreshHint(); };
+        ans.appendChild(at); recaseAnswer(ans); refreshHint();
       };
     });
     document.getElementById('grCheck').onclick = function () {
       if (state.answered) return;
-      var built = Array.from(ans.querySelectorAll('.gr-answer-token')).map(function (t) { return t.textContent; }).join(' ');
-      if (!norm(built)) return;
+      var builtToks = Array.prototype.map.call(ans.querySelectorAll('.gr-answer-token'), function (t) { return (t.getAttribute('data-w') || '').toLowerCase(); });
+      if (!builtToks.length) return;
       state.answered = true;
-      var ok = norm(built) === norm(sentenceOf(q));
+      var ok = builtToks.join(' ') === toks.join(' ');
       if (ok) state.score++;
-      state.answers.push({ q: q.stem, picked: built, correct: sentenceOf(q), ok: ok });
+      state.answers.push({ q: q.stem, picked: naturalJoin(builtToks), correct: sentenceOf(q), ok: ok });
       var ex = (q.explain || '') + (ok ? '' : ' Correct: "' + sentenceOf(q) + '".');
       document.getElementById('grCheck').style.display = 'none';
       document.getElementById('grTail').innerHTML = footFeedback(ok, ex); wireNext();
@@ -530,6 +701,12 @@
     if (typeof showScreen === 'function') showScreen('grammarScreen');
     renderMenu();
   };
+
+  // If the admin's feature toggles land while the grammar menu is already open,
+  // re-render so a just-deactivated game disappears (and the map reflects it).
+  document.addEventListener('feature-toggles-ready', function () {
+    if (DATA && state.view === 'menu' && body()) { try { renderMenu(); } catch (_) {} }
+  });
 
   document.addEventListener('DOMContentLoaded', init);
 })();

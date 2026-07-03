@@ -454,7 +454,7 @@ async function startActivity(activity) {
   // empty for reasons that have nothing to do with their filter. Tell
   // them it's a loading state, not an empty selection.
   if (typeof datasetsReady !== 'undefined' && !datasetsReady) {
-    AppDialog.alert('📚 Still loading vocabulary — please try again in a moment.');
+    AppDialog.alert('📚 Still loading vocabulary - please try again in a moment.');
     return;
   }
 
@@ -577,6 +577,8 @@ function selectMatchItem(el) {
       matchedInBatch++;
       updateStreak(true);
       playSound('correct');
+      // Read the matched word aloud (a.id is the word) for hearing practice.
+      if (typeof speak === 'function') speak(a.id);
       document.getElementById('matchScore').textContent = score;
       setProgress('matchProgress', score, currentWords.length);
       
@@ -708,6 +710,8 @@ function checkChoice(btn, selected, correct) {
     score++;
     updateStreak(true);
     playSound('correct');
+    // Read the word aloud so the student can hear it and repeat to practise.
+    if (typeof speak === 'function') speak(currentWords[currentIndex].word);
   } else {
     btn.classList.add('incorrect');
     updateStreak(false);
@@ -1297,6 +1301,8 @@ function checkFill(btn, selected, correct) {
     updateStreak(true);
     playSound('correct');
     fillAllBlanks('var(--success)');
+    // Read the filled form aloud for hearing / repetition practice.
+    if (typeof speak === 'function') speak(displayForm);
   } else {
     btn.classList.add('incorrect');
     updateStreak(false);
@@ -1472,12 +1478,12 @@ function checkOrder() {
       // First time hitting 3 wrong: reveal correct sentence, add to missed, but keep Check active
       document.getElementById('orderFeedback').innerHTML = `Correct: <strong>${escapeHtml(cur.ex)}</strong>`;
       document.getElementById('orderFeedback').style.display = 'block';
-      document.getElementById('orderAttemptInfo').textContent = `No more points — arrange the sentence correctly to continue.`;
+      document.getElementById('orderAttemptInfo').textContent = `No more points - arrange the sentence correctly to continue.`;
       document.getElementById('orderAttemptInfo').style.display = 'block';
       missedWords.push(cur);
     } else if (orderAttempts > 3) {
       // Already shown the answer — user is still trying, keep feedback visible
-      document.getElementById('orderAttemptInfo').textContent = `No more points — arrange the sentence correctly to continue.`;
+      document.getElementById('orderAttemptInfo').textContent = `No more points - arrange the sentence correctly to continue.`;
       document.getElementById('orderAttemptInfo').style.display = 'block';
     } else {
       document.getElementById('orderAttemptInfo').textContent = `Attempt ${orderAttempts}/3 - Try again!`;
@@ -1687,6 +1693,8 @@ function checkUnscramble() {
       document.getElementById('unscrambleScore').textContent = score;
     }
     playSound('correct');
+    // Read the unscrambled word aloud for hearing / repetition practice.
+    if (typeof speak === 'function') speak(cur.word);
     document.getElementById('unscrambleCheck').style.display = 'none';
     document.getElementById('unscrambleNext').style.display = 'inline-block';
     document.getElementById('unscrambleClear').disabled = true;
@@ -1700,14 +1708,14 @@ function checkUnscramble() {
     if (unscrambleAttempts === 3) {
       document.getElementById('unscrambleFeedback').innerHTML = `Answer: <strong>${escapeHtml(cur.word)}</strong>`;
       document.getElementById('unscrambleFeedback').style.display = 'block';
-      document.getElementById('unscrambleAttemptInfo').textContent = 'No more points — spell it correctly to continue.';
+      document.getElementById('unscrambleAttemptInfo').textContent = 'No more points - spell it correctly to continue.';
       document.getElementById('unscrambleAttemptInfo').style.display = 'block';
       missedWords.push(cur);
     } else if (unscrambleAttempts > 3) {
-      document.getElementById('unscrambleAttemptInfo').textContent = 'No more points — spell it correctly to continue.';
+      document.getElementById('unscrambleAttemptInfo').textContent = 'No more points - spell it correctly to continue.';
       document.getElementById('unscrambleAttemptInfo').style.display = 'block';
     } else {
-      document.getElementById('unscrambleAttemptInfo').textContent = `Attempt ${unscrambleAttempts}/3 — try again!`;
+      document.getElementById('unscrambleAttemptInfo').textContent = `Attempt ${unscrambleAttempts}/3 - try again!`;
       document.getElementById('unscrambleAttemptInfo').style.display = 'block';
     }
     showFeedback(false);

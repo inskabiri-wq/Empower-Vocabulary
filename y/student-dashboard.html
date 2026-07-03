@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Empower Lab</title>
+<title>Lingualab</title>
 <!-- PWA -->
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Empower Lab">
+<meta name="apple-mobile-web-app-title" content="Lingualab">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
 <!-- Crystal-design assignment cards use Outfit (display) + JetBrains Mono
@@ -31,7 +31,7 @@
 <link rel="stylesheet" href="student/css/extra.css">
 <link rel="stylesheet" href="student/css/hub.css?v=14">
 <link rel="stylesheet" href="student/css/skills.css">
-<link rel="stylesheet" href="student/css/grammar.css?v=15">
+<link rel="stylesheet" href="student/css/grammar.css?v=17">
 <link rel="stylesheet" href="student/css/reading-exam.css">
 <link rel="stylesheet" href="assignments/css/assignments.css">
 </head>
@@ -75,6 +75,7 @@
             <option value="B1">B1 — Intermediate</option>
             <option value="B1+">B1+ — Upper Intermediate</option>
             <option value="B2">B2 — Advanced</option>
+            <option value="C1">C1 - Proficiency</option>
           </select>
           <span class="vg-chev" aria-hidden="true">▾</span>
         </div>
@@ -326,6 +327,7 @@
       <button class="level-tab" data-level="B1" onclick="showMapLevel('B1')">B1</button>
       <button class="level-tab" data-level="B1+" onclick="showMapLevel('B1+')">B1+</button>
       <button class="level-tab" data-level="B2" onclick="showMapLevel('B2')">B2</button>
+      <button class="level-tab" data-level="C1" onclick="showMapLevel('C1')">C1</button>
     </div>
 
     <div class="learning-map-container" id="learningMapContainer">
@@ -357,7 +359,7 @@
             <line x1="27" y1="10" x2="27" y2="19" stroke="url(#capGradHub)" stroke-width="2.2" stroke-linecap="round"/>
             <circle cx="27" cy="21.5" r="2.5" fill="#f59e0b"/>
           </svg>
-          FSM Language Trainer
+          Lingualab
         </h1>
         <p class="subtitle">Pick a skill to practice today</p>
       </div>
@@ -461,7 +463,7 @@
             <line x1="27" y1="10" x2="27" y2="19" stroke="url(#capGrad)" stroke-width="2.2" stroke-linecap="round"/>
             <circle cx="27" cy="21.5" r="2.5" fill="#f59e0b"/>
           </svg>
-          Empower Lab
+          Lingualab
         </h1>
         <p class="subtitle">Master <strong>2,679 words</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">from your Empower coursebook</span></span></p>
       </div>
@@ -649,7 +651,7 @@
             Select Content
           </div>
 
-          <div class="sel-group">
+          <div class="sel-group" id="bookSelGroup">
             <div class="sel-lbl">Book</div>
             <div class="sel-opts" id="bookPills">
               <div class="sel-opt" data-value="empower">Empower</div>
@@ -668,12 +670,14 @@
               <div class="sel-opt" data-value="B1">B1</div>
               <div class="sel-opt" data-value="B1+">B1+</div>
               <div class="sel-opt" data-value="B2">B2</div>
+              <div class="sel-opt" data-value="C1">C1</div>
             </div>
             <select id="levelSelect" class="dash-v2-native" aria-hidden="true" onchange="changeLevel(this.value)">
               <option value="A2">A2 - Elementary</option>
               <option value="B1">B1 - Intermediate</option>
               <option value="B1+">B1+ - Upper Intermediate</option>
               <option value="B2">B2 - Advanced</option>
+              <option value="C1">C1 - Proficiency</option>
             </select>
           </div>
 
@@ -1161,6 +1165,9 @@
 
 <!-- Modular JavaScript - Load order matters! -->
 <script src="student/js/config.js"></script>
+<!-- Account gate (window.AccountGate): must load BEFORE auth.js so the
+     dashboard can re-check active/expiry on load, not just at login. -->
+<script src="index/js/account-gate.js"></script>
 <script src="student/js/auth.js"></script>
 <!-- Phase J — bi-monthly verification gate. Watches for
      window.currentStudentData (populated by auth.js after the user
@@ -1197,12 +1204,13 @@
 <!-- Phone/system back-button → in-app navigation. Loaded LAST so it can
      wrap showScreen() after every other module has loaded. -->
 <script src="student/js/back-nav.js"></script>
-<script src="student/js/skills/grammar-content.js?v=10"></script>
-<script src="student/js/skills/grammar.js?v=21"></script>
+<script src="student/js/skills/grammar-content.js?v=33"></script>
+<script src="student/js/skills/grammar.js?v=30"></script>
 <!-- Feature toggles for the hub tiles (settings/featureToggles). -->
-<script src="student/js/feature-toggles.js?v=1"></script>
+<script src="student/js/feature-toggles.js?v=2"></script>
 <!-- Content controls: hide assignment-only exams from practice + grammar count. -->
-<script src="student/js/content-controls-student.js?v=2"></script>
+<script src="student/js/content-controls-student.js?v=6"></script>
+<script src="student/js/set-password.js?v=1"></script>
 <script src="student/js/skills/reading.js"></script>
 <script src="student/js/skills/writing.js"></script>
 <script src="student/js/skills/speaking.js"></script>

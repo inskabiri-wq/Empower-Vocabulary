@@ -609,10 +609,15 @@
     try {
       const sref = db.collection('heist_sessions').doc(sessionCode);
       // Pull players + the full hack log in parallel.
-      const [playersSnap, hacksSnap] = await Promise.all([
+      const [playersSnap, hacksSnap, sessSnap] = await Promise.all([
         sref.collection('players').orderBy('balance', 'desc').get(),
-        sref.collection('hacks').where('status', '==', 'resolved').get()
+        sref.collection('hacks').where('status', '==', 'resolved').get(),
+        sref.get()
       ]);
+      // questionReward comes from the session doc, not the createSession-local
+      // `session` const (which is out of scope here). Passing it in avoids a
+      // ReferenceError that was aborting showResults before the CSV got wired.
+      const reward = (sessSnap.exists && Number(sessSnap.data().questionReward)) || 0;
       const players = playersSnap.docs.map(d => d.data());
       const hacks   = hacksSnap.docs.map(d => d.data())
         .sort((a, b) => {
@@ -622,9 +627,9 @@
         });
 
       renderPodium(players);
-      renderPerPlayer(players);
+      renderPerPlayer(players, reward);
       renderHackLog(hacks);
-      wireCsvDownload(players);
+      wireCsvDownload(players, reward);
     } catch (e) {
       console.error('showResults', e);
     }
@@ -648,13 +653,13 @@
     }).join('');
   }
 
-  function renderPerPlayer(players) {
+  function renderPerPlayer(players, reward) {
+    reward = reward || 0;
     const body = document.getElementById('perPlayerBody');
     body.innerHTML = players.map((p, i) => {
       const answered  = p.questionsAnswered || 0;
       const correct   = p.questionsCorrect  || 0;
       const acc       = answered ? Math.round((correct / answered) * 100) : 0;
-      const reward    = (session && session.questionReward) || 0;
       const earned    = correct * reward;
       const stolen    = p.stolenTotal       || 0;
       const hAtt      = p.hacksAttempted    || 0;
@@ -720,11 +725,11 @@
     }).join('');
   }
 
-  function wireCsvDownload(players) {
+  function wireCsvDownload(players, reward) {
+    reward = reward || 0;
     const btn = document.getElementById('downloadResultsBtn');
     if (!btn) return;
     btn.onclick = () => {
-      const reward = (session && session.questionReward) || 0;
       const rows = [
         ['Rank','Name','Avatar','Coins','Earned (questions)','Stolen (hacks)',
          'Questions Correct','Questions Answered','Accuracy %',

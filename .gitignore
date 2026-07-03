@@ -82,3 +82,6 @@ y/tools/bin/
 y/student/audio/listening-exam-*-part*.mp3
 y/student/audio/listening-exam-*-part*.srt
 y/tools/exam-transcript.aligned.js
+
+# Claude Code worktrees (ephemeral checkouts - never back these up)
+.claude/worktrees/

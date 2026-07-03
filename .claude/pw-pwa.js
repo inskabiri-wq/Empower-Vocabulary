@@ -25,7 +25,7 @@ function writeProbe(marker) {
     const r = await page.request.get(BASE + '/manifest.json');
     const j = await r.json();
     manifestName = j.name;
-    manifestOk = r.ok() && j.name === 'Empower Lab' && Array.isArray(j.icons) && j.icons.length >= 2;
+    manifestOk = r.ok() && j.name === 'Lingualab' && Array.isArray(j.icons) && j.icons.length >= 2;
   } catch (e) {}
   ok('manifest.json loads + valid', manifestOk, 'name="' + manifestName + '"');
 

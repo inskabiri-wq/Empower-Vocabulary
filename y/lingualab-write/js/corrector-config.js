@@ -1,5 +1,5 @@
 /* ============================================================
-   EMPOWER WRITE · config (levels + severity)
+   LINGUALAB WRITE · config (levels + severity)
    ------------------------------------------------------------
    Standalone STAGING build. Lives OUTSIDE y/ so it is never
    deployed. Criterion labels/colours + the comment bank are

@@ -54,7 +54,7 @@ Replace the `"_functions_disabled_until_blaze": "…"` line with:
 firebase functions:config:set \
   sendgrid.key="SG.your-key-here" \
   sender.email="noreply@yourdomain.tld" \
-  sender.name="Empower Vocabulary"
+  sender.name="Lingualab"
 ```
 
 (The `sender.email` should be an address you've verified in SendGrid's
@@ -117,3 +117,29 @@ firebase functions:delete sendWritingReminders
 ```
 
 Then remove the `functions` block from `firebase.json` again.
+
+---
+
+## Second function: `rosterImport` (bulk account + class provisioning)
+
+`functions/index.js` also exports **`rosterImport`**, a callable function the
+admin Roster Import screen invokes to validate a roster and create accounts +
+classes + per-module enrollments.
+
+- It ships in the **same deploy** as the reminder function (Step 5 already
+  pushes everything in `functions/`). No extra step is needed once the
+  `functions` block is restored.
+- It needs **Blaze + firebase-admin only**. It does NOT use SendGrid, so it
+  works even if you skip the SendGrid steps above.
+- It is **admin-only** (checks the admin email or `users/{uid}.role == 'admin'`).
+- `mode:'validate'` writes nothing (the dry-run preview). `mode:'commit'` only
+  runs when there are zero hard problems, and is idempotent (matches by email,
+  never duplicates).
+- The expected Excel columns live in the `COLUMN_MAP` near the top of the
+  `rosterImport` block. Edit them to match your real sheet headers.
+
+Verify after deploy:
+
+```bash
+firebase functions:log --only rosterImport
+```

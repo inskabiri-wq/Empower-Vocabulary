@@ -887,6 +887,42 @@ service cloud.firestore {
       }
     }
 
+    // ── Roster import (modules / classes / enrollments / importRuns) ──
+    //
+    // These are written ONLY by the rosterImport Cloud Function, which uses
+    // the Admin SDK and bypasses these rules entirely. So every client WRITE
+    // is denied here; clients only read what they legitimately need. This is
+    // the safe posture for bulk-provisioned data: the trusted backend is the
+    // sole writer, no student or teacher can forge a class or an enrollment.
+
+    // Module labels (e.g. "2026-M3"): harmless metadata, any signed-in user.
+    match /modules/{moduleId} {
+      allow read: if isAuth();
+      allow write: if false;
+    }
+
+    // A class carries its join code + teacher name for the QR join screen.
+    // Readable by any signed-in user (needed to resolve a scanned class);
+    // contains no student PII.
+    match /classes/{classKey} {
+      allow read: if isAuth();
+      allow write: if false;
+    }
+
+    // Enrollment carries student email / number, so it is NOT world-readable:
+    // the owner reads their own, teachers and admin read for their rosters.
+    match /enrollments/{enrollId} {
+      allow read: if isAdmin() || isTeacher() ||
+        (isAuth() && resource.data.uid == request.auth.uid);
+      allow write: if false;
+    }
+
+    // Audit log of import runs: admin only.
+    match /importRuns/{runId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     // ── Deny everything else ──
     match /{document=**} {
       allow read, write: if false;

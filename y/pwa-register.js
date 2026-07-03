@@ -1,5 +1,5 @@
 /* ============================================================
-   EMPOWER LAB — PWA registration
+   LINGUALAB — PWA registration
    ------------------------------------------------------------
    Registers the service worker. Resilient + feature-detected:
    a failure here NEVER breaks the page (the app works exactly

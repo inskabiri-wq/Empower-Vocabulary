@@ -19,7 +19,7 @@
   // loaded yet (race on cold boot).
   const LEVELS = (typeof window.EXAM_REGISTRY !== 'undefined' && typeof window.EXAM_REGISTRY.levelsFor === 'function')
     ? window.EXAM_REGISTRY.levelsFor('reading')
-    : ['A1', 'A2', 'B1', 'B1+', 'B2'];
+    : ['A1', 'A2', 'B1', 'B1+', 'B2', 'C1'];
 
   // Track which level is currently shown. Default to B2 since that's
   // where our content lives today; if the student's profile level is

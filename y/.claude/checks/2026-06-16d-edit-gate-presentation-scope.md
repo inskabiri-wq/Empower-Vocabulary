@@ -12,11 +12,11 @@ cannot change student records (UI hidden + server rejects).
 - Added a "Signing in" slide as slide 2 (open app -> sign in with FSM email or
   Google -> dashboard loads; password reset note; role decides what you see).
 - Removed the 4 Admin slides (Teachers / Features / Content / Organizations).
-- Removed the Admin row + bullet and the Empower Lab row from the sidebar-map
+- Removed the Admin row + bullet and the Lingualab row from the sidebar-map
   mock (admin + student dashboard are not for regular teachers).
 - Courses slide reworded: teachers SEE status + completions and can fact-check;
   activation/deactivation is done centrally by an admin.
-- Widgets slide reworded (dropped the "above Empower Lab" phrasing).
+- Widgets slide reworded (dropped the "above Lingualab" phrasing).
 Deck is now 12 slides.
 
 ## Versions

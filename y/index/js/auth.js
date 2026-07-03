@@ -1,6 +1,6 @@
 /* ============================================
    AUTH.JS - Authentication Functions
-   Empower Vocabulary Trainer
+   Lingualab
    ============================================ */
 
 // Flag to prevent onAuthStateChanged from running during registration

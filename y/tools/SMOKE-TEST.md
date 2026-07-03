@@ -1,4 +1,4 @@
-# Smoke Test — Empower Vocabulary
+# Smoke Test — Lingualab
 
 Two layers: a Node script for data-layer checks, and a click-through
 checklist for everything a script can't see (rules in action, the actual

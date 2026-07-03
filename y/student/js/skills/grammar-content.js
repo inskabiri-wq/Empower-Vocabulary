@@ -141,963 +141,1237 @@
   ];
 
   // ── generators (each MCQ aims for 4 options) ──────────────
-  var G = {};
 
-  G.be = function () {
-    var out = [], SUB = ['I', 'You', 'We', 'They', 'He', 'She', 'Tom', 'Anna', 'My brother', 'The teacher', 'My parents', 'The students', 'My sister', 'The dog'];
-    var COMP = ['a student', 'from Italy', 'at home', 'very tired', 'happy today', 'a teacher', 'really busy', 'ready now', 'late again', 'in the garden', 'hungry', 'from Spain', 'a good friend', 'here'];
-    SUB.forEach(function (s) { COMP.forEach(function (c) { out.push(mk(s + ' ____ ' + c + '.', beOf(s), ['am', 'is', 'are', 'be'], 'I -> am; he/she/it -> is; you/we/they -> are.')); }); });
-    return out;
-  };
-  G.beQ = function () {
-    var out = [], SUB = ['I', 'you', 'we', 'they', 'he', 'she', 'Tom', 'your friends', 'the children', 'your sister', 'the food', 'the shops', 'the students', 'your teacher'];
-    var COMP = ['ready?', 'at home?', 'tired?', 'a doctor?', 'from Brazil?', 'happy now?', 'here?', 'late?', 'open?', 'hungry?', 'busy today?', 'at work?', 'American?', 'OK?'];
-    SUB.forEach(function (s) { COMP.forEach(function (c) { out.push(mk('____ ' + s + ' ' + c, cap(beOf(s)), ['Am', 'Is', 'Are', 'Be'], 'Am with I, Is with he/she/it, Are with you/we/they.')); }); });
-    return out;
-  };
-  G.aan = function () {
-    var out = [];
-    var A = ['dog', 'car', 'book', 'pen', 'house', 'cat', 'banana', 'teacher', 'boy', 'girl', 'phone', 'table', 'sandwich', 'bottle', 'student', 'university', 'European city', 'one-way street', 'user', 'useful book'];
-    var AN = ['orange', 'apple', 'egg', 'hour', 'umbrella', 'idea', 'elephant', 'old car', 'honest man', 'animal', 'aunt', 'engineer', 'artist', 'island', 'interesting film', 'easy question', 'English book', 'open window', 'angry dog', 'expensive bag'];
-    var FR = ['It is ____ %.', 'This is ____ %.', 'That is ____ %.', 'Here is ____ %.', 'I have ____ %.', 'There is ____ % over there.', 'Look at ____ %.', 'It was ____ %.'];
-    A.forEach(function (n) { FR.forEach(function (f) { out.push(mk(f.replace('%', n), 'a', ['an', 'two', 'these'], 'Use a before a consonant sound, an before a vowel sound.')); }); });
-    AN.forEach(function (n) { FR.forEach(function (f) { out.push(mk(f.replace('%', n), 'an', ['a', 'two', 'these'], 'Use an before a vowel sound, a before a consonant sound.')); }); });
-    return out;
-  };
-  G.plurals = function () {
-    var out = [];
-    var N = [{ s: 'book', p: 'books' }, { s: 'car', p: 'cars' }, { s: 'pen', p: 'pens' }, { s: 'table', p: 'tables' }, { s: 'dog', p: 'dogs' }, { s: 'house', p: 'houses' }, { s: 'apple', p: 'apples' }, { s: 'girl', p: 'girls' }, { s: 'boy', p: 'boys' }, { s: 'day', p: 'days' }, { s: 'key', p: 'keys' }, { s: 'chair', p: 'chairs' },
-      { s: 'box', p: 'boxes' }, { s: 'bus', p: 'buses' }, { s: 'glass', p: 'glasses' }, { s: 'watch', p: 'watches' }, { s: 'dish', p: 'dishes' }, { s: 'class', p: 'classes' }, { s: 'brush', p: 'brushes' }, { s: 'tomato', p: 'tomatoes' }, { s: 'potato', p: 'potatoes' }, { s: 'sandwich', p: 'sandwiches' },
-      { s: 'baby', p: 'babies' }, { s: 'city', p: 'cities' }, { s: 'country', p: 'countries' }, { s: 'family', p: 'families' }, { s: 'party', p: 'parties' }, { s: 'story', p: 'stories' }, { s: 'lady', p: 'ladies' }, { s: 'dictionary', p: 'dictionaries' },
-      { s: 'child', p: 'children' }, { s: 'man', p: 'men' }, { s: 'woman', p: 'women' }, { s: 'foot', p: 'feet' }, { s: 'tooth', p: 'teeth' }, { s: 'mouse', p: 'mice' }];
-    var FR = ['one %s, two ____.', 'one %s, many ____.', 'I have one %s and she has three ____.', 'There is one %s and four ____ here.'];
-    function distr(n) { return uniq([n.s + 's', n.s + 'es', n.s + 'ies', n.s].filter(function (x) { return x !== n.p; })).slice(0, 3); }
-    N.forEach(function (n) { FR.forEach(function (f) { out.push(mk(f.replace('%s', n.s), n.p, distr(n), 'Most add -s; after -s/x/ch/sh add -es; consonant+y -> -ies; some are irregular.')); }); });
-    return out;
-  };
-  G.poss = function () {
-    var out = [];
-    // Distractors stay in the SAME person (her / hers / she), so no second
-    // person's pronoun can also fit the sentence.
-    var ADJP = [
-      ["This is Anna. That is ____ bag.", "her", ["she", "hers", "herself"]],
-      ["This is Tom. That is ____ coat.", "his", ["him", "he", "himself"]],
-      ["I have a dog. ____ name is Rex.", "Its", ["It's", "It", "Itself"]],
-      ["We have a new car. ____ colour is red.", "Its", ["It's", "It", "Itself"]],
-      ["Don't forget ____ keys, please.", "your", ["you", "yours", "you're"]],
-      ["They love ____ new house.", "their", ["theirs", "them", "they're"]],
-      ["I can't find ____ phone. It was in my pocket.", "my", ["mine", "me", "I"]],
-      ["He is washing ____ own car.", "his", ["him", "he", "himself"]],
-      ["She is reading ____ favourite book again.", "her", ["hers", "she", "herself"]],
-      ["We are doing ____ homework together.", "our", ["ours", "us", "we"]],
-      ["The cat is sleeping in ____ basket.", "its", ["it's", "it", "itself"]],
-      ["You and Sam forgot ____ tickets at home.", "your", ["yours", "you", "you're"]],
-      ["My parents sold ____ old house and moved.", "their", ["theirs", "them", "they're"]],
-      ["I really like ____ new haircut. The barber did a great job.", "my", ["mine", "me", "I"]]
-    ];
-    ADJP.forEach(function (a) { out.push(mk(a[0], a[1], a[2], 'Possessive adjectives go before a noun: my, your, his, her, its, our, their.')); });
-    var OWN = ['Anna', 'Tom', 'Sam', 'my sister', 'the teacher', 'my friend', 'the doctor', 'Mary', 'my brother', 'the boy'];
-    var TH = ['book', 'car', 'bag', 'house', 'idea', 'phone', 'dog', 'office', 'desk', 'coat'];
-    OWN.forEach(function (o) { TH.forEach(function (t) { out.push(mk('This ' + t + ' belongs to ' + o + '. It is ____ ' + t + '.', o + "'s", [o + 's', o + "s'", o], "Add 's to a person to show possession: Tom's car.")); }); });
-    return out;
-  };
-  G.qw = function () {
-    var out = [], WORDS = ['What', 'Where', 'When', 'Who', 'Why', 'How'];
-    // Each question carries its short answer, so only ONE question word fits.
-    var BY = {
-      'What': ['____ is your name? Maria.', '____ is your favourite colour? Blue.', '____ do you want for dinner? Pasta, please.', '____ does she do at weekends? She plays tennis.', '____ is the time? Half past two.', '____ is your phone number? 555 0192.', '____ is in the box? Some old books.', '____ are you reading? A history book.'],
-      'Where': ['____ do you live? In Istanbul.', '____ is the station? Next to the bank.', '____ are my keys? On the table.', '____ does he work? In a hospital.', '____ are you going? To the library.', '____ is the nearest bank? On King Street.', '____ did you buy that? At the market.'],
-      'When': ['____ is your birthday? In May.', '____ does the film start? At eight.', '____ do you get up? At seven o\'clock.', '____ is the meeting? On Monday.', '____ did they arrive? Two hours ago.', '____ does the shop close? At nine in the evening.'],
-      'Who': ['____ is that woman? My aunt.', '____ is your teacher? Mr Lee.', '____ wants an ice cream? I do!', '____ are those people? Our new neighbours.', '____ made this cake? My grandmother.', '____ is calling you? My brother.'],
-      'Why': ['____ are you sad? Because I lost my keys.', '____ is the baby crying? Because she is hungry.', '____ did you leave early? Because I was tired.', '____ are they angry? Because the bus was late.'],
-      'How': ['____ old are you? Nineteen.', '____ are you today? Fine, thanks.', '____ do you spell it? B-O-O-K.', '____ much is this? Ten lira.']
-    };
-    Object.keys(BY).forEach(function (w) { BY[w].forEach(function (stem) { out.push(mk(stem, w, shuffle(WORDS.filter(function (x) { return x !== w; })).slice(0, 3), 'what (thing), where (place), when (time), who (person), why (reason), how (manner).')); }); });
-    return out;
-  };
+  // ── VALIDATED generators (typed pools + lint = VOLUME without wrong English) ──
+  // The OLD generators produced wrong carriers ("We are a teacher") because their
+  // pools were untyped. Here pools are TYPED: plural subjects only get plural
+  // nouns, singular only singular, "I" only "am", etc. So agreement is always
+  // correct. Every question carries a `hint`, and lintQ drops any structurally
+  // bad item. Assembly caps each topic at ~104. PILOT: a2-be only for now.
+  function lintQ(q) {
+    if (!q || typeof q.stem !== 'string') return false;
+    if ((q.stem.match(/_{2,}/g) || []).length !== 1) return false;
+    if (!Array.isArray(q.options) || q.options.length !== 4) return false;
+    if (new Set(q.options).size !== 4) return false;
+    if (q.answer < 0 || q.answer >= 4 || q.options[q.answer] == null) return false;
+    return true;
+  }
+  function buildValidated(list, n) { return build(list.filter(lintQ), n); }
+  function withHint(q, hint) { q.hint = hint; return q; }
 
-  G.presSimple = function () {
-    var out = [], ROUT = ['every day', 'every morning', 'on Mondays', 'every weekend', 'twice a week', 'after class'];
-    SING3.forEach(function (s) { V.forEach(function (v) { out.push(mk(s + ' ____ (' + v.b + ') ' + v.o + ' ' + pick(ROUT) + '.', v.s, [v.b, v.ing, 'to ' + v.b], 'he/she/it adds -s in the present simple.')); }); });
-    BASE_SUBJ.forEach(function (s) { V.forEach(function (v) { out.push(mk(s + ' ____ (' + v.b + ') ' + v.o + ' ' + pick(ROUT) + '.', v.b, [v.s, v.ing, 'to ' + v.b], 'I/you/we/they use the base form (no -s).')); }); });
-    SING3.slice(0, 8).forEach(function (s) { V.slice(0, 12).forEach(function (v) { out.push(mk(s + " ____ usually " + v.b + ' ' + v.o + '.', "doesn't", ["don't", "isn't", "aren't"], "he/she/it negative: doesn't + base verb.")); }); });
-    BASE_SUBJ.slice(0, 6).forEach(function (s) { V.slice(0, 12).forEach(function (v) { out.push(mk(s + " ____ usually " + v.b + ' ' + v.o + '.', "don't", ["doesn't", "isn't", "aren't"], "I/you/we/they negative: don't + base verb.")); }); });
-    return out;
-  };
-  G.presSimpleQ = function () {
-    var out = [], SUBJ_Q = ['you', 'we', 'they', 'he', 'she', 'Tom', 'your friends', 'the students', 'your sister', 'the teacher'];
-    var WH = ['Where', 'When', 'Why', 'How often', 'What time'];
-    SUBJ_Q.forEach(function (s) { V.forEach(function (v) { var d = cap(doOf(s)); out.push(mk('____ ' + s + ' ' + v.b + ' ' + v.o + ' ' + pick(['every day', 'every morning', 'on Sundays', 'every week']) + '?', d, d === 'Do' ? ['Does', 'Are', 'Is'] : ['Do', 'Is', 'Are'], 'Do with you/we/they, Does with he/she/it; the main verb stays in the base form.')); }); });
-    SUBJ_Q.forEach(function (s) { V.slice(0, 12).forEach(function (v) { var d = doOf(s); out.push(mk(pick(WH) + ' ____ ' + s + ' ' + v.b + '?', d, d === 'do' ? ['does', 'is', 'are'] : ['do', 'are', 'is'], 'Question word + do/does + subject + base verb.')); }); });
-    return out;
-  };
+  // Adjective -> [comparative, superlative, NOUNS it can sensibly describe].
+  // Pairing each adjective only with compatible nouns prevents silly carriers
+  // like "this exam is happier" or "the fastest film".
+  var ADJN = [
+    ['big', 'bigger', 'the biggest', ['house', 'car', 'city', 'room', 'garden']],
+    ['small', 'smaller', 'the smallest', ['flat', 'car', 'room', 'box', 'phone']],
+    ['fast', 'faster', 'the fastest', ['car', 'train', 'runner', 'computer', 'plane']],
+    ['slow', 'slower', 'the slowest', ['car', 'train', 'computer', 'lift', 'bus']],
+    ['cheap', 'cheaper', 'the cheapest', ['phone', 'ticket', 'hotel', 'meal', 'flight']],
+    ['expensive', 'more expensive', 'the most expensive', ['phone', 'watch', 'hotel', 'meal', 'car']],
+    ['old', 'older', 'the oldest', ['building', 'car', 'tree', 'town', 'bridge']],
+    ['young', 'younger', 'the youngest', ['student', 'player', 'child', 'brother', 'team']],
+    ['happy', 'happier', 'the happiest', ['child', 'student', 'family', 'team', 'customer']],
+    ['easy', 'easier', 'the easiest', ['exam', 'question', 'task', 'lesson', 'recipe']],
+    ['difficult', 'more difficult', 'the most difficult', ['exam', 'question', 'task', 'course', 'job']],
+    ['tall', 'taller', 'the tallest', ['building', 'tree', 'tower', 'player', 'man']],
+    ['hot', 'hotter', 'the hottest', ['day', 'soup', 'country', 'summer', 'curry']],
+    ['cold', 'colder', 'the coldest', ['day', 'water', 'winter', 'room', 'drink']],
+    ['interesting', 'more interesting', 'the most interesting', ['book', 'film', 'story', 'lesson', 'talk']],
+    ['comfortable', 'more comfortable', 'the most comfortable', ['chair', 'bed', 'sofa', 'seat', 'hotel']],
+    ['important', 'more important', 'the most important', ['meeting', 'decision', 'message', 'exam', 'rule']],
+    ['heavy', 'heavier', 'the heaviest', ['box', 'bag', 'suitcase', 'table', 'rock']],
+    ['safe', 'safer', 'the safest', ['car', 'city', 'area', 'route', 'neighbourhood']],
+    ['popular', 'more popular', 'the most popular', ['singer', 'film', 'sport', 'app', 'dish']],
+    ['dangerous', 'more dangerous', 'the most dangerous', ['sport', 'road', 'animal', 'job', 'area']],
+    ['good', 'better', 'the best', ['idea', 'plan', 'film', 'restaurant', 'team']],
+    ['bad', 'worse', 'the worst', ['weather', 'traffic', 'film', 'result', 'day']]
+  ];
+  function compDist(a) {
+    if (a[1].indexOf('more ') === 0) return [a[0], a[0] + 'r', 'most ' + a[0]];
+    if (a[0] === 'good') return ['good', 'gooder', 'best'];
+    if (a[0] === 'bad') return ['bad', 'badder', 'worst'];
+    return [a[0], 'more ' + a[0], 'most ' + a[0]];
+  }
+  function supDist(a) {
+    if (a[2].indexOf('the most ') === 0) { var b = a[2].replace('the most ', ''); return ['the ' + b, 'the ' + a[1], 'most ' + b]; }
+    if (a[0] === 'good') return ['the goodest', 'the better', 'the most good'];
+    if (a[0] === 'bad') return ['the baddest', 'the worse', 'the most bad'];
+    return ['the most ' + a[0], 'the ' + a[1], 'most ' + a[0]];
+  }
 
-  G.freq = function () {
-    var out = [], ADV = ['always', 'usually', 'often', 'sometimes', 'never', 'rarely'];
-    SING3.forEach(function (s) { V.slice(0, 12).forEach(function (v) { ADV.forEach(function (a) { out.push(mk(s + ' ____ ' + v.o + '.', a + ' ' + v.s, [v.s + ' ' + a, 'is ' + a + ' ' + v.s, a + ' ' + v.b], 'Frequency adverbs go before the main verb.')); }); }); });
-    BASE_SUBJ.forEach(function (s) { V.slice(0, 12).forEach(function (v) { ADV.forEach(function (a) { out.push(mk(s + ' ____ ' + v.o + '.', a + ' ' + v.b, [v.b + ' ' + a, 'are ' + a + ' ' + v.b, a + ' ' + v.s], 'Frequency adverbs go before the main verb.')); }); }); });
-    var BES = [['He', 'is'], ['She', 'is'], ['Tom', 'is'], ['I', 'am'], ['They', 'are'], ['We', 'are'], ['You', 'are'], ['My friends', 'are']];
-    var COMP = ['late', 'tired', 'happy', 'busy', 'at home', 'friendly', 'quiet', 'early'];
-    BES.forEach(function (p) { COMP.forEach(function (c) { ADV.forEach(function (a) { out.push(mk(p[0] + ' ____ ' + c + '.', p[1] + ' ' + a, [a + ' ' + p[1], a, p[1]], 'With be, the adverb goes after it: is never late.')); }); }); });
-    return out;
-  };
-  G.haveGot = function () {
-    var out = [], NOUN = ['a new bike', 'two sisters', 'a big house', 'brown eyes', 'a headache', 'long hair', 'a dog', 'three children', 'a fast car', 'blue eyes', 'a brother', 'many friends', 'a sister', 'a cat', 'short hair', 'a bike', 'a problem', 'a good idea'];
-    SUBJ_ALL.forEach(function (s) { NOUN.forEach(function (n) { var h = haveOf(s); out.push(mk(s + ' ____ got ' + n + '.', h, [h === 'have' ? 'has' : 'have', beOf(s), doOf(s)], 'I/you/we/they have got; he/she/it has got.')); }); });
-    ['you', 'he', 'she', 'they', 'Tom', 'your sister', 'the children'].forEach(function (s) { NOUN.slice(0, 8).forEach(function (n) { var h = cap(haveOf(s)); out.push(mk('____ ' + s + ' got ' + n + '?', h, [h === 'Have' ? 'Has' : 'Have', 'Do', 'Are'], 'Questions: Have/Has + subject + got ...?')); }); });
-    var NEG = ['any brothers', 'any sisters', 'any pets', 'any money', 'any free time', 'a garden', 'any children', 'any homework'];
-    SUBJ_ALL.slice(0, 10).forEach(function (s) { NEG.forEach(function (n) { var neg = (haveOf(s) === 'have' ? "haven't" : "hasn't"); out.push(mk(s + ' ____ got ' + n + '.', neg, [neg === "haven't" ? "hasn't" : "haven't", "don't", "isn't"], "Negative: haven't got / hasn't got.")); }); });
-    return out;
-  };
+  var VALID = {
+    'a2-be': function () {
+      var out = [];
+      var ADJ = ['tired', 'happy', 'busy', 'ready', 'late', 'hungry', 'here', 'at home', 'from Italy', 'at school', 'in the garden', 'very young', 'really kind', 'at work', 'from Spain', 'cold', 'angry', 'afraid'];
+      var SNOUN = ['a teacher', 'a student', 'a doctor', 'an engineer', 'a nurse', 'a good friend', 'a singer', 'a driver', 'a tourist'];
+      var PNOUN = ['teachers', 'students', 'doctors', 'engineers', 'nurses', 'good friends', 'singers', 'drivers', 'tourists'];
+      var SING = ['She', 'He', 'My brother', 'My sister', 'Tom', 'Anna', 'My cousin', 'My father', 'My mother', 'My friend', 'My neighbour'];
+      var PLUR = ['They', 'We', 'You', 'My parents', 'The students', 'My friends', 'The women', 'Tom and Anna'];
+      var H = 'verb to be: I am, he/she/it is, you/we/they are.';
+      function be(subj, comp, ans, ex) {
+        out.push(withHint(mk(subj + ' ____ ' + comp + '.', ans, ['am', 'is', 'are', 'be'].filter(function (x) { return x !== ans; }), ex), H));
+      }
+      ADJ.concat(SNOUN).forEach(function (c) { be('I', c, 'am', 'I -> am.'); });
+      SING.forEach(function (s) { ADJ.concat(SNOUN).forEach(function (c) { be(s, c, 'is', 'he/she/it -> is.'); }); });
+      PLUR.forEach(function (s) { ADJ.concat(PNOUN).forEach(function (c) { if (s.indexOf(c) !== -1) return; be(s, c, 'are', 'you/we/they -> are.'); }); });
+      return out;
+    },
 
-  G.someAny = function () {
-    var out = [];
-    var UNC = ['water', 'money', 'milk', 'bread', 'rice', 'sugar', 'coffee', 'cheese', 'time', 'homework', 'music', 'butter', 'juice', 'soup'];
-    var PLU = ['eggs', 'apples', 'books', 'friends', 'chairs', 'oranges', 'problems', 'ideas', 'shops', 'cars', 'flowers', 'stamps', 'letters', 'biscuits'];
-    function sa(stem, correct) { out.push(mk(stem, correct, correct === 'some' ? ['any', 'a', 'an'] : ['some', 'a', 'an'], 'some in positives and offers; any in negatives and questions.')); }
-    UNC.forEach(function (n) { sa('There is ____ ' + n + ' in the fridge.', 'some'); sa("There isn't ____ " + n + ' left.', 'any'); sa('Is there ____ ' + n + ' in the cup?', 'any'); sa('I would like ____ ' + n + ', please.', 'some'); });
-    PLU.forEach(function (n) { sa('There are ____ ' + n + ' on the table.', 'some'); sa("There aren't ____ " + n + ' here.', 'any'); sa('Are there ____ ' + n + ' in the box?', 'any'); sa('I have ____ ' + n + ' for you.', 'some'); });
-    return out;
-  };
-  G.muchMany = function () {
-    var out = [];
-    var UNC = ['water', 'money', 'milk', 'time', 'sugar', 'coffee', 'rice', 'bread', 'homework', 'information', 'cheese', 'salt'];
-    var PLU = ['books', 'friends', 'people', 'cars', 'eggs', 'apples', 'students', 'chairs', 'shops', 'ideas', 'problems', 'photos'];
-    UNC.forEach(function (n) { out.push(mk('How ____ ' + n + ' do you need?', 'much', ['many', 'a few', 'several'], 'much + uncountable noun.')); out.push(mk("There isn't ____ " + n + ' left.', 'much', ['many', 'a few', 'several'], 'much in negatives with uncountable nouns.')); out.push(mk("We don't have ____ " + n + '.', 'much', ['many', 'a few', 'several'], 'much + uncountable noun in negatives.')); });
-    PLU.forEach(function (n) { out.push(mk('How ____ ' + n + ' do you have?', 'many', ['much', 'a little', 'a bit of'], 'many + plural countable noun.')); out.push(mk("There aren't ____ " + n + ' here.', 'many', ['much', 'a little', 'a bit of'], 'many + plural countable noun.')); out.push(mk("We don't have ____ " + n + '.', 'many', ['much', 'a little', 'a bit of'], 'many + plural countable noun in negatives.')); });
-    return out;
-  };
+    'a2-be-questions': function () {
+      var out = [], H = 'questions with be: put am / is / are before the subject.';
+      var ADJ = ['ready', 'tired', 'happy', 'busy', 'late', 'hungry', 'at home', 'at school', 'from Italy', 'here', 'angry', 'cold', 'at work', 'afraid'];
+      var SN = ['a doctor', 'a student', 'a teacher', 'a nurse', 'a tourist', 'an engineer'];
+      var PN = ['doctors', 'students', 'teachers', 'nurses', 'tourists', 'engineers'];
+      var SQ = ['she', 'he', 'Tom', 'Anna', 'your brother', 'your cousin', 'your father', 'your sister', 'your friend'];
+      var PQ = ['they', 'we', 'you', 'your friends', 'the students', 'your parents'];
+      function q(subj, comp, ans, ex) { out.push(withHint(mk('____ ' + subj + ' ' + comp + '?', ans, ['Am', 'Is', 'Are', 'Be'].filter(function (x) { return x !== ans; }), ex), H)); }
+      ADJ.concat(SN).forEach(function (c) { SQ.forEach(function (s) { q(s, c, 'Is', 'he/she/it -> Is.'); }); });
+      ADJ.concat(PN).forEach(function (c) { PQ.forEach(function (s) { if (s.indexOf(c) !== -1) return; q(s, c, 'Are', 'you/we/they -> Are.'); }); });
+      ADJ.concat(SN).forEach(function (c) { q('I', c, 'Am', 'I -> Am.'); });
+      return out;
+    },
 
-  G.there = function () {
-    var out = [];
-    // Curated noun + place pairs (no random cross-products, so no
-    // "four men in the fridge"). Every stem carries a TIME EXPRESSION,
-    // because the options mix present (is/are) and past (was/were):
-    // the time word tells the student which tense is needed.
-    var NOW = ['right now', 'now', 'today', 'at the moment'];
-    var THEN = ['yesterday', 'last night', 'this morning', 'last week'];
-    var SINGP = [
-      ['a library', 'on the campus'], ['a cafe', 'near the university'], ['a printer', 'in the computer room'],
-      ['a whiteboard', 'in the classroom'], ['a dictionary', 'on the shelf'], ['a bus stop', 'in front of the building'],
-      ['a clock', 'on the wall'], ['an exam', 'in room 12'], ['a meeting', 'in the main hall'],
-      ['a cat', 'in the garden'], ['a phone', 'on the desk'], ['a parking area', 'behind the campus'],
-      ['a lesson', 'in the lab'], ['a notebook', 'in my bag'], ['a question', 'on the last page'], ['a concert', 'at the student club']
-    ];
-    var PLUP = [
-      ['twenty students', 'in the lecture hall'], ['some books', 'on the table'], ['two teachers', 'in the office'],
-      ['many cars', 'in the car park'], ['five computers', 'in the lab'], ['some chairs', 'in the corridor'],
-      ['three windows', 'in the classroom'], ['some flowers', 'in the garden'], ['ten questions', 'on the exam'],
-      ['some apples', 'in the fridge'], ['many people', 'at the conference'], ['six desks', 'in the study room'],
-      ['some posters', 'on the wall'], ['two cafes', 'near the library'], ['some announcements', 'on the board'], ['many visitors', 'at the open day']
-    ];
-    // Events / temporary things work naturally in BOTH tenses.
-    var SINGT = [['a meeting', 'in the main hall'], ['an exam', 'in room 12'], ['a lesson', 'in the lab'], ['a concert', 'at the student club'], ['a party', 'at the dormitory'], ['a film night', 'at the club'], ['a bus', 'at the stop'], ['a queue', 'at the cafeteria']];
-    var PLUT = [['twenty students', 'in the lecture hall'], ['many people', 'at the conference'], ['some visitors', 'in the office'], ['two exams', 'on the timetable'], ['many questions', 'in the test'], ['some problems', 'with the printer'], ['three buses', 'at the stop'], ['many guests', 'at the ceremony']];
-    // Permanent things: test SINGULAR vs PLURAL only (options stay in the
-    // present, so no time word is needed and no second answer is possible).
-    SINGP.forEach(function (n) { out.push(mk('____ ' + n[0] + ' ' + n[1] + '.', 'There is', ['There are', 'There am', 'There be'], 'Singular noun -> there is.')); });
-    PLUP.forEach(function (n) { out.push(mk('____ ' + n[0] + ' ' + n[1] + '.', 'There are', ['There is', 'There am', 'There be'], 'Plural noun -> there are.')); });
-    SINGP.forEach(function (n) { out.push(mk('____ ' + n[0] + ' ' + n[1] + '?', 'Is there', ['Are there', 'Am there', 'Be there'], 'Singular question -> Is there ...?')); });
-    PLUP.forEach(function (n) { out.push(mk('____ ' + n[0] + ' ' + n[1] + '?', 'Are there', ['Is there', 'Am there', 'Be there'], 'Plural question -> Are there ...?')); });
-    SINGP.forEach(function (n) { out.push(mk('There ____ ' + n[0] + ' ' + n[1] + '.', 'is', ['are', 'am', 'be'], 'Singular noun -> is.')); });
-    PLUP.forEach(function (n) { out.push(mk('There ____ ' + n[0] + ' ' + n[1] + '.', 'are', ['is', 'am', 'be'], 'Plural noun -> are.')); });
-    // Events / temporary things: test PRESENT vs PAST. The time expression
-    // (right now / last night) tells the student which tense is needed.
-    SINGT.forEach(function (n) { out.push(mk('There ____ ' + n[0] + ' ' + n[1] + ' ' + pick(NOW) + '.', 'is', ['was', 'are', 'were'], 'Present time word (now / today) -> is.')); });
-    PLUT.forEach(function (n) { out.push(mk('There ____ ' + n[0] + ' ' + n[1] + ' ' + pick(NOW) + '.', 'are', ['were', 'is', 'was'], 'Present time word (now / today) -> are.')); });
-    SINGT.forEach(function (n) { THEN.forEach(function (t) { out.push(mk('There ____ ' + n[0] + ' ' + n[1] + ' ' + t + '.', 'was', ['is', 'were', 'are'], 'Past time word (yesterday / last night) -> was.')); }); });
-    PLUT.forEach(function (n) { THEN.forEach(function (t) { out.push(mk('There ____ ' + n[0] + ' ' + n[1] + ' ' + t + '.', 'were', ['are', 'was', 'is'], 'Past time word (yesterday / last night) -> were.')); }); });
-    return out;
-  };
+    'a2-was-were': function () {
+      var out = [], H = 'past of be: I/he/she/it WAS; you/we/they WERE.';
+      // Sensible (complement, time) pairs: a transient state (tired/ill) takes a
+      // short anchor; a place/event can take a longer one. Avoids "ill last year".
+      var COMBO = [
+        ['tired', 'last night'], ['happy', 'yesterday'], ['busy', 'earlier today'], ['ill', 'last week'],
+        ['angry', 'a moment ago'], ['late', 'earlier today'], ['hungry', 'an hour ago'], ['nervous', 'before the exam'],
+        ['at home', 'yesterday'], ['at school', 'last week'], ['on holiday', 'last year'], ['in London', 'last summer'],
+        ['at the party', 'last night'], ['abroad', 'last year'], ['at the cinema', 'yesterday'], ['here', 'a moment ago']];
+      var SING = ['She', 'He', 'My brother', 'Tom', 'Anna', 'The teacher', 'My sister', 'My friend', 'I'];
+      var PLUR = ['They', 'We', 'You', 'My parents', 'The students', 'My friends'];
+      SING.forEach(function (s) { COMBO.forEach(function (c) { out.push(withHint(mk(s + ' ____ ' + c[0] + ' ' + c[1] + '.', 'was', ['were', 'is', 'are'], s === 'I' ? 'I -> was.' : 'he/she/it -> was.'), H)); }); });
+      PLUR.forEach(function (s) { COMBO.forEach(function (c) { out.push(withHint(mk(s + ' ____ ' + c[0] + ' ' + c[1] + '.', 'were', ['was', 'is', 'are'], 'you/we/they -> were.'), H)); }); });
+      return out;
+    },
 
-  G.wasWere = function () {
-    var out = [];
-    // People get people-complements, things get thing-complements (so never
-    // "the students were delicious"), and EVERY stem carries a past time
-    // expression, because is/are sit in the distractors.
-    var PEOPLE = ['I', 'He', 'She', 'Tom', 'Anna', 'My brother', 'My sister', 'The teacher', 'You', 'We', 'They', 'My parents', 'The children', 'My friends', 'The students'];
-    var PCOMP = ['at home yesterday', 'very tired last night', 'late for class this morning', 'at the party on Saturday', 'busy last week', 'at school yesterday', 'in London last week', 'happy yesterday', 'in the library this morning', 'ill last week', 'at the meeting yesterday', 'early this morning'];
-    var THINGS = [
-      ['The weather', 'sunny yesterday'], ['The weather', 'cold last night'], ['The film', 'really good last night'],
-      ['The film', 'interesting last week'], ['The shops', 'open yesterday'], ['The shops', 'closed on Sunday'],
-      ['The food', 'delicious at the party'], ['The exam', 'difficult last week'], ['The bus', 'late this morning'],
-      ['The lessons', 'interesting yesterday'], ['The questions', 'easy on the test last week'], ['The cafeteria', 'crowded yesterday'],
-      ['The classroom', 'empty this morning'], ['The lecture', 'long yesterday'], ['The books', 'cheap last year'], ['The tickets', 'expensive last month']
-    ];
-    PEOPLE.forEach(function (s) { PCOMP.forEach(function (c) { var w = bePastOf(s); out.push(mk(s + ' ____ ' + c + '.', w, [w === 'was' ? 'were' : 'was', 'is', 'are'], 'Past time word -> was/were. was with I/he/she/it; were with you/we/they.')); }); });
-    THINGS.forEach(function (p) { var w = bePastOf(p[0]); out.push(mk(p[0] + ' ____ ' + p[1] + '.', w, [w === 'was' ? 'were' : 'was', 'is', 'are'], 'Past time word -> was/were.')); });
-    PEOPLE.slice(0, 10).forEach(function (s) { PCOMP.slice(0, 8).forEach(function (c) { var n = bePastOf(s) === 'was' ? "wasn't" : "weren't"; out.push(mk(s + ' ____ ' + c + '.', n, [n === "wasn't" ? "weren't" : "wasn't", "isn't", "aren't"], "Negative past of be: wasn't / weren't.")); }); });
-    var QPEOPLE = [['he', 'Was'], ['she', 'Was'], ['Tom', 'Was'], ['Anna', 'Was'], ['your brother', 'Was'], ['you', 'Were'], ['they', 'Were'], ['the children', 'Were'], ['your parents', 'Were'], ['your friends', 'Were']];
-    var QCOMP = ['tired last night', 'at home yesterday', 'late this morning', 'at the party on Saturday', 'busy last week', 'here yesterday', 'OK yesterday', 'at work yesterday'];
-    QPEOPLE.forEach(function (p) { QCOMP.forEach(function (c) { out.push(mk('____ ' + p[0] + ' ' + c + '?', p[1], [p[1] === 'Was' ? 'Were' : 'Was', 'Is', 'Are'], 'Past be question: Was/Were + subject ...?')); }); });
-    var QTHINGS = [['the film', 'good last night', 'Was'], ['the weather', 'nice yesterday', 'Was'], ['the shops', 'open yesterday', 'Were'], ['the exam', 'difficult last week', 'Was'], ['the questions', 'easy on the test last week', 'Were'], ['the bus', 'late this morning', 'Was']];
-    QTHINGS.forEach(function (p) { out.push(mk('____ ' + p[0] + ' ' + p[1] + '?', p[2], [p[2] === 'Was' ? 'Were' : 'Was', 'Is', 'Are'], 'Past be question: Was/Were + subject ...?')); });
-    return out;
-  };
+    'a2-there-is-are': function () {
+      var out = [], H = 'there IS + a singular noun; there ARE + a plural noun.';
+      // Each noun group only goes with places that make sense for it, so we never
+      // get "some people in the box" or "a clock in the garden".
+      var SMALL = ['on the table', 'in the box', 'on the floor', 'in the drawer', 'on the shelf'];
+      var INSIDE = ['in the room', 'in the kitchen', 'near the door', 'by the window'];
+      var AROUND = ['in the room', 'in the garden', 'near the door', 'in the kitchen', 'outside'];
+      var OBJ = [['a book', 'three books'], ['a pen', 'six pens'], ['a key', 'a few keys'], ['a phone', 'two phones'], ['a cup', 'some cups'], ['a clock', 'two clocks']];
+      var FURN = [['a chair', 'two chairs'], ['a table', 'two tables'], ['a sofa', 'three sofas'], ['a plant', 'some plants']];
+      var LIVE = [['a cat', 'some cats'], ['a dog', 'two dogs'], ['a boy', 'two boys'], ['a child', 'some children']];
+      function isThere(n, p) {
+        out.push(withHint(mk('____ ' + n[0] + ' ' + p + '.', 'There is', ['There are', 'It is', 'There be'], 'singular noun -> there is.'), H));
+        out.push(withHint(mk('____ ' + n[1] + ' ' + p + '.', 'There are', ['There is', 'They are', 'There be'], 'plural noun -> there are.'), H));
+      }
+      OBJ.forEach(function (n) { SMALL.forEach(function (p) { isThere(n, p); }); });
+      FURN.forEach(function (n) { INSIDE.forEach(function (p) { isThere(n, p); }); });
+      LIVE.forEach(function (n) { AROUND.forEach(function (p) { isThere(n, p); }); });
+      return out;
+    },
 
-  G.past = function () {
-    var out = [], SUB = ['I', 'You', 'He', 'She', 'We', 'They', 'Tom', 'My brother', 'The students', 'My friend'];
-    var TIME = ['yesterday', 'last night', 'last week', 'two days ago', 'last weekend', 'in 2019', 'last summer', 'last Monday', 'an hour ago', 'last year'];
-    SUB.forEach(function (s) { V.forEach(function (v) { out.push(mk(s + ' ____ (' + v.b + ') ' + v.o + ' ' + pick(TIME) + '.', v.ed, [v.b, v.s, v.ing], 'Past simple: regular verbs add -ed; irregular verbs change form.')); }); });
-    return out;
-  };
-  G.pastQ = function () {
-    var out = [], SUB = ['I', 'You', 'He', 'She', 'We', 'They', 'Tom', 'My brother', 'The students', 'My friend'];
-    SUB.forEach(function (s) { V.slice(0, 12).forEach(function (v) { out.push(mk(s + ' ____ ' + v.b + ' ' + v.o + ' ' + pick(['yesterday', 'last week', 'last night']) + '.', "didn't", ["don't", "doesn't", "wasn't"], "Past negative: didn't + base verb.")); }); });
-    SUB.forEach(function (s) { V.slice(0, 12).forEach(function (v) { out.push(mk('____ ' + qsubj(s) + ' ' + v.b + ' ' + v.o + ' ' + pick(['yesterday', 'last week', 'last night']) + '?', 'Did', ['Do', 'Does', 'Were'], 'Past time word -> Did + subject + base verb.')); }); });
-    ['Where', 'When', 'Why', 'What time'].forEach(function (wh) { V.slice(0, 8).forEach(function (v) { out.push(mk(wh + ' ____ ' + pick(['you', 'he', 'she', 'they']) + ' ' + v.b + ' ' + v.o + ' ' + pick(['yesterday', 'last week', 'last night']) + '?', 'did', ['do', 'does', 'was'], 'Past time word -> question word + did + subject + base verb.')); }); });
-    return out;
-  };
-  G.likeIng = function () {
-    var out = [], FEEL = [['I', 'love'], ['You', 'love'], ['We', 'love'], ['They', 'love'], ['He', 'loves'], ['She', 'loves'], ['Tom', 'loves'], ['I', 'like'], ['She', 'likes'], ['He', 'hates'], ['They', 'enjoy'], ['She', 'enjoys'], ['We', 'prefer'], ['She', 'prefers']];
-    FEEL.forEach(function (p) { V.forEach(function (v) { out.push(mk(p[0] + ' ' + p[1] + ' ____ (' + v.b + ') ' + v.o + '.', v.ing, [v.b, v.s, v.ed], 'After like / love / hate / enjoy use verb + -ing.')); }); });
-    return out;
-  };
+    'a2-a-an': function () {
+      var out = [], H = 'a before a consonant sound, an before a vowel sound.';
+      var A_N = ['car', 'book', 'dog', 'table', 'pen', 'banana', 'phone', 'cat', 'house', 'bag', 'sandwich', 'cup', 'window', 'ticket', 'big dog', 'new car', 'good camera'];
+      var AN_N = ['apple', 'orange', 'egg', 'umbrella', 'animal', 'old car', 'open window', 'empty box', 'onion', 'ice cream', 'electric car', 'English book', 'old phone', 'expensive camera'];
+      var T = ['It is ____ %.', 'That is ____ %.', 'This is ____ %.', 'I can see ____ %.'];
+      A_N.forEach(function (n) { T.forEach(function (t) { out.push(withHint(mk(t.replace('%', n), 'a', ['an', 'every', 'each'], 'consonant sound -> a.'), H)); }); });
+      AN_N.forEach(function (n) { T.forEach(function (t) { out.push(withHint(mk(t.replace('%', n), 'an', ['a', 'every', 'each'], 'vowel sound -> an.'), H)); }); });
+      return out;
+    },
 
-  G.can = function () {
-    var out = [];
-    SUBJ_ALL.forEach(function (s) { V.slice(0, 14).forEach(function (v) { out.push(mk(s + ' ____ ' + v.b + ' ' + v.o + '.', 'can', ['cans', 'can to', 'is can'], 'Ability: can + base verb (no -s, no to).')); }); });
-    SUBJ_ALL.slice(0, 8).forEach(function (s) { V.slice(0, 10).forEach(function (v) { out.push(mk(s + " ____ " + v.b + ' ' + v.o + '.', "can't", ["doesn't can", "not can", "don't can"], "Negative ability: can't + base verb.")); }); });
-    ['you', 'he', 'she', 'they', 'Tom', 'your sister'].forEach(function (s) { V.slice(0, 10).forEach(function (v) { out.push(mk('____ ' + s + ' ' + v.b + ' ' + v.o + '?', 'Can', ['Do', 'Does', 'Are'], 'Question: Can + subject + base verb?')); }); });
-    SUBJ_ALL.slice(0, 10).forEach(function (s) { V.slice(0, 8).forEach(function (v) { out.push(mk('In the past, ' + qsubj(s) + ' ____ ' + v.b + ' ' + v.o + '.', 'could', ['can', 'cans', 'could to'], 'Past ability: could + base verb.')); }); });
-    return out;
-  };
-  G.haveTo = function () {
-    var out = [];
-    SUBJ_ALL.forEach(function (s) { V.slice(0, 14).forEach(function (v) { var h = haveOf(s) + ' to'; out.push(mk(s + ' ____ ' + v.b + ' ' + v.o + '.', h, [h === 'have to' ? 'has to' : 'have to', 'having to', 'to have'], 'Obligation: have to (I/you/we/they), has to (he/she/it) + base verb.')); }); });
-    SUBJ_ALL.slice(0, 8).forEach(function (s) { V.slice(0, 8).forEach(function (v) { var n = (haveOf(s) === 'have' ? "don't" : "doesn't") + ' have to'; out.push(mk(s + ' ____ ' + v.b + ' ' + v.o + '.', n, [n === "don't have to" ? "doesn't have to" : "don't have to", "haven't to", "not have to"], "No obligation: don't / doesn't have to.")); }); });
-    ['you', 'he', 'she', 'they', 'Tom'].forEach(function (s) { V.slice(0, 8).forEach(function (v) { var d = cap(doOf(s)); out.push(mk('____ ' + s + ' have to ' + v.b + ' ' + v.o + '?', d, [d === 'Do' ? 'Does' : 'Do', 'Have', 'Are'], 'Question: Do/Does + subject + have to + base verb?')); }); });
-    return out;
-  };
-
-  G.presCont = function () {
-    var out = [], NOW = ['now', 'at the moment', 'right now', 'today'];
-    SUBJ_ALL.forEach(function (s) { VACT.slice(0, 16).forEach(function (v) { var be = beOf(s); out.push(mk(s + ' ____ (' + v.b + ') ' + v.o + ' ' + pick(NOW) + '.', be + ' ' + v.ing, [v.s, v.b, be + ' ' + v.b], 'Happening now: am/is/are + verb-ing.')); }); });
-    return out;
-  };
-  G.simpleVsCont = function () {
-    var out = [], ROUT = ['every day', 'every morning', 'on Mondays', 'twice a week', 'every weekend'], NOWM = ['now', 'at the moment', 'right now', 'today', 'at present'];
-    SING3.forEach(function (s) { VACT.slice(0, 12).forEach(function (v) { out.push(mk(s + ' ____ (' + v.b + ') ' + v.o + ' ' + pick(ROUT) + '.', v.s, [beOf(s) + ' ' + v.ing, v.ing, v.b], 'A routine (every day) uses the present simple.')); }); });
-    BASE_SUBJ.forEach(function (s) { VACT.slice(0, 12).forEach(function (v) { out.push(mk(s + ' ____ (' + v.b + ') ' + v.o + ' ' + pick(ROUT) + '.', v.b, [beOf(s) + ' ' + v.ing, v.ing, v.s], 'A routine uses the present simple.')); }); });
-    SUBJ_ALL.forEach(function (s) { VACT.slice(0, 12).forEach(function (v) { out.push(mk(s + ' ____ (' + v.b + ') ' + v.o + ' ' + pick(NOWM) + '.', beOf(s) + ' ' + v.ing, [v.s, v.b, v.ing], 'Happening now uses the present continuous.')); }); });
-    return out;
-  };
-
-  G.comp = function () {
-    var out = [], byKey = {}; ADJ.forEach(function (a) { byKey[a.a] = a; });
-    var ITEMS = [
-      ['A train', 'a bus', 'fast'], ['A plane', 'a car', 'fast'], ['A cheetah', 'a cat', 'fast'],
-      ['A giraffe', 'a horse', 'tall'], ['This tower', 'that house', 'tall'], ['My brother', 'my sister', 'tall'],
-      ['A bike', 'a car', 'cheap'], ['A bus ticket', 'a train ticket', 'cheap'],
-      ['A mouse', 'a cat', 'small'], ['My village', 'this city', 'small'],
-      ['My grandfather', 'my father', 'old'], ['This castle', 'that house', 'old'],
-      ['My sister', 'my brother', 'young'], ['Anna', 'Tom', 'young'],
-      ['Winter', 'autumn', 'cold'], ['The North', 'the South', 'cold'],
-      ['My room', 'your room', 'clean'], ['This street', 'that street', 'clean'],
-      ['This film', 'that film', 'short'], ['My hair', 'your hair', 'short'],
-      ['The Nile', 'the Thames', 'long'], ['This road', 'that road', 'long'],
-      ['An elephant', 'a dog', 'big'], ['Russia', 'France', 'big'],
-      ['Summer', 'spring', 'hot'], ['Tea', 'juice', 'hot'],
-      ['This phone', 'that laptop', 'thin'], ['A pencil', 'a pen', 'thin'],
-      ['This song', 'that song', 'sad'],
-      ['Today', 'yesterday', 'happy'], ['She', 'her brother', 'happy'],
-      ['This test', 'that test', 'easy'], ['Art', 'maths', 'easy'],
-      ['My bag', 'your bag', 'heavy'], ['Gold', 'plastic', 'heavy'],
-      ['Monday', 'Sunday', 'busy'], ['The city', 'the village', 'busy'],
-      ['The first train', 'the second train', 'early'],
-      ['The kitchen', 'the bedroom', 'dirty'],
-      ['Asia', 'Europe', 'large'], ['A lake', 'a pond', 'large'],
-      ['This hotel', 'that hotel', 'nice'],
-      ['A plane', 'a motorbike', 'safe'], ['This area', 'that area', 'safe'],
-      ['The last bus', 'the first bus', 'late'],
-      ['A diamond', 'a stone', 'expensive'], ['A car', 'a bike', 'expensive'], ['Gold', 'silver', 'expensive'],
-      ['This book', 'that one', 'interesting'], ['History', 'geography', 'interesting'],
-      ['This painting', 'that one', 'beautiful'], ['The sunset', 'the sunrise', 'beautiful'],
-      ['Chinese', 'Spanish', 'difficult'], ['This exam', 'the last one', 'difficult'],
-      ['Health', 'money', 'important'], ['Family', 'work', 'important'],
-      ['This actor', 'that one', 'famous'], ['London', 'my town', 'famous'],
-      ['This phone', 'that one', 'modern'], ['The new café', 'the old one', 'modern'],
-      ['This restaurant', 'that one', 'good'], ['My team', 'your team', 'good'],
-      ['The traffic today', 'the traffic yesterday', 'bad'],
-      ['The station', 'the shop', 'far'], ['Australia', 'France', 'far']
-    ];
-    ITEMS.forEach(function (it) { var a = byKey[it[2]]; if (!a) return; var d = a.t === 'long' ? [a.a, a.a + 'er', a.s] : [a.a, a.s, 'more ' + a.a]; out.push(mk(it[0] + ' is ____ (' + a.a + ') than ' + it[1] + '.', a.c, d, 'Comparative: short adj + -er; long adj -> more ...; then than.')); });
-    return out;
-  };
-  G.superl = function () {
-    var out = [], byKey = {}; ADJ.forEach(function (a) { byKey[a.a] = a; });
-    var ITEMS = [
-      ['The Nile', 'long', 'river in the world'], ['Russia', 'large', 'country in the world'],
-      ['This', 'cheap', 'phone in the shop'], ['He', 'tall', 'boy in the class'],
-      ['She', 'young', 'student in the group'], ['It', 'old', 'building in the city'],
-      ['Today', 'hot', 'day of the year'], ['This', 'expensive', 'car in the garage'],
-      ['That', 'interesting', 'book I have read'], ['This', 'beautiful', 'beach on the island'],
-      ['Maths', 'difficult', 'subject for me'], ['Health', 'important', 'thing in life'],
-      ['He', 'famous', 'singer in the country'], ['This', 'modern', 'flat in the area'],
-      ['This', 'good', 'restaurant in town'], ['That', 'bad', 'film of the year'],
-      ['The library', 'far', 'building from here'], ['January', 'cold', 'month of the year'],
-      ['This', 'small', 'room in the house'], ['He', 'fast', 'runner in the team'],
-      ['This', 'clean', 'classroom in the school'], ['This', 'short', 'day of the year'],
-      ['The whale', 'big', 'animal in the sea'], ['This', 'heavy', 'box in the room'],
-      ['Monday', 'busy', 'day of the week'], ['She', 'happy', 'person I know'],
-      ['This', 'easy', 'question on the test'], ['This', 'nice', 'hotel in the city'],
-      ['This', 'dirty', 'street in the town'], ['Anna', 'young', 'child in the family'],
-      ['This', 'thin', 'laptop in the shop'], ['That', 'sad', 'story in the book'],
-      ['Mr Lee', 'good', 'teacher in the school'], ['This', 'large', 'lake in the country'],
-      ['Everest', 'tall', 'mountain in the area'], ['This', 'long', 'bridge in the city'],
-      ['That', 'cheap', 'ticket on the website'], ['This', 'old', 'tree in the park'],
-      ['He', 'old', 'man in the village'], ['This', 'expensive', 'watch in the shop'],
-      ['She', 'beautiful', 'singer on the stage'], ['This', 'difficult', 'exam of the year'],
-      ['This', 'important', 'meeting of the month'], ['That', 'famous', 'painting in the museum'],
-      ['This', 'modern', 'car in the showroom'], ['This', 'good', 'idea of all'],
-      ['That', 'bad', 'day of my life'], ['The sun', 'hot', 'star near us'],
-      ['This', 'small', 'box on the shelf'], ['He', 'fast', 'swimmer in the pool'],
-      ['This', 'clean', 'beach in the country'], ['That', 'interesting', 'film at the cinema'],
-      ['This', 'nice', 'garden in the street']
-    ];
-    ITEMS.forEach(function (it) { var a = byKey[it[1]]; if (!a) return; var d = a.t === 'long' ? [a.a, a.c, a.a + 'est'] : [a.a, a.c, 'most ' + a.a]; out.push(mk(it[0] + ' is the ____ (' + a.a + ') ' + it[2] + '.', a.s, d, 'Superlative: the + short adj + -est; the most + long adj.')); });
-    return out;
-  };
-
-  G.pp = function () {
-    var out = [];
-    SUBJ_ALL.forEach(function (s) { V.slice(0, 14).forEach(function (v) { var h = haveOf(s); out.push(mk(s + ' ____ ' + pick(['already', 'just']) + ' ' + v.pp + ' ' + v.o + '.', h, [h === 'have' ? 'has' : 'have', 'is', 'do'], 'already / just -> present perfect: have/has + past participle.')); }); });
-    SUBJ_ALL.slice(0, 10).forEach(function (s) { V.slice(0, 14).filter(function (v) { return v.pp !== v.b; }).forEach(function (v) { var h = haveOf(s); out.push(mk(s + ' ' + h + ' ' + pick(['already', 'just']) + ' ____ (' + v.b + ') ' + v.o + '.', v.pp, [v.b, v.ed, v.s], 'have/has + past participle (gone, seen, eaten ...).')); }); });
-    ['you', 'they', 'we'].forEach(function (s) { V.slice(0, 10).forEach(function (v) { out.push(mk('____ ' + s + ' ever ' + v.pp + ' ' + v.o + '?', 'Have', ['Has', 'Did', 'Do'], 'Question: Have/Has + subject + (ever) + past participle?')); }); });
-    return out;
-  };
-  G.ppVsPast = function () {
-    var out = [], FIN = ['yesterday', 'last week', 'in 2010', 'two days ago', 'last year', 'last night', 'an hour ago', 'last summer'];
-    SUBJ_ALL.forEach(function (s) {
-      VIRR.forEach(function (v) {
-        out.push(mk(s + ' ____ (' + v.b + ') ' + v.o + ' ' + pick(FIN) + '.', v.ed, [haveOf(s) + ' ' + v.pp, v.pp, v.b], 'Finished time (yesterday, last week) -> past simple.'));
+    'a2-present-simple': function () {
+      var out = [], H = 'present simple: he/she/it adds -s; I/you/we/they use the base verb.';
+      // [3rd-singular, base, -ing, object]  (vetted, no runtime conjugation)
+      var V = [['goes', 'go', 'going', 'to work'], ['lives', 'live', 'living', 'in London'], ['plays', 'play', 'playing', 'tennis'],
+        ['watches', 'watch', 'watching', 'TV'], ['studies', 'study', 'studying', 'English'], ['works', 'work', 'working', 'in an office'],
+        ['reads', 'read', 'reading', 'the news'], ['drinks', 'drink', 'drinking', 'coffee'], ['speaks', 'speak', 'speaking', 'French'],
+        ['starts', 'start', 'starting', 'at nine'], ['teaches', 'teach', 'teaching', 'maths'], ['drives', 'drive', 'driving', 'a taxi'],
+        ['cooks', 'cook', 'cooking', 'dinner'], ['walks', 'walk', 'walking', 'to school'], ['likes', 'like', 'liking', 'music']];
+      var SING = ['She', 'He', 'My brother', 'Tom', 'Anna', 'The teacher', 'My sister', 'My father'];
+      var PLUR = ['I', 'You', 'We', 'They', 'My parents', 'My friends', 'The students'];
+      V.forEach(function (v) {
+        SING.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + v[3] + '.', v[0], [v[1], v[2], 'to ' + v[1]], 'he/she/it adds -s.'), H)); });
+        PLUR.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + v[3] + '.', v[1], [v[0], v[2], 'to ' + v[1]], 'I/you/we/they use the base verb.'), H)); });
       });
-    });
-    // 'since ...' requires the present perfect (past simple is wrong with
-    // since), so the contrast has exactly one right answer.
-    var DUR = [
-      { b: 'work', s: 'works', ing: 'working', ed: 'worked', pp: 'worked', o: 'in a bank' },
-      { b: 'live', s: 'lives', ing: 'living', ed: 'lived', pp: 'lived', o: 'in London' },
-      { b: 'study', s: 'studies', ing: 'studying', ed: 'studied', pp: 'studied', o: 'English' },
-      { b: 'play', s: 'plays', ing: 'playing', ed: 'played', pp: 'played', o: 'tennis' },
-      { b: 'teach', s: 'teaches', ing: 'teaching', ed: 'taught', pp: 'taught', o: 'at this university' }
-    ];
-    var SINCE = ['since 2019', 'since last September', 'since Monday', 'since January', 'since high school'];
-    SUBJ_ALL.forEach(function (s) {
-      var h = haveOf(s);
-      DUR.forEach(function (v) {
-        out.push(mk(s + ' ____ (' + v.b + ') ' + v.o + ' ' + pick(SINCE) + '.', h + ' ' + v.pp, [v.ed, v.s, v.ing], "'since' -> present perfect: have/has + past participle."));
+      return out;
+    },
+
+    'a2-past-simple': function () {
+      var out = [], H = 'past simple: regular verbs add -ed; many common verbs are irregular.';
+      // [past, base, -ing, wrong-regular, object]
+      var V = [['went', 'go', 'going', 'goed', 'to Ankara'], ['played', 'play', 'playing', 'plaid', 'tennis'],
+        ['ate', 'eat', 'eating', 'eated', 'a sandwich'], ['watched', 'watch', 'watching', 'wached', 'a film'],
+        ['bought', 'buy', 'buying', 'buyed', 'a car'], ['saw', 'see', 'seeing', 'seed', 'a bird'],
+        ['made', 'make', 'making', 'maked', 'a cake'], ['took', 'take', 'taking', 'taked', 'a photo'],
+        ['wrote', 'write', 'writing', 'writed', 'a letter'], ['drank', 'drink', 'drinking', 'drinked', 'some water'],
+        ['gave', 'give', 'giving', 'gived', 'a present'], ['found', 'find', 'finding', 'finded', 'a key'],
+        ['left', 'leave', 'leaving', 'leaved', 'early'], ['met', 'meet', 'meeting', 'meeted', 'a friend'],
+        ['cooked', 'cook', 'cooking', 'cookd', 'dinner'], ['visited', 'visit', 'visiting', 'visitted', 'a museum']];
+      var SUBJ = ['She', 'He', 'They', 'We', 'I', 'My brother', 'Tom', 'My friends'];
+      V.forEach(function (v) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + v[4] + ' yesterday.', v[0], [v[1], v[2], v[3]], 'past simple of "' + v[1] + '" is "' + v[0] + '".'), H)); }); });
+      return out;
+    },
+
+    'a2-plurals': function () {
+      var out = [], H = 'plural nouns: most add -s/-es; some are irregular.';
+      // [singular, plural, [two wrong forms]] - the singular goes in the STEM so
+      // each carrier is unique (the plural is the blank).
+      var N = [['box', 'boxes', ['boxs', 'boxies']], ['knife', 'knives', ['knifes', 'knifs']], ['child', 'children', ['childs', 'childrens']],
+        ['tomato', 'tomatoes', ['tomatos', 'tomatoe']], ['baby', 'babies', ['babys', 'babyes']], ['city', 'cities', ['citys', 'cityes']],
+        ['man', 'men', ['mans', 'mens']], ['woman', 'women', ['womans', 'womens']], ['foot', 'feet', ['foots', 'feets']],
+        ['tooth', 'teeth', ['tooths', 'toothes']], ['leaf', 'leaves', ['leafs', 'leafes']], ['person', 'people', ['persons', 'peoples']],
+        ['bus', 'buses', ['buss', 'busies']], ['dish', 'dishes', ['dishs', 'dishies']], ['watch', 'watches', ['watchs', 'watchies']],
+        ['party', 'parties', ['partys', 'partyes']], ['potato', 'potatoes', ['potatos', 'potatoe']], ['glass', 'glasses', ['glasss', 'glassies']]];
+      var T = ['One %s, two ____.', 'I can see one %s and several ____.', 'Is it one %s or two ____?', 'First one %s, then many ____.', 'Count them: one %s and lots of ____.', 'There is one %s here and other ____ there.'];
+      N.forEach(function (n) { T.forEach(function (t) { out.push(withHint(mk(t.replace('%s', n[0]), n[1], [n[2][0], n[2][1], n[0]], 'the plural of "' + n[0] + '" is "' + n[1] + '".'), H)); }); });
+      return out;
+    },
+
+    'a2-possessives': function () {
+      var out = [], H = "possessive adjective (my/your/his/her/our/their), or add 's to a name.";
+      var NOUN = ['book', 'car', 'bag', 'house', 'pen', 'phone', 'jacket', 'dog'];
+      var PA = [['I', 'my'], ['you', 'your'], ['he', 'his'], ['she', 'her'], ['we', 'our'], ['they', 'their']];
+      function others(ans) { return ['my', 'your', 'his', 'her', 'our', 'their'].filter(function (x) { return x !== ans; }).slice(0, 3); }
+      PA.forEach(function (p) { NOUN.forEach(function (n) { out.push(withHint(mk('This is ____ ' + n + '. (' + p[0] + ')', p[1], others(p[1]), p[0] + ' -> ' + p[1] + '.'), H)); }); });
+      var NAMES = ['Tom', 'Anna', 'John', 'Maria', 'my sister', 'the teacher'];
+      NAMES.forEach(function (nm) { NOUN.forEach(function (n) { out.push(withHint(mk('This is ____ ' + n + '. (' + nm + ')', nm + "'s", [nm + 's', nm, 'of ' + nm], "add 's to a name to show possession."), H)); }); });
+      return out;
+    },
+
+    'a2-present-simple-q': function () {
+      var out = [], H = 'questions: Do + I/you/we/they, Does + he/she/it, then the base verb.';
+      var VO = ['like coffee', 'play tennis', 'speak English', 'live near here', 'work hard', 'go to school', 'watch TV', 'eat meat', 'study at home', 'drink tea'];
+      var SQ = ['she', 'he', 'Tom', 'your brother', 'the teacher', 'your sister'];
+      var PQ = ['they', 'we', 'you', 'your friends', 'your parents', 'the students'];
+      VO.forEach(function (v) {
+        SQ.forEach(function (s) { out.push(withHint(mk('____ ' + s + ' ' + v + '?', 'Does', ['Do', 'Is', 'Are'], 'he/she/it question: Does + base verb.'), H)); });
+        PQ.forEach(function (s) { out.push(withHint(mk('____ ' + s + ' ' + v + '?', 'Do', ['Does', 'Is', 'Are'], 'you/we/they question: Do + base verb.'), H)); });
       });
-    });
-    return out;
+      return out;
+    },
+
+    'a2-have-got': function () {
+      var out = [], H = 'have got: I/you/we/they HAVE got; he/she/it HAS got.';
+      var OBJ = ['a new phone', 'two sisters', 'a car', 'a big house', 'a dog', 'a bike', 'long hair', 'a good job', 'a brother', 'a cat'];
+      var SING = ['She', 'He', 'My brother', 'Tom', 'My sister', 'The teacher'];
+      var PLUR = ['I', 'You', 'We', 'They', 'My parents', 'My friends'];
+      SING.forEach(function (s) { OBJ.forEach(function (o) { out.push(withHint(mk(s + ' ____ ' + o + '.', 'has got', ['have got', 'got', 'has'], 'he/she/it -> has got.'), H)); }); });
+      PLUR.forEach(function (s) { OBJ.forEach(function (o) { out.push(withHint(mk(s + ' ____ ' + o + '.', 'have got', ['has got', 'got', 'have'], 'I/you/we/they -> have got.'), H)); }); });
+      return out;
+    },
+
+    'a2-some-any': function () {
+      var out = [], H = 'some in positive sentences; any in questions and negatives.';
+      var UNC = ['milk', 'water', 'bread', 'money', 'sugar', 'rice', 'cheese', 'coffee', 'time', 'juice'];
+      var CNT = ['apples', 'books', 'eggs', 'lemons', 'pens', 'chairs', 'oranges', 'biscuits', 'stamps', 'tomatoes'];
+      UNC.forEach(function (n) {
+        out.push(withHint(mk('We have ____ ' + n + '.', 'some', ['any', 'a', 'the'], 'some in positive sentences.'), H));
+        out.push(withHint(mk('Is there ____ ' + n + '?', 'any', ['some', 'a', 'the'], 'any in questions.'), H));
+        out.push(withHint(mk("There isn't ____ " + n + '.', 'any', ['some', 'a', 'the'], 'any in negatives.'), H));
+      });
+      CNT.forEach(function (n) {
+        out.push(withHint(mk('We have ____ ' + n + '.', 'some', ['any', 'a', 'the'], 'some in positive sentences.'), H));
+        out.push(withHint(mk('Are there ____ ' + n + '?', 'any', ['some', 'a', 'the'], 'any in questions.'), H));
+        out.push(withHint(mk("We don't have ____ " + n + '.', 'any', ['some', 'a', 'the'], 'any in negatives.'), H));
+      });
+      return out;
+    },
+
+    'a2-much-many': function () {
+      var out = [], H = 'much + uncountable nouns; many + countable plural nouns.';
+      var UNC = ['water', 'money', 'time', 'sugar', 'rice', 'milk', 'bread', 'homework', 'traffic', 'coffee'];
+      var CNT = ['books', 'people', 'friends', 'cars', 'apples', 'students', 'chairs', 'eggs', 'questions', 'shops'];
+      UNC.forEach(function (n) {
+        out.push(withHint(mk('How ____ ' + n + ' is there?', 'much', ['many', 'a few', 'lots'], 'much + uncountable.'), H));
+        out.push(withHint(mk("There isn't ____ " + n + '.', 'much', ['many', 'a few', 'lots'], 'much + uncountable (negative).'), H));
+        out.push(withHint(mk('Is there ____ ' + n + '?', 'much', ['many', 'a few', 'lots'], 'much + uncountable.'), H));
+      });
+      CNT.forEach(function (n) {
+        out.push(withHint(mk('How ____ ' + n + ' are there?', 'many', ['much', 'a little', 'lots'], 'many + countable plural.'), H));
+        out.push(withHint(mk("There aren't ____ " + n + '.', 'many', ['much', 'a little', 'lots'], 'many + countable plural.'), H));
+        out.push(withHint(mk('Are there ____ ' + n + '?', 'many', ['much', 'a little', 'lots'], 'many + countable plural.'), H));
+      });
+      return out;
+    },
+
+    'a2-like-ing': function () {
+      var out = [], H = 'like / love / hate / enjoy + verb + -ing.';
+      var ING = [['listening', 'listen', 'to music'], ['playing', 'play', 'football'], ['cooking', 'cook', 'dinner'],
+        ['reading', 'read', 'books'], ['swimming', 'swim', 'in the sea'], ['watching', 'watch', 'films'],
+        ['dancing', 'dance', 'at parties'], ['shopping', 'shop', 'at weekends'], ['running', 'run', 'in the park'], ['painting', 'paint', 'pictures']];
+      var SING = [['She', 'likes'], ['He', 'loves'], ['Tom', 'hates'], ['My sister', 'enjoys']];
+      var PLUR = [['I', 'like'], ['You', 'love'], ['We', 'hate'], ['They', 'enjoy']];
+      function row(subj, verb, g) { out.push(withHint(mk(subj + ' ' + verb + ' ____ ' + g[2] + '.', g[0], [g[1], 'to ' + g[1], g[1] + 's'], verb + ' + -ing.'), H)); }
+      SING.forEach(function (sv) { ING.forEach(function (g) { row(sv[0], sv[1], g); }); });
+      PLUR.forEach(function (sv) { ING.forEach(function (g) { row(sv[0], sv[1], g); }); });
+      return out;
+    },
+
+    'a2-past-simple-q': function () {
+      var out = [], H = 'in the past, questions and negatives keep the main verb in its base form; the time is shown on the helper word.';
+      var VO = ['see the match', 'finish the work', 'go home early', 'eat breakfast', 'buy a ticket', 'call you', 'visit them', 'watch the film', 'clean the room', 'pass the exam'];
+      var SQ = ['she', 'he', 'they', 'we', 'you', 'Tom', 'your brother', 'the students'];
+      var SN = ['She', 'He', 'They', 'We', 'Tom', 'My friends', 'I', 'You'];
+      VO.forEach(function (v) { SQ.forEach(function (s) { out.push(withHint(mk('____ ' + s + ' ' + v + '?', 'Did', ['Do', 'Does', 'Was'], 'past question: Did + base verb.'), H)); }); });
+      VO.forEach(function (v) { SN.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + v + '.', "didn't", ["doesn't", "wasn't", "don't"], 'past negative: did not + base verb.'), H)); }); });
+      return out;
+    },
+
+    'a2-can-could': function () {
+      var out = [], H = 'a modal verb is followed by the base verb: no -s ending and no "to".';
+      var V = ['swim', 'drive', 'cook', 'sing', 'dance', 'play the piano', 'speak French', 'ride a bike', 'run fast', 'ski'];
+      var SUBJ = ['I', 'She', 'He', 'We', 'They', 'Tom', 'My sister', 'You'];
+      V.forEach(function (v) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + v + ' very well.', 'can', ['could to', 'cans', 'to can'], 'can + base verb (present ability).'), H)); }); });
+      V.forEach(function (v) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + v + ' years ago.', 'could', ['can', 'cans', 'could to'], 'could for past ability.'), H)); }); });
+      V.forEach(function (v) { out.push(withHint(mk('____ you ' + v + ' with me?', 'Can', ['Do', 'Are', 'Should to'], 'Can for requests and offers.'), H)); });
+      return out;
+    },
+
+    'a2-have-to': function () {
+      var out = [], H = 'have to / has to + base verb for obligation.';
+      var V = ['wake up early', 'wear a uniform', 'study tonight', 'work on Saturday', 'finish the report', 'pay the bill', 'take an exam', 'clean the room', 'call the doctor', 'catch the bus'];
+      var SING = ['She', 'He', 'Tom', 'My brother', 'The student'];
+      var PLUR = ['I', 'You', 'We', 'They', 'My parents'];
+      V.forEach(function (v) {
+        SING.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + v + '.', 'has to', ['have to', 'haves to', 'to have'], 'he/she/it: has to.'), H)); });
+        PLUR.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + v + '.', 'have to', ['has to', 'to have', 'having to'], 'I/you/we/they: have to.'), H)); });
+      });
+      return out;
+    },
+
+    'a2-present-continuous': function () {
+      var out = [], H = 'present continuous: am/is/are + verb-ing for actions happening now.';
+      var V = [['reading', 'read', 'a book'], ['playing', 'play', 'football'], ['cooking', 'cook', 'dinner'], ['watching', 'watch', 'TV'],
+        ['writing', 'write', 'a letter'], ['eating', 'eat', 'lunch'], ['studying', 'study', 'English'], ['listening', 'listen', 'to music'],
+        ['cleaning', 'clean', 'the room'], ['drinking', 'drink', 'coffee']];
+      var SING = ['She', 'He', 'Tom', 'My sister'];
+      var PLUR = ['They', 'We', 'You', 'My friends'];
+      V.forEach(function (g) {
+        SING.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + g[2] + ' now.', 'is ' + g[0], [g[1] + 's', g[1], 'is ' + g[1]], 'he/she/it: is + verb-ing.'), H)); });
+        PLUR.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + g[2] + ' now.', 'are ' + g[0], [g[1] + 's', g[1], 'is ' + g[0]], 'you/we/they: are + verb-ing.'), H)); });
+        out.push(withHint(mk('I ____ ' + g[2] + ' now.', 'am ' + g[0], [g[1] + 's', g[1], 'am ' + g[1]], 'I: am + verb-ing.'), H));
+      });
+      return out;
+    },
+
+    'a2-present-perfect': function () {
+      var out = [], H = 'present perfect: have/has + past participle.';
+      var PP = ['finished the work', 'eaten lunch', 'seen that film', 'lost the keys', 'just arrived', 'already left', 'done the homework', 'been to Paris', 'broken a window', 'found the answer'];
+      var SING = ['She', 'He', 'Tom', 'My brother', 'The teacher'];
+      var PLUR = ['I', 'You', 'We', 'They', 'My friends'];
+      PP.forEach(function (p) {
+        SING.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + p + '.', 'has', ['have', 'is', 'did'], 'he/she/it: has + past participle.'), H)); });
+        PLUR.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + p + '.', 'have', ['has', 'are', 'did'], 'I/you/we/they: have + past participle.'), H)); });
+      });
+      return out;
+    },
+
+    'a2-question-words': function () {
+      var out = [], H = 'what (thing), where (place), when (time), who (person), why (reason), how (manner).';
+      function qw(stem, ans, ex) { out.push(withHint(mk(stem, ans, ['What', 'Where', 'When', 'Who', 'Why', 'How'].filter(function (x) { return x !== ans; }).slice(0, 3), ex), H)); }
+      ['name', 'job', 'address', 'phone number', 'favourite colour', 'surname', 'nationality', 'hobby', 'favourite food', 'plan'].forEach(function (x) { qw('____ is your ' + x + '?', 'What', 'asks about a thing.'); });
+      ['bank', 'station', 'hospital', 'library', 'school', 'post office', 'bus stop', 'supermarket', 'cinema', 'pharmacy'].forEach(function (x) { qw('____ is the ' + x + '?', 'Where', 'asks about a place.'); });
+      ['film', 'class', 'match', 'party', 'meeting', 'train', 'lesson', 'concert', 'exam', 'show'].forEach(function (x) { qw('____ does the ' + x + ' start?', 'When', 'asks about a time.'); });
+      ['woman', 'man', 'boy', 'girl', 'teacher', 'singer', 'actor', 'doctor', 'player', 'writer'].forEach(function (x) { qw('____ is that ' + x + '?', 'Who', 'asks about a person.'); });
+      ['sad', 'late', 'tired', 'angry', 'happy', 'busy', 'worried', 'nervous', 'here', 'quiet'].forEach(function (x) { qw('____ are you ' + x + '?', 'Why', 'asks for a reason.'); });
+      ['____ old are you?', '____ do you go to work?', '____ far is the school?', '____ much is this?', '____ are you today?', '____ many books do you have?'].forEach(function (s) { qw(s, 'How', 'asks about manner or degree.'); });
+      return out;
+    },
+
+    'a2-adv-frequency': function () {
+      var out = [], H = 'frequency adverb goes BEFORE the main verb, but AFTER the verb "to be".';
+      var ADV = ['always', 'usually', 'often', 'sometimes', 'rarely', 'never'];
+      var V = [['drinks', 'drink', 'coffee'], ['eats', 'eat', 'meat'], ['plays', 'play', 'tennis'], ['watches', 'watch', 'TV'], ['reads', 'read', 'books'], ['walks', 'walk', 'to school']];
+      var SUBJ = ['She', 'He', 'Tom', 'My sister'];
+      V.forEach(function (g) { SUBJ.forEach(function (s) { ADV.forEach(function (a) { out.push(withHint(mk(s + ' ____ ' + g[2] + '.', a + ' ' + g[0], [g[0] + ' ' + a, a + ' ' + g[1], g[1] + ' ' + a], 'adverb before the main verb; he/she/it adds -s.'), H)); }); }); });
+      var ADJ = ['late', 'tired', 'happy', 'busy', 'here'];
+      ['He', 'She', 'Tom', 'My sister'].forEach(function (s) { ADJ.forEach(function (c) { ['always', 'usually', 'often', 'never', 'rarely'].forEach(function (a) { out.push(withHint(mk(s + ' ____ ' + c + '.', 'is ' + a, [a + ' is', 'are ' + a, a], 'with "be", the adverb goes after it (is always late).'), H)); }); }); });
+      return out;
+    },
+
+    'a2-simple-vs-continuous': function () {
+      var out = [], H = 'routine/every day/usually -> present simple; now/Look!/Listen!/at the moment -> present continuous.';
+      var V = [['walks', 'walk', 'is walking', 'to work'], ['has', 'have', 'is having', 'breakfast'], ['plays', 'play', 'is playing', 'tennis'], ['reads', 'read', 'is reading', 'a book'],
+        ['watches', 'watch', 'is watching', 'TV'], ['drinks', 'drink', 'is drinking', 'coffee'], ['studies', 'study', 'is studying', 'English'], ['cooks', 'cook', 'is cooking', 'dinner']];
+      var SING = ['She', 'He', 'Tom', 'My sister'];
+      V.forEach(function (g) {
+        SING.forEach(function (s) {
+          out.push(withHint(mk(s + ' ____ ' + g[3] + ' every day.', g[0], [g[2], g[1], 'is ' + g[1]], 'routine (every day) -> present simple.'), H));
+          out.push(withHint(mk('Look! ' + s + ' ____ ' + g[3] + ' now.', g[2], [g[0], g[1], 'is ' + g[1]], 'now (Look!) -> present continuous.'), H));
+          out.push(withHint(mk(s + ' usually ____ ' + g[3] + '.', g[0], [g[2], g[1], 'is ' + g[1]], 'usually -> present simple.'), H));
+          out.push(withHint(mk(s + ' ____ ' + g[3] + ' at the moment.', g[2], [g[0], g[1], 'is ' + g[1]], 'at the moment -> present continuous.'), H));
+        });
+      });
+      return out;
+    },
+
+    'a2-comparatives': function () {
+      var out = [], H = 'comparative: short adjective + -er + than; longer adjective uses more + adjective.';
+      ADJN.forEach(function (a) { a[3].forEach(function (n) { out.push(withHint(mk('This ' + n + ' is ____ than that one. (' + a[0] + ')', a[1], compDist(a), 'the comparative of "' + a[0] + '".'), H)); }); });
+      return out;
+    },
+
+    'a2-superlatives': function () {
+      var out = [], H = 'superlative: the + short adjective + -est; the most + longer adjective.';
+      ADJN.forEach(function (a) { a[3].forEach(function (n) { out.push(withHint(mk('It is ____ ' + n + ' here. (' + a[0] + ')', a[2], supDist(a), 'the superlative of "' + a[0] + '".'), H)); }); });
+      return out;
+    },
+
+    'a2-pp-vs-past': function () {
+      var out = [], H = 'finished time (yesterday/ago) -> past simple; experience (ever/never/just/before) -> present perfect.';
+      var V = [['saw', 'see', 'seen', 'a film'], ['went', 'go', 'gone', 'to London'], ['ate', 'eat', 'eaten', 'sushi'], ['did', 'do', 'done', 'the work'],
+        ['wrote', 'write', 'written', 'a letter'], ['took', 'take', 'taken', 'photos'], ['met', 'meet', 'met', 'her'], ['bought', 'buy', 'bought', 'a car']];
+      var SUBJ = ['I', 'She', 'He', 'We', 'They', 'Tom'];
+      V.forEach(function (g) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + g[3] + ' yesterday.', g[0], [g[1], 'have ' + g[2], 'did ' + g[1]], 'finished time (yesterday) -> past simple.'), H)); }); });
+      V.forEach(function (g) {
+        out.push(withHint(mk('I have ____ ' + g[3] + ' before.', g[2], [g[1], 'to ' + g[1], g[1] + 's'], 'experience (before) -> present perfect: have + past participle.'), H));
+        out.push(withHint(mk('She has never ____ ' + g[3] + '.', g[2], [g[1], 'to ' + g[1], g[1] + 's'], 'never -> present perfect: has + past participle.'), H));
+        out.push(withHint(mk('We have just ____ ' + g[3] + '.', g[2], [g[1], 'to ' + g[1], g[1] + 's'], 'just -> present perfect.'), H));
+        out.push(withHint(mk('They have already ____ ' + g[3] + '.', g[2], [g[1], 'to ' + g[1], g[1] + 's'], 'already -> present perfect.'), H));
+      });
+      return out;
+    },
+
+    'b1-present-cont': function () {
+      var out = [], H = 'facts/routines -> present simple; actions happening now -> present continuous.';
+      var V = [['works', 'work', 'is working', 'in a bank'], ['goes', 'go', 'is going', 'to the gym'], ['speaks', 'speak', 'is speaking', 'to a client'], ['plays', 'play', 'is playing', 'the guitar'],
+        ['studies', 'study', 'is studying', 'for an exam'], ['lives', 'live', 'is living', 'with friends'], ['drinks', 'drink', 'is drinking', 'coffee'], ['watches', 'watch', 'is watching', 'a film']];
+      var SING = ['She', 'He', 'Tom', 'My brother'];
+      V.forEach(function (g) {
+        SING.forEach(function (s) {
+          out.push(withHint(mk(s + ' usually ____ ' + g[3] + '.', g[0], [g[2], g[1], 'is ' + g[1]], 'routine -> present simple.'), H));
+          out.push(withHint(mk('Look! ' + s + ' ____ ' + g[3] + ' right now.', g[2], [g[0], g[1], 'is ' + g[1]], 'now -> present continuous.'), H));
+        });
+      });
+      return out;
+    },
+
+    'b1-question-forms': function () {
+      var out = [], H = 'choose the auxiliary by tense: do/does (present), did (past), is/are (continuous), have/has (perfect).';
+      ['like coffee', 'play the guitar', 'work in London', 'speak Italian'].forEach(function (v) {
+        ['she', 'he', 'your sister'].forEach(function (s) { out.push(withHint(mk('____ ' + s + ' ' + v + '?', 'Does', ['Do', 'Is', 'Did'], 'present simple (he/she/it): Does + base verb.'), H)); });
+        ['they', 'we', 'you'].forEach(function (s) { out.push(withHint(mk('____ ' + s + ' ' + v + '?', 'Do', ['Does', 'Are', 'Did'], 'present simple (you/we/they): Do + base verb.'), H)); });
+      });
+      ['arrive late', 'see the film', 'call you', 'win the game'].forEach(function (v) { ['she', 'they', 'you', 'he'].forEach(function (s) { out.push(withHint(mk('____ ' + s + ' ' + v + ' yesterday?', 'Did', ['Do', 'Does', 'Was'], 'past simple question: Did + base verb.'), H)); }); });
+      ['working', 'sleeping', 'cooking', 'waiting'].forEach(function (v) { out.push(withHint(mk('____ she ' + v + ' now?', 'Is', ['Are', 'Does', 'Did'], 'continuous (he/she/it): Is + -ing.'), H)); out.push(withHint(mk('____ they ' + v + ' now?', 'Are', ['Is', 'Do', 'Did'], 'continuous (you/we/they): Are + -ing.'), H)); });
+      ['lived here', 'known him', 'worked there'].forEach(function (v) { out.push(withHint(mk('How long ____ she ' + v + '?', 'has', ['have', 'did', 'is'], 'present perfect (he/she/it): has + past participle.'), H)); out.push(withHint(mk('How long ____ you ' + v + '?', 'have', ['has', 'did', 'are'], 'present perfect (you/we/they): have + past participle.'), H)); });
+      return out;
+    },
+
+    'b1-past-continuous': function () {
+      var out = [], H = 'past continuous: was/were + verb-ing for an action in progress in the past.';
+      var V = [['watching', 'watch', 'TV'], ['playing', 'play', 'football'], ['cooking', 'cook', 'dinner'], ['reading', 'read', 'a book'], ['working', 'work', 'late'],
+        ['sleeping', 'sleep', ''], ['studying', 'study', 'English'], ['waiting', 'wait', 'for the bus'], ['driving', 'drive', 'home'], ['running', 'run', 'in the park']];
+      var SING = ['She', 'He', 'Tom', 'I', 'My brother'];
+      var PLUR = ['They', 'We', 'You', 'My friends'];
+      V.forEach(function (g) {
+        var obj = g[2] ? ' ' + g[2] : '';
+        SING.forEach(function (s) { out.push(withHint(mk(s + ' ____' + obj + ' when the phone rang.', 'was ' + g[0], ['were ' + g[0], 'is ' + g[0], g[1]], 'I/he/she/it: was + -ing.'), H)); });
+        PLUR.forEach(function (s) { out.push(withHint(mk(s + ' ____' + obj + ' when the phone rang.', 'were ' + g[0], ['was ' + g[0], 'are ' + g[0], g[1]], 'you/we/they: were + -ing.'), H)); });
+      });
+      return out;
+    },
+
+    'b1-used-to': function () {
+      var out = [], H = 'used to + base verb for past habits/states that are not true now.';
+      var V = ['play tennis', 'live in a village', 'go to that school', 'eat meat', 'work nights', 'collect stamps', 'have long hair', 'wear glasses', 'study Latin', 'walk to work'];
+      var SUBJ = ['I', 'She', 'He', 'We', 'They', 'Tom', 'My father'];
+      V.forEach(function (v) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + v + '.', 'used to', ['use to', 'used', 'am used to'], 'used to + base verb for a past habit.'), H)); }); });
+      V.forEach(function (v) { ['I', 'She', 'We', 'They'].forEach(function (s) { out.push(withHint(mk(s + " didn't ____ " + v + '.', 'use to', ['used to', 'uses to', 'using to'], "negative: didn't use to + base verb."), 'after the negative helper, the verb drops its -d and goes back to the base form.')); }); });
+      return out;
+    },
+
+    'b1-present-perfect': function () {
+      var out = [], H = 'present perfect: have/has + past participle.';
+      var PP = ['just finished', 'already eaten', 'never been to Japan', 'lost the keys', 'seen that play', 'done the report', 'met the manager', 'broken the printer', 'read that book', 'arrived late'];
+      var SING = ['She', 'He', 'Tom', 'My boss', 'The teacher'];
+      var PLUR = ['I', 'You', 'We', 'They', 'My colleagues'];
+      PP.forEach(function (p) { SING.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + p + '.', 'has', ['have', 'is', 'did'], 'he/she/it: has + past participle.'), H)); }); PLUR.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + p + '.', 'have', ['has', 'are', 'did'], 'I/you/we/they: have + past participle.'), H)); }); });
+      return out;
+    },
+
+    'b1-pp-vs-past': function () {
+      var out = [], H = 'finished time (last week/ago) -> past simple; experience (just/never/already) -> present perfect.';
+      var V = [['saw', 'see', 'seen', 'the report'], ['went', 'go', 'gone', 'to Berlin'], ['wrote', 'write', 'written', 'the email'], ['made', 'make', 'made', 'a mistake'],
+        ['took', 'take', 'taken', 'the train'], ['gave', 'give', 'given', 'a talk'], ['lost', 'lose', 'lost', 'the file'], ['found', 'find', 'found', 'the solution']];
+      var SUBJ = ['I', 'She', 'He', 'We', 'They'];
+      V.forEach(function (g) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + g[3] + ' last week.', g[0], [g[1], 'have ' + g[2], 'did ' + g[1]], 'finished time -> past simple.'), H)); }); });
+      V.forEach(function (g) {
+        out.push(withHint(mk('I have just ____ ' + g[3] + '.', g[2], [g[1], 'to ' + g[1], g[1] + 's'], 'just -> present perfect.'), H));
+        out.push(withHint(mk('She has never ____ ' + g[3] + '.', g[2], [g[1], 'to ' + g[1], g[1] + 's'], 'never -> present perfect.'), H));
+        out.push(withHint(mk('We have already ____ ' + g[3] + '.', g[2], [g[1], 'to ' + g[1], g[1] + 's'], 'already -> present perfect.'), H));
+      });
+      return out;
+    },
+
+    'b1-quantifiers': function () {
+      var out = [], H = 'much + uncountable nouns; many + countable plural nouns.';
+      var UNC = ['time', 'money', 'information', 'work', 'traffic', 'noise', 'luggage', 'furniture', 'progress', 'rain'];
+      var CNT = ['people', 'colleagues', 'emails', 'meetings', 'options', 'reasons', 'mistakes', 'customers', 'shops', 'reviews'];
+      UNC.forEach(function (n) {
+        out.push(withHint(mk('How ____ ' + n + ' is there?', 'much', ['many', 'a few', 'fewer'], 'much + uncountable.'), H));
+        out.push(withHint(mk("There isn't ____ " + n + '.', 'much', ['many', 'a few', 'fewer'], 'much + uncountable (negative).'), H));
+        out.push(withHint(mk("We don't have ____ " + n + '.', 'much', ['many', 'a few', 'fewer'], 'much + uncountable.'), H));
+      });
+      CNT.forEach(function (n) {
+        out.push(withHint(mk('How ____ ' + n + ' are there?', 'many', ['much', 'a little', 'less'], 'many + countable plural.'), H));
+        out.push(withHint(mk("There aren't ____ " + n + '.', 'many', ['much', 'a little', 'less'], 'many + countable plural.'), H));
+        out.push(withHint(mk("We don't have ____ " + n + '.', 'many', ['much', 'a little', 'less'], 'many + countable plural.'), H));
+      });
+      return out;
+    },
+
+    'b1-comparatives': function () {
+      var out = [], H = 'comparative: short adjective + -er + than; longer adjective uses more + adjective.';
+      ADJN.forEach(function (a) { a[3].forEach(function (n) { out.push(withHint(mk('This ' + n + ' is ____ than the other one. (' + a[0] + ')', a[1], compDist(a), 'the comparative of "' + a[0] + '".'), H)); }); });
+      return out;
+    },
+
+    'b1-gerund-infinitive': function () {
+      var out = [], H = 'some verbs take -ing (enjoy, avoid, mind); others take to + base (want, decide, hope).';
+      var ACT = [['swimming', 'to swim', 'swim', 'in the sea'], ['cooking', 'to cook', 'cook', 'Italian food'], ['travelling', 'to travel', 'travel', 'around Europe'], ['reading', 'to read', 'read', 'long novels'], ['studying', 'to study', 'study', 'for exams'],
+        ['driving', 'to drive', 'drive', 'to work'], ['painting', 'to paint', 'paint', 'pictures'], ['dancing', 'to dance', 'dance', 'the tango'], ['running', 'to run', 'run', 'marathons'], ['singing', 'to sing', 'sing', 'pop songs']];
+      var SV_ING = [['I', 'enjoy'], ['She', 'enjoys'], ['They', 'avoid'], ['He', 'keeps'], ['We', 'miss'], ['I', "don't mind"]];
+      var SV_INF = [['I', 'want'], ['She', 'wants'], ['They', 'decided'], ['He', 'hopes'], ['We', 'agreed'], ['I', 'plan']];
+      SV_ING.forEach(function (sv) { ACT.forEach(function (a) { out.push(withHint(mk(sv[0] + ' ' + sv[1] + ' ____ ' + a[3] + '.', a[0], [a[1], a[2], a[2] + 's'], '"' + sv[1] + '" takes -ing.'), H)); }); });
+      SV_INF.forEach(function (sv) { ACT.forEach(function (a) { out.push(withHint(mk(sv[0] + ' ' + sv[1] + ' ____ ' + a[3] + '.', a[1], [a[0], a[2], a[2] + 's'], '"' + sv[1] + '" takes to + base verb.'), H)); }); });
+      return out;
+    },
+
+    'b1-passive-present': function () {
+      var out = [], H = 'present passive: is/are + past participle.';
+      var SING = [['English', 'spoken', 'speak', 'here'], ['The office', 'cleaned', 'clean', 'every evening'], ['Rice', 'grown', 'grow', 'in many countries'], ['This car', 'made', 'make', 'in Japan'],
+        ['The bill', 'paid', 'pay', 'at the end'], ['The shop', 'closed', 'close', 'on Sundays'], ['Breakfast', 'served', 'serve', 'at eight'], ['The museum', 'visited', 'visit', 'by tourists'],
+        ['This song', 'played', 'play', 'on the radio'], ['The report', 'written', 'write', 'in English'], ['The garden', 'watered', 'water', 'every day'], ['Coffee', 'grown', 'grow', 'in Brazil']];
+      var PLUR = [['These phones', 'made', 'make', 'in China'], ['The emails', 'sent', 'send', 'automatically'], ['The tickets', 'sold', 'sell', 'online'], ['The rooms', 'cleaned', 'clean', 'daily'],
+        ['Many languages', 'spoken', 'speak', 'in India'], ['The bins', 'emptied', 'empty', 'on Mondays'], ['The doors', 'locked', 'lock', 'at night'], ['Wages', 'paid', 'pay', 'monthly'],
+        ['The streets', 'cleaned', 'clean', 'at dawn'], ['These products', 'tested', 'test', 'carefully'], ['The forms', 'checked', 'check', 'by staff'], ['The lights', 'turned off', 'turn off', 'at midnight']];
+      SING.forEach(function (s) { out.push(withHint(mk(s[0] + ' ____ ' + s[3] + '.', 'is ' + s[1], [s[2] + 's', 'are ' + s[1], s[2]], 'singular subject: is + past participle.'), H)); });
+      PLUR.forEach(function (s) { out.push(withHint(mk(s[0] + ' ____ ' + s[3] + '.', 'are ' + s[1], [s[2], 'is ' + s[1], s[2] + 's'], 'plural subject: are + past participle.'), H)); });
+      return out;
+    },
+
+    'b1-passive-past': function () {
+      var out = [], H = 'past passive: was/were + past participle.';
+      var SING = [['The bridge', 'built', 'build', 'in 1990'], ['America', 'discovered', 'discover', 'in 1492'], ['The letter', 'written', 'write', 'last week'], ['The window', 'broken', 'break', 'yesterday'],
+        ['The cake', 'eaten', 'eat', 'quickly'], ['The painting', 'stolen', 'steal', 'at night'], ['The match', 'cancelled', 'cancel', 'because of rain'], ['The car', 'repaired', 'repair', 'yesterday'],
+        ['The house', 'sold', 'sell', 'last month'], ['The film', 'made', 'make', 'in 2010']];
+      var PLUR = [['The windows', 'cleaned', 'clean', 'yesterday'], ['The letters', 'sent', 'send', 'last week'], ['The trees', 'planted', 'plant', 'in spring'], ['The keys', 'found', 'find', 'this morning'],
+        ['The rooms', 'painted', 'paint', 'last year'], ['The guests', 'invited', 'invite', 'by email'], ['The photos', 'taken', 'take', 'at the party'], ['The tickets', 'booked', 'book', 'online'],
+        ['The walls', 'painted', 'paint', 'white'], ['The prizes', 'given', 'give', 'to the winners']];
+      SING.forEach(function (s) { out.push(withHint(mk(s[0] + ' ____ ' + s[3] + '.', 'was ' + s[1], [s[2], 'were ' + s[1], s[2] + 's'], 'singular subject: was + past participle.'), H)); });
+      PLUR.forEach(function (s) { out.push(withHint(mk(s[0] + ' ____ ' + s[3] + '.', 'were ' + s[1], [s[2], 'was ' + s[1], s[2] + 's'], 'plural subject: were + past participle.'), H)); });
+      return out;
+    },
+
+    'b1-future-will-going': function () {
+      var out = [];
+      var Hg = 'for a plan decided before now, match "be" (am/is/are) to the subject; the base verb stays after the future phrase.';
+      var Hw = 'for an instant decision or a prediction, use the future modal + the base verb (no -s, no "to").';
+      var ACT = ['start a new job', 'buy a house', 'study abroad', 'learn to drive', 'visit Rome', 'open a small cafe', 'run a marathon', 'paint the kitchen', 'plant a garden', 'write a novel'];
+      var SING = ['My sister', 'My brother', 'Tom', 'Anna', 'She', 'He', 'The manager'];
+      var PLUR = ['We', 'They', 'My parents', 'You', 'The students'];
+      SING.forEach(function (s) { ACT.forEach(function (a) { out.push(withHint(mk(s + ' ____ ' + a + ' next year.', 'is going to', ['are going to', 'am going to', 'will going to'], 'singular subject: is going to + base verb.'), Hg)); }); });
+      PLUR.forEach(function (s) { ACT.forEach(function (a) { out.push(withHint(mk(s + ' ____ ' + a + ' next year.', 'are going to', ['is going to', 'am going to', 'will going to'], 'plural subject: are going to + base verb.'), Hg)); }); });
+      ACT.forEach(function (a) { out.push(withHint(mk('I ____ ' + a + ' next year.', 'am going to', ['is going to', 'are going to', 'will going to'], 'I: am going to + base verb.'), Hg)); });
+      var SPON = [['The phone is ringing.', 'answer it'], ['That bag looks heavy.', 'carry it for you'], ['It is cold in here.', 'close the window'], ['You look tired.', 'make you a coffee'], ['Wait a second.', 'get my coat'], ['It is late.', 'call a taxi'], ['Leave it to me.', 'fix it'], ['Do not worry.', 'help you']];
+      SPON.forEach(function (p) { out.push(withHint(mk(p[0] + ' I ____ ' + p[1] + '.', 'will', ['will to', 'am going', 'going to'], 'instant decision: will + base verb.'), Hw)); });
+      return out;
+    },
+
+    'b1-future-plans': function () {
+      var out = [], H = 'for plans with "going to", use the form of the verb that matches the subject; in a question it comes first.';
+      var ACT = ['travel around Asia', 'change jobs', 'rent a flat', 'take driving lessons', 'join a gym', 'see the doctor', 'sell the old car', 'visit the grandparents', 'redecorate the house', 'apply to university'];
+      var SING = ['She', 'He', 'Tom', 'My sister'];
+      var PLUR = ['We', 'They', 'My parents', 'The boys'];
+      SING.forEach(function (s) { ACT.forEach(function (a) { out.push(withHint(mk(s + ' ____ going to ' + a + ' soon.', 'is', ['are', 'am', 'be'], 'singular subject: is.'), H)); }); });
+      PLUR.forEach(function (s) { ACT.forEach(function (a) { out.push(withHint(mk(s + ' ____ going to ' + a + ' soon.', 'are', ['is', 'am', 'be'], 'plural subject: are.'), H)); }); });
+      var SQ = ['she', 'he', 'Tom', 'your sister'];
+      SQ.forEach(function (s) { ACT.slice(0, 6).forEach(function (a) { out.push(withHint(mk('____ ' + s + ' going to ' + a + '?', 'Is', ['Are', 'Am', 'Does'], 'question, singular subject: Is first.'), H)); }); });
+      return out;
+    },
+
+    'b1-modals-obligation': function () {
+      var out = [], H = 'obligation, prohibition and "no need" each take a different modal; match it to the meaning and to the subject.';
+      var OBL = ['stop at a red light', 'wear a helmet', 'show some ID', 'pay the entrance fee', 'book a table first', 'renew the permit', 'follow the safety rules', 'sign the form', 'arrive on time', 'keep the receipt'];
+      var SING = ['A driver', 'Every visitor', 'She', 'My brother', 'Each student'];
+      var PLUR = ['Drivers', 'Visitors', 'We', 'They', 'The staff'];
+      SING.forEach(function (s) { OBL.forEach(function (a) { out.push(withHint(mk(s + ' ____ ' + a + '. It is the rule.', 'has to', ['have to', 'having to', 'has'], 'singular subject + obligation: has to.'), H)); }); });
+      PLUR.forEach(function (s) { OBL.forEach(function (a) { out.push(withHint(mk(s + ' ____ ' + a + '. It is the rule.', 'have to', ['has to', 'having to', 'have'], 'plural subject + obligation: have to.'), H)); }); });
+      var PRO = ['park here', 'use phones in the exam', 'feed the animals', 'touch the paintings', 'walk on the grass', 'smoke inside'];
+      PRO.forEach(function (a) { out.push(withHint(mk('You ____ ' + a + '. It is forbidden.', "mustn't", ["don't have to", 'must', 'should'], "a forbidden action: mustn't."), H)); });
+      var NO = ['pay, it is free', 'come early, there is time', 'bring food, we have plenty', 'wear a tie, it is casual', 'rush, we are not late', 'book, there is space'];
+      NO.forEach(function (a) { out.push(withHint(mk('You ____ ' + a + '.', "don't have to", ["mustn't", 'have to', 'should'], "no obligation: don't have to."), H)); });
+      return out;
+    },
+
+    'b1-modals-possibility': function () {
+      var out = [], H = 'a modal of ability or possibility takes the base verb after it (no -s, no "to").';
+      var ABIL = ['speak four languages', 'play the violin', 'drive a lorry', 'fix a computer', 'cook Thai food', 'run ten kilometres', 'read music', 'solve hard puzzles', 'ride a horse', 'paint portraits'];
+      var SUBJ = ['She', 'He', 'Tom', 'My friend', 'My sister', 'The new student'];
+      ABIL.forEach(function (a) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + a + '.', 'can', ['can to', 'cans', 'is can'], 'ability: can + base verb.'), H)); }); });
+      var POSS = [['It', 'rain this afternoon'], ['She', 'be at home'], ['He', 'know the answer'], ['They', 'arrive late'], ['The trip', 'cost a lot'], ['The meeting', 'take all day'], ['This plan', 'work well'], ['The shop', 'be closed']];
+      POSS.forEach(function (p) { out.push(withHint(mk(p[0] + ' ____ ' + p[1] + '.', 'might', ['might to', 'mights', 'may to'], 'possibility: might + base verb.'), H)); });
+      var QS = ['she', 'he', 'your friend', 'your sister'];
+      ABIL.slice(0, 6).forEach(function (a) { QS.forEach(function (s) { out.push(withHint(mk('____ ' + s + ' ' + a + '?', 'Can', ['Cans', 'Does can', 'Is'], 'ability question: Can + subject + base verb.'), H)); }); });
+      return out;
+    },
+
+    'b1-conditional-1': function () {
+      var out = [], H = 'first conditional (real future): use the present simple after "if"; the result uses "will" + the base verb.';
+      var IFV = [['hard', 'study', 'studies'], ['every day', 'train', 'trains'], ['some money', 'save', 'saves'], ['politely', 'ask', 'asks'], ['early', 'leave', 'leaves'], ['a lot', 'practise', 'practises'], ['hard', 'work', 'works'], ['a little', 'help', 'helps']];
+      var RES2 = ['you will pass', 'the team will win'];
+      var PSUBJ = ['you', 'they', 'we'];
+      PSUBJ.forEach(function (s) { IFV.forEach(function (v) { RES2.forEach(function (r) { out.push(withHint(mk('If ' + s + ' ____ ' + v[0] + ', ' + r + '.', v[1], [v[2], 'will ' + v[1], 'to ' + v[1]], 'after "if": present simple base verb.'), H)); }); }); });
+      var SSUBJ = ['she', 'he', 'my brother', 'the teacher'];
+      SSUBJ.forEach(function (s) { IFV.forEach(function (v) { out.push(withHint(mk('If ' + s + ' ____ ' + v[0] + ', the result will be good.', v[2], [v[1], 'will ' + v[1], 'to ' + v[1]], 'after "if", he/she: add -s.'), H)); }); });
+      var RESV = [['the prize', 'win'], ['you back', 'call'], ['the team', 'help'], ['at home', 'stay'], ['the train', 'catch'], ['the room', 'book']];
+      var CONDS = ['If you practise', 'If they hurry', 'If we are lucky', 'If she asks'];
+      CONDS.forEach(function (c) { RESV.forEach(function (rv) { out.push(withHint(mk(c + ', we ____ ' + rv[0] + '.', 'will ' + rv[1], [rv[1], 'will to ' + rv[1], 'are ' + rv[1]], 'result clause: will + base verb.'), H)); }); });
+      return out;
+    },
+
+    'b1-conditional-2': function () {
+      var out = [], H = 'second conditional (unreal): use the past simple after "if"; the result uses "would" + the base verb.';
+      var IFV = [['more time', 'had', 'have'], ['the lottery', 'won', 'win'], ['the answer', 'knew', 'know'], ['nearer', 'lived', 'live'], ['Chinese', 'spoke', 'speak'], ['a car', 'owned', 'own'], ['better', 'felt', 'feel'], ['the truth', 'told', 'tell']];
+      var SUBJ = ['I', 'you', 'she', 'we', 'they'];
+      SUBJ.forEach(function (s) { IFV.forEach(function (v) { out.push(withHint(mk('If ' + s + ' ____ ' + v[0] + ', things would be different.', v[1], [v[2], 'would ' + v[2], 'have ' + v[1]], 'after "if": past simple form.'), H)); }); });
+      var RESV = [['a new house', 'buy'], ['around the world', 'travel'], ['a sports car', 'drive'], ['the truth', 'tell'], ['more friends', 'make'], ['the job', 'take']];
+      var CONDS = ['If I were rich', 'If she had time', 'If we lived here', 'If they tried harder'];
+      CONDS.forEach(function (c) { RESV.forEach(function (rv) { out.push(withHint(mk(c + ', I ____ ' + rv[0] + '.', 'would ' + rv[1], [rv[1], 'will ' + rv[1], 'would to ' + rv[1]], 'result clause: would + base verb.'), H)); }); });
+      return out;
+    },
+
+    'b1-too-enough': function () {
+      var out = [], H = 'pick the word for an excess (it comes before an adjective) or for a sufficient amount (after an adjective, or before a noun).';
+      var TOO = [['This coffee', 'hot', 'drink'], ['The box', 'heavy', 'carry'], ['The water', 'cold', 'swim in'], ['The room', 'dark', 'read in'], ['This ticket', 'expensive', 'buy'], ['The shop', 'far', 'walk to'], ['The street', 'noisy', 'sleep in'], ['The shelf', 'high', 'reach'], ['The soup', 'salty', 'eat'], ['This shirt', 'small', 'wear'], ['The hill', 'steep', 'climb'], ['The film', 'long', 'finish']];
+      TOO.forEach(function (t) { out.push(withHint(mk(t[0] + ' is ____ ' + t[1] + ' to ' + t[2] + '.', 'too', ['enough', 'very', 'so'], 'an excess goes before the adjective.'), H)); });
+      var ENA = [['tall', 'reach the shelf'], ['old', 'drive'], ['strong', 'lift it'], ['warm', 'go outside'], ['fit', 'run a race'], ['good', 'pass the test'], ['fast', 'win the race'], ['ready', 'start now']];
+      ENA.forEach(function (e) { out.push(withHint(mk("She isn't " + e[0] + ' ____ to ' + e[1] + '.', 'enough', ['too', 'very', 'much'], 'a sufficient amount goes after the adjective.'), H)); });
+      var ENN = ['chairs', 'time', 'money', 'room', 'food', 'tickets', 'cups', 'space'];
+      ENN.forEach(function (n) { out.push(withHint(mk("We don't have ____ " + n + ' for everyone.', 'enough', ['too', 'so', 'such'], 'a sufficient amount goes before the noun.'), H)); });
+      return out;
+    },
+
+    'b1-a-few-little': function () {
+      var out = [], H = 'choose the quantifier by the noun: a countable plural noun, or an uncountable noun.';
+      var UNC = ['money', 'time', 'milk', 'sugar', 'water', 'bread', 'salt', 'coffee', 'rice', 'help', 'juice', 'cheese'];
+      var CNT = ['biscuits', 'friends', 'books', 'apples', 'chairs', 'coins', 'ideas', 'shops', 'eggs', 'photos', 'songs', 'cards'];
+      var UF = ['We still have ____ %.', 'I saved ____ %.', 'There is ____ % left.', 'Can you give me ____ %?'];
+      var CF = ['We still have ____ %.', 'I bought ____ %.', 'There are ____ % left.', 'She knows ____ %.'];
+      UNC.forEach(function (n) { UF.forEach(function (f) { out.push(withHint(mk(f.replace('%', n), 'a little', ['a few', 'many', 'few'], 'uncountable noun: a little.'), H)); }); });
+      CNT.forEach(function (n) { CF.forEach(function (f) { out.push(withHint(mk(f.replace('%', n), 'a few', ['a little', 'much', 'little'], 'countable plural: a few.'), H)); }); });
+      return out;
+    },
+
+    'b1-relative-clauses': function () {
+      var out = [], H = 'choose the relative word by what it refers to: a person, a thing, a place, or a possession.';
+      var PERSON = ['the man', 'the woman', 'the teacher', 'the doctor', 'the player', 'the artist', 'the neighbour', 'the writer'];
+      var PVERB = ['lives next door', 'won the prize', 'helped us', 'teaches maths', 'wrote the book', 'fixed the car', 'called you', 'works here'];
+      PERSON.forEach(function (p, i) { out.push(withHint(mk("That's " + p + ' ____ ' + PVERB[i % PVERB.length] + '.', 'who', ['which', 'whose', 'where'], 'refers to a person: who.'), H)); });
+      var THING = ['the book', 'the car', 'the film', 'the phone', 'the house', 'the bag', 'the painting', 'the song'];
+      var TVERB = ['won the award', 'broke down', 'made me cry', 'rang loudly', 'looked lovely', 'went missing', 'sold quickly', 'topped the charts'];
+      THING.forEach(function (t, i) { out.push(withHint(mk('This is ' + t + ' ____ ' + TVERB[i % TVERB.length] + '.', 'which', ['who', 'whose', 'where'], 'refers to a thing: which.'), H)); });
+      var PLACE = ['the house', 'the city', 'the hotel', 'the school', 'the village', 'the cafe', 'the beach', 'the office'];
+      var PLV = ['I was born', 'we first met', 'they got married', 'I grew up', 'she was raised', 'we used to meet', 'he proposed', 'I started work'];
+      PLACE.forEach(function (p, i) { out.push(withHint(mk("That's " + p + ' ____ ' + PLV[i % PLV.length] + '.', 'where', ['which', 'who', 'whose'], 'refers to a place: where.'), H)); });
+      var POSS = ['the woman', 'the man', 'the boy', 'the artist', 'the family', 'the author', 'the student', 'the singer'];
+      var POV = ['car was stolen', 'dog ran away', 'bike was new', 'work sold out', 'house was sold', 'book won a prize', 'bag was lost', 'song went viral'];
+      POSS.forEach(function (p, i) { out.push(withHint(mk('She knows ' + p + ' ____ ' + POV[i % POV.length] + '.', 'whose', ['who', 'which', 'where'], 'refers to a possession: whose.'), H)); });
+      var OBJ = [['the book', 'I read'], ['the film', 'we watched'], ['the meal', 'she cooked'], ['the song', 'they played'], ['the car', 'he bought'], ['the house', 'we visited']];
+      OBJ.forEach(function (o) { out.push(withHint(mk('This is ' + o[0] + ' ____ ' + o[1] + ' last week.', 'that', ['who', 'whose', 'where'], 'a thing as object: that.'), H)); });
+      return out;
+    },
+
+    'b1p-present-perfect': function () {
+      var out = [], H = 'the present perfect links the past to now: use the helper that matches the subject, then the past participle.';
+      var V = [['written', 'write', 'wrote'], ['eaten', 'eat', 'ate'], ['seen', 'see', 'saw'], ['taken', 'take', 'took'], ['broken', 'break', 'broke'], ['spoken', 'speak', 'spoke'], ['given', 'give', 'gave'], ['known', 'know', 'knew'], ['driven', 'drive', 'drove'], ['chosen', 'choose', 'chose']];
+      var OBJ = ['a letter', 'the cake', 'that film', 'some photos', 'the window', 'to the boss', 'a speech', 'the answer', 'the new car', 'a book'];
+      V.forEach(function (v, i) { out.push(withHint(mk('She has ____ ' + OBJ[i] + '.', v[0], [v[1], v[2], v[1] + 'ing'], 'after the helper, use the past participle (the third form).'), H)); });
+      var PP = ['lived here for years', 'known us since school', 'just arrived', 'already left', 'never been abroad', 'lost the keys', 'finished the report', 'seen the results', 'done the homework', 'paid the bill'];
+      var SING = ['She', 'He', 'Tom', 'My sister', 'The manager'];
+      var PLUR = ['We', 'They', 'My parents', 'You', 'The students'];
+      SING.forEach(function (s) { PP.forEach(function (p) { out.push(withHint(mk(s + ' ____ ' + p + '.', 'has', ['have', 'is', 'did'], 'singular subject: has + past participle.'), H)); }); });
+      PLUR.forEach(function (s) { PP.forEach(function (p) { out.push(withHint(mk(s + ' ____ ' + p + '.', 'have', ['has', 'are', 'did'], 'I/you/we/they: have + past participle.'), H)); }); });
+      return out;
+    },
+
+    'b1p-pres-perf-cont': function () {
+      var out = [], H = 'for an action that started in the past and is still going on, use the helper + been + the -ing form.';
+      var ING = ['working hard', 'studying English', 'waiting for you', 'running', 'cooking dinner', 'reading all day', 'playing tennis', 'cleaning the house', 'driving since dawn', 'training for weeks'];
+      var SING = ['She', 'He', 'Tom', 'My sister', 'The team captain'];
+      var PLUR = ['We', 'They', 'My parents', 'You', 'The workers'];
+      SING.forEach(function (s) { ING.forEach(function (g) { out.push(withHint(mk(s + ' ____ ' + g + '.', 'has been', ['have been', 'is been', 'has being'], 'singular subject: has been + -ing.'), H)); }); });
+      PLUR.forEach(function (s) { ING.forEach(function (g) { out.push(withHint(mk(s + ' ____ ' + g + '.', 'have been', ['has been', 'are been', 'have being'], 'I/you/we/they: have been + -ing.'), H)); }); });
+      var SQ = ['you', 'they', 'we'];
+      SQ.forEach(function (s) { ING.slice(0, 4).forEach(function (g) { out.push(withHint(mk('How long ____ ' + s + ' been ' + g.split(' ')[0] + '?', 'have', ['has', 'are', 'did'], 'I/you/we/they question: have + subject.'), H)); }); });
+      return out;
+    },
+
+    'b1p-past-perfect': function () {
+      var out = [], H = 'for an action finished before another past moment, use "had" + the past participle.';
+      var V = [['gone', 'go', 'went'], ['begun', 'begin', 'began'], ['left', 'leave', 'leaving'], ['stopped', 'stop', 'stopping'], ['forgotten', 'forget', 'forgot'], ['eaten', 'eat', 'ate'], ['lost', 'lose', 'losing'], ['finished', 'finish', 'finishing'], ['arrived', 'arrive', 'arriving'], ['closed', 'close', 'closing']];
+      var SUBJ = ['the train', 'the film', 'everyone', 'the rain', 'she', 'the guests', 'he', 'the meeting', 'the bus', 'the shop'];
+      var LEAD = ['By the time we got there, ', 'When I arrived, ', 'After we sat down, ', 'By eight that evening, '];
+      V.forEach(function (v, i) { LEAD.forEach(function (c) { out.push(withHint(mk(c + SUBJ[i] + ' ____.', 'had ' + v[0], ['has ' + v[0], v[2], 'was ' + v[1]], 'earlier past action: had + past participle.'), H)); }); });
+      return out;
+    },
+
+    'b1p-past-continuous': function () {
+      var out = [], H = 'for an action in progress in the past, use the past form of "be" + the -ing form.';
+      var ING = [['cooking', 'dinner'], ['watching', 'TV'], ['reading', 'a book'], ['driving', 'home'], ['working', 'late'], ['studying', ''], ['playing', 'outside'], ['having', 'lunch'], ['painting', 'the wall'], ['sleeping', '']];
+      var SING = ['She', 'He', 'Tom', 'My brother', 'The teacher'];
+      var PLUR = ['We', 'They', 'The children', 'My parents', 'You'];
+      var WHEN = ['when the phone rang', 'when I arrived', 'at nine last night', 'when it started to rain', 'all evening'];
+      SING.forEach(function (s) { ING.forEach(function (g) { var obj = g[1] ? ' ' + g[1] : ''; out.push(withHint(mk(s + ' ____' + obj + ' ' + WHEN[(s.length + g[0].length) % WHEN.length] + '.', 'was ' + g[0], ['were ' + g[0], 'is ' + g[0], 'are ' + g[0]], 'singular subject: was + -ing.'), H)); }); });
+      PLUR.forEach(function (s) { ING.forEach(function (g) { var obj = g[1] ? ' ' + g[1] : ''; out.push(withHint(mk(s + ' ____' + obj + ' ' + WHEN[(s.length + g[0].length) % WHEN.length] + '.', 'were ' + g[0], ['was ' + g[0], 'is ' + g[0], 'are ' + g[0]], 'plural subject: were + -ing.'), H)); }); });
+      return out;
+    },
+
+    'b1p-future-continuous': function () {
+      var out = [], H = 'for an action that will be in progress at a future time, use "will be" + the -ing form.';
+      var ING = [['lying on a beach', 'lie'], ['having dinner', 'have'], ['flying to Rome', 'fly'], ['working from home', 'work'], ['driving north', 'drive'], ['studying for exams', 'study'], ['watching the final', 'watch'], ['waiting at the gate', 'wait'], ['running the shop', 'run'], ['sleeping', 'sleep']];
+      var SUBJ = ['I', 'She', 'He', 'We', 'They'];
+      var LEAD = ['This time tomorrow, ', 'At 8pm, ', 'This time next week, ', 'Tonight at nine, '];
+      ING.forEach(function (g) { SUBJ.forEach(function (s) { var ing = g[0].split(' ')[0], rest = g[0].split(' ').slice(1).join(' '), tail = rest ? ' ' + rest : '', subj = (s === 'I') ? 'I' : s.toLowerCase(); out.push(withHint(mk(LEAD[(g[0].length) % LEAD.length] + subj + ' ____' + tail + '.', 'will be ' + ing, ['will ' + g[1], 'is ' + ing, 'will be ' + g[1]], 'future in progress: will be + -ing.'), H)); }); });
+      return out;
+    },
+
+    'b1p-future': function () {
+      var out = [], H = 'a fixed timetable uses the present simple; an on-the-spot decision or prediction uses the future modal + the base verb.';
+      var TT = [['train', 'leaves', 'leave'], ['film', 'starts', 'start'], ['meeting', 'begins', 'begin'], ['shop', 'opens', 'open'], ['bus', 'arrives', 'arrive'], ['concert', 'finishes', 'finish'], ['flight', 'departs', 'depart'], ['lesson', 'ends', 'end']];
+      var TIME = ['at nine', 'at noon', 'at half past six', 'in ten minutes', 'tomorrow morning', 'on Monday'];
+      TT.forEach(function (t) { TIME.forEach(function (tm) { out.push(withHint(mk('The ' + t[0] + ' ____ ' + tm + '.', t[1], [t[2], 'will ' + t[1], 'is ' + t[2]], 'timetable: present simple, he/she/it adds -s.'), H)); }); });
+      var PRED = [['rain', 'I think it'], ['be fine', 'I am sure she'], ['win', 'I bet they'], ['help', 'Do not worry, we'], ['call back', 'OK, I'], ['work', 'I hope this'], ['arrive soon', 'Maybe they'], ['like it', 'I think you']];
+      PRED.forEach(function (p) { out.push(withHint(mk(p[1] + ' ____ ' + p[0] + '.', 'will', ['will to', 'going to', 'are going'], 'prediction or instant decision: will + base verb.'), H)); });
+      return out;
+    },
+
+    'b1p-deduction': function () {
+      var out = [], H = 'choose the modal that fits how certain the evidence makes you.';
+      var IT = [
+        ['The lights are on, so someone ____ be home.', 'must', ["can't", 'might', 'is']],
+        ['He just ate a big meal, he ____ be hungry.', "can't", ['must', 'might', 'is']],
+        ['I am not sure where she is; she ____ be at work.', 'might', ['must', "can't", 'is']],
+        ['She has not slept all night, she ____ be exhausted.', 'must', ["can't", 'might', 'is']],
+        ['That ____ be John; John is much taller.', "can't", ['must', 'might', 'is']],
+        ['Nobody is answering; they ____ be out.', 'might', ['must', "can't", 'are']],
+        ['He is wearing a uniform, so he ____ be a guard.', 'must', ["can't", 'might', 'is']],
+        ['The shop is dark, it ____ be open.', "can't", ['must', 'might', 'is']],
+        ['Her car is gone, so she ____ be at home.', "can't", ['must', 'might', 'is']],
+        ['I can hear music, so someone ____ be in.', 'must', ["can't", 'might', 'is']],
+        ['Perhaps the keys ____ be in the drawer.', 'might', ['must', "can't", 'are']],
+        ['He is yawning, so he ____ be tired.', 'must', ["can't", 'might', 'is']],
+        ['She lives abroad, so that ____ be her at the door.', "can't", ['must', 'might', 'is']],
+        ['The phone is ringing; it ____ be your mother.', 'might', ['must', "can't", 'is']],
+        ['They have three cars, they ____ be poor.', "can't", ['must', 'might', 'are']],
+        ['The ground is dry, so it ____ be raining.', "can't", ['must', 'might', 'is']]];
+      IT.forEach(function (q) { out.push(withHint(mk(q[0], q[1], q[2], 'present deduction: modal + be.'), H)); });
+      return out;
+    },
+
+    'b1p-past-modals': function () {
+      var out = [], H = 'to look back at the past with a modal, use the modal + "have" + the past participle; the modal shows how sure you are or your judgement.';
+      var IT = [
+        ['You ____ told me earlier; I had no idea.', 'should have', ['should', 'must have', 'should had']],
+        ['The grass is wet, so it ____ rained in the night.', 'must have', ['must', "can't have", 'must had']],
+        ['She was abroad then, so she ____ seen you here.', "can't have", ['must have', "can't", "can't had"]],
+        ['We ____ booked sooner; now it is full.', 'should have', ['should', 'must have', 'should had']],
+        ['He passed easily, so he ____ studied hard.', 'must have', ['must', "can't have", 'must had']],
+        ['You ____ left without saying goodbye; that was rude.', "shouldn't have", ['should have', "shouldn't", "shouldn't had"]],
+        ['The door is open, so someone ____ forgotten to lock it.', 'must have', ['must', "can't have", 'must had']],
+        ['I ____ taken a coat; I was freezing.', 'should have', ['should', 'must have', 'should had']],
+        ['They had no map, so they ____ found it easily.', "can't have", ['must have', "can't", "can't had"]],
+        ['You ____ warned us about the ice.', 'should have', ['should', 'must have', 'should had']],
+        ['Her bag is here, so she ____ gone far.', "can't have", ['must have', "can't", "can't had"]],
+        ['He looks guilty; he ____ broken it.', 'must have', ['must', "can't have", 'must had']],
+        ['We ____ checked the time; we missed the train.', 'should have', ['should', 'must have', 'should had']],
+        ['The cake is gone, so the children ____ eaten it.', 'must have', ['must', "can't have", 'must had']]];
+      IT.forEach(function (q) { out.push(withHint(mk(q[0], q[1], q[2], 'past modal: modal + have + past participle.'), H)); });
+      return out;
+    },
+
+    'b1p-conditional-3': function () {
+      var out = [], H = 'third conditional (unreal past): use "had" + the past participle after "if", and would have + the past participle in the result.';
+      var IFV = [['studied', 'study', 'for it'], ['left', 'leave', 'earlier'], ['known', 'know', 'the truth'], ['asked', 'ask', 'for help'], ['trained', 'train', 'all winter'], ['saved', 'save', 'the file'], ['listened', 'listen', 'to me'], ['called', 'call', 'ahead']];
+      var SUBJ = ['I', 'you', 'she', 'we', 'they'];
+      var RES = [', it would have helped.', ', the result would have changed.', ', things would have turned out better.', ', we would have been ready.', ', you would have known.'];
+      SUBJ.forEach(function (s) { IFV.forEach(function (v, i) { out.push(withHint(mk('If ' + s + ' ____ ' + v[2] + RES[i % RES.length], 'had ' + v[0], [v[0], 'has ' + v[0], 'would have ' + v[0]], 'after "if": had + past participle.'), H)); }); });
+      var RESV = [['passed', 'pass', 'the exam'], ['caught', 'catch', 'the train'], ['won', 'win', 'the match'], ['helped', 'help', 'the team'], ['arrived', 'arrive', 'on time'], ['saved', 'save', 'some money']];
+      var CONDS = ['If you had studied', 'If we had hurried', 'If she had asked', 'If they had trained'];
+      CONDS.forEach(function (c) { RESV.forEach(function (rv) { out.push(withHint(mk(c + ', you ____ ' + rv[2] + '.', 'would have ' + rv[0], [rv[0], 'would ' + rv[1], 'had ' + rv[0]], 'result clause: would have + past participle.'), H)); }); });
+      return out;
+    },
+
+    'b1p-wish': function () {
+      var out = [], H = 'a wish about now uses the past simple; a wish about the past uses the past perfect.';
+      var NOW = [['knew how to swim', 'know'], ['had more money', 'have'], ['lived nearer', 'live'], ['spoke Italian', 'speak'], ['owned a car', 'own'], ['felt better', 'feel'], ['understood maths', 'understand'], ['had more time', 'have']];
+      var SUBJ = ['I', 'she', 'he', 'we', 'they'];
+      SUBJ.forEach(function (s) { NOW.forEach(function (v) { out.push(withHint(mk((s === 'I' ? 'I' : s.charAt(0).toUpperCase() + s.slice(1)) + ' wish' + (s === 'I' || s === 'we' || s === 'they' ? '' : 'es') + ' ' + s + ' ____ ' + v[0].split(' ').slice(1).join(' ') + '.', v[0].split(' ')[0], [v[1], 'will ' + v[1], 'have ' + v[1]], 'wish about now: past simple.'), H)); }); });
+      var PAST = [['studied harder', 'study'], ['gone to the party', 'go'], ['taken the job', 'take'], ['said sorry', 'say'], ['listened', 'listen'], ['booked earlier', 'book'], ['saved more', 'save'], ['called you', 'call']];
+      PAST.forEach(function (v) { var rest = v[0].split(' ').slice(1).join(' '), tail = rest ? ' ' + rest : ''; out.push(withHint(mk('I wish I ____' + tail + '.', 'had ' + v[0].split(' ')[0], [v[0].split(' ')[0], 'have ' + v[0].split(' ')[0], 'would ' + v[1]], 'wish about the past: had + past participle.'), H)); });
+      return out;
+    },
+
+    'b1p-passive-perfect': function () {
+      var out = [], H = 'present perfect passive: the right form of "have" + been + the past participle.';
+      var SING = [['The report', 'finished'], ['The car', 'repaired'], ['The room', 'booked'], ['The letter', 'sent'], ['The bridge', 'rebuilt'], ['The film', 'released'], ['The painting', 'sold'], ['The decision', 'made'], ['The website', 'updated'], ['The window', 'cleaned']];
+      var PLUR = [['The reports', 'finished'], ['The cars', 'repaired'], ['The rooms', 'booked'], ['The letters', 'sent'], ['The prizes', 'given'], ['The photos', 'printed'], ['The tickets', 'sold'], ['The walls', 'painted'], ['The files', 'updated'], ['The windows', 'cleaned']];
+      SING.forEach(function (s) { out.push(withHint(mk(s[0] + ' ____ ' + s[1] + '.', 'has been', ['have been', 'is been', 'has being'], 'singular subject: has been + past participle.'), H)); });
+      PLUR.forEach(function (s) { out.push(withHint(mk(s[0] + ' ____ ' + s[1] + '.', 'have been', ['has been', 'are been', 'have being'], 'plural subject: have been + past participle.'), H)); });
+      return out;
+    },
+
+    'b1p-causative': function () {
+      var out = [], H = 'when you arrange for someone else to do a job, use have/get + the object + the past participle.';
+      var IT = [['my car', 'repaired', 'repair'], ['my hair', 'cut', 'cut'], ['the photos', 'printed', 'print'], ['the house', 'painted', 'paint'], ['my suit', 'cleaned', 'clean'], ['the documents', 'translated', 'translate'], ['my phone', 'fixed', 'fix'], ['the report', 'typed', 'type'], ['my watch', 'mended', 'mend'], ['the carpet', 'cleaned', 'clean'], ['the keys', 'copied', 'copy'], ['the boiler', 'serviced', 'service']];
+      var LEAD = ['I had ', 'She had ', 'We had ', 'They got ', 'He got '];
+      IT.forEach(function (v) { LEAD.forEach(function (l) { out.push(withHint(mk(l + v[0] + ' ____ last week.', v[1], [v[2], v[2] + 'ing', 'to ' + v[2]], 'causative: the object is followed by the past participle.'), H)); }); });
+      return out;
+    },
+
+    'b1p-reported': function () {
+      var out = [], H = 'in reported speech the verb usually shifts one step back into the past.';
+      var IT = [
+        ["'I am tired,' she said. -> She said she ____ tired.", 'was', ['is', 'are', 'will be']],
+        ["'I am working late,' he said. -> He said he ____ working late.", 'was', ['is', 'has been', 'will be']],
+        ["'We will help you,' they said. -> They said they ____ help us.", 'would', ['will', 'are', 'have']],
+        ["'I can swim well,' she said. -> She told me she ____ swim well.", 'could', ['can', 'will', 'is']],
+        ["'I have finished the work,' he said. -> He said he ____ finished the work.", 'had', ['has', 'have', 'will']],
+        ["'We are at home,' they said. -> They said they ____ at home.", 'were', ['are', 'is', 'will be']],
+        ["'I will call later,' she said. -> She said she ____ call later.", 'would', ['will', 'is', 'has']],
+        ["'I have lost it,' he explained. -> He explained that he ____ lost it.", 'had', ['has', 'have', 'will']],
+        ["'The shop is closed,' she said. -> She said the shop ____ closed.", 'was', ['is', 'are', 'has']],
+        ["'I have never been to Spain,' Tom said. -> Tom said he ____ never been to Spain.", 'had', ['has', 'have', 'did']],
+        ["'We are studying hard,' they said. -> They said they ____ studying hard.", 'were', ['are', 'is', 'have']],
+        ["'I will bring the books,' she said. -> She said she ____ bring the books.", 'would', ['will', 'is', 'has']],
+        ["'I can play the guitar,' he said. -> He said he ____ play the guitar.", 'could', ['can', 'will', 'does']],
+        ["'I am very busy this week,' she said. -> She said she ____ very busy that week.", 'was', ['is', 'are', 'will be']]];
+      IT.forEach(function (q) { out.push(withHint(mk(q[0], q[1], q[2], 'reported speech: shift the tense back one step.'), H)); });
+      return out;
+    },
+
+    'b1p-reported-q': function () {
+      var out = [], H = 'a reported question keeps statement word order (no inversion); a yes-no question needs a joining word.';
+      var IT = [
+        ["'Where do you work?' -> She asked where I ____.", 'worked', ['work', 'do work', 'did work']],
+        ["'Are you ready?' -> He asked ____ I was ready.", 'if', ['that', 'what', 'is']],
+        ["'What time does the film start?' -> They asked what time the film ____.", 'started', ['does start', 'start', 'will start']],
+        ["'Why are you late?' -> She wanted to know why I ____ late.", 'was', ['am', 'is', 'will be']],
+        ["'Can you help?' -> He asked ____ I could help.", 'whether', ['that', 'what', 'do']],
+        ["'How long have you lived there?' -> She asked how long I ____ there.", 'had lived', ['have lived', 'live', 'do live']],
+        ["'Where is the station?' -> They asked where the station ____.", 'was', ['is', 'are', 'does']],
+        ["'Is the shop open?' -> He asked ____ the shop was open.", 'if', ['that', 'what', 'is']],
+        ["'What do you want for dinner?' -> She asked what I ____ for dinner.", 'wanted', ['want', 'do want', 'will want']],
+        ["'Who broke the window?' -> He asked who ____ the window.", 'had broken', ['has broken', 'break', 'did break']],
+        ["'Do you need any help?' -> She asked ____ I needed any help.", 'whether', ['that', 'what', 'do']],
+        ["'When does the train leave?' -> They asked when the train ____.", 'left', ['does leave', 'leave', 'will leave']]];
+      IT.forEach(function (q) { out.push(withHint(mk(q[0], q[1], q[2], 'reported question: statement order, joining word for yes-no.'), H)); });
+      return out;
+    },
+
+    'b1p-relative': function () {
+      var out = [], H = 'pick the relative word for what it refers to: a person, a thing, a place, a time, or a possession.';
+      var ITEMS = [
+        ['person', "That's the man ____ helped me.", 'who', ['which', 'where', 'when']],
+        ['thing', 'This is the phone ____ broke.', 'which', ['who', 'where', 'when']],
+        ['place', 'This is the town ____ I was born.', 'where', ['which', 'who', 'when']],
+        ['time', 'Friday is the day ____ we leave.', 'when', ['where', 'which', 'who']],
+        ['poss', "She's the artist ____ work won.", 'whose', ['who', 'which', 'where']]];
+      var PERSON = ['helped me', 'lives next door', 'won the race', 'wrote the book', 'teaches us', 'called you', 'fixed the car', 'works here'];
+      var THING = ['broke down', 'won the award', 'rang loudly', 'went missing', 'sold out fast', 'made a noise', 'fell off', 'arrived late'];
+      var PLACE = ['I was born', 'we first met', 'they got married', 'I grew up', 'we used to live', 'she works now', 'the bus stops', 'we had lunch'];
+      var TIME = ['we leave', 'the shops close', 'the show begins', 'we arrived', 'it happened', 'they met', 'the year ends', 'school starts'];
+      var POSS = ['work won a prize', 'car was stolen', 'dog ran away', 'house was sold', 'book became famous', 'idea changed things', 'team lost', 'song went viral'];
+      PERSON.forEach(function (p) { out.push(withHint(mk("That's the person ____ " + p + '.', 'who', ['which', 'where', 'whose'], 'a person: who.'), H)); });
+      THING.forEach(function (p) { out.push(withHint(mk('This is the thing ____ ' + p + '.', 'which', ['who', 'where', 'whose'], 'a thing: which.'), H)); });
+      PLACE.forEach(function (p) { out.push(withHint(mk("That's the place ____ " + p + '.', 'where', ['which', 'who', 'whose'], 'a place: where.'), H)); });
+      TIME.forEach(function (p) { out.push(withHint(mk("Monday is the day ____ " + p + '.', 'when', ['where', 'which', 'who'], 'a time: when.'), H)); });
+      POSS.forEach(function (p) { out.push(withHint(mk('She is the writer ____ ' + p + '.', 'whose', ['who', 'which', 'where'], 'a possession: whose.'), H)); });
+      return out;
+    },
+
+    'b1p-relative-nd': function () {
+      var out = [], H = 'a non-defining clause adds extra information between commas; choose the pronoun for a person or for a thing (the defining-clause word is not used here).';
+      var PERSON = ['is a doctor', 'lives in Rome', 'loves jazz', 'speaks five languages', 'runs marathons', 'paints well', 'studies law', 'teaches yoga'];
+      var THING = ['I read last week', 'we bought in Paris', 'cost a fortune', 'won an award', 'sits by the lake', 'opened in May', 'closed early', 'looks amazing'];
+      var SUBJP = ['My sister', 'My uncle', 'Our teacher', 'My neighbour', 'The author', 'My boss', 'Her cousin', 'The doctor'];
+      var SUBJT = ['This book', 'That house', 'The new cafe', 'Her painting', 'The old bridge', 'This phone', 'The museum', 'That film'];
+      PERSON.forEach(function (p, i) { out.push(withHint(mk(SUBJP[i] + ', ____ ' + p + ', is well known.', 'who', ['that', 'which', 'what'], 'a person, non-defining: who.'), H)); });
+      THING.forEach(function (p, i) { out.push(withHint(mk(SUBJT[i] + ', ____ ' + p + ', is famous now.', 'which', ['that', 'who', 'what'], 'a thing, non-defining: which.'), H)); });
+      var POSS = ['My friend', 'The artist', 'Our neighbour', 'The writer', 'My colleague', 'Her brother'];
+      var POSSV = ['car was stolen', 'work sold out', 'dog won a prize', 'novel topped the list', 'idea saved us', 'team came first'];
+      POSS.forEach(function (p, i) { out.push(withHint(mk(p + ', ____ ' + POSSV[i] + ', was very happy.', 'whose', ['who', 'which', 'that'], 'a possession, non-defining: whose.'), H)); });
+      return out;
+    },
+
+    'b1p-gerund-infinitive': function () {
+      var out = [], H = 'some verbs and all prepositions are followed by the -ing form; other verbs are followed by to + the base verb.';
+      var GV = [['enjoy', 'listening to music', 'listen'], ['finish', 'reading the book', 'read'], ['avoid', 'making mistakes', 'make'], ['suggest', 'taking a break', 'take'], ['keep', 'trying hard', 'try'], ['practise', 'speaking English', 'speak'], ['mind', 'waiting here', 'wait'], ['miss', 'seeing friends', 'see']];
+      var IV = [['decide', 'leave early', 'leave'], ['hope', 'win the prize', 'win'], ['promise', 'call back', 'call'], ['offer', 'help us', 'help'], ['agree', 'pay the bill', 'pay'], ['manage', 'arrive on time', 'arrive'], ['refuse', 'give up', 'give'], ['plan', 'travel abroad', 'travel']];
+      var PV = [['good at', 'playing chess', 'play'], ['interested in', 'learning Italian', 'learn'], ['tired of', 'waiting around', 'wait'], ['keen on', 'cooking', 'cook'], ['afraid of', 'flying', 'fly'], ['fond of', 'reading', 'read'], ['capable of', 'winning', 'win'], ['bad at', 'lying', 'lie']];
+      var SUBJ = ['I', 'She', 'We', 'They'];
+      function es(v) { return /(s|sh|ch|x|z|o)$/.test(v) ? v + 'es' : v + 's'; }
+      function tail(p) { var r = p.split(' ').slice(1).join(' '); return r ? ' ' + r : ''; }
+      GV.forEach(function (v) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ' + (s === 'She' ? es(v[0]) : v[0]) + ' ____' + tail(v[1]) + '.', v[1].split(' ')[0], ['to ' + v[2], v[2], v[2] + 's'], 'this verb takes the -ing form.'), H)); }); });
+      IV.forEach(function (v) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ' + (s === 'She' ? es(v[0]) : v[0]) + ' ____' + tail(v[1]) + '.', 'to ' + v[2], [v[2] + 'ing', v[2], v[2] + 's'], 'this verb takes to + the base verb.'), H)); }); });
+      PV.forEach(function (v) { out.push(withHint(mk('She is ' + v[0] + ' ____' + tail(v[1]) + '.', v[1].split(' ')[0], ['to ' + v[2], v[2], v[2] + 's'], 'after a preposition: the -ing form.'), H)); });
+      return out;
+    },
+
+    'b1p-verb-object': function () {
+      var out = [], H = 'after these verbs, an object is followed by to + the base verb.';
+      var V = ['want', 'ask', 'tell', 'expect', 'advise', 'remind', 'encourage', 'persuade', 'invite', 'allow'];
+      var OB = [['you', 'help me', 'help'], ['him', 'wait outside', 'wait'], ['us', 'arrive early', 'arrive'], ['her', 'join the club', 'join'], ['them', 'be quiet', 'be'], ['the team', 'train harder', 'train'], ['me', 'call back', 'call'], ['the staff', 'stay late', 'stay']];
+      var SUBJ = ['I', 'She', 'We', 'They', 'The teacher'];
+      OB.forEach(function (o) { V.slice(0, 6).forEach(function (vb) { out.push(withHint(mk(SUBJ[(o[0].length + vb.length) % SUBJ.length] + ' ' + vb + (SUBJ[(o[0].length + vb.length) % SUBJ.length] === 'She' || SUBJ[(o[0].length + vb.length) % SUBJ.length] === 'The teacher' ? 's' : '') + ' ' + o[0] + ' ____ ' + o[1].split(' ').slice(1).join(' ') + '.', 'to ' + o[2], [o[2], o[2] + 'ing', o[2] + 'ed'], 'object + to + base verb.'), H)); }); });
+      return out;
+    },
+
+    'b2-pres-perf-cont': function () {
+      var out = [], H = 'for an activity that began in the past and continues now, use the helper + been + the -ing form.';
+      var ING = [['working', 'on the report'], ['studying', 'for the test'], ['waiting', 'in the queue'], ['training', 'for the race'], ['living', 'in Madrid'], ['learning', 'the guitar'], ['painting', 'the flat'], ['saving', 'for a car'], ['running', 'the project'], ['teaching', 'online']];
+      var SING = ['She', 'He', 'My colleague', 'The author', 'Tom'];
+      var PLUR = ['We', 'They', 'My parents', 'The students', 'You'];
+      SING.forEach(function (s) { ING.forEach(function (g) { out.push(withHint(mk(s + ' ____ ' + g[0] + ' ' + g[1] + ' for months.', 'has been', ['have been', 'is been', 'has being'], 'singular subject: has been + -ing.'), H)); }); });
+      PLUR.forEach(function (s) { ING.forEach(function (g) { out.push(withHint(mk(s + ' ____ ' + g[0] + ' ' + g[1] + ' for months.', 'have been', ['has been', 'are been', 'have being'], 'I/you/we/they: have been + -ing.'), H)); }); });
+      return out;
+    },
+
+    'b2-past-perf-cont': function () {
+      var out = [], H = 'for an activity in progress before another past event, use the past perfect continuous (the past of "be" perfect form) + the -ing form.';
+      var ITEMS = [['waiting', 'for an hour'], ['working', 'since dawn'], ['driving', 'all night'], ['studying', 'for weeks'], ['reading', 'for hours'], ['running', 'for miles'], ['arguing', 'for ages'], ['cooking', 'all morning'], ['travelling', 'for months'], ['practising', 'since June']];
+      var SUBJ = ['She', 'They', 'He', 'We', 'The team'];
+      ITEMS.forEach(function (g) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ____ ' + g[0] + ' ' + g[1] + ' when it happened.', 'had been', ['has been', 'had being', 'was being'], 'earlier ongoing past: had been + -ing.'), H)); }); });
+      return out;
+    },
+
+    'b2-future-perfect': function () {
+      var out = [], H = 'for something completed before a point in the future, use "will have" + the past participle.';
+      var V = [['finished', 'finish', 'the course'], ['left', 'leave', 'the office'], ['saved', 'save', 'enough'], ['written', 'write', 'the book'], ['built', 'build', 'the house'], ['paid', 'pay', 'the loan'], ['learned', 'learn', 'to drive'], ['retired', 'retire', 'from work'], ['sold', 'sell', 'the flat'], ['arrived', 'arrive', 'home']];
+      var SUBJ = ['I', 'She', 'He', 'We', 'They', 'Tom'];
+      V.forEach(function (v) { SUBJ.forEach(function (s) { var subj = (s === 'I' || s === 'Tom') ? s : s.toLowerCase(); out.push(withHint(mk('By next year, ' + subj + ' ____ ' + v[2] + '.', 'will have ' + v[0], ['will has ' + v[0], 'will have ' + v[1], 'has ' + v[0]], 'completed before a future point: will have + past participle.'), H)); }); });
+      return out;
+    },
+
+    'b2-future-continuous': function () {
+      var out = [], H = 'for an action in progress at a future moment, use "will be" + the -ing form.';
+      var V = [['flying', 'fly', 'to Tokyo'], ['presenting', 'present', 'the plan'], ['driving', 'drive', 'to work'], ['studying', 'study', 'abroad'], ['working', 'work', 'from home'], ['relaxing', 'relax', 'at the spa'], ['attending', 'attend', 'the meeting'], ['running', 'run', 'the stall'], ['filming', 'film', 'on location'], ['waiting', 'wait', 'at arrivals']];
+      var SUBJ = ['I', 'She', 'He', 'We', 'They', 'The crew'];
+      V.forEach(function (v) { SUBJ.forEach(function (s) { var subj = (s === 'I') ? 'I' : s.toLowerCase(); out.push(withHint(mk('This time tomorrow, ' + subj + ' ____ ' + v[2] + '.', 'will be ' + v[0], ['will ' + v[1], 'is ' + v[0], 'will be ' + v[1]], 'in progress at a future time: will be + -ing.'), H)); }); });
+      return out;
+    },
+
+    'b2-conditional-3': function () {
+      var out = [], H = 'third conditional (unreal past): "if" + had + past participle, and would have + past participle in the result.';
+      var IFV = [['invested', 'invest', 'sooner'], ['revised', 'revise', 'more'], ['booked', 'book', 'in advance'], ['warned', 'warn', 'us'], ['checked', 'check', 'the map'], ['accepted', 'accept', 'the offer'], ['noticed', 'notice', 'the sign'], ['prepared', 'prepare', 'better']];
+      var SUBJ = ['I', 'you', 'she', 'we', 'they'];
+      SUBJ.forEach(function (s) { IFV.forEach(function (v) { out.push(withHint(mk('If ' + s + ' ____ ' + v[2] + ', the result would have changed.', 'had ' + v[0], [v[0], 'has ' + v[0], 'would have ' + v[0]], 'after "if": had + past participle.'), H)); }); });
+      var RESV = [['succeeded', 'succeed', 'easily'], ['avoided', 'avoid', 'the delay'], ['saved', 'save', 'a fortune'], ['won', 'win', 'the contract'], ['passed', 'pass', 'first time'], ['finished', 'finish', 'on time']];
+      var CONDS = ['If we had planned', 'If she had tried', 'If they had listened', 'If you had hurried'];
+      CONDS.forEach(function (c) { RESV.forEach(function (rv) { out.push(withHint(mk(c + ', we ____ ' + rv[2] + '.', 'would have ' + rv[0], [rv[0], 'would ' + rv[1], 'had ' + rv[0]], 'result clause: would have + past participle.'), H)); }); });
+      return out;
+    },
+
+    'b2-mixed-conditional': function () {
+      var out = [], H = 'a mixed conditional links an unreal past with a present result; match each clause to its own time.';
+      var IFV = [['studied', 'study', 'medicine'], ['taken', 'take', 'the job'], ['saved', 'save', 'money'], ['moved', 'move', 'abroad'], ['learned', 'learn', 'to code'], ['invested', 'invest', 'early'], ['listened', 'listen', 'to advice'], ['trained', 'train', 'harder']];
+      var SUBJ = ['I', 'you', 'she', 'we', 'they'];
+      SUBJ.forEach(function (s) { IFV.forEach(function (v) { out.push(withHint(mk('If ' + s + ' ____ ' + v[2] + ', life would be different now.', 'had ' + v[0], [v[0], 'has ' + v[0], 'would have ' + v[0]], 'unreal past condition: had + past participle.'), H)); }); });
+      var RESNOW = [['be', 'a doctor now'], ['be', 'richer today'], ['live', 'in Spain now'], ['have', 'a better job now'], ['speak', 'the language now'], ['own', 'a house now'], ['feel', 'happier now'], ['know', 'the answer now']];
+      var CONDS = ['If I had studied harder', 'If she had taken that job', 'If we had saved more', 'If they had moved sooner'];
+      RESNOW.forEach(function (r) { CONDS.forEach(function (c) { out.push(withHint(mk(c + ', I ____ ' + r[1] + '.', 'would ' + r[0], ['would have ' + r[0], 'will ' + r[0], 'am ' + r[0]], 'present result: would + base verb.'), H)); }); });
+      return out;
+    },
+
+    'b2-wish-present': function () {
+      var out = [], H = 'a wish or regret about the present situation uses the past simple.';
+      var V = [['knew', 'know', 'the answer'], ['had', 'have', 'more time'], ['lived', 'live', 'closer'], ['spoke', 'speak', 'French'], ['understood', 'understand', 'physics'], ['owned', 'own', 'a flat'], ['earned', 'earn', 'more'], ['remembered', 'remember', 'her name']];
+      var WISH = [['I', 'wish', 'I'], ['She', 'wishes', 'she'], ['He', 'wishes', 'he'], ['We', 'wish', 'we'], ['They', 'wish', 'they']];
+      WISH.forEach(function (w) { V.forEach(function (v) { out.push(withHint(mk(w[0] + ' ' + w[1] + ' ' + w[2] + ' ____ ' + v[2] + '.', v[0], [v[1], 'will ' + v[1], 'have ' + v[1]], 'wish about now: past simple.'), H)); }); });
+      return out;
+    },
+
+    'b2-wish-past': function () {
+      var out = [], H = 'a wish or regret about the past uses the past perfect (had + past participle).';
+      var V = [['studied', 'study', 'harder'], ['gone', 'go', 'to university'], ['taken', 'take', 'the chance'], ['said', 'say', 'sorry'], ['listened', 'listen', 'to advice'], ['saved', 'save', 'the file'], ['booked', 'book', 'earlier'], ['called', 'call', 'sooner']];
+      var WISH = [['I', 'wish', 'I'], ['She', 'wishes', 'she'], ['He', 'wishes', 'he'], ['We', 'wish', 'we'], ['They', 'wish', 'they']];
+      WISH.forEach(function (w) { V.forEach(function (v) { out.push(withHint(mk(w[0] + ' ' + w[1] + ' ' + w[2] + ' ____ ' + v[2] + '.', 'had ' + v[0], [v[0], 'have ' + v[0], 'would ' + v[1]], 'wish about the past: past perfect.'), H)); }); });
+      return out;
+    },
+
+    'b2-modal-passive': function () {
+      var out = [], H = 'a passive after a modal uses the modal + be + the past participle.';
+      var V = [['The work', 'done', 'do', 'today'], ['The form', 'signed', 'sign', 'in ink'], ['The fee', 'paid', 'pay', 'in advance'], ['The food', 'kept', 'keep', 'cold'], ['The badge', 'worn', 'wear', 'at all times'], ['The report', 'sent', 'send', 'by email'], ['The floor', 'cleaned', 'clean', 'daily'], ['The data', 'checked', 'check', 'twice'], ['The book', 'returned', 'return', 'on time'], ['The bill', 'settled', 'settle', 'today']];
+      var MOD = ['must', 'should', 'can', 'will'];
+      V.forEach(function (v) { MOD.forEach(function (m) { out.push(withHint(mk(v[0] + ' ' + m + ' ____ ' + v[3] + '.', 'be ' + v[1], ['be ' + v[2], 'been ' + v[1], v[2]], 'modal passive: be + past participle.'), H)); }); });
+      return out;
+    },
+
+    'b2-passive-perfect': function () {
+      var out = [], H = 'present perfect passive: the right form of "have" + been + the past participle.';
+      var SING = [['The contract', 'signed'], ['The building', 'completed'], ['The novel', 'translated'], ['The bill', 'paid'], ['The road', 'closed'], ['The match', 'postponed'], ['The system', 'upgraded'], ['The order', 'shipped'], ['The wall', 'repainted'], ['The case', 'solved']];
+      var PLUR = [['The contracts', 'signed'], ['The buildings', 'completed'], ['The novels', 'translated'], ['The bills', 'paid'], ['The roads', 'closed'], ['The matches', 'postponed'], ['The systems', 'upgraded'], ['The orders', 'shipped'], ['The walls', 'repainted'], ['The cases', 'solved']];
+      SING.forEach(function (s) { out.push(withHint(mk(s[0] + ' ____ ' + s[1] + '.', 'has been', ['have been', 'is been', 'has being'], 'singular subject: has been + past participle.'), H)); });
+      PLUR.forEach(function (s) { out.push(withHint(mk(s[0] + ' ____ ' + s[1] + '.', 'have been', ['has been', 'are been', 'have being'], 'plural subject: have been + past participle.'), H)); });
+      return out;
+    },
+
+    'b2-deduction-past': function () {
+      var out = [], H = 'choose the past modal that shows how sure you are, then add "have" + the past participle.';
+      var IT = [
+        ['The streets are wet, so it ____ rained.', 'must have', ["can't have", 'might have', 'must had']],
+        ['He knew every detail, so he ____ been there.', 'must have', ["can't have", 'might have', 'must had']],
+        ['She was abroad, so she ____ seen the show.', "can't have", ['must have', 'might have', "can't had"]],
+        ['I am not certain, but they ____ left early.', 'might have', ['must have', "can't have", 'might had']],
+        ['The cake is gone, so someone ____ eaten it.', 'must have', ["can't have", 'might have', 'must had']],
+        ['He had no key, so he ____ locked the door.', "can't have", ['must have', 'might have', "can't had"]],
+        ['Her coat is dry, so she ____ walked here.', "can't have", ['must have', 'might have', "can't had"]],
+        ['Perhaps the parcel ____ arrived yesterday.', 'might have', ['must have', "can't have", 'might had']],
+        ['The lights were off, so they ____ been asleep.', 'must have', ["can't have", 'might have', 'must had']],
+        ['It was warm there, so it ____ snowed.', "can't have", ['must have', 'might have', "can't had"]],
+        ['Maybe she ____ forgotten the meeting.', 'might have', ['must have', "can't have", 'might had']],
+        ['He looked amazed, so he ____ expected the news.', "can't have", ['must have', 'might have', "can't had"]]];
+      IT.forEach(function (q) { out.push(withHint(mk(q[0], q[1], q[2], 'past deduction: modal + have + past participle.'), H)); });
+      return out;
+    },
+
+    'b2-past-modals': function () {
+      var out = [], H = 'a past modal shows regret, criticism or how certain you are about the past: modal + have + past participle.';
+      var IT = [
+        ['You ____ asked first; it was not yours to take.', 'should have', ['should', 'must have', 'should had']],
+        ['They look exhausted; they ____ slept badly.', 'must have', ['must', "can't have", 'must had']],
+        ['He was in class, so he ____ made that call.', "can't have", ['must have', "can't", "can't had"]],
+        ['We ____ brought an umbrella; we got soaked.', 'should have', ['should', 'must have', 'should had']],
+        ['She finished first, so she ____ practised a lot.', 'must have', ['must', "can't have", 'must had']],
+        ['You ____ shouted; everyone heard you.', "shouldn't have", ['should have', "shouldn't", "shouldn't had"]],
+        ['The keys are inside, so I ____ dropped them here.', "can't have", ['must have', "can't", "can't had"]],
+        ['I ____ saved a copy; now the file is gone.', 'should have', ['should', 'must have', 'should had']],
+        ['He passed without studying, so he ____ been lucky.', 'must have', ['must', "can't have", 'must had']],
+        ['You ____ told them the truth from the start.', 'should have', ['should', 'must have', 'should had']],
+        ['She speaks perfect Greek, so she ____ lived there.', 'must have', ['must', "can't have", 'must had']],
+        ['We ____ left so late; we missed the start.', "shouldn't have", ['should have', "shouldn't", "shouldn't had"]]];
+      IT.forEach(function (q) { out.push(withHint(mk(q[0], q[1], q[2], 'past modal: modal + have + past participle.'), H)); });
+      return out;
+    },
+
+    'b2-be-used-to': function () {
+      var out = [], H = 'this structure means being accustomed to something, and it takes a noun or the -ing form after it.';
+      var V = [['getting', 'get', 'up early'], ['working', 'work', 'long hours'], ['living', 'live', 'alone'], ['driving', 'drive', 'on the left'], ['eating', 'eat', 'late'], ['speaking', 'speak', 'English all day'], ['paying', 'pay', 'by card'], ['waiting', 'wait', 'in traffic'], ['studying', 'study', 'at night'], ['travelling', 'travel', 'for work']];
+      var LEAD = ['I am used to ', 'She is used to ', 'They are getting used to ', 'He is not used to ', 'We are used to '];
+      V.forEach(function (v) { LEAD.forEach(function (l) { out.push(withHint(mk(l + '____ ' + v[2] + '.', v[0], ['to ' + v[1], v[1], v[1] + 's'], 'be/get used to + the -ing form.'), H)); }); });
+      return out;
+    },
+
+    'b2-causative': function () {
+      var out = [], H = 'when you arrange for someone else to do a job, use have/get + the object + the past participle.';
+      var IT = [['the office', 'redecorated', 'redecorate'], ['the contract', 'reviewed', 'review'], ['the logo', 'redesigned', 'redesign'], ['the engine', 'checked', 'check'], ['the suit', 'tailored', 'tailor'], ['the data', 'analysed', 'analyse'], ['the roof', 'repaired', 'repair'], ['the speech', 'translated', 'translate'], ['the garden', 'landscaped', 'landscape'], ['the accounts', 'audited', 'audit']];
+      var LEAD = ['The firm had ', 'She got ', 'We had ', 'They got ', 'He had '];
+      IT.forEach(function (v) { LEAD.forEach(function (l) { out.push(withHint(mk(l + v[0] + ' ____ last month.', v[1], [v[2], v[2] + 'ing', 'to ' + v[2]], 'causative: the object is followed by the past participle.'), H)); }); });
+      return out;
+    },
+
+    'b2-reporting-verbs': function () {
+      var out = [], H = 'each reporting verb has its own pattern: some are followed by -ing, some by to + the base verb, and some by a preposition + -ing.';
+      var SUBJ = ['She', 'He', 'They', 'Tom'];
+      var ING = [['suggested', 'taking a taxi', 'take'], ['admitted', 'breaking it', 'break'], ['denied', 'taking the money', 'take'], ['recommended', 'booking early', 'book'], ['mentioned', 'meeting her', 'meet']];
+      var TO = [['offered', 'help us', 'help'], ['promised', 'call back', 'call'], ['agreed', 'pay the bill', 'pay'], ['refused', 'answer', 'answer'], ['decided', 'wait', 'wait']];
+      var PREP = [['apologised for', 'being late', 'be'], ['accused him of', 'cheating', 'cheat'], ['insisted on', 'paying', 'pay'], ['thanked us for', 'helping', 'help'], ['congratulated her on', 'winning', 'win']];
+      function tail(p) { var r = p.split(' ').slice(1).join(' '); return r ? ' ' + r : ''; }
+      ING.forEach(function (v) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ' + v[0] + ' ____' + tail(v[1]) + '.', v[1].split(' ')[0], ['to ' + v[2], v[2], v[2] + 's'], 'this verb takes the -ing form.'), H)); }); });
+      TO.forEach(function (v) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ' + v[0] + ' ____' + tail(v[1]) + '.', 'to ' + v[2], [v[2] + 'ing', v[2], v[2] + 'ed'], 'this verb takes to + the base verb.'), H)); }); });
+      PREP.forEach(function (v) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ' + v[0] + ' ____' + tail(v[1]) + '.', v[1].split(' ')[0], ['to ' + v[2], v[2], v[2] + 's'], 'a preposition takes the -ing form.'), H)); }); });
+      return out;
+    },
+
+    'b2-reported-speech': function () {
+      var out = [], H = 'in reported speech the verb usually shifts one step back into the past.';
+      var IT = [
+        ["'I am feeling ill,' she said. -> She said she ____ feeling ill.", 'was', ['is', 'are', 'will be']],
+        ["'I have already eaten,' he told us. -> He told us he ____ already eaten.", 'had', ['has', 'have', 'will']],
+        ["'We will arrive by six,' they said. -> They said they ____ arrive by six.", 'would', ['will', 'are', 'have']],
+        ["'I do not agree,' she explained. -> She explained that she ____ not agree.", 'did', ['does', 'is', 'will']],
+        ["'I have been waiting for ages,' he said. -> He said he ____ been waiting for ages.", 'had', ['has', 'have', 'is']],
+        ["'Prices have risen,' she mentioned. -> She mentioned that prices ____ risen.", 'had', ['have', 'has', 'will']],
+        ["'We have seen nothing,' they claimed. -> They claimed they ____ seen nothing.", 'had', ['have', 'has', 'did']],
+        ["'I have broken the vase,' he admitted. -> He admitted he ____ broken the vase.", 'had', ['has', 'have', 'was']],
+        ["'The train has been delayed,' she said. -> She said the train ____ been delayed.", 'had', ['has', 'have', 'is']],
+        ["'I will call the next day,' he noted. -> He noted that he ____ call the next day.", 'would', ['will', 'is', 'has']],
+        ["'I am working there,' she said. -> She said she ____ working there then.", 'was', ['is', 'has', 'will be']],
+        ["'We will help if needed,' they said. -> They said they ____ help if needed.", 'would', ['will', 'are', 'have']]];
+      IT.forEach(function (q) { out.push(withHint(mk(q[0], q[1], q[2], 'reported speech: shift the tense back.'), H)); });
+      return out;
+    },
+
+    'b2-ger-inf-meaning': function () {
+      var out = [], H = 'some verbs change meaning: the -ing form looks back at something already done, while to + the base verb looks forward to a task or purpose.';
+      var IT = [
+        ['Remember ____ the door when you leave later.', 'to lock', ['locking', 'lock', 'locked']],
+        ['I clearly remember ____ the door this morning.', 'locking', ['to lock', 'lock', 'locked']],
+        ['He stopped ____ because his legs hurt.', 'walking', ['to walk', 'walk', 'walked']],
+        ['On the way, we stopped ____ some petrol.', 'to get', ['getting', 'get', 'got']],
+        ['She forgot ____ the email, so it never arrived.', 'to send', ['sending', 'send', 'sent']],
+        ['I will never forget ____ the Alps for the first time.', 'seeing', ['to see', 'see', 'saw']],
+        ['We regret ____ you that the trip is full.', 'to tell', ['telling', 'tell', 'told']],
+        ['He regrets ____ school so young.', 'leaving', ['to leave', 'leave', 'left']],
+        ['We tried ____ the window, but it was stuck.', 'to open', ['opening', 'open', 'opened']],
+        ['If you are tired, try ____ some water.', 'drinking', ['to drink', 'drink', 'drank']],
+        ['She went on ____ for another hour without a break.', 'working', ['to work', 'work', 'worked']],
+        ['After the intro, he went on ____ the results.', 'to present', ['presenting', 'present', 'presented']]];
+      IT.forEach(function (q) { out.push(withHint(mk(q[0], q[1], q[2], 'meaning depends on -ing (looking back) vs to + base (looking forward).'), H)); });
+      return out;
+    },
+
+    'b2-so-such-unless': function () {
+      var out = [], H = 'one word goes before an adjective or adverb, another goes before a noun phrase, and another means "if not".';
+      var SO = ['cold', 'tired', 'late', 'expensive', 'loud', 'busy', 'quickly', 'well'];
+      SO.forEach(function (a) { out.push(withHint(mk('It was ____ ' + a + ' that we noticed at once.', 'so', ['such', 'such a', 'very much'], 'so + adjective or adverb.'), H)); });
+      var SUCH = ['a cold day', 'a long film', 'nice people', 'a good meal', 'bad weather', 'a kind man', 'heavy traffic', 'a loud noise'];
+      SUCH.forEach(function (n) { out.push(withHint(mk('It was ____ ' + n + ' that we remembered it.', 'such', ['so', 'very', 'too'], 'such + a noun phrase.'), H)); });
+      var UNL = [['I will be on time', 'the train is delayed'], ['We will eat outside', 'it rains'], ['She will pass', 'she stops revising'], ['The shop stays open', 'it is a holiday'], ['We will walk', 'it gets too dark'], ['He will help', 'he is too busy'], ['They will win', 'they get injured'], ['I will call you', 'I forget']];
+      UNL.forEach(function (c) { out.push(withHint(mk(c[0] + ' ____ ' + c[1] + '.', 'unless', ['so', 'such', 'very'], 'unless means "if not".'), H)); });
+      return out;
+    },
+
+    'b2-gerund-review': function () {
+      var out = [], H = 'choose -ing or to + the base verb from the verb or preposition before the gap.';
+      var GV = [['avoid', 'making errors', 'make'], ['consider', 'moving abroad', 'move'], ['imagine', 'living there', 'live'], ['delay', 'paying the bill', 'pay'], ['risk', 'losing it all', 'lose'], ['practise', 'speaking daily', 'speak']];
+      var IV = [['afford', 'buy a car', 'buy'], ['arrange', 'meet later', 'meet'], ['fail', 'reach the top', 'reach'], ['hesitate', 'ask for help', 'ask'], ['tend', 'arrive late', 'arrive'], ['threaten', 'leave the firm', 'leave']];
+      var PV = [['capable of', 'winning', 'win'], ['fond of', 'reading', 'read'], ['afraid of', 'failing', 'fail'], ['good at', 'cooking', 'cook'], ['interested in', 'learning', 'learn'], ['keen on', 'cycling', 'cycle'], ['tired of', 'waiting', 'wait'], ['used to', 'driving here', 'drive']];
+      var SUBJ = ['I', 'She', 'We', 'They'];
+      function tail(p) { var r = p.split(' ').slice(1).join(' '); return r ? ' ' + r : ''; }
+      GV.forEach(function (v) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ' + (s === 'She' ? v[0] + 's' : v[0]) + ' ____' + tail(v[1]) + '.', v[1].split(' ')[0], ['to ' + v[2], v[2], v[2] + 's'], 'this verb takes the -ing form.'), H)); }); });
+      IV.forEach(function (v) { SUBJ.forEach(function (s) { out.push(withHint(mk(s + ' ' + (s === 'She' ? v[0] + 's' : v[0]) + ' ____' + tail(v[1]) + '.', 'to ' + v[2], [v[2] + 'ing', v[2], v[2] + 's'], 'this verb takes to + the base verb.'), H)); }); });
+      PV.forEach(function (v) { out.push(withHint(mk('She is ' + v[0] + ' ____' + tail(v[1]) + '.', v[1].split(' ')[0], ['to ' + v[2], v[2], v[2] + 's'], 'after a preposition: the -ing form.'), H)); });
+      return out;
+    }
   };
+
+  // ── FIXED, hand-authored question banks ──────────────────────
+  // Replaces the template GENERATORS (which produced wrong carriers like
+  // "We are a teacher" and mismatched explanations). When a topic id has a
+  // FIXED entry, assembly uses it instead of the generator. Authored level by
+  // level; un-converted topics still fall back to their generator. mk() shuffles
+  // options + sets the answer index; build() dedupes + pads to 4.
 
   // ── A2 topic skeleton (id, title, blurb=Unit, generator, cap) ─
   var A2_SPEC = [
-    { id: 'a2-be', title: 'be: am / is / are', blurb: 'Unit 1 · positive and negative', gen: G.be, cap: 18 },
-    { id: 'a2-be-questions', title: 'be: questions', blurb: 'Unit 1 · questions and short answers', gen: G.beQ, cap: 18 },
-    { id: 'a2-a-an', title: 'a / an', blurb: 'Unit 1 · indefinite article', gen: G.aan, cap: 18 },
-    { id: 'a2-plurals', title: 'Plural nouns', blurb: 'Unit 1 · regular and irregular', gen: G.plurals, cap: 18 },
-    { id: 'a2-possessives', title: "Possessives (my / 's)", blurb: 'Units 1 and 5 · possessive adjectives and ’s', gen: G.poss, cap: 18 },
-    { id: 'a2-question-words', title: 'Question words', blurb: 'Unit 1 · what / where / when / who', gen: G.qw, cap: 18 },
-    { id: 'a2-present-simple', title: 'Present Simple', blurb: 'Unit 2 · positive and negative', gen: G.presSimple, cap: 52 },
-    { id: 'a2-present-simple-q', title: 'Present Simple: questions', blurb: 'Unit 2 · do / does', gen: G.presSimpleQ, cap: 52 },
-    { id: 'a2-adv-frequency', title: 'Adverbs of frequency', blurb: 'Unit 3 · always, usually, never', gen: G.freq, cap: 52 },
-    { id: 'a2-have-got', title: 'have got', blurb: 'Unit 3 · possession', gen: G.haveGot, cap: 52 },
-    { id: 'a2-some-any', title: 'some / any', blurb: 'Unit 4 · countable and uncountable', gen: G.someAny, cap: 52 },
-    { id: 'a2-much-many', title: 'much / many', blurb: 'Unit 4 · quantifiers', gen: G.muchMany, cap: 52 },
-    { id: 'a2-there-is-are', title: 'there is / there are', blurb: 'Unit 5 · places', gen: G.there, cap: 104 },
-    { id: 'a2-was-were', title: 'was / were', blurb: 'Unit 6 · past of be', gen: G.wasWere, cap: 104 },
-    { id: 'a2-past-simple', title: 'Past Simple', blurb: 'Unit 7 · positive (regular and irregular)', gen: G.past, cap: 35 },
-    { id: 'a2-past-simple-q', title: 'Past Simple: questions', blurb: 'Unit 7 · negative and questions', gen: G.pastQ, cap: 35 },
-    { id: 'a2-like-ing', title: 'like / love / hate + -ing', blurb: 'Unit 7 · verb + -ing', gen: G.likeIng, cap: 35 },
-    { id: 'a2-can-could', title: 'can / could (ability)', blurb: 'Unit 8 · ability now and past', gen: G.can, cap: 52 },
-    { id: 'a2-have-to', title: "have to / don't have to", blurb: 'Unit 8 · obligation', gen: G.haveTo, cap: 52 },
-    { id: 'a2-present-continuous', title: 'Present Continuous', blurb: 'Unit 9 · happening now', gen: G.presCont, cap: 52 },
-    { id: 'a2-simple-vs-continuous', title: 'Present Simple or Continuous', blurb: 'Unit 9 · routine vs now', gen: G.simpleVsCont, cap: 52 },
-    { id: 'a2-comparatives', title: 'Comparative Adjectives', blurb: 'Unit 10 · -er / more ... than', gen: G.comp, cap: 52 },
-    { id: 'a2-superlatives', title: 'Superlative Adjectives', blurb: 'Unit 10 · the -est / the most', gen: G.superl, cap: 52 },
-    { id: 'a2-present-perfect', title: 'Present Perfect', blurb: 'Unit 11 · have / has + past participle', gen: G.pp, cap: 52 },
-    { id: 'a2-pp-vs-past', title: 'Present Perfect or Past Simple', blurb: 'Unit 11 · finished time or not', gen: G.ppVsPast, cap: 52 }
+    { id: 'a2-be', title: 'be: am / is / are', blurb: 'Unit 1 · positive and negative' },
+    { id: 'a2-be-questions', title: 'be: questions', blurb: 'Unit 1 · questions and short answers' },
+    { id: 'a2-a-an', title: 'a / an', blurb: 'Unit 1 · indefinite article' },
+    { id: 'a2-plurals', title: 'Plural nouns', blurb: 'Unit 1 · regular and irregular' },
+    { id: 'a2-possessives', title: "Possessives (my / 's)", blurb: 'Units 1 and 5 · possessive adjectives and ’s' },
+    { id: 'a2-question-words', title: 'Question words', blurb: 'Unit 1 · what / where / when / who' },
+    { id: 'a2-present-simple', title: 'Present Simple', blurb: 'Unit 2 · positive and negative' },
+    { id: 'a2-present-simple-q', title: 'Present Simple: questions', blurb: 'Unit 2 · do / does' },
+    { id: 'a2-adv-frequency', title: 'Adverbs of frequency', blurb: 'Unit 3 · always, usually, never' },
+    { id: 'a2-have-got', title: 'have got', blurb: 'Unit 3 · possession' },
+    { id: 'a2-some-any', title: 'some / any', blurb: 'Unit 4 · countable and uncountable' },
+    { id: 'a2-much-many', title: 'much / many', blurb: 'Unit 4 · quantifiers' },
+    { id: 'a2-there-is-are', title: 'there is / there are', blurb: 'Unit 5 · places' },
+    { id: 'a2-was-were', title: 'was / were', blurb: 'Unit 6 · past of be' },
+    { id: 'a2-past-simple', title: 'Past Simple', blurb: 'Unit 7 · positive (regular and irregular)' },
+    { id: 'a2-past-simple-q', title: 'Past Simple: questions', blurb: 'Unit 7 · negative and questions' },
+    { id: 'a2-like-ing', title: 'like / love / hate + -ing', blurb: 'Unit 7 · verb + -ing' },
+    { id: 'a2-can-could', title: 'can / could (ability)', blurb: 'Unit 8 · ability now and past' },
+    { id: 'a2-have-to', title: "have to / don't have to", blurb: 'Unit 8 · obligation' },
+    { id: 'a2-present-continuous', title: 'Present Continuous', blurb: 'Unit 9 · happening now' },
+    { id: 'a2-simple-vs-continuous', title: 'Present Simple or Continuous', blurb: 'Unit 9 · routine vs now' },
+    { id: 'a2-comparatives', title: 'Comparative Adjectives', blurb: 'Unit 10 · -er / more ... than' },
+    { id: 'a2-superlatives', title: 'Superlative Adjectives', blurb: 'Unit 10 · the -est / the most' },
+    { id: 'a2-present-perfect', title: 'Present Perfect', blurb: 'Unit 11 · have / has + past participle' },
+    { id: 'a2-pp-vs-past', title: 'Present Perfect or Past Simple', blurb: 'Unit 11 · finished time or not' }
   ];
 
   var A2 = A2_SPEC.map(function (t) {
-    return { id: t.id, title: t.title, blurb: t.blurb, questions: build(t.gen(), t.cap) };
+    return { id: t.id, title: t.title, blurb: t.blurb, questions: VALID[t.id] ? buildValidated(VALID[t.id](), 104) : [] };
   });
 
   // ── B1 generators (reuse the A2 engine: mk / build / pools) ──
-  G.b1PastCont = function () {
-    var out = [], TIME = ['at 8 last night', 'this time yesterday', 'all morning', 'when you called', 'at midnight', 'all day yesterday'];
-    SUBJ_ALL.forEach(function (s) { VDUR.forEach(function (v) { var w = bePastOf(s), x = w === 'was' ? 'were' : 'was'; out.push(mk(s + ' ____ (' + v.b + ') ' + v.o + ' ' + pick(TIME) + '.', w + ' ' + v.ing, [x + ' ' + v.ing, v.b, v.s], 'Past continuous: was/were + verb-ing for an action in progress.')); }); });
-    var INT = ['the phone rang', 'it started to rain', 'I arrived', 'the lights went out', 'he came in'];
-    SUBJ_ALL.slice(0, 10).forEach(function (s) { VACT.slice(0, 10).forEach(function (v) { var w = bePastOf(s), x = w === 'was' ? 'were' : 'was'; out.push(mk('While ' + qsubj(s) + ' ____ (' + v.b + ') ' + v.o + ', ' + pick(INT) + '.', w + ' ' + v.ing, [x + ' ' + v.ing, v.b, v.s], 'The longer action uses the past continuous: was/were + verb-ing.')); }); });
-    return out;
-  };
-  G.b1UsedTo = function () {
-    var out = [], OBJ = ['live in London', 'play football', 'go to school here', 'have long hair', 'work in a shop', 'eat meat', 'watch a lot of TV', 'study French', 'smoke', 'get up early'];
-    SUBJ_ALL.forEach(function (s) { OBJ.forEach(function (o) { out.push(mk(s + ' ____ ' + o + ', but not any more.', 'used to', ['use to', 'used', 'am used to'], 'Past habit: used to + base verb.')); }); });
-    var DOES = { I: 'I do now', You: 'you do now', He: 'he does now', She: 'she does now', They: 'they do now', We: 'we do now' };
-    ['I', 'You', 'He', 'She', 'They', 'We'].forEach(function (s) { OBJ.slice(0, 8).forEach(function (o) { out.push(mk(s + ' ____ ' + o + ', but ' + DOES[s] + '.', "didn't use to", ["didn't used to", "don't use to", "wasn't used to"], "Negative past habit: didn't use to + base verb.")); }); });
-    return out;
-  };
-  G.b1FutureWillGoing = function () {
-    var out = [];
-    SUBJ_ALL.forEach(function (s) { V.slice(0, 14).forEach(function (v) {
-      out.push(mk(s + ' ____ ' + v.b + ' ' + v.o + ' tomorrow.', 'will', ['wills', 'am will', 'going'], 'Future prediction/decision: will + base verb.'));
-      out.push(mk(s + ' ____ ' + v.b + ' ' + v.o + ' next week.', "won't", ["willn't", "doesn't", "not will"], "Negative future: won't + base verb."));
-    }); });
-    return out;
-  };
-  G.b1FuturePlans = function () {
-    var out = [], FUT = ['tomorrow', 'next weekend', 'after class', 'tonight', 'next summer'];
-    SUBJ_ALL.forEach(function (s) { VACT.slice(0, 14).forEach(function (v) { var be = beOf(s); out.push(mk(s + ' ____ going to ' + v.b + ' ' + v.o + ' ' + pick(FUT) + '.', be, [be === 'is' ? 'are' : 'is', 'be', 'will'], 'Plans/intentions: am/is/are + going to + base verb.')); }); });
-    return out;
-  };
-  G.b1ModalsOblig = function () {
-    var out = [];
-    // Real rules and real advice (no "it is a rule: she must drink coffee").
-    var MUST = ['Students ____ arrive on time.', 'You ____ bring your ID card to the exam.', 'Drivers ____ stop at a red light.', 'Visitors ____ sign in at reception.', 'Players ____ follow the rules.', 'You ____ wear a seatbelt in the car.', 'Passengers ____ keep their tickets.', 'You ____ switch off your phone in the library.', 'Members ____ show their cards at the door.', 'Students ____ hand in homework on Friday.', 'You ____ be quiet in the reading room.', 'Everyone ____ leave the building during a fire alarm.'];
-    var SHOULD = ['You look tired. You ____ go to bed early.', 'It is cold outside. You ____ wear a coat.', 'He has an exam tomorrow. He ____ study tonight.', 'She has a headache. She ____ take a break.', 'We are lost. We ____ ask for directions.', 'Your phone is very old. You ____ buy a new one.', 'They are always late. They ____ leave home earlier.', 'It might rain. You ____ take an umbrella.', 'He is very stressed. He ____ relax more.', 'You cough a lot. You ____ see a doctor.', 'The exam is difficult. You ____ start studying early.', 'Her English is good. She ____ try the next level.'];
-    MUST.forEach(function (st) { out.push(mk(st, 'must', ['musts', 'must to', 'has'], 'Strong obligation / a rule: must + base verb.')); });
-    SHOULD.forEach(function (st) { out.push(mk(st, 'should', ['shoulds', 'should to', 'musts'], 'Advice: should + base verb.')); });
-    SUBJ_ALL.forEach(function (s) { V.slice(0, 8).forEach(function (v) { var h = haveOf(s) + ' to'; out.push(mk(s + ' ____ ' + v.b + ' ' + v.o + ' every day.', h, [h === 'have to' ? 'has to' : 'have to', 'must to', 'having to'], 'Obligation: have to / has to + base verb.')); }); });
-    return out;
-  };
-  G.b1ModalsPoss = function () {
-    var out = [];
-    SUBJ_ALL.forEach(function (s) { V.slice(0, 14).forEach(function (v) {
-      out.push(mk('Maybe ' + qsubj(s) + ' ____ ' + v.b + ' ' + v.o + ' later.', 'might', ['mights', 'might to', 'is might'], 'Possibility: might + base verb (= maybe).'));
-      out.push(mk(s + ' ____ ' + v.b + ' ' + v.o + ' very well.', 'can', ['cans', 'can to', 'is can'], 'Ability: can + base verb.'));
-    }); });
-    return out;
-  };
-  G.b1Cond1 = function () {
-    var out = [], IFCL = [['it rains', 'we', 'stay at home'], ['you study hard', 'you', 'pass the exam'], ['she calls', 'I', 'answer'], ['they win', 'they', 'celebrate'], ['I have time', 'I', 'help you'], ['he is late', 'we', 'start without him'], ['we hurry', 'we', 'catch the bus'], ['it gets cold', 'I', 'wear a coat'], ['they ask', 'we', 'tell them'], ['you heat water', 'it', 'boil']];
-    IFCL.forEach(function (c) { out.push(mk('If ' + c[0] + ', ' + c[1] + ' ____ ' + c[2] + '.', 'will', ['would', 'will to', 'is going'], 'First conditional result: will + base verb.')); });
-    SING3.slice(0, 8).forEach(function (s) { V.slice(0, 10).forEach(function (v) { out.push(mk('If ' + qsubj(s) + ' ____ (' + v.b + ') ' + v.o + ', I will be happy.', v.s, ['will ' + v.b, v.ed, v.ing], "After 'if', use the present simple.")); }); });
-    BASE_SUBJ.slice(0, 6).forEach(function (s) { V.slice(0, 8).forEach(function (v) { out.push(mk('If ' + qsubj(s) + ' ____ (' + v.b + ') ' + v.o + ', we will win.', v.b, ['will ' + v.b, v.ed, v.ing], "After 'if', use the present simple.")); }); });
-    return out;
-  };
-  G.b1Cond2 = function () {
-    var out = [], ITEMS = [['I had a million dollars', 'I', 'travel the world'], ['she knew the answer', 'she', 'tell us'], ['we lived by the sea', 'we', 'swim every day'], ['you studied more', 'you', 'pass'], ['they had more time', 'they', 'visit us'], ['I won the lottery', 'I', 'buy a house'], ['he spoke French', 'he', 'get the job'], ['we had a car', 'we', 'drive there']];
-    ITEMS.forEach(function (c) { out.push(mk('If ' + c[0] + ', ' + c[1] + ' ____ ' + c[2] + '.', 'would', ['will', 'would to', 'had'], 'Second conditional result: would + base verb.')); });
-    SING3.slice(0, 8).forEach(function (s) { V.slice(0, 10).forEach(function (v) { out.push(mk('If ' + qsubj(s) + ' ____ (' + v.b + ') ' + v.o + ', it would be great.', v.ed, [v.s, v.b, 'would ' + v.b], "Second conditional 'if' clause uses the past simple.")); }); });
-    ['I', 'he', 'she', 'it'].forEach(function (s) { ['rich', 'taller', 'here', 'ready', 'free', 'younger'].forEach(function (c) { out.push(mk('If ' + s + ' ____ ' + c + ', life would be easier.', 'were', ['be', 'is', 'would be'], "In the second conditional we usually use 'were' for all subjects.")); }); });
-    return out;
-  };
-  G.b1TooEnough = function () {
-    var out = [], ADJ2 = ['hot', 'cold', 'expensive', 'difficult', 'small', 'big', 'heavy', 'loud', 'busy', 'tired', 'young', 'dark'];
-    ADJ2.forEach(function (a) {
-      out.push(mk('It is ____ ' + a + ' for me.', 'too', ['enough', 'too much', 'very much'], 'too + adjective = more than necessary.'));
-      out.push(mk('It is ____ ' + a + ' to use.', 'too', ['enough', 'too much', 'so'], 'too + adjective + to ...'));
-      out.push(mk('It is ' + a + ' ____ for me.', 'enough', ['too', 'too much', 'very'], 'adjective + enough = as much as necessary.'));
-    });
-    ['water', 'money', 'time', 'sugar', 'noise', 'traffic'].forEach(function (n) { out.push(mk('There is ____ ' + n + '.', 'too much', ['too many', 'enough of', 'too'], 'too much + uncountable noun.')); });
-    ['people', 'cars', 'books', 'mistakes', 'rules'].forEach(function (n) { out.push(mk('There are ____ ' + n + '.', 'too many', ['too much', 'enough of', 'too'], 'too many + plural countable noun.')); });
-    ['time', 'money', 'chairs', 'water', 'tickets', 'space', 'food', 'sleep'].forEach(function (n) { out.push(mk("We don't have ____ " + n + '.', 'enough', ['too', 'so', 'very'], 'enough + noun = as much as is needed.')); });
-    return out;
-  };
-  G.b1AFewLittle = function () {
-    var out = [], UNC = ['water', 'money', 'time', 'sugar', 'milk', 'bread', 'information', 'coffee', 'salt', 'help'];
-    var PLU = ['friends', 'books', 'apples', 'people', 'ideas', 'eggs', 'cars', 'students', 'questions', 'days'];
-    UNC.forEach(function (n) { out.push(mk('I have ____ ' + n + ', not much.', 'a little', ['a few', 'many', 'a number of'], 'a little + uncountable noun (a small amount).')); out.push(mk('How ____ ' + n + ' do you need?', 'much', ['many', 'a few', 'several'], 'much + uncountable noun.')); out.push(mk('There is only ____ ' + n + ' left.', 'a little', ['a few', 'many', 'several'], 'a little + uncountable noun.')); });
-    PLU.forEach(function (n) { out.push(mk('I have ____ ' + n + ', not many.', 'a few', ['a little', 'much', 'an amount of'], 'a few + plural countable noun (a small number).')); out.push(mk('How ____ ' + n + ' do you have?', 'many', ['much', 'a little', 'a bit of'], 'many + plural countable noun.')); out.push(mk('There are only ____ ' + n + ' left.', 'a few', ['a little', 'much', 'a bit of'], 'a few + plural countable noun.')); });
-    return out;
-  };
-  G.b1PassivePres = function () {
-    var out = [];
-    // Curated subject + participle + tail (no "the letter is eaten").
-    var SING = [
-      ['English', 'spoken', 'all over the world'], ['Rice', 'grown', 'in Asia'], ['The classroom', 'cleaned', 'every evening'],
-      ['Breakfast', 'served', 'at seven'], ['The homework', 'checked', 'every week'], ['This room', 'used', 'for meetings'],
-      ['Coffee', 'made', 'fresh every morning'], ['The door', 'locked', 'at night'], ['The exam', 'written', 'in pencil'],
-      ['The rubbish', 'collected', 'on Mondays'], ['The bill', 'paid', 'online'], ['Turkish', 'spoken', 'in this office'],
-      ['The bread', 'baked', 'every morning'], ['Attendance', 'taken', 'in every lesson'], ['The grass', 'cut', 'once a week'], ['Lunch', 'eaten', 'at noon here']
-    ];
-    var PLU = [
-      ['The emails', 'sent', 'every morning'], ['The dishes', 'washed', 'after dinner'], ['The rooms', 'cleaned', 'daily'],
-      ['Many languages', 'spoken', 'in this city'], ['The tickets', 'sold', 'online'], ['The exams', 'marked', 'by two teachers'],
-      ['The windows', 'opened', 'every morning'], ['Photos', 'taken', 'at every ceremony'], ['The grades', 'given', 'at the end of term'],
-      ['These computers', 'used', 'by the students'], ['The lessons', 'taught', 'in English'], ['The doors', 'locked', 'at midnight'],
-      ['The books', 'kept', 'in the library'], ['The results', 'announced', 'every Friday'], ['Mistakes', 'corrected', 'in red'], ['The bills', 'paid', 'monthly']
-    ];
-    SING.forEach(function (p) { out.push(mk(p[0] + ' ____ ' + p[1] + ' ' + p[2] + '.', 'is', ['are', 'be', 'does'], 'Present passive (singular): is + past participle.')); });
-    PLU.forEach(function (p) { out.push(mk(p[0] + ' ____ ' + p[1] + ' ' + p[2] + '.', 'are', ['is', 'be', 'do'], 'Present passive (plural): are + past participle.')); });
-    SING.forEach(function (p) { out.push(mk('____ ' + lcFirst(p[0]) + ' ' + p[1] + ' ' + p[2] + '?', 'Is', ['Are', 'Does', 'Do'], 'Present passive question (singular): Is + subject + past participle?')); });
-    PLU.forEach(function (p) { out.push(mk('____ ' + lcFirst(p[0]) + ' ' + p[1] + ' ' + p[2] + '?', 'Are', ['Is', 'Do', 'Does'], 'Present passive question (plural): Are + subject + past participle?')); });
-    return out;
-  };
-  G.b1PassivePast = function () {
-    var out = [];
-    var SING = [
-      ['The bridge', 'built', 'in 1990'], ['This house', 'built', 'a hundred years ago'], ['The telephone', 'invented', 'in 1876'],
-      ['Penicillin', 'discovered', 'in 1928'], ['This book', 'written', 'in the 19th century'], ['The painting', 'painted', 'in Italy in 1503'],
-      ['The letter', 'sent', 'last Monday'], ['The window', 'broken', 'during the storm'], ['My bike', 'stolen', 'last week'],
-      ['The museum', 'opened', 'in 1955'], ['The house', 'sold', 'last month'], ['This building', 'designed', 'by a famous architect in 1910'],
-      ['The film', 'made', 'in 2005'], ['The wallet', 'found', 'near the station yesterday'], ['The prize', 'given', 'to the best student last term'], ['The road', 'repaired', 'last summer']
-    ];
-    var PLU = [
-      ['The pyramids', 'built', 'thousands of years ago'], ['These letters', 'written', 'by my grandfather years ago'], ['The photos', 'taken', 'at the ceremony last year'],
-      ['The tickets', 'sold', 'in one day last month'], ['The windows', 'broken', 'during the storm'], ['The paintings', 'stolen', 'from the museum in 2003'],
-      ['The results', 'announced', 'yesterday'], ['The invitations', 'sent', 'last week'], ['These houses', 'designed', 'in the 1960s'],
-      ['The keys', 'found', 'under the desk yesterday'], ['The prizes', 'given', 'at the end of last year'], ['The roads', 'repaired', 'last summer']
-    ];
-    SING.forEach(function (p) { out.push(mk(p[0] + ' ____ ' + p[1] + ' ' + p[2] + '.', 'was', ['were', 'is', 'did'], 'Past passive (singular): was + past participle.')); });
-    PLU.forEach(function (p) { out.push(mk(p[0] + ' ____ ' + p[1] + ' ' + p[2] + '.', 'were', ['was', 'are', 'did'], 'Past passive (plural): were + past participle.')); });
-    SING.forEach(function (p) { out.push(mk('____ ' + lcFirst(p[0]) + ' ' + p[1] + ' ' + p[2] + '?', 'Was', ['Were', 'Did', 'Is'], 'Past passive question (singular): Was + subject + past participle?')); });
-    PLU.forEach(function (p) { out.push(mk('____ ' + lcFirst(p[0]) + ' ' + p[1] + ' ' + p[2] + '?', 'Were', ['Was', 'Did', 'Are'], 'Past passive question (plural): Were + subject + past participle?')); });
-    return out;
-  };
-  G.b1Relative = function () {
-    var out = [], PN = ['man', 'woman', 'girl', 'boy', 'teacher', 'doctor', 'student', 'artist', 'singer', 'player', 'friend', 'neighbour'];
-    var TN = ['book', 'film', 'car', 'phone', 'house', 'song', 'shop', 'bag', 'watch', 'idea', 'photo', 'machine'];
-    var PL = ['city', 'town', 'shop', 'hotel', 'office', 'school', 'park', 'street', 'country', 'room'];
-    PN.forEach(function (n) { out.push(mk('The ' + n + ' ____ lives next door is nice.', 'who', ['which', 'where', 'whose'], "who / that for people.")); out.push(mk('I met a ' + n + ' ____ knew you.', 'who', ['which', 'where', 'whose'], "who / that for people.")); out.push(mk('She is the ' + n + ' ____ bag was stolen.', 'whose', ['who', 'which', 'where'], "whose shows possession.")); });
-    TN.forEach(function (n) { out.push(mk('The ' + n + ' ____ I bought is great.', 'which', ['who', 'where', 'whose'], "which / that for things.")); out.push(mk('This is the ' + n + ' ____ won an award.', 'which', ['who', 'where', 'whose'], "which / that for things.")); });
-    PL.forEach(function (n) { out.push(mk('This is the ' + n + ' ____ I work.', 'where', ['which', 'who', 'when'], "where for places.")); });
-    return out;
-  };
-  G.b1GerundInf = function () {
-    var out = [];
-    var ING = ['I enjoy', 'She finished', 'They keep', 'He avoids', "We don't mind", 'I love', 'Do you like', 'She suggested', 'I miss', 'He gave up'];
-    var TO = ['I want', 'She decided', 'They hope', 'He plans', 'We need', 'I would like', 'She promised', 'They agreed', 'He learned', 'I offered'];
-    ING.forEach(function (p) { VACT.slice(0, 12).forEach(function (v) { out.push(mk(p + ' ____ (' + v.b + ') ' + v.o + '.', v.ing, [v.b, 'to ' + v.b, v.s], 'After enjoy / finish / keep / mind / like use verb + -ing.')); }); });
-    TO.forEach(function (p) { VACT.slice(0, 12).forEach(function (v) { out.push(mk(p + ' ____ (' + v.b + ') ' + v.o + '.', 'to ' + v.b, [v.ing, v.b, v.s], 'After want / decide / hope / plan / need use to + base verb.')); }); });
-    return out;
-  };
 
   // ── B1 unit skeleton (reuses some A2 generators for shared points) ──
   var B1_SPEC = [
-    { id: 'b1-present-cont', title: 'Present Simple or Continuous', blurb: 'Unit 1 · routine vs now', gen: G.simpleVsCont, cap: 52 },
-    { id: 'b1-question-forms', title: 'Question forms', blurb: 'Unit 1 · do / does + question words', gen: G.presSimpleQ, cap: 52 },
-    { id: 'b1-past-continuous', title: 'Past Continuous', blurb: 'Unit 2 · was / were + -ing', gen: G.b1PastCont, cap: 52 },
-    { id: 'b1-used-to', title: 'used to', blurb: 'Unit 2 · past habits', gen: G.b1UsedTo, cap: 52 },
-    { id: 'b1-present-perfect', title: 'Present Perfect', blurb: 'Unit 3 · have / has + past participle', gen: G.pp, cap: 52 },
-    { id: 'b1-pp-vs-past', title: 'Present Perfect or Past Simple', blurb: 'Unit 3 · finished time or not', gen: G.ppVsPast, cap: 52 },
-    { id: 'b1-future-will-going', title: 'will / won\'t', blurb: 'Unit 4 · predictions and decisions', gen: G.b1FutureWillGoing, cap: 52 },
-    { id: 'b1-future-plans', title: 'going to', blurb: 'Unit 4 · plans and intentions', gen: G.b1FuturePlans, cap: 52 },
-    { id: 'b1-modals-obligation', title: 'must / have to / should', blurb: 'Unit 5 · obligation and advice', gen: G.b1ModalsOblig, cap: 52 },
-    { id: 'b1-modals-possibility', title: 'might / can', blurb: 'Unit 5 · possibility and ability', gen: G.b1ModalsPoss, cap: 52 },
-    { id: 'b1-conditional-1', title: 'First Conditional', blurb: 'Unit 6 · if + present, will', gen: G.b1Cond1, cap: 52 },
-    { id: 'b1-conditional-2', title: 'Second Conditional', blurb: 'Unit 6 · if + past, would', gen: G.b1Cond2, cap: 52 },
-    { id: 'b1-comparatives', title: 'Comparatives', blurb: 'Unit 7 · -er / more ... than', gen: G.comp, cap: 52 },
-    { id: 'b1-too-enough', title: 'too / enough', blurb: 'Unit 7 · degree', gen: G.b1TooEnough, cap: 52 },
-    { id: 'b1-quantifiers', title: 'much / many', blurb: 'Unit 8 · quantifiers', gen: G.muchMany, cap: 52 },
-    { id: 'b1-a-few-little', title: 'a few / a little', blurb: 'Unit 8 · countable and uncountable', gen: G.b1AFewLittle, cap: 52 },
-    { id: 'b1-passive-present', title: 'Present Passive', blurb: 'Unit 9 · is / are + past participle', gen: G.b1PassivePres, cap: 52 },
-    { id: 'b1-passive-past', title: 'Past Passive', blurb: 'Unit 9 · was / were + past participle', gen: G.b1PassivePast, cap: 52 },
-    { id: 'b1-relative-clauses', title: 'Relative Clauses', blurb: 'Unit 10 · who / which / where / whose', gen: G.b1Relative, cap: 52 },
-    { id: 'b1-gerund-infinitive', title: 'Gerund or Infinitive', blurb: 'Unit 10 · verb + -ing / to', gen: G.b1GerundInf, cap: 52 }
+    { id: 'b1-present-cont', title: 'Present Simple or Continuous', blurb: 'Unit 1 · routine vs now' },
+    { id: 'b1-question-forms', title: 'Question forms', blurb: 'Unit 1 · do / does + question words' },
+    { id: 'b1-past-continuous', title: 'Past Continuous', blurb: 'Unit 2 · was / were + -ing' },
+    { id: 'b1-used-to', title: 'used to', blurb: 'Unit 2 · past habits' },
+    { id: 'b1-present-perfect', title: 'Present Perfect', blurb: 'Unit 3 · have / has + past participle' },
+    { id: 'b1-pp-vs-past', title: 'Present Perfect or Past Simple', blurb: 'Unit 3 · finished time or not' },
+    { id: 'b1-future-will-going', title: 'will / won\'t', blurb: 'Unit 4 · predictions and decisions' },
+    { id: 'b1-future-plans', title: 'going to', blurb: 'Unit 4 · plans and intentions' },
+    { id: 'b1-modals-obligation', title: 'must / have to / should', blurb: 'Unit 5 · obligation and advice' },
+    { id: 'b1-modals-possibility', title: 'might / can', blurb: 'Unit 5 · possibility and ability' },
+    { id: 'b1-conditional-1', title: 'First Conditional', blurb: 'Unit 6 · if + present, will' },
+    { id: 'b1-conditional-2', title: 'Second Conditional', blurb: 'Unit 6 · if + past, would' },
+    { id: 'b1-comparatives', title: 'Comparatives', blurb: 'Unit 7 · -er / more ... than' },
+    { id: 'b1-too-enough', title: 'too / enough', blurb: 'Unit 7 · degree' },
+    { id: 'b1-quantifiers', title: 'much / many', blurb: 'Unit 8 · quantifiers' },
+    { id: 'b1-a-few-little', title: 'a few / a little', blurb: 'Unit 8 · countable and uncountable' },
+    { id: 'b1-passive-present', title: 'Present Passive', blurb: 'Unit 9 · is / are + past participle' },
+    { id: 'b1-passive-past', title: 'Past Passive', blurb: 'Unit 9 · was / were + past participle' },
+    { id: 'b1-relative-clauses', title: 'Relative Clauses', blurb: 'Unit 10 · who / which / where / whose' },
+    { id: 'b1-gerund-infinitive', title: 'Gerund or Infinitive', blurb: 'Unit 10 · verb + -ing / to' }
   ];
   var B1 = B1_SPEC.map(function (t) {
-    return { id: t.id, title: t.title, blurb: t.blurb, questions: build(t.gen(), t.cap) };
+    return { id: t.id, title: t.title, blurb: t.blurb, questions: VALID[t.id] ? buildValidated(VALID[t.id](), 104) : [] };
   });
 
   // ── B1+ generators (reuse engine; upper-intermediate points) ──
-  G.b1pPresPerfCont = function () {
-    var out = [], DUR = ['for two hours', 'all day', 'since this morning', 'for a long time', 'lately', 'since 9am'];
-    SUBJ_ALL.forEach(function (s) { VDUR.forEach(function (v) { var h = haveOf(s);
-      out.push(mk(s + ' ' + h + ' ____ ' + v.ing + ' ' + v.o + ' ' + pick(DUR) + '.', 'been', ['being', 'be', 'was'], 'Present perfect continuous: have/has + been + verb-ing.'));
-      out.push(mk(s + ' ____ been ' + v.ing + ' ' + v.o + '.', h, [h === 'have' ? 'has' : 'have', 'is', 'are'], 'Present perfect continuous: have/has + been + -ing.'));
-    }); });
-    return out;
-  };
-  G.b1pPastPerfect = function () {
-    var out = [];
-    SUBJ_ALL.forEach(function (s) { V.slice(0, 16).forEach(function (v) {
-      out.push(mk('When I arrived, ' + qsubj(s) + ' ____ already ' + v.pp + ' ' + v.o + '.', 'had', ['has', 'was', 'have'], 'Past perfect: had + past participle (the earlier action).'));
-      out.push(mk(s + ' ____ never ' + v.pp + ' ' + v.o + ' before that day.', 'had', ['has', 'was', 'did'], 'Past perfect: had + past participle.'));
-    }); });
-    return out;
-  };
-  G.b1pFutureCont = function () {
-    var out = [], TIME = ['this time tomorrow', 'at 8 tonight', 'all day tomorrow', 'next week'];
-    SUBJ_ALL.forEach(function (s) { VDUR.forEach(function (v) {
-      out.push(mk(s + ' will ____ ' + v.ing + ' ' + v.o + ' ' + pick(TIME) + '.', 'be', ['being', 'is', 'been'], 'Future continuous: will + be + verb-ing.'));
-      out.push(mk('At 8 tonight ' + qsubj(s) + ' will be ____ (' + v.b + ') ' + v.o + '.', v.ing, [v.b, 'to ' + v.b, v.s], 'Future continuous: will be + verb-ing.'));
-    }); });
-    return out;
-  };
-  G.b1pDeduction = function () {
-    var out = [];
-    // Coherent evidence -> conclusion pairs (no arbitrary cross-product).
-    var MUST = [['The lights are on', 'they', 'at home'], ['I can hear voices inside', 'someone', 'in there'], ['Her coat is on the chair', 'she', 'here somewhere'], ['The car is in the drive', 'they', 'home'], ['He keeps yawning', 'he', 'tired'], ['She is smiling a lot', 'she', 'happy'], ['He has eaten three plates', 'he', 'hungry'], ['You have worked all day', 'you', 'exhausted'], ['The ground is wet', 'it', 'raining'], ['They have a huge house', 'they', 'rich'], ['She knows everything about it', 'she', 'an expert'], ['He is shivering', 'he', 'cold']];
-    var CANT = [['He is in Spain right now', 'that', 'him at the door'], ['She is only six', 'she', 'the driver'], ['They left two hours ago', 'they', 'still here'], ['It is the middle of the night', 'the shops', 'open'], ['He earns very little', 'he', 'the owner'], ['She never eats meat', 'this', 'her plate'], ['I posted it myself', 'the letter', 'lost'], ['He is a complete beginner', 'he', 'the champion'], ['It costs almost nothing', 'it', 'expensive'], ['The test was very easy', 'that', 'why he failed']];
-    var MIGHT = [['The sky is grey', 'it', 'about to rain'], ['He is not answering his phone', 'he', 'busy'], ['I have not met him yet', 'he', 'friendly'], ['Nobody is certain', 'we', 'wrong'], ['She did not tell me', 'they', 'coming'], ['The forecast is unclear', 'it', 'sunny later'], ['I have not checked yet', 'it', 'correct'], ['There is no sign of them', 'they', 'late'], ['It is hard to say', 'this', 'the place'], ['No one has confirmed it', 'the news', 'true']];
-    MUST.forEach(function (p) { out.push(mk(p[0] + ', so ' + p[1] + ' ____ be ' + p[2] + '.', 'must', ["can't", 'might', 'should'], 'Sure it is true -> must be.')); });
-    CANT.forEach(function (p) { out.push(mk(p[0] + ', so ' + p[1] + " ____ be " + p[2] + '.', "can't", ['must', 'might', 'should'], "Sure it is not -> can't be.")); });
-    MIGHT.forEach(function (p) { out.push(mk(p[0] + ', so ' + p[1] + ' ____ be ' + p[2] + '.', 'might', ['must', "can't", 'should'], 'Not sure -> might be.')); });
-    return out;
-  };
-  G.b1pPastModals = function () {
-    var out = [];
-    SUBJ_ALL.forEach(function (s) { V.slice(0, 12).forEach(function (v) {
-      out.push(mk(s + ' ____ ' + v.pp + ' ' + v.o + '. It was a bad idea.', "shouldn't have", ['should have', "didn't have to", 'must have'], "Criticism of a past action: shouldn't have + past participle."));
-      out.push(mk('Looking back, ' + qsubj(s) + ' ____ ' + v.pp + ' ' + v.o + '.', 'should have', ["shouldn't have", 'must have', 'could of'], 'Past regret / advice: should have + past participle.'));
-    }); });
-    var MUST = ['The ground is wet. It ____ rained.', 'He looks happy. He ____ passed.', 'They are not here. They ____ left.', 'The plate is empty. She ____ eaten.', 'The window is broken. Someone ____ broken it.'];
-    MUST.forEach(function (st) { out.push(mk(st, 'must have', ["can't have", 'should have', 'might of'], 'must have + past participle = a sure conclusion about the past.')); });
-    return out;
-  };
-  G.b1pCond3 = function () {
-    var out = [], ITEMS = [['I had known', 'I', 'told you'], ['she had studied', 'she', 'passed'], ['we had left earlier', 'we', 'caught the train'], ['you had asked', 'I', 'helped'], ['they had invited us', 'we', 'come'], ['he had driven', 'he', 'arrived sooner'], ['it had not rained', 'we', 'gone out'], ['I had seen it', 'I', 'told you']];
-    ITEMS.forEach(function (c) { out.push(mk('If ' + c[0] + ', ' + c[1] + ' would ____ ' + c[2] + '.', 'have', ['has', 'had', 'of'], 'Third conditional result: would have + past participle.')); });
-    SUBJ_ALL.forEach(function (s) { V.slice(0, 14).forEach(function (v) { out.push(mk('If ' + qsubj(s) + ' ____ ' + v.pp + ' ' + v.o + ', things would have been different.', 'had', ['has', 'would have', 'did'], "Third conditional 'if' clause: had + past participle.")); }); });
-    return out;
-  };
-  G.b1pWish = function () {
-    var out = [], ADJ2 = ['rich', 'taller', 'here', 'younger', 'ready', 'famous', 'free', 'better'];
-    var WISHERS = [['I', 'wish', 'I'], ['She', 'wishes', 'she'], ['He', 'wishes', 'he'], ['We', 'wish', 'we'], ['They', 'wish', 'they'], ['I', 'wish', 'he'], ['I', 'wish', 'they'], ['She', 'wishes', 'I']];
-    WISHERS.forEach(function (w) { ADJ2.forEach(function (a) { out.push(mk(w[0] + ' ' + w[1] + ' ' + w[2] + ' ____ ' + a + '.', 'were', ['be', 'is', 'am'], 'wish + were for an unreal present situation.')); }); });
-    WISHERS.forEach(function (w) { V.slice(0, 10).forEach(function (v) { out.push(mk(w[0] + ' ' + w[1] + ' ' + w[2] + ' ____ (' + v.b + ') ' + v.o + '.', v.ed, [v.s, v.b, 'will ' + v.b], 'wish + past simple for an unreal present.')); }); });
-    return out;
-  };
-  G.b1pPassivePerf = function () {
-    var out = [];
-    // Curated subject + participle pairs (no "the car has been written").
-    var SING = [
-      ['The work', 'finished'], ['The report', 'written'], ['The room', 'cleaned'], ['The car', 'repaired'],
-      ['The letter', 'sent'], ['The house', 'sold'], ['The window', 'broken'], ['The wall', 'painted'],
-      ['The project', 'completed'], ['The decision', 'made'], ['The money', 'found'], ['The homework', 'checked'],
-      ['The meeting room', 'booked'], ['The exam', 'marked'], ['The package', 'delivered'], ['The problem', 'solved']
-    ];
-    var PLU = [
-      ['The emails', 'sent'], ['The reports', 'written'], ['The rooms', 'cleaned'], ['The cars', 'repaired'],
-      ['The tickets', 'sold'], ['The windows', 'broken'], ['The walls', 'painted'], ['The projects', 'completed'],
-      ['The keys', 'found'], ['The exams', 'marked'], ['The packages', 'delivered'], ['The problems', 'solved'],
-      ['The invitations', 'printed'], ['The results', 'announced']
-    ];
-    SING.forEach(function (p) { out.push(mk(p[0] + ' ____ just been ' + p[1] + '.', 'has', ['have', 'is', 'was'], 'Present perfect passive (singular): has + been + past participle.')); });
-    PLU.forEach(function (p) { out.push(mk(p[0] + ' ____ just been ' + p[1] + '.', 'have', ['has', 'are', 'were'], 'Present perfect passive (plural): have + been + past participle.')); });
-    SING.forEach(function (p) { out.push(mk(p[0] + ' has ____ ' + p[1] + ' already.', 'been', ['being', 'be', 'is'], 'Present perfect passive: has/have + been + past participle.')); });
-    PLU.forEach(function (p) { out.push(mk(p[0] + ' have ____ ' + p[1] + ' already.', 'been', ['being', 'be', 'are'], 'Present perfect passive: has/have + been + past participle.')); });
-    return out;
-  };
-  G.b1pCausative = function () {
-    var out = [];
-    // % is replaced with the right possessive for the subject (his hair,
-    // not "Tom has my hair cut").
-    var THING = [['% car', 'repaired'], ['% hair', 'cut'], ['% house', 'painted'], ['% photo', 'taken'], ['% watch', 'fixed'], ['% documents', 'translated'], ['% suit', 'cleaned'], ['% windows', 'cleaned'], ['% eyes', 'tested'], ['% roof', 'repaired']];
-    var POSS = { I: 'my', You: 'your', We: 'our', They: 'their', He: 'his', She: 'her', Tom: 'his', Anna: 'her' };
-    ['I', 'You', 'We', 'They'].forEach(function (s) { THING.forEach(function (t) { out.push(mk(s + ' ____ ' + t[0].replace('%', POSS[s]) + ' ' + t[1] + ' yesterday.', 'had', ['have', 'has', 'did'], 'Causative (past): had + something + past participle.')); }); });
-    // Present options stay in the present (has/have/does/is), so "every
-    // month" cannot also be read as past habit.
-    ['He', 'She', 'Tom', 'Anna'].forEach(function (s) { THING.forEach(function (t) { out.push(mk(s + ' ____ ' + t[0].replace('%', POSS[s]) + ' ' + t[1] + ' every month.', 'has', ['have', 'does', 'is'], 'Causative (he/she): has + something + past participle.')); }); });
-    return out;
-  };
-  G.b1pReported = function () {
-    var out = [], ITEMS = [
-      ["Direct: 'I am tired.' -> He said he ____ tired.", 'was', ['is', 'will be', 'has been']],
-      ["Direct: 'I work here.' -> She said she ____ there.", 'worked', ['works', 'work', 'is working']],
-      ["Direct: 'I have finished.' -> He said he ____ finished.", 'had', ['has', 'have', 'was']],
-      ["Direct: 'I will call.' -> She said she ____ call.", 'would', ['will', 'will have', 'shall']],
-      ["Direct: 'I can swim.' -> He said he ____ swim.", 'could', ['can', 'will', 'is able to']],
-      ["Direct: 'I am working.' -> He said he ____ working.", 'was', ['is', 'will be', 'has been']],
-      ["Direct: 'I live in Rome.' -> She said she ____ in Rome.", 'lived', ['lives', 'live', 'is living']]
-    ];
-    ITEMS.forEach(function (q) { out.push(mk(q[0], q[1], q[2], 'In reported speech the tense usually shifts back one step.')); });
-    SUBJ_ALL.forEach(function (s) { V.slice(0, 14).forEach(function (v) { out.push(mk('He said ' + qsubj(s) + ' ____ (' + v.b + ') ' + v.o + ' every day.', v.ed, [v.s, v.b, 'will ' + v.b], 'Reported speech: present simple shifts back to past simple.')); }); });
-    return out;
-  };
-  G.b1pReportedQ = function () {
-    var out = [], ITEMS = [
-      ["Direct: 'Where do you live?' -> He asked where I ____.", 'lived', ['live', 'do live', 'am living']],
-      ["Direct: 'What is your name?' -> She asked what my name ____.", 'was', ['is', 'will be', 'has been']],
-      ["Direct: 'Are you ready?' -> He asked ____ I was ready.", 'if', ['that', 'do', 'what']],
-      ["Direct: 'Do you like it?' -> She asked if I ____ it.", 'liked', ['like', 'do like', 'am liking']],
-      ["Direct: 'Can you swim?' -> He asked if I ____ swim.", 'could', ['can', 'will', 'am able to']],
-      ["Direct: 'Have you finished?' -> She asked if I ____ finished.", 'had', ['have', 'has', 'did']],
-      ["Direct: 'When did you arrive?' -> She asked when I ____ arrived.", 'had', ['have', 'has', 'did']]
-    ];
-    ITEMS.forEach(function (q) { out.push(mk(q[0], q[1], q[2], 'Reported questions use statement word order and the tense shifts back.')); });
-    SUBJ_ALL.forEach(function (s) { V.slice(0, 12).forEach(function (v) { out.push(mk('She asked where ' + qsubj(s) + ' ____ (' + v.b + ') ' + v.o + '.', v.ed, [v.s, v.b, 'does ' + v.b], 'Reported question: statement word order + the tense shifts back.')); }); });
-    return out;
-  };
-  G.b1pVerbObj = function () {
-    var out = [], VRB = ['want', 'wants', 'asked', 'told', 'expected', 'advised', 'allowed', 'persuaded', 'reminded', 'invited'];
-    var OBJ = ['me', 'him', 'her', 'them', 'us', 'you', 'Tom', 'the students'];
-    VRB.forEach(function (vb) { OBJ.forEach(function (o) { V.slice(0, 6).forEach(function (v) { out.push(mk('They ' + vb + ' ' + o + ' ____ (' + v.b + ') ' + v.o + '.', 'to ' + v.b, [v.b, v.ing, v.s], 'verb + object + to + base verb (want / ask / tell someone to do).')); }); }); });
-    return out;
-  };
-  G.b1pRelativeND = function () {
-    var out = [], PN = ['brother', 'sister', 'friend', 'teacher', 'boss', 'neighbour', 'cousin', 'uncle', 'aunt', 'father'];
-    var TN = ['car', 'phone', 'house', 'laptop', 'watch', 'bike', 'camera', 'bag', 'flat', 'garden'];
-    PN.forEach(function (n) {
-      out.push(mk('My ' + n + ', ____ lives nearby, is very friendly.', 'who', ['which', 'that', 'whose'], 'Non-defining clause (with commas) for people: who, not that.'));
-      out.push(mk('My ' + n + ', ____ I see often, is kind.', 'who', ['which', 'that', 'whose'], 'Non-defining clause for people: who.'));
-      out.push(mk('My ' + n + ', ____ car is red, drives fast.', 'whose', ['who', 'which', 'that'], 'whose shows possession.'));
-    });
-    TN.forEach(function (n) {
-      out.push(mk('My ' + n + ', ____ I bought recently, is great.', 'which', ['who', 'that', 'whose'], 'Non-defining clause (with commas) for things: which, not that.'));
-      out.push(mk('Their ' + n + ', ____ is very old, still works.', 'which', ['who', 'that', 'whose'], 'Non-defining clause for things: which.'));
-    });
-    return out;
-  };
 
   // ── B1+ unit skeleton (reuses some A2/B1 generators for review) ──
   var B1PLUS_SPEC = [
-    { id: 'b1p-pres-perf-cont', title: 'Present Perfect Continuous', blurb: 'Unit 1 · have been + -ing', gen: G.b1pPresPerfCont, cap: 52 },
-    { id: 'b1p-present-perfect', title: 'Present Perfect', blurb: 'Unit 1 · have / has + past participle', gen: G.pp, cap: 52 },
-    { id: 'b1p-past-perfect', title: 'Past Perfect', blurb: 'Unit 2 · had + past participle', gen: G.b1pPastPerfect, cap: 52 },
-    { id: 'b1p-past-continuous', title: 'Past Continuous', blurb: 'Unit 2 · was / were + -ing', gen: G.b1PastCont, cap: 52 },
-    { id: 'b1p-future-continuous', title: 'Future Continuous', blurb: 'Unit 3 · will be + -ing', gen: G.b1pFutureCont, cap: 52 },
-    { id: 'b1p-future', title: 'Future: will', blurb: 'Unit 3 · predictions and decisions', gen: G.b1FutureWillGoing, cap: 52 },
-    { id: 'b1p-deduction', title: 'Modals of Deduction', blurb: "Unit 4 · must / can't / might be", gen: G.b1pDeduction, cap: 52 },
-    { id: 'b1p-past-modals', title: 'Past Modals', blurb: 'Unit 4 · should have / must have', gen: G.b1pPastModals, cap: 72 },
-    { id: 'b1p-conditional-3', title: 'Third Conditional', blurb: 'Unit 5 · if + past perfect, would have', gen: G.b1pCond3, cap: 52 },
-    { id: 'b1p-wish', title: 'wish / if only', blurb: 'Unit 5 · unreal present', gen: G.b1pWish, cap: 52 },
-    { id: 'b1p-passive-perfect', title: 'Present Perfect Passive', blurb: 'Unit 6 · has / have been + past participle', gen: G.b1pPassivePerf, cap: 52 },
-    { id: 'b1p-causative', title: 'Causative have', blurb: 'Unit 6 · have something done', gen: G.b1pCausative, cap: 52 },
-    { id: 'b1p-reported', title: 'Reported Speech', blurb: 'Unit 7 · statements', gen: G.b1pReported, cap: 52 },
-    { id: 'b1p-reported-q', title: 'Reported Questions', blurb: 'Unit 7 · questions', gen: G.b1pReportedQ, cap: 52 },
-    { id: 'b1p-relative', title: 'Relative Clauses', blurb: 'Unit 8 · who / which / where / whose', gen: G.b1Relative, cap: 52 },
-    { id: 'b1p-relative-nd', title: 'Non-defining Relatives', blurb: 'Unit 8 · with commas', gen: G.b1pRelativeND, cap: 52 },
-    { id: 'b1p-gerund-infinitive', title: 'Gerund or Infinitive', blurb: 'Unit 9 · verb + -ing / to', gen: G.b1GerundInf, cap: 52 },
-    { id: 'b1p-verb-object', title: 'Verb + Object + to', blurb: 'Unit 9 · want someone to do', gen: G.b1pVerbObj, cap: 52 }
+    { id: 'b1p-pres-perf-cont', title: 'Present Perfect Continuous', blurb: 'Unit 1 · have been + -ing' },
+    { id: 'b1p-present-perfect', title: 'Present Perfect', blurb: 'Unit 1 · have / has + past participle' },
+    { id: 'b1p-past-perfect', title: 'Past Perfect', blurb: 'Unit 2 · had + past participle' },
+    { id: 'b1p-past-continuous', title: 'Past Continuous', blurb: 'Unit 2 · was / were + -ing' },
+    { id: 'b1p-future-continuous', title: 'Future Continuous', blurb: 'Unit 3 · will be + -ing' },
+    { id: 'b1p-future', title: 'Future: will', blurb: 'Unit 3 · predictions and decisions' },
+    { id: 'b1p-deduction', title: 'Modals of Deduction', blurb: "Unit 4 · must / can't / might be" },
+    { id: 'b1p-past-modals', title: 'Past Modals', blurb: 'Unit 4 · should have / must have' },
+    { id: 'b1p-conditional-3', title: 'Third Conditional', blurb: 'Unit 5 · if + past perfect, would have' },
+    { id: 'b1p-wish', title: 'wish / if only', blurb: 'Unit 5 · unreal present' },
+    { id: 'b1p-passive-perfect', title: 'Present Perfect Passive', blurb: 'Unit 6 · has / have been + past participle' },
+    { id: 'b1p-causative', title: 'Causative have', blurb: 'Unit 6 · have something done' },
+    { id: 'b1p-reported', title: 'Reported Speech', blurb: 'Unit 7 · statements' },
+    { id: 'b1p-reported-q', title: 'Reported Questions', blurb: 'Unit 7 · questions' },
+    { id: 'b1p-relative', title: 'Relative Clauses', blurb: 'Unit 8 · who / which / where / whose' },
+    { id: 'b1p-relative-nd', title: 'Non-defining Relatives', blurb: 'Unit 8 · with commas' },
+    { id: 'b1p-gerund-infinitive', title: 'Gerund or Infinitive', blurb: 'Unit 9 · verb + -ing / to' },
+    { id: 'b1p-verb-object', title: 'Verb + Object + to', blurb: 'Unit 9 · want someone to do' }
   ];
   var B1PLUS = B1PLUS_SPEC.map(function (t) {
-    return { id: t.id, title: t.title, blurb: t.blurb, questions: build(t.gen(), t.cap) };
+    return { id: t.id, title: t.title, blurb: t.blurb, questions: VALID[t.id] ? buildValidated(VALID[t.id](), 104) : [] };
   });
 
   // ── B2 generators (advanced points; reuse engine + pools) ──
-  G.b2PastPerfCont = function () {
-    var out = [], DUR = ['for two hours', 'all morning', 'for a long time', 'since dawn'];
-    SUBJ_ALL.forEach(function (s) { VDUR.forEach(function (v) {
-      out.push(mk('When I arrived, ' + qsubj(s) + ' had ____ ' + v.ing + ' ' + v.o + ' ' + pick(DUR) + '.', 'been', ['being', 'be', 'was'], 'Past perfect continuous: had + been + verb-ing for a longer earlier action.'));
-      out.push(mk(s + ' ____ been ' + v.ing + ' ' + v.o + ' for hours when the phone rang.', 'had', ['has', 'have', 'was'], 'Past perfect continuous: had + been + verb-ing.'));
-    }); });
-    return out;
-  };
-  G.b2FuturePerf = function () {
-    var out = [], BY = ['by Friday', 'by the end of the month', 'by 2030', 'by this time next year', 'by tomorrow evening'];
-    SUBJ_ALL.forEach(function (s) { V.slice(0, 14).forEach(function (v) {
-      out.push(mk(s + ' will ____ ' + v.pp + ' ' + v.o + ' ' + pick(BY) + '.', 'have', ['has', 'had', 'be'], 'Future perfect: will + have + past participle (finished before a future time).'));
-      out.push(mk('By next year ' + qsubj(s) + ' will have ____ (' + v.b + ') ' + v.o + '.', v.pp, [v.b, v.ed === v.pp ? v.ing : v.ed, v.s], 'Future perfect: will have + past participle.'));
-    }); });
-    return out;
-  };
-  G.b2MixedCond = function () {
-    // [if-clause(past perfect), base verb of the if-clause, subject, present result]
-    var out = [], ITEMS = [
-      ['I had studied medicine', 'study', 'I', 'a doctor now'], ['she had taken the job', 'take', 'she', 'in Paris now'],
-      ['we had saved money', 'save', 'we', 'rich today'], ['he had learned English earlier', 'learn', 'he', 'fluent now'],
-      ['they had caught the train', 'catch', 'they', 'here now'], ['you had slept well', 'sleep', 'you', 'less tired today'],
-      ['I had listened to your advice', 'listen', 'I', 'in a better position now'], ['she had accepted the offer', 'accept', 'she', 'the manager today'],
-      ['he had finished his degree', 'finish', 'he', 'an engineer now'], ['we had bought that flat', 'buy', 'we', 'homeowners today'],
-      ['I had practised more', 'practise', 'I', 'on the team now'], ['they had booked earlier', 'book', 'they', 'on the plane now'],
-      ['she had grown up abroad', 'grow', 'she', 'bilingual now'], ['you had kept the receipt', 'keep', 'you', 'able to return it now'],
-      ['he had told the truth', 'tell', 'he', 'in less trouble now'], ['I had set an alarm', 'set', 'I', 'awake now'],
-      ['we had planted the garden in spring', 'plant', 'we', 'eating our own vegetables now'], ['she had joined the course', 'join', 'she', 'certified today']
-    ];
-    ITEMS.forEach(function (c) {
-      out.push(mk('If ' + c[0] + ', ' + c[2] + ' ____ be ' + c[3] + '.', 'would', ['will', 'would have', 'had'], 'Mixed conditional: past condition (if + past perfect) with a PRESENT result (would + base verb).'));
-      out.push(mk('If ' + c[0] + ', ' + c[2] + ' would ____ ' + c[3] + '.', 'be', ['being', 'been', 'is'], 'The result is about NOW, so would + be.'));
-      out.push(mk('If ' + c[2] + ' had ____ (' + c[1] + ') ' + c[0].replace(/^\w+ had \w+ ?/, '') + ', things would be different now.', c[0].split(' had ')[1].split(' ')[0], [c[1], c[1] + 's', c[1] + 'ing'], "The 'if' clause uses had + past participle."));
-    });
-    return out;
-  };
-  G.b2WishPast = function () {
-    var out = [];
-    var REG = [['I', 'wish', 'I'], ['She', 'wishes', 'she'], ['He', 'wishes', 'he'], ['We', 'wish', 'we'], ['They', 'wish', 'they'], ['I', 'wish', 'he'], ['She', 'wishes', 'I'], ['I', 'wish', 'they']];
-    REG.forEach(function (w) { V.slice(0, 12).forEach(function (v) {
-      out.push(mk(w[0] + ' ' + w[1] + ' ' + w[2] + ' ____ ' + v.pp + ' ' + v.o + ' yesterday.', 'had', ['has', 'have', 'would'], 'A regret about the PAST: wish + had + past participle.'));
-    }); });
-    return out;
-  };
-  G.b2ModalPassive = function () {
-    var out = [];
-    // [subject, participle, BASE verb (for the cue), tail]
-    var PAIRS = [
-      ['The form', 'completed', 'complete', 'in English'], ['The report', 'finished', 'finish', 'by Friday'],
-      ['The rules', 'followed', 'follow', 'at all times'], ['This medicine', 'taken', 'take', 'twice a day'],
-      ['The documents', 'signed', 'sign', 'before the deadline'], ['Phones', 'switched off', 'switch off', 'during the exam'],
-      ['The room', 'booked', 'book', 'in advance'], ['The fee', 'paid', 'pay', 'online'],
-      ['Helmets', 'worn', 'wear', 'on site'], ['The answers', 'written', 'write', 'in pencil'],
-      ['The essay', 'submitted', 'submit', 'before midnight'], ['The lab coats', 'cleaned', 'clean', 'every week'],
-      ['The equipment', 'checked', 'check', 'before each class'], ['The ID card', 'shown', 'show', 'at the gate'],
-      ['The library books', 'returned', 'return', 'on time'], ['The seats', 'reserved', 'reserve', 'for guests'],
-      ['The results', 'announced', 'announce', 'on Friday']
-    ];
-    PAIRS.forEach(function (p, i) {
-      out.push(mk(p[0] + ' must ____ ' + p[1] + ' ' + p[3] + '.', 'be', ['been', 'being', 'to be'], 'Modal passive: modal + be + past participle.'));
-      if (p[2].indexOf(' ') < 0) { // phrasal bases would inflect wrongly (switch offing)
-        out.push(mk(p[0] + ' should be ____ (' + p[2] + ') ' + p[3] + '.', p[1], [p[2] + 'ing', 'to ' + p[2], p[2] + 's'], 'Modal passive: should + be + past participle.'));
-      }
-      if (i < 9) out.push(mk(p[0] + ' has to ____ ' + p[1] + ' ' + p[3] + '.', 'be', ['been', 'being', 'to be'], 'Modal passive: has to + be + past participle.'));
-    });
-    var CAN = [['Tickets', 'bought', 'online'], ['The museum', 'visited', 'for free on Mondays'], ['This word', 'used', 'in two ways'], ['The files', 'downloaded', 'from the website'], ['Lunch', 'ordered', 'at the desk'], ['The course', 'taken', 'in English or Turkish'], ['The hall', 'hired', 'for events'], ['Questions', 'asked', 'at the end'], ['The password', 'changed', 'in settings'], ['The slides', 'viewed', 'on any device']];
-    CAN.forEach(function (p) { out.push(mk(p[0] + ' can ____ ' + p[1] + ' ' + p[2] + '.', 'be', ['been', 'being', 'to be'], 'Modal passive: can + be + past participle.')); });
-    return out;
-  };
-  G.b2DeductionPast = function () {
-    var out = [];
-    var MUST = [['The ground is wet', 'it', 'rained last night'], ['He knows the whole story', 'he', 'read the report'], ['She speaks perfect French', 'she', 'lived in France'], ['The lights were on all night', 'someone', 'stayed late'], ['His desk is empty', 'he', 'left already'], ['The cake is gone', 'the children', 'eaten it'], ['They look exhausted', 'they', 'worked all night'], ['The window is broken', 'the storm', 'caused it'], ['Her bag is not here', 'she', 'gone home'], ['The grass is cut', 'the gardener', 'come this morning'], ['He answered every question', 'he', 'studied hard'], ['The plants are dead', 'everyone', 'forgotten to water them']];
-    var CANT = [['He was with me all day', 'he', 'taken the keys'], ['She was abroad last week', 'she', 'attended the meeting'], ['The shop was closed', 'they', 'bought it there'], ['He cannot drive', 'he', 'driven the van'], ['The letter is unopened', 'she', 'read it'], ['They only met yesterday', 'they', 'known each other long'], ['The door was locked from inside', 'the thief', 'entered through it'], ['He is a vegetarian', 'he', 'ordered the steak'], ['She had no internet all week', 'she', 'seen the email'], ['The car was in the garage', 'he', 'driven to work'], ['The exam had not started yet', 'he', 'failed it'], ['I checked the list twice', 'I', 'missed her name']];
-    var MIGHT = [['Nobody saw her leave', 'she', 'gone home early'], ['The phone is dead', 'he', 'forgotten to charge it'], ['The road was busy', 'they', 'taken a shortcut'], ['It is hard to say', 'the keys', 'fallen behind the desk'], ['There is no record', 'the email', 'gone to spam'], ['We are not sure', 'he', 'missed the bus']];
-    MUST.forEach(function (p) { out.push(mk(p[0] + ', so ' + p[1] + ' ____ have ' + p[2] + '.', 'must', ["can't", 'might', 'should'], 'Sure about the past -> must have + past participle.')); });
-    CANT.forEach(function (p) { out.push(mk(p[0] + ', so ' + p[1] + ' ____ have ' + p[2] + '.', "can't", ['must', 'might', 'should'], "Sure it did NOT happen -> can't have + past participle.")); });
-    MIGHT.forEach(function (p) { out.push(mk(p[0] + ', so ' + p[1] + ' ____ have ' + p[2] + '.', 'might', ['must', "can't", 'should'], 'Not sure about the past -> might have + past participle.')); });
-    // Second form: the HAVE slot ("must ____ rained" -> have).
-    MUST.concat(CANT, MIGHT).forEach(function (p) {
-      var modal = MUST.indexOf(p) >= 0 ? 'must' : (CANT.indexOf(p) >= 0 ? "can't" : 'might');
-      out.push(mk(p[0] + ', so ' + p[1] + ' ' + modal + ' ____ ' + p[2] + '.', 'have', ['has', 'had', 'be'], 'Past deduction: modal + have + past participle.'));
-    });
-    return out;
-  };
-  G.b2BeUsedTo = function () {
-    var out = [];
-    // Contrast: used to + base (past habit) vs be used to + -ing (accustomed).
-    var PASTHABIT = ['live in a village', 'play football', 'drink a lot of coffee', 'work in a bank', 'get up late'];
-    PASTHABIT.forEach(function (p) {
-      SUBJ_ALL.slice(0, 8).forEach(function (s) {
-        out.push(mk('Years ago ' + qsubj(s) + ' ____ ' + p + ', but not any more.', 'used to', ['is used to', 'use to', 'was used to'], 'Past habit: used to + base verb.'));
-      });
-    });
-    var ACCUSTOM = ['getting up early', 'working at night', 'driving in traffic', 'living alone', 'speaking English every day', 'eating spicy food'];
-    ACCUSTOM.forEach(function (a) {
-      SUBJ_ALL.slice(0, 8).forEach(function (s) {
-        var be = beOf(s);
-        out.push(mk('After two years here, ' + qsubj(s) + ' ____ used to ' + a + ' now.', be, [be === 'is' ? 'are' : 'is', 'used', 'did'], 'be used to + -ing = accustomed to it now.'));
-      });
-    });
-    return out;
-  };
-  G.b2GerInfMeaning = function () {
-    var out = [], ITEMS = [
-      ["He stopped ____ (smoke) two years ago. He doesn't smoke now.", 'smoking', ['to smoke', 'smoke', 'smoked'], 'stop + -ing = quit the activity.'],
-      ['She stopped ____ (buy) a coffee on the way, then drove on.', 'to buy', ['buying', 'buy', 'bought'], 'stop + to = pause in order to do something.'],
-      ["I remember ____ (lock) the door this morning. I can picture it.", 'locking', ['to lock', 'lock', 'locked'], 'remember + -ing = a memory of a past action.'],
-      ['Please remember ____ (lock) the door when you leave tonight.', 'to lock', ['locking', 'lock', 'locked'], 'remember + to = do not forget a duty.'],
-      ["I'll never forget ____ (see) the sea for the first time years ago.", 'seeing', ['to see', 'see', 'saw'], 'forget + -ing = an unforgettable past experience.'],
-      ["Don't forget ____ (send) the report before Friday.", 'to send', ['sending', 'send', 'sent'], 'forget + to = a duty not yet done.'],
-      ['The room was hot, so he tried ____ (open) the window, but it was stuck.', 'to open', ['opening', 'open', 'opened'], 'try + to = attempt something difficult.'],
-      ['If the file will not open, try ____ (restart) the computer.', 'restarting', ['to restart', 'restart', 'restarted'], 'try + -ing = experiment with a method.'],
-      ['He went on ____ (talk) for an hour after the break.', 'talking', ['to talk', 'talk', 'talked'], 'go on + -ing = continue the same activity.'],
-      ['After her degree she went on ____ (become) a judge.', 'to become', ['becoming', 'become', 'became'], 'go on + to = the next stage, a change.'],
-      ['I regret ____ (tell) you that the flight is cancelled.', 'to tell', ['telling', 'tell', 'told'], 'regret + to = bad news now.'],
-      ['She regrets ____ (sell) her old guitar last year.', 'selling', ['to sell', 'sell', 'sold'], 'regret + -ing = a past action she is sorry about.'],
-      ['It started ____ (rain) during the match yesterday.', 'to rain', ['rain', 'rained', 'rains'], 'start + to / -ing are both fine; only this option is grammatical here.'],
-      ['He means ____ (finish) the project by Friday.', 'to finish', ['finishing', 'finish', 'finished'], 'mean + to = intend to.'],
-      ['Getting the visa means ____ (fill) in many forms.', 'filling', ['to fill', 'fill', 'filled'], 'mean + -ing = involves.'],
-      ['She tried ____ (call) you twice last night, but no answer.', 'to call', ['calling', 'call', 'called'], 'try + to = attempted.'],
-      ['She tried ____ (add) more salt, but the soup still tasted flat.', 'adding', ['to add', 'add', 'added'], 'try + -ing = experiment with a method.'],
-      ['Remember ____ (bring) your ID to the exam tomorrow.', 'to bring', ['bringing', 'bring', 'brought'], 'remember + to = a duty.'],
-      ['I remember ____ (meet) him at a conference years ago.', 'meeting', ['to meet', 'meet', 'met'], 'remember + -ing = a past memory.'],
-      ['He stopped ____ (answer) a phone call, then continued walking.', 'to answer', ['answering', 'answer', 'answered'], 'stop + to = pause in order to do something.'],
-      ['They stopped ____ (sell) printed maps years ago.', 'selling', ['to sell', 'sell', 'sold'], 'stop + -ing = quit the activity.'],
-      ['I regret ____ (say) that your application was not successful.', 'to say', ['saying', 'say', 'said'], 'regret + to = bad news now.'],
-      ['He regrets ____ (leave) school at sixteen.', 'leaving', ['to leave', 'leave', 'left'], 'regret + -ing = a past action he is sorry about.'],
-      ["Don't forget ____ (turn) off the lights tonight.", 'to turn', ['turning', 'turn', 'turned'], 'forget + to = a duty not yet done.']
-    ];
-    ITEMS.forEach(function (q) { out.push(mk(q[0], q[1], q[2], q[3])); });
-    return out;
-  };
-  G.b2ReportingVerbs = function () {
-    var out = [], ITEMS = [
-      ["'I'll help you,' she said. -> She ____ to help me.", 'offered', ['suggested', 'refused', 'denied'], 'offer + to + base verb.'],
-      ["'I won't do it,' he said. -> He ____ to do it.", 'refused', ['offered', 'denied', 'admitted'], 'refuse + to + base verb.'],
-      ["'Let's go to the cinema,' she said. -> She ____ going to the cinema.", 'suggested', ['offered', 'promised', 'agreed'], 'suggest + -ing.'],
-      ["'I broke the window,' he said. -> He ____ breaking the window.", 'admitted', ['refused', 'offered', 'promised'], 'admit + -ing.'],
-      ["'I didn't take the money,' she said. -> She ____ taking the money.", 'denied', ['admitted', 'suggested', 'agreed'], 'deny + -ing.'],
-      ["'I'll definitely come,' he said. -> He ____ to come.", 'promised', ['denied', 'suggested', 'admitted'], 'promise + to + base verb.'],
-      ["'You should see a doctor,' she said. -> She ____ me to see a doctor.", 'advised', ['suggested', 'denied', 'offered'], 'advise + object + to.'],
-      ["'Don't touch it!' he said. -> He ____ me not to touch it.", 'warned', ['denied', 'suggested', 'admitted'], 'warn + object + (not) to.'],
-      ["'Could you open the window?' she said. -> She ____ me to open the window.", 'asked', ['suggested', 'denied', 'admitted'], 'ask + object + to.'],
-      ["'OK, I'll pay half,' he said. -> He ____ to pay half.", 'agreed', ['denied', 'warned', 'admitted'], 'agree + to + base verb.'],
-      ["'I'm sorry I was late,' she said. -> She ____ for being late.", 'apologised', ['admitted', 'denied', 'promised'], 'apologise for + -ing.'],
-      ["'Buy the tickets early,' he said. -> He ____ buying the tickets early.", 'recommended', ['refused', 'promised', 'offered'], 'recommend + -ing.']
-    ];
-    ITEMS.forEach(function (q) { out.push(mk(q[0], q[1], q[2], q[3])); });
-    // Pattern drills: the verb is given, the student picks the right form.
-    var LEMMA = { offered: 'offer', refused: 'refuse', promised: 'promise', agreed: 'agree', suggested: 'suggest', admitted: 'admit', denied: 'deny', recommended: 'recommend' };
-    var TOV = ['offered', 'refused', 'promised', 'agreed'];
-    var TOACT = [['help', 'us'], ['pay', 'half'], ['drive', 'me home'], ['wait', 'outside'], ['join', 'the team'], ['check', 'the figures'], ['carry', 'the boxes'], ['explain', 'the rules']];
-    TOV.forEach(function (vb) { TOACT.forEach(function (a) {
-      out.push(mk('He ' + vb + ' ____ (' + a[0] + ') ' + a[1] + '.', 'to ' + a[0], [a[0] + 'ing', a[0], a[0] + 'ed'], LEMMA[vb] + ' + to + base verb.'));
-    }); });
-    var INGV = ['suggested', 'admitted', 'denied', 'recommended'];
-    var INGACT = [['take', 'taking', 'a taxi'], ['go', 'going', 'home early'], ['use', 'using', 'her phone in class'], ['copy', 'copying', 'the answers'], ['book', 'booking', 'the early train'], ['leave', 'leaving', 'the door open'], ['visit', 'visiting', 'the museum'], ['try', 'trying', 'the new cafe']];
-    INGV.forEach(function (vb) { INGACT.forEach(function (a) {
-      out.push(mk('She ' + vb + ' ____ (' + a[0] + ') ' + a[2] + '.', a[1], ['to ' + a[0], a[0], a[0] + 's'], LEMMA[vb] + ' + -ing.'));
-    }); });
-    return out;
-  };
-  G.b2SoSuch = function () {
-    var out = [];
-    var SO = [['The film was', 'boring', 'that we left early'], ['The test was', 'easy', 'that everyone passed'], ['He spoke', 'quickly', 'that nobody understood'], ['The coffee was', 'hot', 'that I could not drink it'], ['The room was', 'small', 'that we could not all fit'], ['She was', 'tired', 'that she fell asleep at dinner'], ['The music was', 'loud', 'that the neighbours complained'], ['The queue was', 'long', 'that we gave up'], ['The lecture was', 'long', 'that some students fell asleep'], ['The book was', 'good', 'that I read it twice'], ['It was', 'dark', 'that we could not see the path'], ['The bag was', 'heavy', 'that I could not lift it']];
-    var SUCH = [['It was', 'a boring film', 'that we left early'], ['It was', 'an easy test', 'that everyone passed'], ['It was', 'a hot day', 'that we stayed inside'], ['It was', 'a small room', 'that we could not all fit'], ['He is', 'a good teacher', 'that his classes are always full'], ['It was', 'a long queue', 'that we gave up'], ['She made', 'a big mistake', 'that everyone noticed'], ['They had', 'a great time', 'that they did not want to leave'], ['It was', 'a difficult exam', 'that half the class failed'], ['He told', 'a funny story', 'that everyone laughed'], ['It was', 'an expensive hotel', 'that we stayed one night only'], ['She has', 'a busy schedule', 'that she rarely rests']];
-    SO.forEach(function (p) { out.push(mk(p[0] + ' ____ ' + p[1] + ' ' + p[2] + '.', 'so', ['such', 'such a', 'very'], 'so + adjective/adverb (+ that).')); });
-    SUCH.forEach(function (p) { out.push(mk(p[0] + ' ____ ' + p[1] + ' ' + p[2] + '.', 'such', ['so', 'so a', 'very'], 'such + (a/an) + adjective + noun (+ that).')); });
-    return out;
-  };
-  G.b2Unless = function () {
-    var out = [], ITEMS = [
-      ["You'll miss the bus ____ you leave now.", 'unless', ['if', 'when', 'although'], "unless = if ... not."],
-      ["We'll eat outside ____ it rains.", 'unless', ['if', 'because', 'although'], 'unless = if it does not rain.'],
-      ['____ you study, you will fail the exam.', 'Unless', ['If', 'Although', 'Because'], 'Unless you study = if you do not study.'],
-      ["He won't come ____ you invite him personally.", 'unless', ['if', 'although', 'so'], 'unless = if ... not.'],
-      ['Take an umbrella ____ case it rains.', 'in', ['on', 'at', 'for'], 'in case + present = preparation for a possibility.'],
-      ["I'll take my phone ____ case you need to call me.", 'in', ['on', 'at', 'for'], 'in case you need = because you might need.'],
-      ["____ long as you finish the work, you can leave early.", 'As', ['So that', 'Even', 'Despite'], 'as long as = on condition that.'],
-      ['You can borrow the car as ____ as you drive carefully.', 'long', ['far', 'soon', 'well'], 'as long as = provided that.'],
-      ["Speak quietly ____ that the baby doesn't wake up.", 'so', ['in', 'unless', 'for'], 'so that + clause = purpose.'],
-      ['He saved money ____ that he could travel next summer.', 'so', ['unless', 'despite', 'for'], 'so that = purpose.'],
-      ["You won't improve ____ you practise every day.", 'unless', ['if', 'although', 'because'], 'unless = if ... not.'],
-      ['Write it down ____ case you forget.', 'in', ['on', 'at', 'for'], 'in case = because you might.'],
-      ['We left early so ____ we could find parking.', 'that', ['as', 'if', 'for'], 'so that + clause = purpose.'],
-      ['You can stay ____ long as you keep quiet.', 'as', ['so', 'too', 'very'], 'as long as = on condition that.']
-    ];
-    ITEMS.forEach(function (q) { out.push(mk(q[0], q[1], q[2], q[3])); });
-    return out;
-  };
-  G.b2Articles = function () {
-    var out = [], ITEMS = [
-      ['She plays ____ piano beautifully.', 'the', ['a', 'an', 'this'], 'the + musical instruments.'],
-      ['He is in ____ hospital after the accident.', 'x', [], ''],
-      ['____ Nile flows through Egypt.', 'The', ['A', 'An', 'This'], 'the + rivers.'],
-      ['They crossed ____ Atlantic in five days.', 'the', ['a', 'an', 'this'], 'the + oceans and seas.'],
-      ['We visited ____ Netherlands last spring.', 'the', ['a', 'an', 'this'], 'the + plural country names.'],
-      ['____ rich should help the poor, people say.', 'The', ['A', 'An', 'This'], 'the + adjective = a group of people.'],
-      ['Mount Everest is ____ highest mountain on Earth.', 'the', ['a', 'an', 'this'], 'the + superlatives.'],
-      ['She was ____ first person to arrive this morning.', 'the', ['a', 'an', 'this'], 'the + ordinal numbers (first, second).'],
-      ['He bought ____ umbrella because of the forecast.', 'an', ['a', 'the', 'these'], 'an + vowel sound, first mention.'],
-      ['It was ____ honest answer, and I respected it.', 'an', ['a', 'the', 'these'], "an + silent h ('onest)."],
-      ['She works as ____ engineer at a tech firm.', 'an', ['a', 'the', 'these'], 'an + vowel sound for jobs.'],
-      ['What ____ beautiful day it is today!', 'a', ['an', 'the', 'this'], 'What + a + adjective + noun.'],
-      ['They go to school by ____ bus every day.', 'x', [], '']
-    ];
-    ITEMS.forEach(function (q) { if (q[1] !== 'x') out.push(mk(q[0], q[1], q[2], q[3])); });
-    return out;
-  };
 
   // ── B2 unit skeleton (new points + targeted review) ────────
   var B2_SPEC = [
-    { id: 'b2-pres-perf-cont', title: 'Present Perfect Continuous', blurb: 'Unit 1 · have been + -ing', gen: G.b1pPresPerfCont, cap: 52 },
-    { id: 'b2-past-perf-cont', title: 'Past Perfect Continuous', blurb: 'Unit 1 · had been + -ing', gen: G.b2PastPerfCont, cap: 52 },
-    { id: 'b2-future-perfect', title: 'Future Perfect', blurb: 'Unit 2 · will have + past participle', gen: G.b2FuturePerf, cap: 52 },
-    { id: 'b2-future-continuous', title: 'Future Continuous', blurb: 'Unit 2 · will be + -ing', gen: G.b1pFutureCont, cap: 52 },
-    { id: 'b2-conditional-3', title: 'Third Conditional', blurb: 'Unit 3 · if + past perfect, would have', gen: G.b1pCond3, cap: 52 },
-    { id: 'b2-mixed-conditional', title: 'Mixed Conditionals', blurb: 'Unit 3 · past condition, present result', gen: G.b2MixedCond, cap: 52 },
-    { id: 'b2-wish-past', title: 'wish + past perfect', blurb: 'Unit 4 · regrets about the past', gen: G.b2WishPast, cap: 52 },
-    { id: 'b2-wish-present', title: 'wish / if only', blurb: 'Unit 4 · unreal present', gen: G.b1pWish, cap: 52 },
-    { id: 'b2-modal-passive', title: 'Modal Passives', blurb: 'Unit 5 · must / can / should + be done', gen: G.b2ModalPassive, cap: 52 },
-    { id: 'b2-passive-perfect', title: 'Perfect Passive', blurb: 'Unit 5 · has / have been + done', gen: G.b1pPassivePerf, cap: 52 },
-    { id: 'b2-deduction-past', title: 'Past Deduction', blurb: "Unit 6 · must / can't / might have done", gen: G.b2DeductionPast, cap: 52 },
-    { id: 'b2-past-modals', title: 'Past Modals', blurb: 'Unit 6 · should have / must have', gen: G.b1pPastModals, cap: 52 },
-    { id: 'b2-be-used-to', title: 'used to vs be used to', blurb: 'Unit 7 · habits and adaptation', gen: G.b2BeUsedTo, cap: 52 },
-    { id: 'b2-causative', title: 'Causative have', blurb: 'Unit 7 · have something done', gen: G.b1pCausative, cap: 52 },
-    { id: 'b2-reporting-verbs', title: 'Reporting Verbs', blurb: 'Unit 8 · offer / deny / suggest / admit', gen: G.b2ReportingVerbs, cap: 52 },
-    { id: 'b2-reported-speech', title: 'Reported Speech', blurb: 'Unit 8 · tense backshift', gen: G.b1pReported, cap: 52 },
-    { id: 'b2-ger-inf-meaning', title: 'stop / remember / try + -ing or to', blurb: 'Unit 9 · meaning changes', gen: G.b2GerInfMeaning, cap: 52 },
-    { id: 'b2-so-such-unless', title: 'so / such + unless / in case', blurb: 'Unit 9 · emphasis and condition', gen: function () { return G.b2SoSuch().concat(G.b2Unless(), G.b2Articles()); }, cap: 52 },
-    { id: 'b2-gerund-review', title: 'Gerund or Infinitive: review', blurb: 'Unit 9 · verb + -ing / to', gen: G.b1GerundInf, cap: 31 }
+    { id: 'b2-pres-perf-cont', title: 'Present Perfect Continuous', blurb: 'Unit 1 · have been + -ing' },
+    { id: 'b2-past-perf-cont', title: 'Past Perfect Continuous', blurb: 'Unit 1 · had been + -ing' },
+    { id: 'b2-future-perfect', title: 'Future Perfect', blurb: 'Unit 2 · will have + past participle' },
+    { id: 'b2-future-continuous', title: 'Future Continuous', blurb: 'Unit 2 · will be + -ing' },
+    { id: 'b2-conditional-3', title: 'Third Conditional', blurb: 'Unit 3 · if + past perfect, would have' },
+    { id: 'b2-mixed-conditional', title: 'Mixed Conditionals', blurb: 'Unit 3 · past condition, present result' },
+    { id: 'b2-wish-past', title: 'wish + past perfect', blurb: 'Unit 4 · regrets about the past' },
+    { id: 'b2-wish-present', title: 'wish / if only', blurb: 'Unit 4 · unreal present' },
+    { id: 'b2-modal-passive', title: 'Modal Passives', blurb: 'Unit 5 · must / can / should + be done' },
+    { id: 'b2-passive-perfect', title: 'Perfect Passive', blurb: 'Unit 5 · has / have been + done' },
+    { id: 'b2-deduction-past', title: 'Past Deduction', blurb: "Unit 6 · must / can't / might have done" },
+    { id: 'b2-past-modals', title: 'Past Modals', blurb: 'Unit 6 · should have / must have' },
+    { id: 'b2-be-used-to', title: 'used to vs be used to', blurb: 'Unit 7 · habits and adaptation' },
+    { id: 'b2-causative', title: 'Causative have', blurb: 'Unit 7 · have something done' },
+    { id: 'b2-reporting-verbs', title: 'Reporting Verbs', blurb: 'Unit 8 · offer / deny / suggest / admit' },
+    { id: 'b2-reported-speech', title: 'Reported Speech', blurb: 'Unit 8 · tense backshift' },
+    { id: 'b2-ger-inf-meaning', title: 'stop / remember / try + -ing or to', blurb: 'Unit 9 · meaning changes' },
+    { id: 'b2-so-such-unless', title: 'so / such + unless / in case', blurb: 'Unit 9 · emphasis and condition' },
+    { id: 'b2-gerund-review', title: 'Gerund or Infinitive: review', blurb: 'Unit 9 · verb + -ing / to' }
   ];
   var B2 = B2_SPEC.map(function (t) {
-    return { id: t.id, title: t.title, blurb: t.blurb, questions: build(t.gen(), t.cap) };
+    return { id: t.id, title: t.title, blurb: t.blurb, questions: VALID[t.id] ? buildValidated(VALID[t.id](), 104) : [] };
   });
 
   window.GRAMMAR_PRACTICE = {
-    levels: ['A2', 'B1', 'B1+', 'B2'],
+    levels: ['A2', 'B1', 'B1+', 'B2', 'C1'],
     byLevel: { 'A2': A2, 'B1': B1, 'B1+': B1PLUS, 'B2': B2 }
   };
 })();

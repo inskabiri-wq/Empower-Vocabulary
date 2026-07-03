@@ -37,10 +37,10 @@ everything available on the profile:
   per-question table with their answer vs the correct answer, page-break-safe.
 - Removed the em dashes that were in the old report strings (now hyphen / middot).
 
-## 4. Widget placement - above Empower Lab in the sidebar
+## 4. Widget placement - above Lingualab in the sidebar
 Per "widget should go above empower lab sidebar section":
 - `teacher-dashboard.html`: added a `#wtSidebarBtn` ("🧰 Widgets") nav item in
-  the sidebar Account group, directly above the Empower Lab link.
+  the sidebar Account group, directly above the Lingualab link.
 - `js/widgets-tray.js`: build() now binds to `#wtSidebarBtn` when present (no
   more docked bottom-left launcher on the dashboard) and floats the popover
   next to the trigger - to the right of the sidebar item, clamped on-screen,

@@ -82,7 +82,7 @@ function spawnScript(file) {
 }
 
 async function main() {
-  banner('🚀 Empower Vocabulary — Ship-Readiness Check');
+  banner('🚀 Lingualab — Ship-Readiness Check');
   console.log(' Project root : ' + path.resolve(HERE, '..'));
   console.log(' Started      : ' + new Date().toISOString());
 

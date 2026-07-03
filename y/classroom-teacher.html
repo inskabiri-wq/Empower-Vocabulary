@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Classroom Mode - Teacher | Empower Lab</title>
+<title>Classroom Mode - Teacher | Lingualab</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
 <!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
@@ -302,6 +302,7 @@
             <option value="B1">B1 - Intermediate</option>
             <option value="B1+">B1+ - Upper Intermediate</option>
             <option value="B2">B2 - Advanced</option>
+            <option value="C1">C1 - Proficiency</option>
           </select>
         </div>
         
@@ -321,6 +322,9 @@
             <option value="10" selected>10 (Standard)</option>
             <option value="15">15</option>
             <option value="20">20 (Challenge)</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="70">70 (Marathon)</option>
           </select>
         </div>
         
@@ -816,10 +820,36 @@
      pages after submit. -->
 <script src="assignments/js/exam-registry.js"></script>
 <!-- Grammar question bank — powers the Grammar Race picker card. -->
-<script src="student/js/skills/grammar-content.js?v=10"></script>
+<script src="student/js/skills/grammar-content.js?v=33"></script>
 
 <!-- Teacher JS -->
 <script src="classroom/js/teacher.js"></script>
+
+<!-- Hide any classroom games an admin has deactivated in Admin ▸ Features
+     (settings/featureToggles.game_*). Uses the db + auth already defined by
+     teacher.js. Safe default: if anything fails, all games stay visible. -->
+<script>
+  (function () {
+    var MAP = {
+      game_vocabRace: 'pickVocabRace', game_grammar: 'pickGrammar',
+      game_heist: 'pickHeist', game_trust: 'pickTrust',
+      game_reading: 'pickReading', game_listening: 'pickListening'
+    };
+    var done = false;
+    function gate() {
+      if (done || typeof db === 'undefined' || typeof auth === 'undefined' || !auth.currentUser) return;
+      done = true;
+      db.collection('settings').doc('featureToggles').get().then(function (snap) {
+        var t = snap.exists ? (snap.data() || {}) : {};
+        Object.keys(MAP).forEach(function (k) {
+          if (t[k] === false) { var el = document.getElementById(MAP[k]); if (el) el.style.display = 'none'; }
+        });
+      }).catch(function (e) { console.warn('game toggles', e); });
+    }
+    try { if (typeof auth !== 'undefined') auth.onAuthStateChanged(function () { gate(); }); } catch (_) {}
+    setTimeout(gate, 800);
+  })();
+</script>
 
 <!-- Game-mode picker + Heist setup wiring. The picker shows TWO setup
      forms inline (Vocab Race / The Heist). For Vocab Race the existing

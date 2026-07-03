@@ -4773,7 +4773,7 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
      horizontal top bar — flex-row, overflow-x scroll, icons-only
      pills. The five main-section nav buttons (Overview / Students /
      Assignments / Activity / Admin) stay reachable. Account-area
-     items (Empower Lab, Classroom, Export, Logout) are hidden on phones
+     items (Lingualab, Classroom, Export, Logout) are hidden on phones
      to keep the bar lean; the user can still hit Logout via the
      hidden legacy .tab-nav area or the browser back-out, but if we
      want them exposed later, just remove the `:not([data-tab])` rule. */

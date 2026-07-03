@@ -44,9 +44,9 @@ def tli(s):  # muted TL inline (same line, parenthesised)
 doc = SimpleDocTemplate(BUILD, pagesize=A4,
                         leftMargin=15*mm, rightMargin=15*mm,
                         topMargin=12*mm, bottomMargin=11*mm,
-                        title="Empower Lab - Budget Request")
+                        title="Lingualab - Budget Request")
 S = []
-S.append(Paragraph("Empower Lab &mdash; What We Need, and What It Costs", title))
+S.append(Paragraph("Lingualab &mdash; What We Need, and What It Costs", title))
 S.append(Paragraph("Budget request &middot; 400 students &middot; one academic year &middot; figures in US dollars (USD) and Turkish lira (TL)", sub))
 S.append(HRFlowable(width="100%", thickness=1, color=BLUE, spaceAfter=7))
 

@@ -359,7 +359,7 @@ async function testAssignmentCompletions() {
 
 // ── Main ──────────────────────────────────────────────────────
 async function main() {
-  console.log('\x1b[1m🚀 Empower Vocabulary — Smoke Test\x1b[0m');
+  console.log('\x1b[1m🚀 Lingualab — Smoke Test\x1b[0m');
   console.log('   Project: ' + (admin.app().options.projectId || '(unknown)'));
   console.log('   Started: ' + new Date().toISOString());
 

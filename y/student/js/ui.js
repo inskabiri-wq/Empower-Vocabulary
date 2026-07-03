@@ -295,6 +295,9 @@ function updateStreakDisplays() {
 // sync entirely, so the pills stayed on the previous value and the UI
 // lied about what scope the user was actually in.
 async function changeBook(book) {
+  // Pilot lock: never switch away from the forced book, even if something
+  // calls this programmatically (assignments box, restored pill state, etc.).
+  if (window.FORCE_BOOK) book = window.FORCE_BOOK;
   selectedBook = book;
   localStorage.setItem('selectedBook', book);
 
@@ -381,7 +384,13 @@ function changeUnit(unit) {
 
 function populateUnitSelector() {
   const data = datasets[selectedLevel] || [];
-  const allUnits = [...new Set(data.map(w => w.unit).filter(u => u))];
+  const unitHidden = (u) => typeof window.isVocabUnitHidden === 'function'
+    && window.isVocabUnitHidden(selectedLevel, u);
+  const allUnits = [...new Set(data.map(w => w.unit).filter(u => u))].filter(u => !unitHidden(u));
+
+  // If the student was parked on a unit that just got deactivated, fall back to
+  // "All Units" so they never sit on an empty (and now hidden) selection.
+  if (selectedUnit !== 'all' && unitHidden(selectedUnit)) selectedUnit = 'all';
 
   const regularUnits = allUnits.filter(u => !String(u).toLowerCase().includes('unassigned')).sort((a, b) => {
     const numA = parseInt(String(a).replace(/\D/g, '')) || 0;
@@ -458,7 +467,13 @@ function wireDashboardPills() {
 }
 
 function getFilteredWords() {
-  const data = datasets[selectedLevel] || [];
+  let data = datasets[selectedLevel] || [];
+  // Drop words from admin-deactivated units (word lists). This is the single
+  // pool chokepoint every vocab game runs through, so filtering here covers
+  // "All Units" and every per-mode game in one place.
+  if (typeof window.isVocabUnitHidden === 'function') {
+    data = data.filter(w => !window.isVocabUnitHidden(selectedLevel, w.unit));
+  }
   if (selectedUnit === 'all') return data;
   return data.filter(w => w.unit == selectedUnit);
 }

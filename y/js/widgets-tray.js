@@ -51,7 +51,7 @@
     injectStyle();
 
     // Prefer an in-page trigger (the dashboard's sidebar "Widgets" item) so the
-    // launcher lives above Empower Lab. If none exists (other pages), fall back
+    // launcher lives above Lingualab. If none exists (other pages), fall back
     // to a docked bottom-left launcher button.
     var sidebarBtn = document.getElementById('wtSidebarBtn');
     var launch = sidebarBtn;

@@ -1,6 +1,6 @@
 /* ============================================
    CLASSROOM MODE - Teacher JavaScript
-   Empower Vocabulary Trainer
+   Lingualab
    ============================================ */
 
 function escapeHtml(str) {
