@@ -1,7 +1,7 @@
 /* ============================================================
-   LISTENING CLASSROOM — Teacher (host) controller
+   LISTENING CLASSROOM - Teacher (host) controller
    ----------------------------------------------------------------
-   Architecturally identical to reading-teacher.js — same
+   Architecturally identical to reading-teacher.js - same
    no-leak posture, same client-side grading, same reveal flow.
    Differences:
      • Left pane is an <audio> element instead of a passage div.
@@ -17,7 +17,7 @@
    Question content lives in LISTENING_EXAMS (loaded by the host
    page via student/js/listening-exam.js). It's declared `const`
    at script scope, so it's accessible by bare name from this IIFE
-   — NOT on `window`. (That bug bit us in Phase 3 — Create button
+   - NOT on `window`. (That bug bit us in Phase 3 - Create button
    bounced back to the picker because the check was `window.LISTENING_EXAMS`,
    always undefined.)  Each exam has sections of type
    'truefalse' | 'mcq' | 'fillblank'.
@@ -201,9 +201,9 @@
     }
     // LISTENING_EXAMS is `const` at script scope (not on window).
     // typeof on an undeclared identifier returns 'undefined' without
-    // throwing — perfect for this check.
+    // throwing - perfect for this check.
     if (typeof LISTENING_EXAMS === 'undefined') {
-      throw new Error('Listening exam content missing — load student/js/listening-exam.js');
+      throw new Error('Listening exam content missing - load student/js/listening-exam.js');
     }
     const meta = window.EXAM_REGISTRY.find('listening', examId);
     if (!meta) throw new Error(`Exam not found: ${level}/${examId}`);
@@ -239,7 +239,7 @@
             return { id: opt.id, text: opt.text };
           });
         }
-        // truefalse + fillblank don't need extra option metadata —
+        // truefalse + fillblank don't need extra option metadata -
         // student-side renderer will inject T/F radios or text input.
         const k = secId + '__' + it.id;
         akey[k] = {
@@ -307,7 +307,7 @@
       discussionPhase: !!settings.discussionPhase,
       qMarkerBroadcast: !!settings.qMarker,
       replayPolicy,
-      // Audio playback state — host updates as audio plays.
+      // Audio playback state - host updates as audio plays.
       audioStatus: 'idle',              // idle | playing | paused | ended
       replayCount: 0,
       activeQuestionKey: null,          // null = no broadcast
@@ -342,7 +342,7 @@
     const hint = document.getElementById('lobbyReplayHint');
     if (hint) {
       hint.textContent = (
-        replayPolicy === 'once'      ? '🔒 Once-only playback — no replays allowed.' :
+        replayPolicy === 'once'      ? '🔒 Once-only playback - no replays allowed.' :
         replayPolicy === 'unlimited' ? '♾️ Unlimited replays available.' :
                                         '🎚️ Teacher-controlled playback.'
       );
@@ -450,7 +450,7 @@
     audioEl = document.getElementById('hostAudio');
     if (!audioEl || !examData.audioUrl) return;
     audioEl.src = examData.audioUrl;
-    // Audio metadata might not be loaded yet — wait for it.
+    // Audio metadata might not be loaded yet - wait for it.
     audioEl.addEventListener('loadedmetadata', () => {
       const dur = audioEl.duration;
       const durEl  = document.getElementById('audioDuration');
@@ -563,7 +563,7 @@
         update.audioFirstPlayedAt = firebase.firestore.FieldValue.serverTimestamp();
       }
       await db.collection('listening_sessions').doc(sessionCode).update(update);
-    } catch (e) { /* swallow — not fatal */ }
+    } catch (e) { /* swallow - not fatal */ }
   }
 
   // ── Q-marker ───────────────────────────────────────────────
@@ -604,7 +604,7 @@
       sec.items.forEach(it => {
         const k = sec.id + '__' + it.id;
         const a = answerKey[k];
-        const ans = a ? String(a.answer || '—') : '—';
+        const ans = a ? String(a.answer || '-') : '-';
         rows.push(`<div class="ak-row"><span class="ak-id">${escHtml(it.id)}</span><span class="ak-ans">${escHtml(ans.toUpperCase ? ans.toUpperCase() : ans)}</span></div>`);
       });
     });
@@ -766,6 +766,25 @@
       const psnap = await sref.collection('players').orderBy('score', 'desc').get();
       const players = psnap.docs.map(d => d.data());
 
+      // Persist a compact record for Admin > Reports (fail-silent).
+      if (window.saveGameReport) {
+        sref.get().then(sd => {
+          const s = sd.exists ? sd.data() : {};
+          window.saveGameReport(db, {
+            game: 'listening',
+            mode: 'exam',
+            code: sessionCode,
+            teacherId: s.hostUid || '',
+            teacherName: s.hostName || '',
+            level: s.examLevel || '',
+            unit: s.examTitle || s.examId || '',
+            examId: s.examId || '',
+            examTitle: s.examTitle || '',
+            players: players.map(p => ({ name: p.name || '', score: p.score || 0 }))
+          });
+        }).catch(() => {});
+      }
+
       const totalQ = Object.keys(answerKey).length;
       const totalStudents = players.length;
       const totalSubmitted = players.filter(p => p.submitted).length;
@@ -781,7 +800,7 @@
           <div class="stat-tile"><div class="stat-num">${avgScore}%</div><div class="stat-lbl">📊 Avg score</div></div>
           <div class="stat-tile"><div class="stat-num">${totalQ}</div><div class="stat-lbl">❓ Questions</div></div>
           <div class="stat-tile"><div class="stat-num">${replayCount}</div><div class="stat-lbl">🔁 Replays</div></div>
-          <div class="stat-tile"><div class="stat-num">${top ? Math.round(top.score || 0) + '%' : '—'}</div><div class="stat-lbl">🥇 Top</div></div>
+          <div class="stat-tile"><div class="stat-num">${top ? Math.round(top.score || 0) + '%' : '-'}</div><div class="stat-lbl">🥇 Top</div></div>
         `;
       }
 
@@ -794,7 +813,7 @@
       if (perQEl) {
         const rows = [];
         examData.questionsManifest.sections.forEach(sec => {
-          rows.push(`<div class="per-q-section-h">${escHtml(sec.label || sec.id)} — <span style="color:var(--l-text-mut); font-weight:400;">${sec.type}</span></div>`);
+          rows.push(`<div class="per-q-section-h">${escHtml(sec.label || sec.id)} - <span style="color:var(--l-text-mut); font-weight:400;">${sec.type}</span></div>`);
           sec.items.forEach(it => {
             const k = sec.id + '__' + it.id;
             const ak = answerKey[k];
@@ -828,7 +847,7 @@
           <td>${escHtml(p.avatar || avatarFor(p.name || ''))} ${escHtml(p.name)}</td>
           <td><strong>${p.score || 0}%</strong></td>
           <td>${p.correctCount || 0} / ${totalQ}</td>
-          <td>${p.submitted ? '✓' : '—'}</td>
+          <td>${p.submitted ? '✓' : '-'}</td>
         </tr>`).join('');
     } catch (e) {
       console.error('showResults', e);

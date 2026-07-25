@@ -16,7 +16,7 @@
 </head>
 <body class="trust">
 
-<!-- PRE-PAINT SYNC — only ?auto=1 is a valid entry now. Without it,
+<!-- PRE-PAINT SYNC - only ?auto=1 is a valid entry now. Without it,
      bounce back to the unified Classroom Mode picker. Prevents any
      stale view from briefly painting before the JS auth+setup runs. -->
 <script>
@@ -38,7 +38,7 @@
   html[data-trust-view="auto-creating"] #view-auto-creating { display: block !important; }
 </style>
 
-<!-- Background music — same control / track list as the rest of the
+<!-- Background music - same control / track list as the rest of the
      classroom games for brand consistency. Functions exposed on
      window from trust-teacher.js since the rest of that file is in
      an IIFE. -->
@@ -71,7 +71,7 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 0: AUTO-CREATING — flashed for the half-second
+       VIEW 0: AUTO-CREATING - flashed for the half-second
        between landing here and the lobby actually appearing.
        ════════════════════════════════════════════════════ -->
   <div id="view-auto-creating" style="display:none;">
@@ -137,7 +137,7 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 2: LIFTOFF BRIEFING — host's view shows the
+       VIEW 2: LIFTOFF BRIEFING - host's view shows the
        entire crew with roles revealed (moderation needs it).
        Students see their own private briefing on their phones.
        ════════════════════════════════════════════════════ -->
@@ -159,7 +159,7 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 3: LIVE — host dashboard during the game.
+       VIEW 3: LIVE - host dashboard during the game.
        Phase 1: leaderboard with roles + investigations count.
        Phases 2-4 add: clue log, meeting controls, sabotage events.
        ════════════════════════════════════════════════════ -->
@@ -178,7 +178,7 @@
       </div>
     </div>
 
-    <!-- Phase 3: meeting cooldown banner — appears between meetings. -->
+    <!-- Phase 3: meeting cooldown banner - appears between meetings. -->
     <div id="meetingCooldownBanner" style="display:none;
          background: rgba(99,102,241,0.10);
          border: 1px dashed rgba(99,102,241,0.4);
@@ -215,12 +215,12 @@
     </div>
 
     <div class="trust-phase-note">
-      Phase 2 build — Phases 3-4 will add meetings + voting + ghost mode.
+      Phase 2 build - Phases 3-4 will add meetings + voting + ghost mode.
     </div>
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 3.5: MEETING (host's spectator view) — runs in
+       VIEW 3.5: MEETING (host's spectator view) - runs in
        parallel with the student meeting screens. Host can
        force-end the meeting early if needed.
        ════════════════════════════════════════════════════ -->
@@ -251,7 +251,7 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 3.6: EJECT REVEAL (host) — flashes the ejected
+       VIEW 3.6: EJECT REVEAL (host) - flashes the ejected
        player's role for the whole room, then auto-returns
        to live. Auto-detects win conditions before showing.
        ════════════════════════════════════════════════════ -->
@@ -268,7 +268,7 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 4: RESULTS — final podium + per-team breakdown.
+       VIEW 4: RESULTS - final podium + per-team breakdown.
        Phase 4 wires this against the `winner` field on the
        session doc. Stalemate, crewmates, or impostors all
        render distinct banners.
@@ -276,7 +276,7 @@
   <div id="view-results" style="display:none;">
     <div class="trust-results">
 
-      <!-- Winning team banner — class is set from JS to .win-crewmates,
+      <!-- Winning team banner - class is set from JS to .win-crewmates,
            .win-impostors, .win-stalemate, or .win-aborted. -->
       <div id="resultsBanner" class="trust-win-banner">
         <div class="win-icon" id="winIcon">🏁</div>
@@ -324,7 +324,7 @@
 
 </div>
 
-<!-- Themed confirm modal — replaces native confirm() for End-mission etc. -->
+<!-- Themed confirm modal - replaces native confirm() for End-mission etc. -->
 <div id="trustConfirm" class="modal-overlay" style="display:none;">
   <div class="modal-content" style="max-width: 380px; border-color: rgba(99, 102, 241, 0.35) !important;">
     <h3 class="modal-title" id="trustConfirmTitle">Are you sure?</h3>
@@ -340,6 +340,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<!-- Persists a finished-game record for Admin > Reports. -->
+<script src="classroom/js/game-report.js?v=1"></script>
 <script src="classroom/js/trust-teacher.js"></script>
 
 <script src="js/classroom-timer.js?v=3"></script>

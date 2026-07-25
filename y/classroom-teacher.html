@@ -6,22 +6,25 @@
 <title>Classroom Mode - Teacher | Lingualab</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
-<!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
+<!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
 <link rel="stylesheet" href="css/brand.css">
-<!-- Shared themed dialog (alert/confirm/prompt) — replaces native browser popups app-wide. -->
+<!-- Shared themed dialog (alert/confirm/prompt) - replaces native browser popups app-wide. -->
 <script src="js/app-dialog.js"></script>
 <link rel="stylesheet" href="classroom/css/styles.css">
 <link rel="stylesheet" href="css/fsmvu-loader.css">
 <style>
-  /* ===== Game-mode picker — hover/active affordances =====
+  /* ===== Game-mode picker - hover/active affordances =====
      Inline styles can't carry :hover, so the look-up rules live
      here. Targets the picker cards by id so they don't bleed
      into other cards on the page. */
-  #pickVocabRace:hover, #pickHeist:hover, #pickTrust:hover, #pickReading:hover, #pickListening:hover, #pickGrammar:hover {
+  #pickVocabRace:hover, #pickHeist:hover, #pickTrust:hover, #pickReading:hover, #pickListening:hover, #pickGrammar:hover, #pickTug:hover, #pickBingo:hover, #pickScramble:hover {
     transform: translateY(-2px);
     border-color: rgba(255,255,255,0.5) !important;
   }
-  #pickVocabRace:active, #pickHeist:active, #pickTrust:active, #pickReading:active, #pickListening:active, #pickGrammar:active { transform: translateY(0); }
+  #pickVocabRace:active, #pickHeist:active, #pickTrust:active, #pickReading:active, #pickListening:active, #pickGrammar:active, #pickTug:active, #pickBingo:active, #pickScramble:active { transform: translateY(0); }
+  #pickTug:focus-visible      { outline: 2px solid #f59e0b; outline-offset: 3px; }
+  #pickBingo:focus-visible    { outline: 2px solid #a855f7; outline-offset: 3px; }
+  #pickScramble:focus-visible { outline: 2px solid #10b981; outline-offset: 3px; }
   #pickVocabRace:focus-visible, #pickHeist:focus-visible {
     outline: 2px solid #f59e0b; outline-offset: 3px;
   }
@@ -38,7 +41,7 @@
     outline: 2px solid #38bdf8; outline-offset: 3px;
   }
 
-  /* ===== Session QR card (lobby) — minimal, just the QR + caption ===== */
+  /* ===== Session QR card (lobby) - minimal, just the QR + caption ===== */
   .session-qr-card {
     display: flex;
     flex-direction: column;
@@ -125,7 +128,7 @@
     </div>
   </header>
 
-  <!-- Game-mode picker — shown first; teacher picks which classroom
+  <!-- Game-mode picker - shown first; teacher picks which classroom
        game to host. "Vocab Race" (the original mode) keeps the
        existing flow inline. "The Heist" routes to its own page since
        it has a completely different UI (vault, hint modal, etc.). -->
@@ -133,7 +136,7 @@
     <div class="card">
       <h2 class="card-title" style="margin-bottom: 8px;">🎮 Pick a game mode</h2>
       <p style="color: var(--text-secondary, #94a3b8); margin: 0 0 22px;">
-        Two ways to run a classroom session — pick one.
+        Two ways to run a classroom session - pick one.
       </p>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
@@ -154,7 +157,7 @@
           </div>
         </button>
 
-        <!-- Grammar Race — same race engine as Vocab Race, but the
+        <!-- Grammar Race - same race engine as Vocab Race, but the
              questions come from the generated grammar bank (the same
              one the solo Grammar practice + assignments use). -->
         <button type="button" id="pickGrammar"
@@ -176,7 +179,7 @@
           </div>
         </button>
 
-        <!-- The Heist — now stays on THIS page; clicking the card
+        <!-- The Heist - now stays on THIS page; clicking the card
              reveals the heist setup form inline. No more navigation
              to a separate URL until the game actually starts. -->
         <button type="button" id="pickHeist"
@@ -196,7 +199,7 @@
           </div>
         </button>
 
-        <!-- Reading Exam — host projects passage on the board, students
+        <!-- Reading Exam - host projects passage on the board, students
              answer on their phones with NO leak vectors (no ✓/✗ feedback,
              no per-question breakdown until the teacher releases). Picker
              card reveals the inline setup form; submit hands off to
@@ -215,12 +218,12 @@
           </div>
           <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
             You project the passage on the board, students answer the
-            questions on their phones — no leak, no answer key visible.
+            questions on their phones - no leak, no answer key visible.
             You control when to reveal the breakdown.
           </div>
         </button>
 
-        <!-- Listening Exam — host plays audio on the classroom speakers,
+        <!-- Listening Exam - host plays audio on the classroom speakers,
              students see ONLY the questions on their phones. Same no-leak
              posture as Reading Exam. Audio URL is never sent to students.
              Per-pack replayPolicy (once / unlimited / teacher) determines
@@ -239,12 +242,12 @@
           </div>
           <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
             You play the audio over the classroom speakers, students
-            answer the questions on their phones — no audio file leaked,
+            answer the questions on their phones - no audio file leaked,
             no answer key. Replay policy is yours to pick.
           </div>
         </button>
 
-        <!-- Trust No One — Among-Us-style social deduction. Picker
+        <!-- Trust No One - Among-Us-style social deduction. Picker
              card reveals the inline setup form; submit hands off to
              classroom-trust-teacher.html with ?auto=1&… params,
              same pattern as the Heist. -->
@@ -264,6 +267,68 @@
             Crewmates answer questions and hunt impostors hidden in the
             class. Impostors sabotage and lie at meetings. Vote them off
             before they outnumber you.
+          </div>
+        </button>
+
+        <!-- Tug of War - team quiz. Picker card reveals the inline setup
+             form; submit hands off to classroom-tug-teacher.html with
+             ?auto=1&… params, same pattern as the Heist. -->
+        <button type="button" id="pickTug"
+                style="text-align:left; cursor:pointer;
+                       background: linear-gradient(135deg, rgba(245,158,11,0.10), rgba(239,68,68,0.10));
+                       border: 1px solid rgba(245,158,11,0.4);
+                       border-radius: 16px; padding: 22px;
+                       color: inherit; font-family: inherit;
+                       transition: transform 0.1s, border-color 0.15s, background 0.15s;">
+          <div style="font-size: 2.4em; margin-bottom: 10px;">🪢</div>
+          <div style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">
+            Tug of War
+            <span style="font-size:0.55em; background:#f59e0b; color:#fff; padding:2px 6px; border-radius:6px; margin-left:6px; vertical-align:middle; font-weight:800;">NEW</span>
+          </div>
+          <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
+            Red vs Blue. Every correct answer pulls the rope on the
+            projector - first team to the target lead (or ahead at the
+            bell) wins.
+          </div>
+        </button>
+
+        <!-- Vocab Bingo - projector calls clues, students mark cards. -->
+        <button type="button" id="pickBingo"
+                style="text-align:left; cursor:pointer;
+                       background: linear-gradient(135deg, rgba(168,85,247,0.10), rgba(236,72,153,0.10));
+                       border: 1px solid rgba(168,85,247,0.4);
+                       border-radius: 16px; padding: 22px;
+                       color: inherit; font-family: inherit;
+                       transition: transform 0.1s, border-color 0.15s, background 0.15s;">
+          <div style="font-size: 2.4em; margin-bottom: 10px;">🎱</div>
+          <div style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">
+            Vocab Bingo
+            <span style="font-size:0.55em; background:#a855f7; color:#fff; padding:2px 6px; border-radius:6px; margin-left:6px; vertical-align:middle; font-weight:800;">NEW</span>
+          </div>
+          <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
+            Every phone gets a 4x4 word card. You call the clues on the
+            board (definitions, or gapped sentences at A2); students find
+            and tap the word. First full line is BINGO.
+          </div>
+        </button>
+
+        <!-- Sentence Scramble - synchronized unscramble rounds. -->
+        <button type="button" id="pickScramble"
+                style="text-align:left; cursor:pointer;
+                       background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(6,182,212,0.10));
+                       border: 1px solid rgba(16,185,129,0.4);
+                       border-radius: 16px; padding: 22px;
+                       color: inherit; font-family: inherit;
+                       transition: transform 0.1s, border-color 0.15s, background 0.15s;">
+          <div style="font-size: 2.4em; margin-bottom: 10px;">🔀</div>
+          <div style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">
+            Sentence Scramble
+            <span style="font-size:0.55em; background:#10b981; color:#fff; padding:2px 6px; border-radius:6px; margin-left:6px; vertical-align:middle; font-weight:800;">NEW</span>
+          </div>
+          <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
+            The word bank's own example sentences arrive scrambled;
+            everyone rebuilds the same sentence at the same time - faster
+            correct answers score more.
           </div>
         </button>
 
@@ -345,7 +410,7 @@
     </div>
   </div>
 
-  <!-- Heist Setup Screen — lives INSIDE classroom-teacher.html so the
+  <!-- Heist Setup Screen - lives INSIDE classroom-teacher.html so the
        teacher never feels like they jumped to a different app. When
        they hit "Create the room" we navigate to classroom-heist-teacher.html
        with the chosen parameters in the URL; that page auto-creates
@@ -427,7 +492,7 @@
     </div>
   </div>
 
-  <!-- Listening Exam Setup Screen — lives INSIDE classroom-teacher.html
+  <!-- Listening Exam Setup Screen - lives INSIDE classroom-teacher.html
        so the teacher never feels like they jumped to a different app.
        Submit hands off to classroom-listening-teacher.html?auto=1&… and
        that page auto-creates the session and drops them in the lobby. -->
@@ -444,7 +509,7 @@
       </div>
 
       <p style="color: var(--text-secondary, #94a3b8); margin: -4px 0 18px;">
-        You'll play the audio on the classroom speakers — students see only the questions on their phones (no audio file, no transcript leaked). After they submit, they see only their raw score until you press <strong>Reveal answers</strong>.
+        You'll play the audio on the classroom speakers - students see only the questions on their phones (no audio file, no transcript leaked). After they submit, they see only their raw score until you press <strong>Reveal answers</strong>.
       </p>
 
       <div class="form-row">
@@ -464,15 +529,15 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Time limit (minutes) — 0 for untimed</label>
+          <label class="form-label">Time limit (minutes) - 0 for untimed</label>
           <input id="listeningDuration" class="form-input" type="number" min="0" max="120" value="30">
         </div>
         <div class="form-group">
           <label class="form-label">Replay policy</label>
           <select id="listeningReplayPolicy" class="form-select">
-            <option value="teacher" selected>Teacher controls — play/pause/restart any time</option>
-            <option value="once">Once only — strict, no replays (IELTS-style)</option>
-            <option value="unlimited">Unlimited — students never lose time to a missed cue</option>
+            <option value="teacher" selected>Teacher controls - play/pause/restart any time</option>
+            <option value="once">Once only - strict, no replays (IELTS-style)</option>
+            <option value="unlimited">Unlimited - students never lose time to a missed cue</option>
           </select>
         </div>
       </div>
@@ -481,15 +546,15 @@
         <div class="form-group">
           <label class="form-label">Discussion phase after reveal</label>
           <select id="listeningDiscussion" class="form-select">
-            <option value="1" selected>Yes — students see the breakdown when I reveal</option>
-            <option value="0">No — score only, no breakdown ever</option>
+            <option value="1" selected>Yes - students see the breakdown when I reveal</option>
+            <option value="0">No - score only, no breakdown ever</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">Question marker broadcast</label>
           <select id="listeningQMarker" class="form-select">
-            <option value="1" selected>Yes — highlight the current question on student phones</option>
-            <option value="0">No — students navigate the booklet freely</option>
+            <option value="1" selected>Yes - highlight the current question on student phones</option>
+            <option value="0">No - students navigate the booklet freely</option>
           </select>
         </div>
       </div>
@@ -504,7 +569,7 @@
     </div>
   </div>
 
-  <!-- Reading Exam Setup Screen — lives INSIDE classroom-teacher.html
+  <!-- Reading Exam Setup Screen - lives INSIDE classroom-teacher.html
        so the teacher never feels like they jumped to a different app.
        Submit hands off to classroom-reading-teacher.html?auto=1&… and
        that page auto-creates the session and drops them in the lobby. -->
@@ -521,7 +586,7 @@
       </div>
 
       <p style="color: var(--text-secondary, #94a3b8); margin: -4px 0 18px;">
-        You'll see the passage + live answer key on your screen — students see only the questions on their phones. They can change answers until they tap Submit. After submitting, they see only their raw score (no breakdown) until you press <strong>Reveal answers</strong>.
+        You'll see the passage + live answer key on your screen - students see only the questions on their phones. They can change answers until they tap Submit. After submitting, they see only their raw score (no breakdown) until you press <strong>Reveal answers</strong>.
       </p>
 
       <div class="form-row">
@@ -541,14 +606,14 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Time limit (minutes) — 0 for untimed</label>
+          <label class="form-label">Time limit (minutes) - 0 for untimed</label>
           <input id="readingDuration" class="form-input" type="number" min="0" max="90" value="20">
         </div>
         <div class="form-group">
           <label class="form-label">Discussion phase after reveal</label>
           <select id="readingDiscussion" class="form-select">
-            <option value="1" selected>Yes — students see the breakdown when I reveal</option>
-            <option value="0">No — score only, no breakdown ever</option>
+            <option value="1" selected>Yes - students see the breakdown when I reveal</option>
+            <option value="0">No - score only, no breakdown ever</option>
           </select>
         </div>
       </div>
@@ -563,7 +628,7 @@
     </div>
   </div>
 
-  <!-- Trust No One Setup Screen — lives INSIDE classroom-teacher.html
+  <!-- Trust No One Setup Screen - lives INSIDE classroom-teacher.html
        so the teacher never feels like they jumped to a different app.
        Submit hands off to classroom-trust-teacher.html?auto=1&… and
        that page auto-creates the session and drops them in the lobby. -->
@@ -580,7 +645,7 @@
       </div>
 
       <p style="color: var(--text-secondary, #94a3b8); margin: -4px 0 18px;">
-        Some students will secretly be impostors. Crewmates win by voting them off; impostors win by outnumbering crewmates. Designed for classes of 5–25.
+        Some students will secretly be impostors. Crewmates win by voting them off; impostors win by outnumbering crewmates. Designed for classes of 5-25.
       </p>
 
       <!-- 1) WHAT students answer to run investigations: vocab, grammar,
@@ -681,6 +746,194 @@
     </div>
   </div>
 
+  <!-- Tug of War Setup Screen - lives INSIDE classroom-teacher.html; submit
+       hands off to classroom-tug-teacher.html?auto=1&… (Heist pattern). -->
+  <div id="tugSetupScreen" class="container" style="display: none;">
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <h2 class="card-title" style="margin: 0;">🪢 Tug of War · Setup</h2>
+        <button type="button" id="backToPickerFromTug"
+                style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
+                       color: var(--text-secondary, #94a3b8); padding: 6px 12px;
+                       border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
+          ← Pick different game
+        </button>
+      </div>
+
+      <p style="color: var(--text-secondary, #94a3b8); margin: -4px 0 18px;">
+        The class is split into RED and BLUE automatically. Every correct answer is one pull on the rope; first team to the target lead wins - or whoever is ahead when the timer ends.
+      </p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Questions</label>
+          <select id="tugQSource" class="form-select">
+            <option value="vocab" selected>Vocabulary</option>
+            <option value="grammar">Grammar</option>
+            <option value="mixed">Both, mixed (vocabulary + grammar)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Level</label>
+          <select id="tugLevel" class="form-select" required>
+            <option value="">Select level...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Unit</label>
+          <select id="tugUnit" class="form-select">
+            <option value="all">All Units</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Game length (min)</label>
+          <input id="tugDuration" class="form-input" type="number" min="2" max="30" value="8">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Winning lead (pulls ahead)</label>
+          <select id="tugLead" class="form-select">
+            <option value="10">10 (Quick)</option>
+            <option value="15" selected>15 (Standard)</option>
+            <option value="25">25 (Long battle)</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" id="tugCreateBtn" class="btn btn-primary btn-large" style="width: 100%; margin-top: 12px;">
+        🪢 Create Tug of War Room
+      </button>
+
+      <p style="color: var(--text-muted, #6b7280); font-size: 0.82em; margin: 14px 0 0; text-align: center;">
+        After you create the room you'll move to the live host view (lobby → rope → results).
+      </p>
+    </div>
+  </div>
+
+  <!-- Vocab Bingo Setup Screen - same inline pattern. -->
+  <div id="bingoSetupScreen" class="container" style="display: none;">
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <h2 class="card-title" style="margin: 0;">🎱 Vocab Bingo · Setup</h2>
+        <button type="button" id="backToPickerFromBingo"
+                style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
+                       color: var(--text-secondary, #94a3b8); padding: 6px 12px;
+                       border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
+          ← Pick different game
+        </button>
+      </div>
+
+      <p style="color: var(--text-secondary, #94a3b8); margin: -4px 0 18px;">
+        Each phone gets a random 4x4 card from the word pool. You call clues on the projector - definitions from B1 up, gapped example sentences at A2 - and students tap the matching word. Wrong taps lock the card for 3 seconds.
+      </p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Level</label>
+          <select id="bingoLevel" class="form-select" required>
+            <option value="">Select level...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Unit</label>
+          <select id="bingoUnit" class="form-select">
+            <option value="all">All Units</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Word pool</label>
+          <select id="bingoPool" class="form-select">
+            <option value="20">20 words (tight cards)</option>
+            <option value="24" selected>24 words (standard)</option>
+            <option value="32">32 words (spread out)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Clue pace</label>
+          <select id="bingoAdvance" class="form-select">
+            <option value="0" selected>I call each clue (Next clue button)</option>
+            <option value="20">Auto - every 20 seconds</option>
+            <option value="30">Auto - every 30 seconds</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" id="bingoCreateBtn" class="btn btn-primary btn-large" style="width: 100%; margin-top: 12px;">
+        🎱 Create Bingo Room
+      </button>
+
+      <p style="color: var(--text-muted, #6b7280); font-size: 0.82em; margin: 14px 0 0; text-align: center;">
+        After you create the room you'll move to the live host view (lobby → clues → results).
+      </p>
+    </div>
+  </div>
+
+  <!-- Sentence Scramble Setup Screen - same inline pattern. -->
+  <div id="scrambleSetupScreen" class="container" style="display: none;">
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <h2 class="card-title" style="margin: 0;">🔀 Sentence Scramble · Setup</h2>
+        <button type="button" id="backToPickerFromScramble"
+                style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
+                       color: var(--text-secondary, #94a3b8); padding: 6px 12px;
+                       border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
+          ← Pick different game
+        </button>
+      </div>
+
+      <p style="color: var(--text-secondary, #94a3b8); margin: -4px 0 18px;">
+        Everyone rebuilds the SAME scrambled sentence at the same time - the sentences are the word bank's own examples (4-10 words). Correct = 100 points + 2 per second left. Rounds advance on the timer, when everyone has submitted, or when you press Next.
+      </p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Level</label>
+          <select id="scrambleLevel" class="form-select" required>
+            <option value="">Select level...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Unit</label>
+          <select id="scrambleUnit" class="form-select">
+            <option value="all">All Units</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Sentences</label>
+          <select id="scrambleRounds" class="form-select">
+            <option value="5">5 (Quick)</option>
+            <option value="10" selected>10 (Standard)</option>
+            <option value="15">15 (Challenge)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time per sentence</label>
+          <select id="scrambleSec" class="form-select">
+            <option value="30">30 seconds (Hard)</option>
+            <option value="40" selected>40 seconds (Normal)</option>
+            <option value="60">60 seconds (Relaxed)</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" id="scrambleCreateBtn" class="btn btn-primary btn-large" style="width: 100%; margin-top: 12px;">
+        🔀 Create Scramble Room
+      </button>
+
+      <p style="color: var(--text-muted, #6b7280); font-size: 0.82em; margin: 14px 0 0; text-align: center;">
+        After you create the room you'll move to the live host view (lobby → rounds → results).
+      </p>
+    </div>
+  </div>
+
   <!-- Lobby Screen -->
   <div id="lobbyScreen" class="container" style="display: none;">
     <div class="card">
@@ -719,7 +972,7 @@
       
       <!-- Live Leaderboard (shows during game) -->
       <div id="liveLeaderboardSection" style="margin-top: 24px;">
-        <h3 style="margin-bottom: 12px;">📊 Live Scores</h3>
+        <h3 style="margin-bottom: 12px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="vertical-align:-4px;margin-right:6px;"><rect x="3" y="13" width="4.5" height="8" rx="1.5" fill="#3b82f6"/><rect x="9.75" y="8" width="4.5" height="13" rx="1.5" fill="#06b6d4"/><rect x="16.5" y="4" width="4.5" height="17" rx="1.5" fill="#38bdf8"/></svg>Live Scores</h3>
         <div class="leaderboard-list" id="liveLeaderboard">
           <p style="color: var(--text-muted); text-align: center; padding: 20px;">Scores will appear here during the game</p>
         </div>
@@ -760,7 +1013,7 @@
         <button class="btn btn-primary btn-large" onclick="newSession()" style="flex: 1;">
           🔄 New Session
         </button>
-        <!-- "Back to Classroom Mode" — parity with the Heist results
+        <!-- "Back to Classroom Mode" - parity with the Heist results
              screen, lets the teacher switch games without going all
              the way back to the dashboard. deleteSessionOnLeave still
              fires so the session doc is cleaned up. -->
@@ -813,15 +1066,20 @@
     });
 </script>
 
-<!-- Exam registry — needed by the Reading + Listening pickers to
+<!-- Exam registry - needed by the Reading + Listening pickers to
      enumerate available exams per level. Loads window.EXAM_REGISTRY.
      The picker only needs id/title metadata; the per-exam content
      (passages, audio, questions) is loaded by the respective host
      pages after submit. -->
 <script src="assignments/js/exam-registry.js"></script>
-<!-- Grammar question bank — powers the Grammar Race picker card. -->
-<script src="student/js/skills/grammar-content.js?v=33"></script>
+<!-- Grammar question bank - powers the Grammar Race picker card. -->
+<script src="student/js/skills/grammar-content.js?v=34"></script>
 
+<!-- Admin content controls (classroom scope): filters hidden word-lists +
+     grammar topics out of the games teacher.js builds. Load before it. -->
+<script src="classroom/js/cc-classroom.js"></script>
+<!-- Persists a finished-game record for Admin > Reports. -->
+<script src="classroom/js/game-report.js?v=1"></script>
 <!-- Teacher JS -->
 <script src="classroom/js/teacher.js"></script>
 
@@ -833,7 +1091,8 @@
     var MAP = {
       game_vocabRace: 'pickVocabRace', game_grammar: 'pickGrammar',
       game_heist: 'pickHeist', game_trust: 'pickTrust',
-      game_reading: 'pickReading', game_listening: 'pickListening'
+      game_reading: 'pickReading', game_listening: 'pickListening',
+      game_tug: 'pickTug', game_bingo: 'pickBingo', game_scramble: 'pickScramble'
     };
     var done = false;
     function gate() {
@@ -855,19 +1114,19 @@
      forms inline (Vocab Race / The Heist). For Vocab Race the existing
      teacher.js takes over once the teacher hits "Create Session". For
      The Heist we navigate to classroom-heist-teacher.html with the
-     chosen parameters in the URL — that page auto-creates the session
+     chosen parameters in the URL - that page auto-creates the session
      and drops the teacher into the lobby (no second setup form). -->
 <script>
   (function () {
     function show(id) {
-      ['gameModePicker', 'setupScreen', 'heistSetupScreen', 'trustSetupScreen', 'readingSetupScreen', 'listeningSetupScreen', 'lobbyScreen', 'resultsScreen'].forEach(s => {
+      ['gameModePicker', 'setupScreen', 'heistSetupScreen', 'trustSetupScreen', 'readingSetupScreen', 'listeningSetupScreen', 'tugSetupScreen', 'bingoSetupScreen', 'scrambleSetupScreen', 'lobbyScreen', 'resultsScreen'].forEach(s => {
         const el = document.getElementById(s);
         if (el) el.style.display = (s === id) ? '' : 'none';
       });
     }
 
     // Both Heist and Trust No One use the same hint packs (vocab MCQ
-    // content stays the same — only the gameplay around it changes).
+    // content stays the same - only the gameplay around it changes).
     // Cache the fetch so picking either game's card doesn't re-hit
     // the network.
     let packsCache = null;
@@ -953,7 +1212,7 @@
         fillPackSelect(document.getElementById('trustPackSelect'));
       });
 
-      // Picker → reading exam setup (inline) — populates the level
+      // Picker → reading exam setup (inline) - populates the level
       // dropdown from EXAM_REGISTRY. Choosing a level re-fills the
       // exam dropdown with that level's available reading exams.
       const readingPick = document.getElementById('pickReading');
@@ -962,7 +1221,7 @@
         fillReadingLevels();
       });
 
-      // Picker → listening exam setup (inline) — same shape as
+      // Picker → listening exam setup (inline) - same shape as
       // reading, just driven off the 'listening' branch of the
       // registry and with the extra replayPolicy dropdown.
       const listeningPick = document.getElementById('pickListening');
@@ -1012,7 +1271,7 @@
       const hgl = document.getElementById('heistGrammarLevel');
       if (hgl) hgl.addEventListener('change', () => fillGrammarUnitSelect(document.getElementById('heistGrammarUnit'), hgl.value));
 
-      // Heist "Create Heist Room" — hand off to classroom-heist-teacher.html
+      // Heist "Create Heist Room" - hand off to classroom-heist-teacher.html
       const createH = document.getElementById('heistCreateBtn');
       if (createH) createH.addEventListener('click', () => {
         const pack = (document.getElementById('heistPackSelect') || {}).value || '';
@@ -1040,7 +1299,7 @@
       const tgl = document.getElementById('trustGrammarLevel');
       if (tgl) tgl.addEventListener('change', () => fillGrammarUnitSelect(document.getElementById('trustGrammarUnit'), tgl.value));
 
-      // Trust "Create Trust No One Room" — hand off to classroom-trust-teacher.html
+      // Trust "Create Trust No One Room" - hand off to classroom-trust-teacher.html
       const createT = document.getElementById('trustCreateBtn');
       if (createT) createT.addEventListener('click', () => {
         const pack = (document.getElementById('trustPackSelect')   || {}).value || '';
@@ -1063,6 +1322,106 @@
           auto: '1'
         });
         window.location.href = 'classroom-trust-teacher.html?' + qs.toString();
+      });
+
+      // ── New mini-games: Tug of War / Vocab Bingo / Sentence Scramble ──
+      // Same inline-setup + ?auto=1 handoff pattern as the Heist. Level
+      // and unit dropdowns are filled from the SAME sources the other
+      // games use (datasets.json vocabulary + the grammar bank).
+      const VOCAB_LEVELS = ['A2', 'B1', 'B1+', 'B2'];
+      function fillVocabLevelSelect(sel) {
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Select level...</option>' +
+          VOCAB_LEVELS.map(l => `<option value="${l}">${l}</option>`).join('');
+      }
+      function fillVocabUnitSelect(sel, level) {
+        if (!sel) return;
+        sel.innerHTML = '<option value="all">All Units</option>';
+        const words = (typeof vocabulary !== 'undefined' && vocabulary && vocabulary[level]) || [];
+        const units = [...new Set(words.map(w => w.unit).filter(Boolean))]
+          .sort((a, b) => (parseInt(String(a).replace(/\D/g, ''), 10) || 0) - (parseInt(String(b).replace(/\D/g, ''), 10) || 0));
+        units.forEach(u => { sel.innerHTML += `<option value="${u}">${u}</option>`; });
+      }
+
+      // Tug of War: the unit dropdown follows the question source -
+      // vocabulary uses the dataset's "Unit N" values, grammar/mixed use
+      // the grammar bank's numeric units (tug-teacher.js expects that).
+      function fillTugLevelUnit() {
+        const qsrc = (document.getElementById('tugQSource') || {}).value || 'vocab';
+        const lvlSel = document.getElementById('tugLevel');
+        const unitSel = document.getElementById('tugUnit');
+        if (qsrc === 'vocab') fillVocabLevelSelect(lvlSel);
+        else fillGrammarLevelSelect(lvlSel);
+        if (unitSel) unitSel.innerHTML = '<option value="all">All Units</option>';
+      }
+      const tugPick = document.getElementById('pickTug');
+      if (tugPick) tugPick.addEventListener('click', () => { show('tugSetupScreen'); fillTugLevelUnit(); });
+      const tugQ = document.getElementById('tugQSource');
+      if (tugQ) tugQ.addEventListener('change', fillTugLevelUnit);
+      const tugLvl = document.getElementById('tugLevel');
+      if (tugLvl) tugLvl.addEventListener('change', () => {
+        const qsrc = (document.getElementById('tugQSource') || {}).value || 'vocab';
+        if (qsrc === 'vocab') fillVocabUnitSelect(document.getElementById('tugUnit'), tugLvl.value);
+        else fillGrammarUnitSelect(document.getElementById('tugUnit'), tugLvl.value);
+      });
+      const createTug = document.getElementById('tugCreateBtn');
+      if (createTug) createTug.addEventListener('click', () => {
+        const qsrc = (document.getElementById('tugQSource') || {}).value || 'vocab';
+        const lvl  = (document.getElementById('tugLevel') || {}).value || '';
+        const unit = (document.getElementById('tugUnit')  || {}).value || 'all';
+        const dur  = parseInt((document.getElementById('tugDuration') || {}).value, 10) || 8;
+        const lead = parseInt((document.getElementById('tugLead')     || {}).value, 10) || 15;
+        if (!lvl) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '📊' }); return; }
+        const qs = new URLSearchParams({ qsrc, lvl, unit, dur: String(dur), lead: String(lead), auto: '1' });
+        window.location.href = 'classroom-tug-teacher.html?' + qs.toString();
+      });
+
+      // Vocab Bingo
+      const bingoPick = document.getElementById('pickBingo');
+      if (bingoPick) bingoPick.addEventListener('click', () => {
+        show('bingoSetupScreen');
+        fillVocabLevelSelect(document.getElementById('bingoLevel'));
+        const u = document.getElementById('bingoUnit');
+        if (u) u.innerHTML = '<option value="all">All Units</option>';
+      });
+      const bingoLvl = document.getElementById('bingoLevel');
+      if (bingoLvl) bingoLvl.addEventListener('change', () => fillVocabUnitSelect(document.getElementById('bingoUnit'), bingoLvl.value));
+      const createBingo = document.getElementById('bingoCreateBtn');
+      if (createBingo) createBingo.addEventListener('click', () => {
+        const lvl  = (document.getElementById('bingoLevel')   || {}).value || '';
+        const unit = (document.getElementById('bingoUnit')    || {}).value || 'all';
+        const pool = parseInt((document.getElementById('bingoPool')    || {}).value, 10) || 24;
+        const adv  = parseInt((document.getElementById('bingoAdvance') || {}).value, 10) || 0;
+        if (!lvl) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '📊' }); return; }
+        const qs = new URLSearchParams({ lvl, unit, pool: String(pool), adv: String(adv), auto: '1' });
+        window.location.href = 'classroom-bingo-teacher.html?' + qs.toString();
+      });
+
+      // Sentence Scramble
+      const scrPick = document.getElementById('pickScramble');
+      if (scrPick) scrPick.addEventListener('click', () => {
+        show('scrambleSetupScreen');
+        fillVocabLevelSelect(document.getElementById('scrambleLevel'));
+        const u = document.getElementById('scrambleUnit');
+        if (u) u.innerHTML = '<option value="all">All Units</option>';
+      });
+      const scrLvl = document.getElementById('scrambleLevel');
+      if (scrLvl) scrLvl.addEventListener('change', () => fillVocabUnitSelect(document.getElementById('scrambleUnit'), scrLvl.value));
+      const createScr = document.getElementById('scrambleCreateBtn');
+      if (createScr) createScr.addEventListener('click', () => {
+        const lvl    = (document.getElementById('scrambleLevel')  || {}).value || '';
+        const unit   = (document.getElementById('scrambleUnit')   || {}).value || 'all';
+        const rounds = parseInt((document.getElementById('scrambleRounds') || {}).value, 10) || 10;
+        const sec    = parseInt((document.getElementById('scrambleSec')    || {}).value, 10) || 40;
+        if (!lvl) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '📊' }); return; }
+        const qs = new URLSearchParams({ lvl, unit, rounds: String(rounds), sec: String(sec), auto: '1' });
+        window.location.href = 'classroom-scramble-teacher.html?' + qs.toString();
+      });
+
+      // Back links for the three new setup screens
+      ['backToPickerFromTug', 'backToPickerFromBingo', 'backToPickerFromScramble'].forEach(id => {
+        const b = document.getElementById(id);
+        if (b) b.addEventListener('click', () => show('gameModePicker'));
       });
 
       // Reading-Exam dropdown wiring + Create handoff.
@@ -1117,6 +1476,30 @@
       });
     });
 
+    // ── Admin content controls (classroom scope) ──────────────
+    // Exams the admin hid from CLASSROOM games (settings/contentControls
+    // .classroomHidden). Loaded once when auth is ready; a missing doc or
+    // read error means nothing is hidden (fail open).
+    let ccClassroomHidden = { reading: [], listening: [] };
+    (function loadClassroomHidden() {
+      if (typeof db === 'undefined' || typeof auth === 'undefined') { setTimeout(loadClassroomHidden, 500); return; }
+      if (!auth.currentUser) { setTimeout(loadClassroomHidden, 500); return; }
+      db.collection('settings').doc('contentControls').get().then(snap => {
+        const d = snap.exists ? (snap.data() || {}) : {};
+        const ch = (d.classroomHidden && typeof d.classroomHidden === 'object') ? d.classroomHidden : {};
+        ccClassroomHidden = {
+          reading: Array.isArray(ch.reading) ? ch.reading : [],
+          listening: Array.isArray(ch.listening) ? ch.listening : []
+        };
+      }).catch(e => console.warn('classroomHidden load', e));
+    })();
+    // Registry exams for a level minus unavailable + classroom-hidden ones.
+    function visibleExams(skill, level) {
+      const hidden = ccClassroomHidden[skill] || [];
+      return (window.EXAM_REGISTRY.examsForLevel(skill, level) || [])
+        .filter(e => e.available !== false && hidden.indexOf(e.id) === -1);
+    }
+
     // ── Reading-exam dropdown helpers ─────────────────────────
     // Public so the registry-load callback (if any) can re-trigger,
     // but they only do anything when the setup screen is visible.
@@ -1128,11 +1511,8 @@
         return;
       }
       const levels = window.EXAM_REGISTRY.levelsFor('reading') || [];
-      // Filter to only levels that actually have at least one available exam.
-      const withExams = levels.filter(lvl =>
-        (window.EXAM_REGISTRY.examsForLevel('reading', lvl) || [])
-          .some(e => e.available !== false)
-      );
+      // Only levels with at least one available, non-classroom-hidden exam.
+      const withExams = levels.filter(lvl => visibleExams('reading', lvl).length > 0);
       sel.innerHTML = '<option value="">Select level...</option>' +
         withExams.map(l => `<option value="${l}">${l}</option>`).join('');
       // Reset exam dropdown until a level is picked.
@@ -1150,8 +1530,7 @@
         sel.disabled = true;
         return;
       }
-      const exams = (window.EXAM_REGISTRY.examsForLevel('reading', level) || [])
-        .filter(e => e.available !== false);
+      const exams = visibleExams('reading', level);
       if (!exams.length) {
         sel.innerHTML = '<option value="">No exams available at this level</option>';
         sel.disabled = true;
@@ -1171,10 +1550,7 @@
         return;
       }
       const levels = window.EXAM_REGISTRY.levelsFor('listening') || [];
-      const withExams = levels.filter(lvl =>
-        (window.EXAM_REGISTRY.examsForLevel('listening', lvl) || [])
-          .some(e => e.available !== false)
-      );
+      const withExams = levels.filter(lvl => visibleExams('listening', lvl).length > 0);
       sel.innerHTML = '<option value="">Select level...</option>' +
         withExams.map(l => `<option value="${l}">${l}</option>`).join('');
       const eSel = document.getElementById('listeningExam');
@@ -1191,8 +1567,7 @@
         sel.disabled = true;
         return;
       }
-      const exams = (window.EXAM_REGISTRY.examsForLevel('listening', level) || [])
-        .filter(e => e.available !== false);
+      const exams = visibleExams('listening', level);
       if (!exams.length) {
         sel.innerHTML = '<option value="">No exams available at this level</option>';
         sel.disabled = true;

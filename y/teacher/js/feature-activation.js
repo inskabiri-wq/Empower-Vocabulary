@@ -22,6 +22,9 @@
     { id: 'speaking',   icon: '🎤', name: 'Speaking', group: 'Skills' },
     { id: 'classroom',  icon: '🎮', name: 'Classroom Mode', group: 'Skills' },
     { id: 'courses',    icon: '🎓', name: 'Courses', group: 'Skills' },
+    // Placement is OPT-IN (default off): the student tile shows only when this
+    // toggle is explicitly ON and the student matches placementConfig.scope.
+    { id: 'placement',  icon: '🎯', name: 'Placement Test', group: 'Skills' },
     // Individual classroom games - deactivating one hides its card from the
     // teacher's Classroom game picker (classroom-teacher.html).
     { id: 'game_vocabRace', icon: '🏁', name: 'Vocab Race', group: 'Classroom games' },
@@ -30,6 +33,9 @@
     { id: 'game_trust',     icon: '🕵️', name: 'Trust No One', group: 'Classroom games' },
     { id: 'game_reading',   icon: '📖', name: 'Reading Exam', group: 'Classroom games' },
     { id: 'game_listening', icon: '🎧', name: 'Listening Exam', group: 'Classroom games' },
+    { id: 'game_tug',       icon: '🪢', name: 'Tug of War', group: 'Classroom games' },
+    { id: 'game_bingo',     icon: '🎱', name: 'Vocab Bingo', group: 'Classroom games' },
+    { id: 'game_scramble',  icon: '🔀', name: 'Sentence Scramble', group: 'Classroom games' },
     // Vocabulary practice modes - deactivating one hides its card from the
     // vocabulary screen (student dashboard).
     { id: 'mode_choice',        icon: '📋', name: 'Multiple Choice', group: 'Vocabulary modes' },

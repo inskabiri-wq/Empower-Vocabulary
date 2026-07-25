@@ -22,6 +22,19 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// LOCAL TESTING ONLY: talk to the Firebase emulators instead of production.
+// Runs only when BOTH are true: the page is served from localhost AND the
+// tester has set localStorage.useEmulators = '1'. Production domains and
+// normal local previews are untouched. See y/tools/README-emulator-e2e.md.
+try {
+  if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') &&
+      localStorage.getItem('useEmulators') === '1') {
+    auth.useEmulator('http://127.0.0.1:9099');
+    db.useEmulator('127.0.0.1', 8080);
+    console.warn('[emulator] connected to LOCAL Auth (9099) + Firestore (8080)');
+  }
+} catch (e) { /* never block app boot */ }
+
 // Global State
 let currentUser = null;
 let userData = null;
@@ -165,7 +178,7 @@ async function loadDashboard() {
       clearTimeout(loadTimeout);
       document.getElementById('loadingScreen').style.display = 'none';
       document.getElementById('mainContent').style.display = 'flex';
-      console.log('[loadDashboard] teacher has no scope — empty dashboard');
+      console.log('[loadDashboard] teacher has no scope - empty dashboard');
       return;
     }
 
@@ -176,7 +189,7 @@ async function loadDashboard() {
     // unfiltered queries would be rejected (the rule denies any single
     // out-of-scope doc, which fails the whole query). We add .where()
     // filters so the server only returns docs the teacher is allowed
-    // to read — that satisfies the rule AND fetches less data.
+    // to read - that satisfies the rule AND fetches less data.
     let studentsQuery = db.collection('users').where('role', '==', 'student');
     let sessionsQuery = db.collection('sessions').orderBy('createdAt', 'desc');
 
@@ -202,7 +215,7 @@ async function loadDashboard() {
       }
     }
 
-    // Execute the scoped queries — wrapped in try/catch each so we can
+    // Execute the scoped queries - wrapped in try/catch each so we can
     // tell WHICH one is failing, what the user's effective filters are,
     // and the exact Firestore error. Remove this verbose logging once
     // the dashboard is stable.
@@ -228,7 +241,7 @@ async function loadDashboard() {
     // blows the quota fast under repeated reloads. Fix:
     //   1) keep the lifetime "Total Sessions" accurate via the cheap count()
     //      aggregation (~1 read per 1000 docs), then
-    //   2) only FETCH the most recent N docs — that's all the activity feed,
+    //   2) only FETCH the most recent N docs - that's all the activity feed,
     //      popularity, and recent-score analytics actually need.
     window.totalSessionsCount = null;
     try {
@@ -260,7 +273,7 @@ async function loadDashboard() {
     updateLevelDistribution();
     checkStrugglingStudents();
 
-    // v2 overview render — runs LAST so it reads the freshly-populated
+    // v2 overview render - runs LAST so it reads the freshly-populated
     // allStudents + allSessions globals. Wrapped in typeof guard so the
     // page still works if overview-v2.js fails to load.
     if (typeof renderOverviewV2 === 'function') {
@@ -275,10 +288,8 @@ async function loadDashboard() {
       if (t2Admin) t2Admin.style.display = '';
       const logsSection = document.getElementById('activityLogsSection');
       if (logsSection) logsSection.style.display = 'block';
-      // Export Report is admin-only: reveal the (default-hidden) export buttons.
-      ['exportReportNav', 'exportReportMore'].forEach(function (id) {
-        var el = document.getElementById(id); if (el) el.style.display = '';
-      });
+      // Results exporting now lives in Admin > Reports (reports-admin.js);
+      // the old sidebar/menu Export Report buttons were removed.
       if (typeof ActivityAdmin !== 'undefined' && typeof ActivityAdmin.init === 'function') {
         ActivityAdmin.init();
       }
@@ -296,7 +307,7 @@ async function loadDashboard() {
     document.getElementById('mainContent').style.display = 'flex';
     
   } catch (error) {
-    // Clear the 30s fallback timeout — otherwise it fires later and
+    // Clear the 30s fallback timeout - otherwise it fires later and
     // overwrites this real error message with "Loading timed out".
     clearTimeout(loadTimeout);
     console.error('Error loading dashboard:', error);

@@ -640,14 +640,75 @@
     const essay = el.essay.value;
     if (!essay.trim()) { el.essay.focus(); return; }
     const s = currentSample();
+    // A pristine sample essay uses its pre-baked correction (instant, offline).
     if (isSampleEssay() && s && s.corrections[activeLevel]) {
       note('');
       renderCorrection(s.corrections[activeLevel], essay);
       el.results.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
-    // Edited / custom essay: the live AI runs once mounted.
-    note('Live AI analysis runs once the corrector is mounted in the app. For now pick a sample below, or send me this essay in chat and I will add it as a sample.');
+    // Any other essay -> live AI via the analyzeWriting Cloud Function.
+    runLiveAnalysis(essay);
+  }
+  // ── Auth state (Firebase restores the signed-in session asynchronously) ──
+  var _authUser = null, _authResolved = false, _authWaiters = [];
+  function _flushAuth() { var ws = _authWaiters.splice(0); for (var i = 0; i < ws.length; i++) ws[i](_authUser); }
+  function initAuthWatch() {
+    if (typeof firebase === 'undefined' || !firebase.auth) { _authResolved = true; return; }
+    try {
+      _authUser = firebase.auth().currentUser || null;
+      firebase.auth().onAuthStateChanged(function (u) { _authUser = u || null; _authResolved = true; _flushAuth(); });
+    } catch (_) { _authResolved = true; }
+  }
+  // Resolve with the current user once auth has settled. Resolves immediately if
+  // a user is already present; otherwise waits for onAuthStateChanged (with a
+  // safety timeout so we never hang).
+  function whenAuthUser(cb) {
+    if (_authUser) { cb(_authUser); return; }
+    if (_authResolved) { cb(_authUser); return; }
+    _authWaiters.push(cb);
+    setTimeout(function () { if (!_authResolved) { _authResolved = true; _flushAuth(); } }, 4000);
+  }
+
+  function runLiveAnalysis(essay) {
+    if (typeof firebase === 'undefined' || !firebase.functions) {
+      note('Live AI is not available on this page (Cloud Functions not loaded).');
+      return;
+    }
+    // Firebase restores the signed-in session asynchronously, so currentUser is
+    // null for a moment after load. Wait for auth to resolve before deciding,
+    // otherwise a quick click wrongly reports "not signed in".
+    note('Checking sign-in...');
+    el.run.disabled = true;
+    whenAuthUser(function (user) {
+      if (!user) {
+        el.run.disabled = false;
+        note('You are not signed in on this tab. Open Lingualab, sign in, then come back here and click Analyze again.');
+        return;
+      }
+      doAnalyze(essay);
+    });
+  }
+  function doAnalyze(essay) {
+    const rubric = (el.rubric && el.rubric.value) || 'essay';
+    const depth = activeLevel;
+    const task = (el.task && el.task.value || '').trim();
+    const oldLabel = el.run.textContent;
+    el.run.disabled = true; el.run.textContent = 'Analyzing...';
+    note('Analyzing with AI - this can take a few seconds...');
+    firebase.functions().httpsCallable('analyzeWriting')({ essay: essay, rubric: rubric, depth: depth, task: task })
+      .then(function (res) {
+        const d = (res && res.data) || {};
+        if (!d.correction) { note('The AI did not return any feedback. Please try again.'); return; }
+        note('');
+        renderCorrection(d.correction, essay);
+        el.results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      })
+      .catch(function (e) {
+        const perm = e && e.code === 'permission-denied';
+        note('Could not analyze: ' + ((e && e.message) || 'error') + (perm ? ' (ask an admin to enable Writing AI for your account in Admin ▸ Writing AI)' : ''));
+      })
+      .then(function () { el.run.disabled = false; el.run.textContent = oldLabel; });
   }
   function loadSample(idx) {
     const list = samples(); if (!list.length) return;
@@ -658,6 +719,18 @@
     if (el.samplePick) el.samplePick.value = String(currentSampleIdx);
     note('');
     renderCorrection(s.corrections[activeLevel], s.essay);
+  }
+  // Open blank: no preloaded sample, empty fields, results hidden. Teachers
+  // paste a real essay and run live AI. Samples stay available in the picker.
+  function clearAll() {
+    currentSampleIdx = -1;
+    if (el.essay) el.essay.value = '';
+    if (el.task) el.task.value = '';
+    if (el.samplePick) el.samplePick.value = '';
+    activeCorrection = null; activeEssay = '';
+    editSet.clear();
+    note('');
+    if (el.results) el.results.style.display = 'none';
   }
 
   function init() {
@@ -671,14 +744,22 @@
       essayBox: $('corEssayBox'), profile: $('corProfile'), panel: $('corPanel')
     };
 
+    // Start watching auth immediately so the signed-in session is known by the
+    // time the teacher clicks Analyze.
+    initAuthWatch();
+
     const meta = (window.WRITING_COMMENT_BANK && window.WRITING_COMMENT_BANK.rubricMeta) || null;
     const rubrics = meta ? Object.keys(meta) : Object.keys(FALLBACK_RUBRICS);
     el.rubric.innerHTML = rubrics.map(r => '<option value="' + r + '">' + esc(rubricLabel(r)) + '</option>').join('');
 
     const list = samples();
     if (el.samplePick) {
-      el.samplePick.innerHTML = list.map((s, i) => '<option value="' + i + '">' + esc(s.label || ('Sample ' + (i + 1))) + '</option>').join('');
-      el.samplePick.addEventListener('change', () => loadSample(Number(el.samplePick.value)));
+      el.samplePick.innerHTML = '<option value="">Blank (paste your own)</option>'
+        + list.map((s, i) => '<option value="' + i + '">' + esc(s.label || ('Sample ' + (i + 1))) + '</option>').join('');
+      el.samplePick.addEventListener('change', () => {
+        const v = el.samplePick.value;
+        if (v === '') clearAll(); else loadSample(Number(v));
+      });
     }
 
     el.levels.innerHTML = Object.keys(LEVELS).map(k => {
@@ -690,12 +771,18 @@
 
     el.simple.addEventListener('change', () => { simpleLang = el.simple.checked; reRender(); });
     el.run.addEventListener('click', run);
-    if (el.reset) el.reset.addEventListener('click', () => loadSample(currentSampleIdx));
+    if (el.reset) el.reset.addEventListener('click', () => { if (currentSampleIdx < 0) clearAll(); else loadSample(currentSampleIdx); });
     if (el.edit) el.edit.addEventListener('click', () => {
       if (SECTIONS.every(s => editSet.has(s))) editSet.clear(); else SECTIONS.forEach(s => editSet.add(s));
       if (activeCorrection) renderCorrection(activeCorrection, activeEssay);
     });
-    if (el.print) el.print.addEventListener('click', () => window.print());
+    // The page URL / page numbers in the PDF are Chrome's OWN print header and
+    // footer, not part of this page - CSS cannot remove them, so tell the
+    // teacher where the switch is. Paint the note before print() blocks.
+    if (el.print) el.print.addEventListener('click', () => {
+      note('In the print dialog, turn OFF "Headers and footers" so the page URL is not printed.');
+      setTimeout(() => window.print(), 60);
+    });
     const showRel = (on) => { if (el.relModal) el.relModal.hidden = !on; };
     if (el.release) el.release.addEventListener('click', () => showRel(true));
     if (el.relCancel) el.relCancel.addEventListener('click', () => showRel(false));
@@ -703,7 +790,45 @@
     if (el.relModal) el.relModal.addEventListener('click', (e) => { if (e.target === el.relModal) showRel(false); });
 
     syncLevelButtons();
-    loadSample(0);
+    clearAll();
+    gateDeepButton();
+    consumePrefill();
+  }
+
+  // Placement handoff: the teacher pressed "Open in Writing AI" on a
+  // placement result, so the essay + prompt arrive via localStorage
+  // (same origin). One-shot: the key is removed as soon as it is read.
+  function consumePrefill() {
+    let raw = null;
+    try { raw = localStorage.getItem('llwPrefill'); localStorage.removeItem('llwPrefill'); } catch (_) {}
+    if (!raw) return;
+    let pre = null;
+    try { pre = JSON.parse(raw); } catch (_) { return; }
+    if (!pre || !pre.essay || !el.essay) return;
+    if (el.samplePick) el.samplePick.value = '';
+    el.essay.value = String(pre.essay);
+    if (el.task && pre.task) el.task.value = String(pre.task);
+    note((pre.student ? pre.student + '’s' : 'The student’s') + ' placement essay is loaded - pick a depth and press Analyze.');
+  }
+
+  // ── Deep tier gating (client-side mirror of the server rule) ──
+  // The Deep button is HIDDEN unless the signed-in user is the admin or has
+  // the Deep grant (settings/aiWritingAccess.deepUids). The analyzeWriting
+  // function still enforces this server-side; this only removes the tease.
+  function gateDeepButton() {
+    if (typeof firebase === 'undefined' || !firebase.firestore) return;
+    whenAuthUser(function (user) {
+      if (!user) return;
+      if (String(user.email || '').toLowerCase() === 'akabiriaslifar@fsm.edu.tr') return; // admin sees all
+      firebase.firestore().collection('settings').doc('aiWritingAccess').get().then(function (snap) {
+        var cfg = snap.exists ? (snap.data() || {}) : {};
+        var deep = Array.isArray(cfg.deepUids) ? cfg.deepUids : [];
+        if (deep.indexOf(user.uid) !== -1) return;
+        var btn = el.levels && el.levels.querySelector('.cor-level-btn[data-level="deep"]');
+        if (btn) btn.style.display = 'none';
+        if (activeLevel === 'deep') { activeLevel = 'medium'; syncLevelButtons(); reRender(); }
+      }).catch(function () {});
+    });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

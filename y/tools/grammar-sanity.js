@@ -154,16 +154,41 @@ function ambiguityFlag(q) {
   return null;
 }
 
+// Hints must be THINKING CUES, not form recipes. A hint that names the tested
+// structure or spells out its formula hands the answer to a multiple-choice
+// student (the options differ exactly by that form). These patterns are banned
+// in q.hint; q.explain (shown AFTER answering) may still teach the rule.
+var RECIPE_PATTERNS = [
+  [/->/, 'mapping arrow'],
+  [/\+/, 'formula plus'],
+  [/\b(past|present)\s+participle\b/i, 'names participle'],
+  [/\bbase (verb|form)\b/i, 'names base form'],
+  [/-ing\b/, 'names -ing form'],
+  [/\badds? -/i, 'ending recipe'],
+  [/\b(present|past|future)\s+(simple|continuous|perfect)\b/i, 'names tense'],
+  [/\b(first|second|third|mixed)\s+conditional\b/i, 'names conditional'],
+  [/\bpassive\b/i, 'names passive'],
+  [/\b(comparative|superlative)\b/i, 'names degree'],
+  [/\binfinitive\b/i, 'names infinitive']
+];
+function recipeFlag(hint) {
+  for (var i = 0; i < RECIPE_PATTERNS.length; i++) {
+    if (RECIPE_PATTERNS[i][0].test(hint)) return RECIPE_PATTERNS[i][1];
+  }
+  return null;
+}
+
 // ---- run --------------------------------------------------------------------
 var levels = Object.keys(GP.byLevel);
-var grand = { q: 0, struct: 0, giveaway: 0, distractorHint: 0, semantic: 0, ambig: 0, units: 0, badUnits: 0 };
+var grand = { q: 0, struct: 0, giveaway: 0, distractorHint: 0, semantic: 0, ambig: 0, recipe: 0, units: 0, badUnits: 0 };
 var report = [];
 
 levels.forEach(function (lvl) {
   var topics = GP.byLevel[lvl] || [];
   topics.forEach(function (t) {
     grand.units++;
-    var u = { lvl: lvl, id: t.id, n: t.questions.length, struct: [], giveaway: [], distractorHint: [], semantic: [], ambig: [] };
+    var u = { lvl: lvl, id: t.id, n: t.questions.length, struct: [], giveaway: [], distractorHint: [], semantic: [], ambig: [], recipe: [] };
+    var seenRecipeHints = {};
     t.questions.forEach(function (q) {
       grand.q++;
       // 1. structure
@@ -181,6 +206,13 @@ levels.forEach(function (lvl) {
         var distrIn = distr.filter(function (d) { return hasPhrase(q.hint, d); });
         if (ansIn && distrIn.length === 0) u.giveaway.push(q.stem + '  ==> ans "' + ansText + '" | hint: ' + q.hint);
         else if (!ansIn && distrIn.length > 0) u.distractorHint.push(q.stem + '  ==> only wrong opt in hint: ' + distrIn.join(',') + ' | hint: ' + q.hint);
+      }
+
+      // 2b. recipe hint (report once per distinct hint text per unit)
+      if (q.hint && !seenRecipeHints[q.hint]) {
+        seenRecipeHints[q.hint] = 1;
+        var rf = recipeFlag(q.hint);
+        if (rf) u.recipe.push(rf + ' | hint: ' + q.hint);
       }
 
       // 3. semantics (on the filled sentence)
@@ -203,7 +235,8 @@ levels.forEach(function (lvl) {
     });
     grand.struct += u.struct.length; grand.giveaway += u.giveaway.length;
     grand.distractorHint += u.distractorHint.length; grand.semantic += u.semantic.length; grand.ambig += u.ambig.length;
-    if (u.struct.length || u.giveaway.length || u.semantic.length) grand.badUnits++;
+    grand.recipe += u.recipe.length;
+    if (u.struct.length || u.giveaway.length || u.semantic.length || u.recipe.length) grand.badUnits++;
     report.push(u);
   });
 });
@@ -212,16 +245,17 @@ levels.forEach(function (lvl) {
 function head(s) { return '\n' + s + '\n' + '-'.repeat(s.length); }
 console.log(head('GRAMMAR SANITY - ' + levels.length + ' levels, ' + grand.units + ' units, ' + grand.q + ' questions'));
 report.forEach(function (u) {
-  var bad = u.struct.length + u.giveaway.length + u.semantic.length;
+  var bad = u.struct.length + u.giveaway.length + u.semantic.length + u.recipe.length;
   var flag = bad ? 'FAIL' : 'ok  ';
   var extra = (u.distractorHint.length ? ' (+' + u.distractorHint.length + ' distractor-in-hint)' : '') +
     (u.ambig.length ? ' (+' + u.ambig.length + ' ambiguous?)' : '');
   console.log(flag + '  ' + (u.lvl + '/' + u.id).padEnd(34) + ' n=' + String(u.n).padStart(4) +
-    '  struct=' + u.struct.length + ' giveaway=' + u.giveaway.length + ' semantic=' + u.semantic.length + extra);
+    '  struct=' + u.struct.length + ' giveaway=' + u.giveaway.length + ' semantic=' + u.semantic.length + ' recipe=' + u.recipe.length + extra);
   if (SHOW_SAMPLES) {
     u.struct.slice(0, 3).forEach(function (x) { console.log('        STRUCT   ' + x); });
     u.giveaway.slice(0, 4).forEach(function (x) { console.log('        GIVEAWAY ' + x); });
     u.semantic.slice(0, 6).forEach(function (x) { console.log('        SEMANTIC ' + x); });
+    u.recipe.slice(0, 3).forEach(function (x) { console.log('        RECIPE   ' + x); });
     u.ambig.slice(0, 6).forEach(function (x) { console.log('        AMBIG?   ' + x); });
   }
 });
@@ -231,8 +265,9 @@ console.log('units              ' + grand.units + ' (' + grand.badUnits + ' fail
 console.log('structure issues   ' + grand.struct);
 console.log('hint give-aways    ' + grand.giveaway);
 console.log('semantic nonsense  ' + grand.semantic);
+console.log('recipe hints       ' + grand.recipe + '  (hint names the tested structure or its formula)');
 console.log('distractor-in-hint ' + grand.distractorHint + '  (review-only, not a hard fail)');
 console.log('ambiguous?         ' + grand.ambig + '  (review-only heuristic: maybe >1 correct answer)');
-var hardFail = grand.struct + grand.giveaway + grand.semantic;
+var hardFail = grand.struct + grand.giveaway + grand.semantic + grand.recipe;
 console.log('\n' + (hardFail === 0 ? 'PASS - every unit is clean' : 'FAIL - ' + hardFail + ' hard issues across ' + grand.badUnits + ' units'));
 process.exit(hardFail === 0 ? 0 : 1);

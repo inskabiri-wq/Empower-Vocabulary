@@ -52,9 +52,9 @@ body {
 .cor-select:focus, .cor-task:focus, .cor-essay:focus, .cor-json:focus {
   outline: none; border-color: var(--accent-primary, #3b82f6); box-shadow: 0 0 0 3px rgba(59,130,246,0.18); }
 
-/* Level segmented control */
-.cor-levels { display: inline-flex; gap: 6px; background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border-color, rgba(59,130,246,0.2)); border-radius: 12px; padding: 4px; }
+/* Level segmented control - same box family as the inputs (universal look) */
+.cor-levels { display: inline-flex; gap: 6px; background: #0f1729;
+  border: 1px solid var(--border-color, rgba(59,130,246,0.25)); border-radius: 12px; padding: 4px; }
 .cor-level-btn { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-family: inherit;
   border: 1px solid transparent; background: transparent; color: var(--text-secondary, #94a3b8);
   padding: 7px 14px; border-radius: 9px; font-weight: 700; font-size: 0.9rem; transition: all .15s; }
@@ -63,10 +63,24 @@ body {
 .cor-level-btn.active { background: var(--accent-gradient, linear-gradient(135deg,#3b82f6,#0ea5e9)); color: #fff;
   box-shadow: 0 6px 18px rgba(59,130,246,0.35); }
 
-/* Simpler-language toggle */
-.cor-toggle { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem;
-  font-weight: 600; color: var(--text-secondary, #94a3b8); user-select: none; }
-.cor-toggle input { width: 16px; height: 16px; accent-color: var(--accent-primary, #3b82f6); cursor: pointer; }
+/* Simpler-language toggle - a proper box like every other control, and pinned
+   to the RIGHT of the row (margin-left:auto) so hiding the Deep button can
+   never shift it sideways. */
+.cor-toggle { margin-left: auto; display: inline-flex; align-items: center; gap: 9px; cursor: pointer;
+  font-size: 0.85rem; font-weight: 600; color: var(--text-secondary, #94a3b8); user-select: none;
+  background: #0f1729; border: 1px solid var(--border-color, rgba(59,130,246,0.25));
+  border-radius: 12px; padding: 10px 14px; white-space: nowrap;
+  transition: border-color .15s, color .15s; }
+.cor-toggle:hover { border-color: var(--accent-primary, #3b82f6); color: var(--text-primary, #f8fafc); }
+.cor-toggle input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent-primary, #3b82f6); cursor: pointer; }
+
+/* Signed-in but not granted Writing AI - same posture as the dashboards. */
+.cor-gate-denied { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.cor-gate-box { max-width: 460px; text-align: center; background: var(--bg-card, #152035);
+  border: 1px solid var(--border-color, rgba(59,130,246,0.2)); border-radius: 16px; padding: 32px 28px; }
+.cor-gate-box h2 { margin: 0 0 10px; font-size: 1.15rem; color: var(--text-primary, #f8fafc); }
+.cor-gate-box p { margin: 0 0 14px; color: var(--text-secondary, #94a3b8); font-size: 0.95rem; line-height: 1.6; }
+.cor-gate-mail { font-weight: 700; color: var(--accent-primary, #3b82f6); }
 
 .cor-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
 .cor-btn { cursor: pointer; font-family: inherit; font-weight: 700; font-size: 0.92rem;
@@ -307,8 +321,19 @@ body.cor-editing .cor-ed:hover { outline-color: rgba(59,130,246,0.7); }
 @media print {
   @page { margin: 14mm; }
   body { background: #fff !important; }
+  /* EVERY on-screen control must be gone from the PDF. .cor-topactions holds
+     Reset / Edit all / Print / Release (these were printing), .cor-sec-edit is
+     the per-section pencil, .cor-modal is the release dialog. */
   .cor-toolbar, .cor-dev, .cor-ribbon, .cor-actions, .cor-legend, .cor-foot,
-  .cor-tabs, .cor-vs-cell, .cor-del, .cor-add, .cor-crit-count { display: none !important; }
+  .cor-tabs, .cor-vs-cell, .cor-del, .cor-add, .cor-crit-count,
+  .cor-topactions, .cor-sec-edit, .cor-modal { display: none !important; }
+  /* One full-width column on paper. The on-screen multi-column grid leaves
+     half the page blank whenever a group has a single comment, and rows align
+     to the tallest cell, which is where the big empty gaps came from. */
+  .cor-comments { grid-template-columns: 1fr !important; }
+  .cor-crit-grid { grid-template-columns: 1fr 1fr !important; }
+  .cor-comment, .cor-rewrite, .cor-crit { break-inside: avoid; page-break-inside: avoid; }
+  .cor-grouphdr { break-after: avoid; page-break-after: avoid; }
   .cor-app { max-width: none; padding: 0; }
   .cor-header h1, .cor-tag { -webkit-text-fill-color: #111 !important; color: #111 !important; }
   .cor-pcard, .cor-card, .cor-essaybox { box-shadow: none !important; background: #fff !important;

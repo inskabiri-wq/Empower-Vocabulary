@@ -1139,6 +1139,13 @@
     if (state.timerHandle) { clearInterval(state.timerHandle); state.timerHandle = null; }
     applyLockdownAttr();          // drops data-lockdown so results screen is interactive
     const result = computeScore();
+    // Optional host-page hook (placement.html): hand over the score without
+    // touching the normal results flow. Fail-silent by design.
+    try {
+      if (typeof window.onReadingExamSubmitted === 'function') {
+        window.onReadingExamSubmitted({ correct: result.totalCorrect, total: result.totalQuestions, pct: result.totalPct, examId: state.exam && state.exam.id });
+      }
+    } catch (_) {}
     // Persist to Firestore so the teacher dashboard can see the
     // attempt. Fire-and-forget — the results screen renders
     // immediately and the network write happens in the background.

@@ -1,5 +1,5 @@
 /* ============================================================
-   LINGUALAB — Service Worker (PWA)
+   LINGUALAB - Service Worker (PWA)
    ------------------------------------------------------------
    Goal: installable + fast repeat-opens + offline shell, WITHOUT
    ever serving a stale version after you deploy, and WITHOUT
@@ -11,7 +11,7 @@
        get stuck on an old page.
      • Static files (css/js/png/woff/json) → CACHE-FIRST within the
        current version, so repeat opens are instant. The cache name
-       is VERSIONED — bump CACHE_VERSION on each meaningful deploy
+       is VERSIONED - bump CACHE_VERSION on each meaningful deploy
        and the `activate` step purges the old cache, so a new deploy
        refreshes assets cleanly.
      • Firebase / Google / any cross-origin request → NOT touched.
@@ -27,11 +27,11 @@
        always network-first so pages are fresh regardless.
    ============================================================ */
 
-const CACHE_VERSION = 'v72';
+const CACHE_VERSION = 'v112';
 const CACHE_NAME = 'empower-shell-' + CACHE_VERSION;
 const CACHE_PREFIX = 'empower-shell-';
 
-// Tiny precache — just the login entry + manifest/icon so the very
+// Tiny precache - just the login entry + manifest/icon so the very
 // first offline open shows something. Everything else is cached
 // on-demand as the student navigates. Kept minimal so install is fast.
 const PRECACHE = [

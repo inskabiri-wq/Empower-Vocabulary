@@ -23,6 +23,17 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// LOCAL TESTING ONLY: same emulator opt-in as classroom/js/teacher.js
+// (localhost + localStorage.useEmulators='1'). Production untouched.
+try {
+  if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') &&
+      localStorage.getItem('useEmulators') === '1') {
+    auth.useEmulator('http://127.0.0.1:9099');
+    db.useEmulator('127.0.0.1', 8080);
+    console.warn('[emulator] connected to LOCAL Auth (9099) + Firestore (8080)');
+  }
+} catch (e) { /* never block app boot */ }
+
 // ============================================
 // PARTICLES ANIMATION
 // ============================================
@@ -243,12 +254,13 @@ async function joinSession() {
   const codeInput = document.getElementById('sessionCodeInput');
   const code = codeInput.value.trim().toUpperCase();
 
-  // Two valid code shapes now:
-  //   • 6-char (vocab race / classic classroom)  — classroom_sessions
-  //   • 4-char (The Heist)                       — heist_sessions
+  // Three valid code shapes now:
+  //   • 6-char (vocab race / classic classroom)  - classroom_sessions
+  //   • 5-char (Tug of War / Bingo / Scramble)   - *_sessions mini-games
+  //   • 4-char (The Heist)                       - heist_sessions
   // Reject anything else early.
-  if (code.length !== 6 && code.length !== 4) {
-    showError('Codes are 4 letters (Heist) or 6 characters (Classroom).');
+  if (code.length !== 6 && code.length !== 5 && code.length !== 4) {
+    showError('Codes are 4 letters (Heist), 5 (mini-games) or 6 (Classroom).');
     return;
   }
 
@@ -265,6 +277,27 @@ async function joinSession() {
         return;
       }
       showError('Heist room not found. Check the code with your teacher.');
+      return;
+    }
+
+    // 5-char codes belong to the mini-games (Tug of War / Vocab Bingo /
+    // Sentence Scramble). Check each collection and redirect to the
+    // matching student page with the code pre-filled - same pattern as
+    // the Heist redirect above.
+    if (code.length === 5) {
+      const miniGames = [
+        ['tug_sessions', 'classroom-tug-student.html'],
+        ['bingo_sessions', 'classroom-bingo-student.html'],
+        ['scramble_sessions', 'classroom-scramble-student.html']
+      ];
+      for (const [coll, page] of miniGames) {
+        const doc = await db.collection(coll).doc(code).get();
+        if (doc.exists) {
+          window.location.href = page + '?code=' + encodeURIComponent(code);
+          return;
+        }
+      }
+      showError('Game not found. Check the code with your teacher.');
       return;
     }
 
@@ -905,7 +938,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (joinBtn) joinBtn.focus();
       }
     }
-  } catch (_) { /* URLSearchParams not supported — ignore */ }
+  } catch (_) { /* URLSearchParams not supported - ignore */ }
 
   // Note: bgMusic 'ended' listener and initial volume are set in the IIFE
   // above (line ~166). Duplicating them here caused two playRandomTrack()

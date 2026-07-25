@@ -43,11 +43,15 @@
     const box = document.getElementById('grammarTopicsBox');
     if (!box) return;
     const data = GP();
-    const topics = (data && data.byLevel && data.byLevel[level]) ? data.byLevel[level] : [];
+    let topics = (data && data.byLevel && data.byLevel[level]) ? data.byLevel[level] : [];
     if (!level) {
       box.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9em; margin: 0;">Pick a level first.</p>';
       return;
     }
+    // Drop topics the admin hid from ASSIGNMENTS (contentControls.assignmentsHidden
+    // .grammar). Fail open if the shared list has not loaded yet.
+    const ahG = (window.CC_ASSIGNMENTS_HIDDEN && Array.isArray(window.CC_ASSIGNMENTS_HIDDEN.grammar)) ? window.CC_ASSIGNMENTS_HIDDEN.grammar : [];
+    if (ahG.length) topics = topics.filter(t => ahG.indexOf(t.id) === -1);
     if (!topics.length) {
       box.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9em; margin: 0;">No topics for this level yet.</p>';
       return;

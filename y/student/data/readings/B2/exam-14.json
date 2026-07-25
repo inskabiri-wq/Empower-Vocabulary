@@ -1,0 +1,256 @@
+{
+ "id": "b2-r14",
+ "level": "B2",
+ "title": "B2 Reading 14 - Gold",
+ "subtitle": "One passage · Headings, MCQ, short-answer",
+ "timeLimitMin": 20,
+ "passages": [
+  {
+   "passageNumber": 1,
+   "title": "Gold",
+   "introHtml": "",
+   "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Gold was the first metal widely known to our species. When thinking about the historical progress of technology, people often consider the development of iron and copper as the greatest contributions to our species' economic and cultural progress, but gold actually came first. Gold is the easiest of the metals to work. It occurs in a virtually pure and workable state, whereas most other metals tend to be found in ore-bodies that pose some difficulty in smelting. Gold's early uses were no doubt ornamental, and its brilliance and permanence linked it to deities and royalty in early civilisations.</p><p class=\"rd-para\" data-para=\"2\">In virtually every culture around the world gold is prized, as it seems to be a natural law that things that are pretty and rare at the same time become valuable. Over time, this asset most precious to humans became a means of payment for a simple reason: it concentrates the highest value in a limited space. The more value is contained in a coin, the easier and cheaper storage and transactions become. Its reputation grew so strong that many times in history, gold was the world's number one currency. Of course, the fact that gold cannot be artificially produced or printed by any government helps immensely.</p><p class=\"rd-para\" data-para=\"3\">Gold works in the opposite way to Wall Street products or most currencies, as gold appreciates when markets are in bad shape. In addition to this, there is a reasonably strong principle that when the US dollar is strong, the price of gold goes down and when the US dollar is weak, the reverse happens. Due to its stability and these trends, gold has been dubbed a safe haven. It enables investors and savers to weather a financial storm and then set out for more profitable investments after the storm is over. The nice side effect is that not only do they survive the storm, they also make a profit from it.</p><p class=\"rd-para\" data-para=\"4\">Geologists have worked out that most of the gold that has been on Earth since its formation lies close to the Earth's core. This is because of its high density, which over time made it sink down, along with many other valuable metals. Gold found near the Earth's surface is theorised to have fallen to Earth approximately 3.8 million years ago, when the planet was hit by billions of tons of rock during a massive asteroid shower. As well as other minerals, there was gold in those asteroids and it has not had time to sink with the rest of the Earth's gold.</p><p class=\"rd-para\" data-para=\"5\">One of the first records society has of gold mining is from the Greeks. The science may have been primitive, but the Greeks learned much about the practicalities of gold mining. The Greeks mined gold from Spain to Egypt, and we find traces of their mines even today. From records, it can be learned that some of the mines were owned by the governments and some were worked privately with a duty paid to the state. The Roman Empire furthered the quest for gold. The Romans mined gold extensively throughout their empire, and advanced the technology of gold-mining considerably. They diverted streams of water to mine hydraulically, and built sluices and the first 'long toms'. They mined underground also, and introduced water wheels and the 'roasting' of gold-bearing ores to separate the gold from rock. They were able to efficiently exploit old mine-sites, and of course their costs were low, as their chief labourers were slaves. Finding gold can also start with an enthusiast in a river with a pan. The process basically consists of placing the material to be processed into a pan with water and shaking it until the gold, which is heavy, works its way down toward the bottom while the lighter, worthless materials rise to the surface and are swept away. Gold on a large scale can be mined in different ways, but they all involve the removal of large amounts of rock and treating it to obtain any gold within. Methods for extracting the gold from the crushed rock vary according to local conditions, but the processes can be highly toxic with the use of cyanide and hydrochloric acid.</p><p class=\"rd-para\" data-para=\"6\">Gold has long been a medium of exchange and investment. However, although governments of most countries include holdings of gold as part of their monetary reserves, many are starting to reduce their holdings. Gold is an important material for jewellery, dentistry, and the adornment of buildings and for artistic purposes. In addition, its high electrical conductivity, malleability and ductility favour the use of gold in electronic and computer circuitry, radar equipment and satellites. An important and growing use is in the mechanism and circuitry of safety air bags in motor vehicles.</p>",
+   "sections": [
+    {
+     "id": "headings",
+     "type": "match-headings",
+     "label": "Part A",
+     "instructions": "Match the paragraphs with the headings. There is ONE extra heading.",
+     "options": [
+      {
+       "id": "A",
+       "text": "Man's original metal"
+      },
+      {
+       "id": "B",
+       "text": "How gold became valuable"
+      },
+      {
+       "id": "C",
+       "text": "Safety in the bad times"
+      },
+      {
+       "id": "D",
+       "text": "Where did it come from?"
+      },
+      {
+       "id": "E",
+       "text": "Getting the gold out"
+      },
+      {
+       "id": "F",
+       "text": "The many uses of gold"
+      },
+      {
+       "id": "G",
+       "text": "Legends of lost treasure"
+      }
+     ],
+     "items": [
+      {
+       "id": "p1",
+       "label": "Paragraph 1",
+       "answer": "A"
+      },
+      {
+       "id": "p2",
+       "label": "Paragraph 2",
+       "answer": "B"
+      },
+      {
+       "id": "p3",
+       "label": "Paragraph 3",
+       "answer": "C"
+      },
+      {
+       "id": "p4",
+       "label": "Paragraph 4",
+       "answer": "D"
+      },
+      {
+       "id": "p5",
+       "label": "Paragraph 5",
+       "answer": "E"
+      },
+      {
+       "id": "p6",
+       "label": "Paragraph 6",
+       "answer": "F"
+      }
+     ]
+    },
+    {
+     "id": "mcq",
+     "type": "mcq",
+     "label": "Part B",
+     "instructions": "Circle the best answer according to the text.",
+     "items": [
+      {
+       "id": "m1",
+       "question": "Gold became a convenient form of money mainly because _____.",
+       "options": [
+        {
+         "id": "a",
+         "text": "it can be produced cheaply by governments"
+        },
+        {
+         "id": "b",
+         "text": "it holds the greatest value in a small space"
+        },
+        {
+         "id": "c",
+         "text": "it is the rarest of all the metals"
+        },
+        {
+         "id": "d",
+         "text": "it is easier to store than paper money"
+        }
+       ],
+       "answer": "b"
+      },
+      {
+       "id": "m2",
+       "question": "According to the text, when the US dollar is weak, the price of gold _____.",
+       "options": [
+        {
+         "id": "a",
+         "text": "stays the same"
+        },
+        {
+         "id": "b",
+         "text": "falls"
+        },
+        {
+         "id": "c",
+         "text": "rises"
+        },
+        {
+         "id": "d",
+         "text": "becomes unpredictable"
+        }
+       ],
+       "answer": "c"
+      },
+      {
+       "id": "m3",
+       "question": "Most of the gold that formed with the Earth is now near the core because _____.",
+       "options": [
+        {
+         "id": "a",
+         "text": "it arrived later than other metals"
+        },
+        {
+         "id": "b",
+         "text": "its high density made it sink"
+        },
+        {
+         "id": "c",
+         "text": "it was buried by asteroid strikes"
+        },
+        {
+         "id": "d",
+         "text": "it reacts with surface minerals"
+        }
+       ],
+       "answer": "b"
+      },
+      {
+       "id": "m4",
+       "question": "The Romans were able to keep their gold-mining costs low because _____.",
+       "options": [
+        {
+         "id": "a",
+         "text": "their main workers were slaves"
+        },
+        {
+         "id": "b",
+         "text": "they only reused old mine-sites"
+        },
+        {
+         "id": "c",
+         "text": "they mined mostly on the surface"
+        },
+        {
+         "id": "d",
+         "text": "they paid no duty to the state"
+        }
+       ],
+       "answer": "a"
+      }
+     ]
+    },
+    {
+     "id": "shortanswer",
+     "type": "find-word",
+     "label": "Part C",
+     "instructions": "Find the answers from the text. Do not use more than 3 words.",
+     "items": [
+      {
+       "id": "s1",
+       "definition": "As well as their gods, early civilisations linked gold to which group of people?",
+       "answer": "royalty",
+       "acceptable": [
+        "royalty"
+       ]
+      },
+      {
+       "id": "s2",
+       "definition": "What name has gold been given because its value rises when markets are bad?",
+       "answer": "safe haven",
+       "acceptable": [
+        "safe haven",
+        "a safe haven"
+       ]
+      },
+      {
+       "id": "s3",
+       "definition": "Most of the Earth’s original gold lies close to which part of the planet?",
+       "answer": "core",
+       "acceptable": [
+        "core",
+        "the core",
+        "earths core",
+        "the earths core"
+       ]
+      },
+      {
+       "id": "s4",
+       "definition": "On privately worked Greek mines, what was paid to the state?",
+       "answer": "duty",
+       "acceptable": [
+        "duty",
+        "a duty"
+       ]
+      },
+      {
+       "id": "s5",
+       "definition": "What did the Romans advance considerably in gold-mining?",
+       "answer": "technology",
+       "acceptable": [
+        "technology",
+        "the technology"
+       ]
+      },
+      {
+       "id": "s6",
+       "definition": "Who did most of the labour in the Roman mines?",
+       "answer": "slaves",
+       "acceptable": [
+        "slaves"
+       ]
+      },
+      {
+       "id": "s7",
+       "definition": "Large-scale extraction can be dangerous because the substances used are described as what?",
+       "answer": "toxic",
+       "acceptable": [
+        "toxic",
+        "highly toxic"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

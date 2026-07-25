@@ -6,7 +6,7 @@
 <title>The Heist · Teacher | Lingualab</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
-<!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
+<!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
 <link rel="stylesheet" href="css/brand.css">
 <!-- Load the shared classroom stylesheet FIRST so the heist-specific
      overrides in heist.css win where needed (vault list, modals, etc.).
@@ -22,7 +22,7 @@
         immediately, then auto-create + jump to lobby.
      2. No ?auto=1 → the teacher hit this URL directly (legacy
         bookmark or mid-flight refresh). Redirect to the unified
-        Classroom Mode picker right away — synchronously, before
+        Classroom Mode picker right away - synchronously, before
         anything paints. This guarantees zero flash of any stale
         view, and removes the visual inconsistency of a duplicate
         gold-themed setup form. -->
@@ -31,7 +31,7 @@
     try {
       var auto = new URLSearchParams(location.search).get('auto') === '1';
       if (!auto) {
-        // No payload to act on — bounce to the picker BEFORE any
+        // No payload to act on - bounce to the picker BEFORE any
         // HTML below this script paints. replace() so the back
         // button still does the right thing.
         window.location.replace('classroom-teacher.html');
@@ -40,7 +40,7 @@
       // ?auto=1 path: mark the doc so the inline <style> below picks
       // the auto-creating view as the first paint.
       document.documentElement.setAttribute('data-heist-view', 'auto-creating');
-    } catch (_) { /* old browser without URLSearchParams — fall back to JS path */ }
+    } catch (_) { /* old browser without URLSearchParams - fall back to JS path */ }
   })();
 </script>
 
@@ -48,7 +48,7 @@
   html[data-heist-view="auto-creating"] #view-auto-creating { display: block !important; }
 </style>
 
-<!-- Background music control — same UI + behaviour as the Vocab Race
+<!-- Background music control - same UI + behaviour as the Vocab Race
      classroom so the two game modes feel like one app. Buttons use
      inline onclick → functions are exposed on `window` from heist-teacher.js. -->
 <div class="music-control">
@@ -87,7 +87,7 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 0: AUTO-CREATING — flashed for the half-second
+       VIEW 0: AUTO-CREATING - flashed for the half-second
        between landing here from classroom-teacher.html and
        the lobby actually appearing. Without this view the
        teacher sees the setup form flash, which is ugly.
@@ -106,13 +106,13 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 1: SETUP — host configures the new room
+       VIEW 1: SETUP - host configures the new room
        (Standalone fallback; the inline form on classroom-teacher.html
        is the primary path. This still works for legacy bookmarks.)
        ════════════════════════════════════════════════════ -->
   <div id="view-lobby-setup" style="display:none;">
 
-    <!-- Hero card — explains the game with three "how it plays" steps
+    <!-- Hero card - explains the game with three "how it plays" steps
          so a teacher who's never seen this game understands the mechanic
          before they fill out the form. -->
     <div style="background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(239,68,68,0.06));
@@ -194,7 +194,7 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 2: WAITING — code displayed, roster fills, host
+       VIEW 2: WAITING - code displayed, roster fills, host
        starts the game once every student has set a password
        ════════════════════════════════════════════════════ -->
   <div id="view-lobby-waiting" style="display:none;">
@@ -216,7 +216,7 @@
           </button>
         </div>
 
-        <!-- QR card — separate, like Vocab Race -->
+        <!-- QR card - separate, like Vocab Race -->
         <div class="session-qr-card">
           <div class="session-qr-tile">
             <img id="qrImg" alt="Scan to join this session" width="220" height="220">
@@ -224,7 +224,7 @@
           <div class="session-qr-label">📱 Scan with phone camera to join</div>
         </div>
 
-        <!-- Hidden join link — kept in DOM for the host JS but not
+        <!-- Hidden join link - kept in DOM for the host JS but not
              prominently displayed; the QR and code above are the
              primary affordances. -->
         <a id="joinUrl" target="_blank" rel="noopener" style="display:none;">join link</a>
@@ -234,7 +234,7 @@
           The Heist · Lock your vaults
         </div>
 
-        <!-- Players section — reuses the Vocab Race `.players-section` -->
+        <!-- Players section - reuses the Vocab Race `.players-section` -->
         <div class="players-section">
           <div class="players-header">
             <h3 class="players-count">👥 Players: <span id="rosterCount">0</span></h3>
@@ -256,7 +256,7 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 3: LIVE — referee dashboard (board + event log)
+       VIEW 3: LIVE - referee dashboard (board + event log)
        ════════════════════════════════════════════════════ -->
   <div id="view-live" style="display:none;">
 
@@ -286,7 +286,7 @@
     </div>
 
     <!-- Full-screen QR overlay (shown when host clicks the small QR
-         above) — gives the projector audience a giant scannable target
+         above) - gives the projector audience a giant scannable target
          so a student at the back of the room can join without walking up. -->
     <div id="liveQrOverlay" style="display:none; position:fixed; inset:0;
          background:rgba(0,0,0,0.85); z-index:300; align-items:center;
@@ -325,7 +325,7 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       Themed confirm modal — replaces browser confirm(), keeps
+       Themed confirm modal - replaces browser confirm(), keeps
        the dark cyber-bank aesthetic.
        ════════════════════════════════════════════════════ -->
   <div id="heistConfirm" class="heist-modal-bg" style="display:none;">
@@ -342,7 +342,7 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 4: RESULTS — podium + full per-player analysis
+       VIEW 4: RESULTS - podium + full per-player analysis
        Teacher needs to see exactly who did what, not just a
        final coin count. Three blocks here:
          1. Podium (top 3 visually)
@@ -354,7 +354,7 @@
       <h2>🏆 Heist Complete</h2>
       <div class="heist-podium" id="podium"></div>
 
-      <!-- Per-player breakdown — sortable table the teacher can scan
+      <!-- Per-player breakdown - sortable table the teacher can scan
            at a glance. Counters come straight off the player docs the
            referee updated during play. -->
       <h3 style="margin-top: 30px; margin-bottom: 12px; text-align:left;
@@ -381,7 +381,7 @@
         </table>
       </div>
 
-      <!-- Hack log — chronological, every attempt resolved. -->
+      <!-- Hack log - chronological, every attempt resolved. -->
       <h3 style="margin-top: 28px; margin-bottom: 12px; text-align:left;
                  color: var(--heist-text-mut); font-weight:700;
                  letter-spacing:0.12em; text-transform:uppercase; font-size:0.85em;">
@@ -416,6 +416,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<!-- Persists a finished-game record for Admin > Reports. -->
+<script src="classroom/js/game-report.js?v=1"></script>
 <script src="classroom/js/heist-teacher.js"></script>
 
 <!-- Mirror liveCode badge into the live header (set once code exists) -->

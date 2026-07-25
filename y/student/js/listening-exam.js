@@ -642,6 +642,13 @@ function submitListeningExam() {
 
   // Show results
   const pct = Math.round((totalCorrect / totalQuestions) * 100);
+  // Optional host-page hook (placement.html): hand over the score without
+  // touching the normal results flow. Fail-silent by design.
+  try {
+    if (typeof window.onListeningExamSubmitted === 'function') {
+      window.onListeningExamSubmitted({ correct: totalCorrect, total: totalQuestions, pct: pct, examId: exam && exam.id });
+    }
+  } catch (_) {}
   const resultsArea = document.getElementById('examResultsArea');
   resultsArea.style.display = 'block';
   resultsArea.innerHTML = `

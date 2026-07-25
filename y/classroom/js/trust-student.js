@@ -1,5 +1,5 @@
 /* ============================================================
-   TRUST NO ONE — Student client — Phase 1
+   TRUST NO ONE - Student client - Phase 1
    ----------------------------------------------------------------
    Flow:
      1. Land on page, optionally with ?code=XXXX prefilled.
@@ -156,7 +156,7 @@
       const r = await fetch('classroom/data/heist-packs.json', { cache: 'no-store' });
       const j = await r.json();
       packData = (j.packs || []).find(p => p.id === session.packId);
-      if (!packData) { toast('Question pack missing — refresh and try again', 'fail'); return; }
+      if (!packData) { toast('Question pack missing - refresh and try again', 'fail'); return; }
     } catch (e) {
       console.error('pack load', e);
       toast('Could not load the question pack', 'fail');
@@ -209,7 +209,7 @@
       .onSnapshot(snap => {
         cluesCache = snap.docs.map(d => d.data());
         renderClueFeed();
-        // Phase 4: keep the ghost's feed live too — same data,
+        // Phase 4: keep the ghost's feed live too - same data,
         // separate node; the function no-ops if the ghost view's
         // not in the DOM yet.
         renderGhostClueFeed();
@@ -220,7 +220,7 @@
     const el = document.getElementById('clueFeed');
     if (!el) return;
     if (!cluesCache.length) return;
-    // Students don't see truth tags — that's the whole social-deduction
+    // Students don't see truth tags - that's the whole social-deduction
     // game. They just see the clue + time.
     el.innerHTML = cluesCache.map(c => {
       const t = c.createdAt && c.createdAt.toDate
@@ -357,7 +357,7 @@
       // teammates AND own ghost-mode earnings).
       updateGhostCoins();
       // Phase 3: alive → false transition routes us to the ghost view
-      // (unless we're currently in the meeting / eject reveal — those
+      // (unless we're currently in the meeting / eject reveal - those
       // own their own exit). The session-status handler picks us back
       // up when the meeting resolves and status flips to 'playing'.
       if (prevAlive !== false && d.alive === false) {
@@ -418,7 +418,7 @@
 
     const brief = document.getElementById('liftoffBrief');
     brief.textContent = role === 'impostor'
-      ? 'Blend in. Answer questions like everyone else but sabotage when the time is right. Lie at meetings. Survive the votes — and don\'t let them outnumber you.'
+      ? 'Blend in. Answer questions like everyone else but sabotage when the time is right. Lie at meetings. Survive the votes - and don\'t let them outnumber you.'
       : 'Run investigations by answering vocab questions. Use clues and meetings to spot the impostors and vote them out before they outnumber the crew.';
 
     // Impostors see their fellow impostors.
@@ -431,7 +431,7 @@
           '</strong>';
         bd.style.display = '';
       } else {
-        bd.innerHTML = '<strong>You\'re the only impostor.</strong> No backup — choose your sabotages well.';
+        bd.innerHTML = '<strong>You\'re the only impostor.</strong> No backup - choose your sabotages well.';
         bd.style.display = '';
       }
     }
@@ -481,16 +481,17 @@
       plantBtn.style.opacity = plantBtn.disabled ? '0.5' : '1';
     }
   }
-  // Grammar question queue — pulled from the generated grammar bank
+  // Grammar question queue - pulled from the generated grammar bank
   // (grammar-content.js is loaded on the trust student page). Each item
   // carries its own 4 options, so no pack distractors are needed.
   function buildGrammarQueue() {
     const GP = window.GRAMMAR_PRACTICE;
     const topics = (GP && GP.byLevel && GP.byLevel[session.grammarLevel]) || [];
     const unitOf = t => { const m = String(t.blurb || '').match(/Units?\s+(\d+)/i); return m ? parseInt(m[1], 10) : 0; };
-    let list = topics;
+    // Drop topics the admin hid from CLASSROOM (classroomHidden.grammar).
+    let list = topics.filter(t => !(typeof window.ccClassroomGrammarHidden === 'function' && window.ccClassroomGrammarHidden(t.id)));
     if (session.grammarUnit && session.grammarUnit !== 'all') {
-      list = topics.filter(t => unitOf(t) === parseInt(session.grammarUnit, 10));
+      list = list.filter(t => unitOf(t) === parseInt(session.grammarUnit, 10));
     }
     const out = [];
     list.forEach(t => (t.questions || []).forEach(q => out.push({
@@ -589,7 +590,7 @@
       .filter(p => p.alive !== false)
       .map(p => {
         const isMe = p.uid === myUid;
-        // Sabotage button — only visible to impostors, only on
+        // Sabotage button - only visible to impostors, only on
         // crewmates (no friendly fire), only when we have charges.
         // The host's resolveSabotage applies the effect; we just
         // file the request.
@@ -648,7 +649,7 @@
     const bg = document.getElementById('plantClueModal');
     if (!bg) return;
     const targetList = document.getElementById('plantClueTargets');
-    // Only show CREWMATES as targets — framing a fellow impostor is
+    // Only show CREWMATES as targets - framing a fellow impostor is
     // strategically counterproductive AND would out yourself.
     const targets = allPlayers.filter(p => p.alive !== false && p.role !== 'impostor' && p.uid !== myUid);
     if (!targets.length) {
@@ -680,7 +681,7 @@
   }
 
   // ── Phase 3: emergency-meeting trigger from student side ──
-  // Student creates the /meetings doc with status: 'open' — the
+  // Student creates the /meetings doc with status: 'open' - the
   // host's tab is listening for this and flips session.status to
   // 'meeting' (rules restrict session updates to the host).
   async function callEmergencyMeeting() {
@@ -765,7 +766,7 @@
     unsubMeeting = mref.onSnapshot(doc => {
       const m = doc.data();
       if (!m) return;
-      document.getElementById('meetingCalledBy').textContent = m.calledByName || '—';
+      document.getElementById('meetingCalledBy').textContent = m.calledByName || '-';
       const rRow = document.getElementById('meetingReasonRow');
       if (rRow) rRow.textContent = m.reason ? `"${m.reason}"` : '';
       const startedAt = m.startedAt && m.startedAt.toMillis ? m.startedAt.toMillis() : null;
@@ -776,7 +777,7 @@
       }
     });
     unsubMeetingVotes = mref.collection('votes').onSnapshot(snap => {
-      // We don't show live counts to students — but we do use this to
+      // We don't show live counts to students - but we do use this to
       // detect whether OUR vote landed (in case Firestore retry).
       const me = snap.docs.find(d => d.id === myUid);
       if (me) myVoteTarget = me.data().targetUid;
@@ -831,7 +832,7 @@
     const myVoteLine = document.getElementById('meetingMyVote');
     if (myVoteLine) {
       if (iAmDead) {
-        myVoteLine.textContent = '👻 You\'ve been ejected — observing only.';
+        myVoteLine.textContent = '👻 You\'ve been ejected - observing only.';
       } else if (myVoteTarget) {
         const t = myVoteTarget === 'skip' ? 'Skip' :
           (allPlayers.find(p => p.uid === myVoteTarget) || {}).name || 'someone';
@@ -1086,7 +1087,7 @@
   // ── Done view ──────────────────────────────────────────────
   function enterDone() {
     setView('done');
-    const myRole = (myPlayer && myPlayer.role) || '—';
+    const myRole = (myPlayer && myPlayer.role) || '-';
     const sorted = [...allPlayers].sort((a, b) => (b.balance || 0) - (a.balance || 0));
     const myRank = sorted.findIndex(p => p.uid === myUid);
     const finalEl = document.getElementById('myFinal');
@@ -1099,7 +1100,7 @@
       <div style="color: var(--t-text-mut);">
         Final coins: <strong style="color: var(--t-amber-2);">💸 ${(myPlayer && myPlayer.balance) || 0}</strong>
         · Investigations: <strong>${(myPlayer && myPlayer.investigationsCompleted) || 0}</strong>
-        · Rank: <strong>#${myRank >= 0 ? myRank + 1 : '—'}</strong> of ${sorted.length}
+        · Rank: <strong>#${myRank >= 0 ? myRank + 1 : '-'}</strong> of ${sorted.length}
       </div>
     `;
     unsubs.forEach(u => { try { u(); } catch (_) {} });
@@ -1143,7 +1144,7 @@
     setView('join');
   });
 
-  // refresh-guard.js predicate — themed double-confirm on F5 / Ctrl+R
+  // refresh-guard.js predicate - themed double-confirm on F5 / Ctrl+R
   // active during any in-flight Trust No One state (the post-eject
   // ghost view stays interactive, so protect it too).
   window.refreshGuardShouldProtect = () => {

@@ -16,7 +16,7 @@
 </head>
 <body class="reading">
 
-<!-- PRE-PAINT SYNC — only ?auto=1 is a valid entry. Without it,
+<!-- PRE-PAINT SYNC - only ?auto=1 is a valid entry. Without it,
      bounce back to the unified Classroom Mode picker. Prevents any
      stale view from briefly painting before the JS auth+setup runs. -->
 <script>
@@ -60,7 +60,7 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 0: AUTO-CREATING — flashed for the half-second
+       VIEW 0: AUTO-CREATING - flashed for the half-second
        between landing here and the lobby actually appearing.
        ════════════════════════════════════════════════════ -->
   <div id="view-auto-creating" style="display:none;">
@@ -126,11 +126,11 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 2: LIVE — host's exam dashboard.
+       VIEW 2: LIVE - host's exam dashboard.
          • LEFT pane: the passage at full size (projector-friendly).
          • RIGHT pane: live student-progress grid (host-only).
          • TOP bar: code, timer (or untimed badge), Reveal + End buttons.
-       Students CANNOT see this view (it's host-only — students only
+       Students CANNOT see this view (it's host-only - students only
        see their question list on their phones).
        ════════════════════════════════════════════════════ -->
   <div id="view-live" style="display:none;">
@@ -160,7 +160,7 @@
 
     <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap: 14px; margin-top: 14px;">
 
-      <!-- Passage pane — projected for the classroom. -->
+      <!-- Passage pane - projected for the classroom. -->
       <div class="reading-passage-pane">
         <div class="passage-header">
           <h2 id="passageTitle">Passage</h2>
@@ -191,7 +191,7 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       VIEW 3: RESULTS — final podium + per-question breakdown
+       VIEW 3: RESULTS - final podium + per-question breakdown
        + per-student table. Reached when the host clicks End
        exam (or the timer expires).
        ════════════════════════════════════════════════════ -->
@@ -234,7 +234,7 @@
 
 </div>
 
-<!-- Themed confirm modal — replaces native confirm() for End-exam etc. -->
+<!-- Themed confirm modal - replaces native confirm() for End-exam etc. -->
 <div id="readingConfirm" class="modal-overlay" style="display:none;">
   <div class="modal-content" style="max-width: 380px; border-color: rgba(251, 113, 133, 0.35) !important;">
     <h3 class="modal-title" id="readingConfirmTitle">Are you sure?</h3>
@@ -251,6 +251,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="assignments/js/exam-registry.js"></script>
+<!-- Persists a finished-game record for Admin > Reports. -->
+<script src="classroom/js/game-report.js?v=1"></script>
 <script src="classroom/js/reading-teacher.js"></script>
 
 <script src="js/classroom-timer.js?v=3"></script>

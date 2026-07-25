@@ -1,5 +1,5 @@
 /* ============================================================
-   EXAM ASSIGNMENT FORM — Phase 2 (reading + listening)
+   EXAM ASSIGNMENT FORM - Phase 2 (reading + listening)
    Shared modal logic for skill='reading' and skill='listening'.
    Replaces the placeholder where those tiles opened the
    vocabulary form. Reads from EXAM_REGISTRY for the exam picker.
@@ -22,6 +22,41 @@
   // Set when openExamAssignmentModal(skill) is called.
   let activeExamSkill = 'reading';
 
+  // Admin content controls: exams the admin has hidden from the ASSIGNMENTS
+  // scope (settings/contentControls.assignmentsHidden). Loaded once, lazily;
+  // a missing doc or read error means nothing is hidden (fail open).
+  // Shared across the assignment forms: exam-form (reading/listening), plus
+  // grammar-form (grammar topics) and the vocab unit gating in
+  // teacher-assignments.js both read window.CC_ASSIGNMENTS_HIDDEN.
+  let assignmentsHidden = { reading: [], listening: [], grammar: [], vocabulary: [] };
+  window.CC_ASSIGNMENTS_HIDDEN = assignmentsHidden;
+  let assignmentsHiddenLoaded = false;
+  function loadAssignmentsHidden() {
+    if (assignmentsHiddenLoaded || typeof db === 'undefined') return;
+    assignmentsHiddenLoaded = true;
+    // Live listener (not a one-shot get): the admin's Content controls panel
+    // lives on this same dashboard, so a toggle must apply to the very next
+    // modal open without a page reload.
+    db.collection('settings').doc('contentControls').onSnapshot(snap => {
+      const d = snap.exists ? (snap.data() || {}) : {};
+      const ah = (d.assignmentsHidden && typeof d.assignmentsHidden === 'object') ? d.assignmentsHidden : {};
+      assignmentsHidden = {
+        reading: Array.isArray(ah.reading) ? ah.reading : [],
+        listening: Array.isArray(ah.listening) ? ah.listening : [],
+        grammar: Array.isArray(ah.grammar) ? ah.grammar : [],
+        vocabulary: Array.isArray(ah.vocabulary) ? ah.vocabulary : []
+      };
+      window.CC_ASSIGNMENTS_HIDDEN = assignmentsHidden;
+      // If the picker is already open and untouched, refresh it so hidden
+      // exams drop out; never clobber a selection the teacher already made.
+      const sel = document.getElementById('examPickerSelect');
+      if (sel && !sel.value) populateExamDropdown();
+      // Let the grammar + vocab forms re-gate if they are open.
+      document.dispatchEvent(new CustomEvent('assignments-hidden-ready'));
+    }, e => { console.warn('assignmentsHidden listen', e); });
+  }
+  document.addEventListener('DOMContentLoaded', loadAssignmentsHidden);
+
   // ── Open / close ─────────────────────────────────────────────
   function openExamAssignmentModal(skillId, prefill) {
     activeExamSkill = (skillId === 'listening') ? 'listening' : 'reading';
@@ -42,7 +77,7 @@
       titleEl.innerHTML = `${skillMeta.icon} New ${skillMeta.name} Assignment`;
     }
 
-    // Role-based scope — non-admin loses Level/Module options + class
+    // Role-based scope - non-admin loses Level/Module options + class
     // dropdown narrows to their assigned classes + student picker to
     // students in those classes.
     if (typeof applyRoleScopeToTargetDropdown === 'function') {
@@ -72,11 +107,11 @@
   }
 
   // ── Exam dropdown ────────────────────────────────────────────
-  // Phase G — exams are grouped under <optgroup label="LEVEL"> so the
+  // Phase G - exams are grouped under <optgroup label="LEVEL"> so the
   // hierarchy (skill → level → exam) is visible at a glance. Unavailable
   // exams render disabled with a "(unavailable)" suffix so admins can
   // see what's offline without leaving the picker. We pull from
-  // EXAM_REGISTRY.examsForLevel() — the canonical catalog.
+  // EXAM_REGISTRY.examsForLevel() - the canonical catalog.
   function populateExamDropdown() {
     const sel = document.getElementById('examPickerSelect');
     const hint = document.getElementById('examPickerHint');
@@ -86,13 +121,18 @@
       return;
     }
     const levels = EXAM_REGISTRY.levelsFor(activeExamSkill);
-    // Total available across all levels — drives the "N exams"
+    // Total available across all levels - drives the "N exams"
     // banner and the empty-state branch.
     let availableCount = 0;
     let unavailableCount = 0;
 
+    loadAssignmentsHidden();
+    const hiddenIds = assignmentsHidden[activeExamSkill] || [];
     const groupsHtml = levels.map(lvl => {
-      const exams = EXAM_REGISTRY.examsForLevel(activeExamSkill, lvl);
+      // Admin-hidden (assignments scope) exams are excluded outright - the
+      // point of the control is that teachers cannot assign them.
+      const exams = (EXAM_REGISTRY.examsForLevel(activeExamSkill, lvl) || [])
+        .filter(e => hiddenIds.indexOf(e.id) === -1);
       if (!exams.length) return '';   // skip empty levels to keep the dropdown tidy
       const opts = exams.map(e => {
         const isAvail = (e.available !== false);
@@ -107,14 +147,14 @@
     }).join('');
 
     if (availableCount === 0 && unavailableCount === 0) {
-      sel.innerHTML = '<option value="">— No exams available yet —</option>';
+      sel.innerHTML = '<option value="">- No exams available yet -</option>';
       if (hint) {
         hint.textContent = `No ${activeExamSkill} exams are registered yet. Add entries to y/assignments/js/exam-registry.js to make them assignable.`;
       }
       return;
     }
 
-    sel.innerHTML = '<option value="">— Select an exam —</option>' + groupsHtml;
+    sel.innerHTML = '<option value="">- Select an exam -</option>' + groupsHtml;
     if (hint) {
       const unavailNote = unavailableCount > 0
         ? ` · <span style="color:#fbbf24;">${unavailableCount} disabled</span>`
@@ -125,7 +165,7 @@
                      font-weight:600;">
           ${availableCount} ${activeExamSkill} exam${availableCount === 1 ? '' : 's'} available
         </span>${unavailNote}
-        <span style="margin-left:6px;">— add more or toggle availability in
+        <span style="margin-left:6px;">- add more or toggle availability in
           <code style="background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:4px;">
             y/assignments/js/exam-registry.js
           </code>
@@ -148,7 +188,7 @@
   async function populateExamClasses() {
     const sel = document.getElementById('examTargetClass');
     if (!sel) return;
-    sel.innerHTML = '<option value="">— Loading classes —</option>';
+    sel.innerHTML = '<option value="">- Loading classes -</option>';
 
     const fromStudents = (Array.isArray(allStudents) ? allStudents : [])
       .map(s => (s && s.studentClass ? String(s.studentClass).trim() : ''))
@@ -164,7 +204,7 @@
     } catch (_) { /* no-op */ }
 
     const all = [...new Set([...fromStudents, ...registry])].sort();
-    sel.innerHTML = '<option value="">— Select a class —</option>'
+    sel.innerHTML = '<option value="">- Select a class -</option>'
       + all.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c.replace(/</g, '&lt;')}</option>`).join('');
   }
 

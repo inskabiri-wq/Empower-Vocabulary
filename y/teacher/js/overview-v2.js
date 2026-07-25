@@ -1,8 +1,8 @@
 /* ============================================================
-   TEACHER DASHBOARD v2 — Overview-tab data + chrome wiring
+   TEACHER DASHBOARD v2 - Overview-tab data + chrome wiring
    Phase 1 of the "Teacher's Dash" Claude Design handoff.
    Reads the SAME globals the legacy dashboard already loads
-   (allStudents, allSessions, currentUserData) — no new fetches,
+   (allStudents, allSessions, currentUserData) - no new fetches,
    no extra Firestore round-trips. Pure render layer.
    ============================================================ */
 
@@ -10,11 +10,11 @@
   'use strict';
 
   // ============================================================
-  // THEME_COLORS — JS-side mirror of the CSS palette tokens.
+  // THEME_COLORS - JS-side mirror of the CSS palette tokens.
   // Reads the values from CSS custom properties on :root so the
   // dashboard charts/badges stay aligned with the rest of the
   // teacher dashboard when colors change. Falls back to hard-coded
-  // hex if a token isn't loaded yet (defensive — shouldn't happen
+  // hex if a token isn't loaded yet (defensive - shouldn't happen
   // in practice because dashboard-v2.css loads before this script).
   //
   // Naming mirrors the --t2-* tokens in dashboard-v2.css plus a
@@ -57,11 +57,11 @@
   }
 
   // ============================================================
-  // SVG ICON SYSTEM — Lucide-style line icons
+  // SVG ICON SYSTEM - Lucide-style line icons
   //   Replaces the casual emojis that read as "playful school app"
   //   with crisp 1.8px-stroke icons that read as "tool". Each icon
   //   uses currentColor so it tints with whatever the parent text
-  //   color is — works on the sidebar (muted/active states), the
+  //   color is - works on the sidebar (muted/active states), the
   //   stat cards (per-card accent), and the panel titles.
   // ============================================================
   const ICONS = {
@@ -99,6 +99,8 @@
       '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/>',
     'plus':
       '<line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/>',
+    'pen-line':
+      '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>',
     'arrow-right':
       '<line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/>'
   };
@@ -112,7 +114,7 @@
 
   // Walk the DOM and replace any element that has [data-icon] with the
   // corresponding SVG. Run once after parse for static HTML; call again
-  // after innerHTML rewrites if needed. Idempotent — re-running on the
+  // after innerHTML rewrites if needed. Idempotent - re-running on the
   // same element just re-emits the same SVG.
   function hydrateIcons(root) {
     root = root || document;
@@ -179,7 +181,7 @@
   }
 
   // ============================================================
-  // Sparkline SVG builder — matches the design's gradient + line
+  // Sparkline SVG builder - matches the design's gradient + line
   // ============================================================
   function makeSparkline(data, color, width, height) {
     width  = width  || 100;
@@ -217,11 +219,11 @@
   }
 
   // ============================================================
-  // Period state — driven by the "Last 7 days / Last 30 days" select
+  // Period state - driven by the "Last 7 days / Last 30 days" select
   //   Window in days. Sparklines, trend deltas, and the Activity
   //   Popularity panel all key off this value.
   //   Totals (Total Students, Total Sessions, Avg Score lifetime) are
-  //   intentionally NOT windowed — they're absolute counts.
+  //   intentionally NOT windowed - they're absolute counts.
   // ============================================================
   let t2Period = 7;
 
@@ -243,7 +245,7 @@
       && document.querySelector('#t2popularity').closest('.t2-panel')
       && document.querySelector('#t2popularity').closest('.t2-panel').querySelector('.t2-panel-sub');
     if (sub) {
-      sub.textContent = `Which games students used most — last ${t2Period} days`;
+      sub.textContent = `Which games students used most - last ${t2Period} days`;
     }
   }
 
@@ -318,7 +320,7 @@
     }).length;
 
     // Per-day distinct-active-students curve. Proxy for "Total Students"
-    // sparkline since we don't have historical roster data — gives shape
+    // sparkline since we don't have historical roster data - gives shape
     // (engagement movement) without claiming to be enrollment history.
     const studentSpark = dailyActive.slice();
 
@@ -390,7 +392,7 @@
   }
 
   // ============================================================
-  // Render — Stat cards
+  // Render - Stat cards
   // ============================================================
   function renderStatCards() {
     const m = computeOverviewMetrics();
@@ -439,7 +441,7 @@
     });
   }
 
-  // Color per stat card — keeps the design's accent mapping.
+  // Color per stat card - keeps the design's accent mapping.
   // Sourced from THEME_COLORS so changing --t2-* re-themes here too.
   const CARD_ACCENTS = {
     students: THEME_COLORS.cyan,
@@ -478,7 +480,7 @@
   }
 
   // ============================================================
-  // Render — Level Distribution mini-bar chart
+  // Render - Level Distribution mini-bar chart
   // ============================================================
   const LEVELS_ORDER = ['A2', 'B1', 'B1+', 'B2', 'C1'];
   const LEVEL_COLORS = {
@@ -531,14 +533,14 @@
   }
 
   // ============================================================
-  // Render — Activity Popularity (last 7 days)
+  // Render - Activity Popularity (last 7 days)
   //   Counts sessions by `activity` field over the trailing week,
   //   ranks them, and renders a horizontal bar list. Answers
-  //   "which games are students actually using?" — directly
+  //   "which games are students actually using?" - directly
   //   actionable for content / curriculum decisions in a way the
   //   day-by-hour heatmap was not.
   // ============================================================
-  // Canonical activity meta — icon set must match activity.js
+  // Canonical activity meta - icon set must match activity.js
   // activityIcons. Each activity has ONE icon used everywhere in the
   // teacher dashboard. Colors are intentionally varied per activity to
   // make the popularity chart readable; they pull from THEME_COLORS at
@@ -598,7 +600,7 @@
       const pct = Math.max(2, Math.round((e.count / max) * 100));
       const sharePct = total > 0 ? Math.round((e.count / total) * 100) : 0;
       return `
-        <div class="t2-pop-row" title="${escapeHtml(meta.name)} — ${e.count} session${e.count === 1 ? '' : 's'} (${sharePct}% of period total)">
+        <div class="t2-pop-row" title="${escapeHtml(meta.name)} - ${e.count} session${e.count === 1 ? '' : 's'} (${sharePct}% of period total)">
           <span class="t2-pop-icon" aria-hidden="true">${meta.icon}</span>
           <span class="t2-pop-name">${escapeHtml(meta.name)}</span>
           <div class="t2-pop-track">
@@ -611,7 +613,7 @@
   }
 
   // ============================================================
-  // Render — Needs Attention list
+  // Render - Needs Attention list
   //   Reuses the legacy `allStudents` + `allSessions` + the same
   //   "struggling" definitions activity.js computes for the alert
   //   cards (inactive 7+ days, low score, no sessions).
@@ -686,7 +688,7 @@
       listEl.innerHTML = `
         <div class="t2-attn-empty">
           <span class="ico">✨</span>
-          <span>All clear — every student is engaged.</span>
+          <span>All clear - every student is engaged.</span>
         </div>
       `;
       return;
@@ -729,7 +731,7 @@
 
   // ── Flag-for-follow-up (Missing#3) ─────────────────────────
   // A lightweight local marker so a teacher can earmark students to
-  // circle back to. Persisted in localStorage (per browser) — no
+  // circle back to. Persisted in localStorage (per browser) - no
   // Firestore write, no schema change. Keyed by the teacher's uid so
   // two teachers sharing a machine don't see each other's flags.
   function _flagKey() {
@@ -763,7 +765,7 @@
     if (typeof switchTab === 'function') {
       switchTab('students');
     }
-    // Defer until the Students tab paints — the table body might be
+    // Defer until the Students tab paints - the table body might be
     // re-rendering from a filter change. Two RAFs covers the worst case.
     requestAnimationFrame(() => requestAnimationFrame(() => {
       // The students table renderer wires `data-id` on each row's
@@ -774,7 +776,7 @@
       if (!row) return;
       // Scroll the row into view in the page scroll container
       row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // Highlight pulse — applied via CSS class, removed after 2s
+      // Highlight pulse - applied via CSS class, removed after 2s
       row.classList.add('t2-row-highlight');
       setTimeout(() => row.classList.remove('t2-row-highlight'), 2000);
     }));
@@ -788,7 +790,7 @@
   window.t2OpenStudent = t2OpenStudent;
 
   // ============================================================
-  // Render — Recent Activity feed
+  // Render - Recent Activity feed
   //   Pulls the 6 most recent sessions, formats with timeAgo + a
   //   color dot mapped to the activity outcome.
   // ============================================================
@@ -831,11 +833,11 @@
     students.forEach(s => { studentNameById[s.id] = s.name || (s.email || '').split('@')[0]; });
 
     // allSessions is loaded `orderBy createdAt desc`, so already sorted.
-    // 5-item teaser — the Activity tab carries the full filterable list.
+    // 5-item teaser - the Activity tab carries the full filterable list.
     const top = sessions.slice(0, 5);
 
     if (top.length === 0) {
-      listEl.innerHTML = `<div class="t2-feed-empty">No activity yet — sessions will appear here as students practice.</div>`;
+      listEl.innerHTML = `<div class="t2-feed-empty">No activity yet - sessions will appear here as students practice.</div>`;
       return;
     }
 
@@ -867,7 +869,7 @@
   }
 
   // ============================================================
-  // Page header — greeting + per-tab subtitle
+  // Page header - greeting + per-tab subtitle
   //   "Good morning/afternoon/evening, <FirstName> 👋"
   //   Subtitle changes per active tab.
   // ============================================================
@@ -880,7 +882,7 @@
   function firstNameFromUserData() {
     const ud = (typeof currentUserData !== 'undefined') ? currentUserData : null;
     if (!ud) return 'there';
-    // Prefer the actual `name` field if set — that's what the teacher
+    // Prefer the actual `name` field if set - that's what the teacher
     // typed during registration. Take the first whitespace-separated
     // token so "Alireza Kabiri" → "Alireza".
     const name = (ud.name || '').trim();
@@ -967,7 +969,7 @@
   }
 
   function setSidebarProfile() {
-    // Same `let`-not-on-window trap as allStudents/allSessions —
+    // Same `let`-not-on-window trap as allStudents/allSessions -
     // currentUserData and currentUser are also script-top `let`.
     const ud = (typeof currentUserData !== 'undefined') ? currentUserData : null;
     const u  = (typeof currentUser     !== 'undefined') ? currentUser     : null;
@@ -987,7 +989,7 @@
   }
 
   // ============================================================
-  // Public entry point — call this AFTER loadDashboard finishes.
+  // Public entry point - call this AFTER loadDashboard finishes.
   // Renders every v2 surface in one pass.
   // ============================================================
   function renderOverviewV2() {
@@ -1000,7 +1002,7 @@
       renderRecentActivity();
       // (Confusing word pairs card is admin-only now; mounted by admin.js
       // inside the Admin tab. Intentionally NOT shown on Overview.)
-      // Header reflects the *currently active* tab — read it from the
+      // Header reflects the *currently active* tab - read it from the
       // class state on existing tab-content elements.
       const active = document.querySelector('.tab-content.active');
       const tabName = active ? active.id.replace(/^tab-/, '') : 'overview';
@@ -1025,13 +1027,13 @@
   // switchTab, then (b) registers its OWN DOMContentLoaded listener that
   // calls switchTab(savedTab) to restore the last viewed tab. If we
   // defer our patch to DOMContentLoaded, the inline listener fires first
-  // (registered earlier) and runs the unpatched switchTab — meaning the
+  // (registered earlier) and runs the unpatched switchTab - meaning the
   // sidebar's .active class never mirrors the restored tab on cold load.
   // Patching at IIFE time (this overview-v2.js file is included AFTER
   // the inline script in the HTML) sidesteps the race.
   wireSidebarSync();
 
-  // The "+ New Assignment" header button — defer to the existing
+  // The "+ New Assignment" header button - defer to the existing
   // assignment modal opener. Switch tabs first so the user lands on
   // the right context after creating.
   window.t2NewAssignment = function () {

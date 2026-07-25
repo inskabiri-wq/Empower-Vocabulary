@@ -1,0 +1,827 @@
+<!-- ============================================================
+     LINGUALAB, one-page showcase site (for GOOGLE SITES)
+     ------------------------------------------------------------
+     Self-contained: all CSS + JS inline, no external images (only
+     Google Fonts load over the network). Paste this WHOLE file into
+     a Google Sites "Embed code" block. See README.txt for steps.
+
+     20 styled UI components (same content, all emoji rebuilt as SVG icons):
+       1  Aurora + dot-grid animated background
+       2  Glass sticky nav
+       3  Animated shine logo mark
+       4  Gradient + shine button system
+       5  Pill eyebrow badges
+       6  Hero animated word-rotator
+       7  3D tilt + spotlight app mockup
+       8  Floating stat badges (bob)
+       9  Custom SVG icon set (replaces all emoji)
+      10  Gradient avatar chips (leaderboard)
+      11  Infinite marquee games ticker
+      12  Count-up stat band
+      13  Bento feature grid (spotlight tiles)
+      14  Animated gradient-border showcase card
+      15  Severity-highlight essay mock
+      16  Tabbed panel (students / teachers)
+      17  Animated beam "how it works" steps
+      18  Testimonial / value cards (tilt)
+      19  Accordion FAQ
+      20  Shine CTA + mailto contact  (+ glass footer)
+      21  Nav hover dropdown menu (spring pop)
+      22  Variable-font hover on all headings (site-wide)
+      23  Cursor-following page glow (site-wide)
+      24  Animated conic-gradient button borders (site-wide)
+     ============================================================ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- NOTE: there is deliberately NO <base target="_top"> here. Inside the
+     Google Sites embed iframe it makes every "#section" link try to move the
+     PARENT page, so the menu appears dead. In-page links now scroll inside
+     the embed (see the click handler at the bottom); only mail links carry
+     an explicit target="_top". -->
+<title>Lingualab, English learning that feels like play</title>
+<meta name="description" content="Lingualab is an all-in-one English learning platform: vocabulary, grammar, reading, listening, AI-assisted writing, a CEFR placement test, and live classroom games, with a full teacher dashboard.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070b14;
+    --bg2: #0b1220;
+    --card: rgba(255,255,255,0.035);
+    --card-2: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.09);
+    --border-2: rgba(255,255,255,0.14);
+    --text: #eef2fb;
+    --muted: #94a3c0;
+    --muted-2: #6b7896;
+    --blue: #3b82f6;
+    --cyan: #22d3ee;
+    --violet: #a855f7;
+    --pink: #ec4899;
+    --grad: linear-gradient(135deg, #3b82f6, #22d3ee);
+    --grad-3: linear-gradient(120deg, #60a5fa, #22d3ee 45%, #c084fc 80%);
+  }
+  @property --ang { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* Dark from the very first paint, and a DARK scrollbar. Inside a Google
+     Sites embed the browser's default WHITE iframe background and its light
+     scrollbar both show as white edges, so pin them here. */
+  html {
+    scroll-behavior: smooth; -webkit-text-size-adjust: 100%;
+    background: #070b14;
+    color-scheme: dark;                 /* dark form controls + scrollbars */
+    scrollbar-color: rgba(255,255,255,0.22) #070b14;   /* Firefox */
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #070b14; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.65;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;            /* short content must still paint dark */
+  }
+  h1, h2, h3, .display { font-family: 'Space Grotesk', 'Inter', sans-serif; letter-spacing: -0.02em; line-height: 1.08; }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: rgba(34,211,238,0.32); }
+  img, svg { display: block; }
+
+  /* ========== COMPONENT 1: Aurora + dot-grid background ========== */
+  .bg-fixed { position: fixed; inset: 0; z-index: -3; background:
+      radial-gradient(60% 50% at 50% -10%, #0e1a34 0%, transparent 60%),
+      radial-gradient(40% 40% at 100% 0%, #12143a 0%, transparent 55%),
+      var(--bg); }
+  .aurora { position: fixed; inset: -20% -10% auto -10%; height: 90vh; z-index: -2; filter: blur(80px); opacity: 0.55; pointer-events: none;
+    background:
+      radial-gradient(35% 45% at 20% 30%, rgba(59,130,246,0.55), transparent 70%),
+      radial-gradient(30% 40% at 70% 20%, rgba(34,211,238,0.45), transparent 70%),
+      radial-gradient(30% 45% at 50% 60%, rgba(168,85,247,0.42), transparent 70%);
+    animation: auroraMove 16s ease-in-out infinite; }
+  @keyframes auroraMove {
+    0%,100% { transform: translate3d(0,0,0) scale(1); }
+    33% { transform: translate3d(6%, 3%, 0) scale(1.1); }
+    66% { transform: translate3d(-5%, 5%, 0) scale(1.05); }
+  }
+  .dotgrid { position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px);
+    background-size: 28px 28px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, #000 0%, transparent 75%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, #000 0%, transparent 75%); }
+
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 22px; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-family: 'Space Grotesk'; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--cyan);
+    background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.22); border-radius: 999px; padding: 6px 13px; margin-bottom: 18px; }
+  .eyebrow::before { content:''; width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+  .grad-text { background: var(--grad-3); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+  /* Buttons + shine */
+  .btn { position: relative; display: inline-flex; align-items: center; gap: 9px; font-family: 'Space Grotesk'; font-weight: 600; font-size: 0.98rem; padding: 13px 25px; border-radius: 13px; cursor: pointer; border: 1px solid transparent; transition: transform .16s ease, box-shadow .22s ease; overflow: hidden; }
+  .btn-primary { background: var(--grad); color: #04121f; box-shadow: 0 10px 30px rgba(34,211,238,0.28); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 44px rgba(34,211,238,0.42); }
+  .btn-primary .shine { position: absolute; top: 0; left: -120%; width: 60%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.55), transparent); transform: skewX(-18deg); animation: shine 3.4s ease-in-out infinite; }
+  @keyframes shine { 0%,60% { left: -120%; } 100% { left: 160%; } }
+  .btn-ghost { background: rgba(255,255,255,0.04); color: var(--text); border-color: var(--border-2); }
+  .btn-ghost:hover { border-color: var(--cyan); transform: translateY(-2px); }
+  .btn-sm { padding: 9px 17px; font-size: 0.9rem; border-radius: 11px; }
+
+  /* ========== COMPONENT 2: Glass sticky nav ========== */
+  nav { position: sticky; top: 0; z-index: 60; transition: background .25s, border-color .25s, backdrop-filter .25s; border-bottom: 1px solid transparent; }
+  nav.scrolled { background: rgba(7,11,20,0.7); backdrop-filter: blur(16px) saturate(1.4); border-bottom-color: var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 70px; }
+  .brand { display: flex; align-items: center; gap: 11px; font-family: 'Space Grotesk'; font-weight: 700; font-size: 1.18rem; }
+  .brand .mark { position: relative; width: 34px; height: 34px; border-radius: 10px; background: var(--grad); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(34,211,238,0.4); overflow: hidden; }
+  .brand .mark::after { content:''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.6) 50%, transparent 60%); transform: translateX(-100%); animation: shine 4.5s ease-in-out infinite; }
+  .nav-links { display: flex; align-items: center; gap: 22px; }
+  /* Sticky-nav offset so an anchor jump never hides the section heading. */
+  section, header.hero, #top { scroll-margin-top: 86px; }
+  .nav-links a.link { font-size: 0.94rem; font-weight: 500; color: var(--muted); transition: color .15s; }
+  .nav-links a.link:hover { color: var(--text); }
+  .nav-toggle { display: none; background: none; border: none; color: var(--text); cursor: pointer; }
+
+  /* ========== COMPONENT 3: Hero ========== */
+  .hero { padding: 78px 0 64px; }
+  .hero-grid { display: grid; grid-template-columns: 1.02fr 0.98fr; gap: 46px; align-items: center; }
+  .hero h1 { font-size: clamp(2.5rem, 5.4vw, 4rem); font-weight: 700; margin-bottom: 20px; }
+  /* word rotator */
+  .rot { position: relative; display: inline-block; min-width: 6ch; }
+  .rot span { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transform: translateY(0.35em); transition: opacity .5s, transform .5s; }
+  .rot span.on { position: relative; opacity: 1; transform: none; }
+  .hero p.lead { font-size: 1.13rem; color: var(--muted); max-width: 540px; margin-bottom: 30px; }
+  .hero-cta { display: flex; gap: 13px; flex-wrap: wrap; }
+  .hero-note { margin-top: 22px; font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+
+  /* ========== COMPONENT 4: 3D tilt + spotlight mock ========== */
+  .mock { position: relative; perspective: 1000px; }
+  .tilt { transform-style: preserve-3d; transition: transform .18s ease; }
+  .mock-card { position: relative; background: linear-gradient(165deg, rgba(255,255,255,0.1), rgba(255,255,255,0.025)); border: 1px solid var(--border-2); border-radius: 22px; padding: 20px; box-shadow: 0 40px 90px rgba(0,0,0,0.55); backdrop-filter: blur(8px); overflow: hidden; }
+  .mock-card::after { content:''; position: absolute; inset: 0; background: radial-gradient(340px circle at var(--mx,70%) var(--my,20%), rgba(34,211,238,0.16), transparent 60%); pointer-events: none; }
+  .mock-top { display: flex; align-items: center; gap: 7px; margin-bottom: 15px; }
+  .mock-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.16); }
+  .mock-q { font-family: 'Space Grotesk'; font-weight: 600; font-size: 1rem; margin-bottom: 13px; }
+  .mock-opt { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); margin-bottom: 8px; font-size: 0.9rem; }
+  .mock-opt.ok { border-color: rgba(34,197,94,0.6); background: rgba(34,197,94,0.13); }
+  .mock-opt .k { margin-left: auto; font-size: 0.72rem; color: var(--muted); }
+  .mock-lead { margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--border); }
+  .mock-row { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; padding: 5px 0; }
+  .mock-row .rank { width: 18px; color: var(--muted); font-weight: 700; }
+  .mock-row .pts { margin-left: auto; font-weight: 700; color: #67e8f9; font-family: 'Space Grotesk'; }
+  .float-badge { position: absolute; z-index: 3; background: rgba(11,18,32,0.92); border: 1px solid var(--border-2); border-radius: 13px; padding: 9px 13px; font-size: 0.8rem; font-weight: 600; box-shadow: 0 14px 34px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 8px; }
+  .float-badge.fb1 { top: 8px; right: -14px; animation: bob 4s ease-in-out infinite; }
+  .float-badge.fb2 { bottom: -14px; left: -16px; animation: bob 4s ease-in-out infinite; animation-delay: -2s; }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+  /* ========== COMPONENT 5: Marquee ========== */
+  .marquee { margin: 26px 0 6px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); overflow: hidden; }
+  .marquee-track { display: flex; gap: 14px; width: max-content; animation: marquee 34s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+  .mq-item { display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; font-family: 'Space Grotesk'; font-weight: 500; font-size: 0.95rem; color: var(--muted); background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 10px 18px; }
+  .mq-item .gi { font-size: 1.1rem; }
+
+  /* ========== COMPONENT 6: Stats ========== */
+  section { padding: 70px 0; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .stat { position: relative; text-align: center; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 28px 14px; overflow: hidden; }
+  .stat::before { content:''; position: absolute; inset: 0; background: radial-gradient(300px circle at var(--mx,50%) var(--my,50%), rgba(59,130,246,0.12), transparent 60%); opacity: 0; transition: opacity .3s; }
+  .stat:hover::before { opacity: 1; }
+  .stat .num { font-family: 'Space Grotesk'; font-weight: 700; font-size: 2.3rem; background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat .lbl { color: var(--muted); font-size: 0.85rem; margin-top: 6px; }
+
+  .sec-head { text-align: center; max-width: 680px; margin: 0 auto 46px; }
+  .sec-head h2 { font-size: clamp(2rem, 3.6vw, 2.7rem); font-weight: 700; margin-bottom: 14px; }
+  .sec-head p { color: var(--muted); font-size: 1.05rem; }
+
+  /* ========== COMPONENT 7: Bento grid ========== */
+  .bento { display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-rows: 190px; gap: 16px; }
+  .tile { position: relative; overflow: hidden; background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; transition: transform .2s, border-color .2s, background .2s; }
+  .tile::after { content:''; position: absolute; inset: 0; background: radial-gradient(360px circle at var(--mx,50%) var(--my,50%), rgba(34,211,238,0.14), transparent 55%); opacity: 0; transition: opacity .3s; pointer-events: none; }
+  .tile:hover { transform: translateY(-4px); border-color: var(--border-2); background: var(--card-2); }
+  .tile:hover::after { opacity: 1; }
+  .tile.lg { grid-column: span 3; grid-row: span 2; }
+  .tile.md { grid-column: span 3; }
+  .tile.sm { grid-column: span 2; }
+  .tile .ic { width: 46px; height: 46px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 1.45rem; margin-bottom: 15px; }
+  .tile h3 { font-size: 1.16rem; margin-bottom: 8px; }
+  .tile p { color: var(--muted); font-size: 0.92rem; }
+  .tile.lg h3 { font-size: 1.5rem; }
+  .tile .big-emoji { position: absolute; right: -6px; bottom: -12px; font-size: 6.5rem; opacity: 0.12; }
+
+  /* ========== COMPONENT 8: Animated gradient-border card ========== */
+  .gborder { position: relative; border-radius: 24px; padding: 1.6px; background: conic-gradient(from var(--ang), rgba(59,130,246,0.1), #3b82f6, #22d3ee, #a855f7, #ec4899, rgba(59,130,246,0.1)); animation: spinang 7s linear infinite; }
+  @keyframes spinang { to { --ang: 360deg; } }
+  .gborder-inner { border-radius: 22px; background: #0a1120; padding: 34px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  .split h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 700; margin-bottom: 15px; }
+  .split .lead { color: var(--muted); margin-bottom: 22px; }
+  .check { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+  .check .cm { flex-shrink: 0; width: 23px; height: 23px; border-radius: 7px; background: rgba(34,197,94,0.16); color: #4ade80; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; margin-top: 3px; }
+  .check b { font-weight: 600; } .check span { color: var(--muted); }
+  .essay-mock { font-size: 0.96rem; line-height: 1.95; }
+  .hl { border-radius: 5px; padding: 1px 3px; }
+  .hl.g { background: rgba(34,197,94,0.22); box-shadow: 0 1.5px 0 rgba(34,197,94,0.7) inset; }
+  .hl.a { background: rgba(245,158,11,0.22); box-shadow: 0 1.5px 0 rgba(245,158,11,0.7) inset; }
+  .hl.r { background: rgba(236,72,153,0.22); box-shadow: 0 1.5px 0 rgba(236,72,153,0.8) inset; }
+  .essay-tags { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .tag { font-family: 'Space Grotesk'; font-size: 0.74rem; font-weight: 600; border-radius: 8px; padding: 4px 10px; }
+  .tag.g { background: rgba(34,197,94,0.16); color: #4ade80; }
+  .tag.a { background: rgba(245,158,11,0.16); color: #fbbf24; }
+  .tag.r { background: rgba(236,72,153,0.16); color: #f472b6; }
+
+  /* ========== COMPONENT 9: Tabs ========== */
+  .tabs { display: inline-flex; gap: 4px; padding: 5px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; margin: 0 auto 30px; }
+  .tab-btn { font-family: 'Space Grotesk'; font-weight: 600; font-size: 0.92rem; color: var(--muted); background: none; border: none; cursor: pointer; padding: 10px 20px; border-radius: 10px; transition: color .2s, background .2s; }
+  .tab-btn.active { color: #04121f; background: var(--grad); }
+  .tab-panels { position: relative; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; animation: fadeUp .4s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } }
+  .mini { position: relative; overflow: hidden; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; transition: transform .2s, border-color .2s, background .2s; }
+  .mini::after { content: ''; position: absolute; inset: 0; background: radial-gradient(360px circle at var(--mx,50%) var(--my,50%), rgba(34,211,238,0.14), transparent 55%); opacity: 0; transition: opacity .3s; pointer-events: none; }
+  .mini:hover { transform: translateY(-4px); border-color: var(--border-2); background: var(--card-2); }
+  .mini:hover::after { opacity: 1; }
+  .mini > * { position: relative; z-index: 1; }
+  .mini .ic { font-size: 1.6rem; margin-bottom: 10px; }
+  .mini h4 { font-family: 'Space Grotesk'; font-size: 1.04rem; margin-bottom: 6px; }
+  .mini p { color: var(--muted); font-size: 0.9rem; }
+
+  /* ========== COMPONENT 10: Beam steps ========== */
+  .steps { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .beam { position: absolute; top: 40px; left: 16%; right: 16%; height: 2px; z-index: 0; background: linear-gradient(90deg, transparent, var(--border-2), transparent); overflow: hidden; }
+  .beam::after { content:''; position: absolute; top: 0; left: -30%; width: 30%; height: 100%; background: linear-gradient(90deg, transparent, var(--cyan), transparent); box-shadow: 0 0 12px var(--cyan); animation: beam 3.2s ease-in-out infinite; }
+  @keyframes beam { 0% { left: -30%; } 100% { left: 100%; } }
+  .step { position: relative; overflow: hidden; z-index: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 18px; padding: 26px 24px; transition: transform .2s, border-color .2s, background .2s; }
+  .step::after { content: ''; position: absolute; inset: 0; background: radial-gradient(360px circle at var(--mx,50%) var(--my,50%), rgba(34,211,238,0.14), transparent 55%); opacity: 0; transition: opacity .3s; pointer-events: none; }
+  .step:hover { transform: translateY(-4px); border-color: var(--border-2); }
+  .step:hover::after { opacity: 1; }
+  .step > * { position: relative; z-index: 1; }
+  .step .n { font-family: 'Space Grotesk'; font-weight: 700; width: 46px; height: 46px; border-radius: 13px; background: var(--grad); color: #04121f; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; font-size: 1.15rem; }
+  .step h3 { font-size: 1.14rem; margin-bottom: 8px; } .step p { color: var(--muted); font-size: 0.92rem; }
+
+  /* ========== COMPONENT 11: Testimonial / value cards ========== */
+  .quotes { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .quote { position: relative; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 26px; transition: transform .18s, border-color .18s; }
+  .quote:hover { transform: translateY(-4px); border-color: var(--border-2); }
+  .quote .qm { font-family: 'Space Grotesk'; font-size: 2.4rem; line-height: 0.5; color: var(--cyan); opacity: 0.4; }
+  .quote p { color: var(--text); font-size: 0.98rem; margin: 12px 0 16px; }
+  .quote .who { color: var(--muted); font-size: 0.84rem; font-weight: 600; }
+
+  /* ========== COMPONENT 12: Accordion ========== */
+  .faq { max-width: 780px; margin: 0 auto; }
+  .acc { border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; overflow: hidden; background: var(--card); }
+  .acc-q { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; font-family: 'Space Grotesk'; font-weight: 600; font-size: 1rem; color: var(--text); background: none; border: none; cursor: pointer; padding: 18px 20px; }
+  .acc-q .chev { transition: transform .25s; color: var(--muted); flex-shrink: 0; }
+  .acc.open .acc-q .chev { transform: rotate(180deg); }
+  .acc-a { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+  .acc-a p { color: var(--muted); font-size: 0.94rem; padding: 0 20px 18px; }
+
+  /* ========== COMPONENT 13: CTA ========== */
+  .cta-box { position: relative; text-align: center; border-radius: 26px; padding: 60px 28px; overflow: hidden;
+    background: radial-gradient(120% 120% at 50% 0%, rgba(34,211,238,0.16), rgba(168,85,247,0.1) 55%, transparent 100%); border: 1px solid var(--border-2); }
+  .cta-box h2 { font-size: clamp(2rem, 3.6vw, 2.8rem); font-weight: 700; margin-bottom: 14px; }
+  .cta-box p { color: var(--muted); max-width: 520px; margin: 0 auto 28px; font-size: 1.05rem; }
+  .cta-mail { margin-top: 16px; font-size: 0.9rem; color: var(--muted); }
+  .cta-mail a { color: #67e8f9; font-weight: 600; }
+
+  footer { border-top: 1px solid var(--border); padding: 34px 0; }
+  .foot-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .foot-inner .muted { color: var(--muted); font-size: 0.85rem; }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* Responsive */
+  @media (max-width: 960px) {
+    .hero-grid, .split { grid-template-columns: 1fr; }
+    .mock { max-width: 440px; margin: 0 auto; }
+    .bento { grid-template-columns: repeat(2, 1fr); grid-auto-rows: auto; }
+    .tile.lg, .tile.md, .tile.sm { grid-column: span 2; grid-row: auto; min-height: 170px; }
+    .tile .big-emoji { display: none; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .tab-panel.active, .quotes { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr; } .beam { display: none; }
+    .nav-links { position: fixed; inset: 70px 0 auto 0; flex-direction: column; gap: 4px; background: rgba(7,11,20,0.98); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); padding: 16px 22px 22px; transform: translateY(-130%); transition: transform .28s ease; }
+    .nav-links.open { transform: none; }
+    .nav-links a.link { padding: 9px 0; }
+    .nav-toggle { display: block; }
+    .nav-item { display: block; }
+    .nav-item .dropdown { display: none; }
+    .nav-item > .link::after { display: none; }
+  }
+  @media (max-width: 560px) {
+    .bento, .stats-grid { grid-template-columns: 1fr; }
+    .tile.lg, .tile.md, .tile.sm { grid-column: span 1; }
+    .tabs { width: 100%; } .tab-btn { flex: 1; }
+  }
+  /* GOOGLE SITES EMBED: the block is about one screen tall and scrolls
+     inside itself, so tighten the vertical rhythm on short viewports -
+     otherwise the first screen is mostly empty space. */
+  @media (max-height: 820px) {
+    .hero { padding: 40px 0 36px; }
+    section { padding: 46px 0; }
+    .sec-head { margin-bottom: 30px; }
+    .hero h1 { font-size: clamp(2rem, 4.4vw, 3rem); }
+    .cta-box { padding: 44px 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .aurora, .btn-primary .shine, .brand .mark::after, .float-badge, .marquee-track, .gborder, .beam::after { animation: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+
+  /* ========== COMPONENT: custom SVG icon system (replaces all emoji) ========== */
+  .ic svg { width: 26px; height: 26px; }
+  .mini .ic { width: 54px; height: 54px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+  .mini .ic svg { width: 30px; height: 30px; }
+  .fbic { display: inline-flex; color: var(--cyan); }
+  .fbic svg { width: 16px; height: 16px; }
+  .gi { display: inline-flex; align-items: center; color: var(--cyan); }
+  .gi svg { width: 18px; height: 18px; }
+  .big-emoji svg { width: 130px; height: 130px; }
+  /* avatar chips (leaderboard) */
+  .av { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+  .av svg { display: block; }
+  .av1 { background: linear-gradient(135deg, #3b82f6, #22d3ee); }
+  .av2 { background: linear-gradient(135deg, #a855f7, #ec4899); }
+  .av3 { background: linear-gradient(135deg, #22d3ee, #60a5fa); }
+
+  /* ========== COMPONENT 21: nav hover dropdown menu (spring pop) ========== */
+  .nav-item { position: relative; display: flex; align-items: center; }
+  .nav-item > .link { display: inline-flex; align-items: center; gap: 6px; }
+  .nav-item > .link::after { content: ''; width: 6px; height: 6px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-1px); opacity: .45; transition: transform .2s ease, opacity .2s; }
+  .nav-item:hover > .link::after { transform: rotate(45deg) translateY(1px); opacity: .9; }
+  .dropdown { position: absolute; top: 100%; left: 50%; transform: translateX(-50%) scale(.92) translateY(8px); transform-origin: top center; opacity: 0; visibility: hidden; pointer-events: none; padding-top: 16px; transition: opacity .26s ease, transform .34s cubic-bezier(.34,1.56,.64,1), visibility .26s; }
+  .nav-item:hover .dropdown { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) scale(1) translateY(0); }
+  .dropdown-inner { background: rgba(11,18,32,0.92); backdrop-filter: blur(18px) saturate(1.4); border: 1px solid var(--border-2); border-radius: 18px; box-shadow: 0 26px 64px rgba(0,0,0,0.55); padding: 12px; }
+  .dd-col { display: flex; flex-direction: column; gap: 2px; min-width: 224px; }
+  .dd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px; min-width: 340px; }
+  .dd-link { display: flex; align-items: center; gap: 11px; padding: 9px 11px; border-radius: 11px; color: var(--muted); font-size: 0.9rem; font-weight: 500; transition: background .15s, color .15s; }
+  .dd-link:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+  .dd-link .di { width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(34,211,238,0.1); color: var(--cyan); }
+  .dd-link .di svg { width: 17px; height: 17px; }
+
+  /* ========== COMPONENT 22: variable-font hover, applied to every heading ========== */
+  .vw { display: inline-block; }
+  h1 .ch, h2 .ch, h3 .ch { display: inline; font-variation-settings: 'wght' 600; transition: font-variation-settings .45s cubic-bezier(.34,1.56,.64,1); }
+
+  /* ========== COMPONENT 23: page-wide cursor-following glow ========== */
+  #cursor-glow { position: fixed; inset: 0; z-index: 9998; pointer-events: none; mix-blend-mode: screen; opacity: 0; transition: opacity .45s ease;
+    background: radial-gradient(360px circle at var(--cx, 50%) var(--cy, 50%), rgba(34,211,238,0.16), rgba(59,130,246,0.09) 42%, transparent 68%); }
+  #cursor-glow.on { opacity: 1; }
+
+  /* ========== COMPONENT 24: animated conic-gradient border on action buttons ========== */
+  .btn-ghost { isolation: isolate; }
+  .btn-ghost::before { content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px;
+    background: conic-gradient(from var(--ang), #3b82f6, #22d3ee, #a855f7, #3b82f6);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+    z-index: -1; animation: spinBorder 4.5s linear infinite; opacity: .5; transition: opacity .2s; }
+  .btn-ghost:hover { border-color: transparent; transform: translateY(-2px); }
+  .btn-ghost:hover::before { opacity: 1; }
+  @keyframes spinBorder { to { --ang: 360deg; } }
+</style>
+</head>
+<body>
+
+<!-- COMPONENT 1: background -->
+<div class="bg-fixed"></div>
+<div class="aurora"></div>
+<div class="dotgrid"></div>
+
+<!-- COMPONENT 2: nav -->
+<nav id="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand">
+      <span class="mark">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M9 3h6M10 3v5.5L5.5 17a2 2 0 0 0 1.8 3h9.4a2 2 0 0 0 1.8-3L14 8.5V3" stroke="#04121f" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 14h8" stroke="#04121f" stroke-width="1.9" stroke-linecap="round"/></svg>
+      </span>
+      Lingualab
+    </a>
+    <div class="nav-links" id="navLinks">
+      <div class="nav-item">
+        <a class="link" href="#features">Skills</a>
+        <div class="dropdown"><div class="dropdown-inner"><div class="dd-col">
+          <a class="dd-link" href="#features"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v13"/><path d="M3 5.5A2 2 0 0 1 5 4h4a3 3 0 0 1 3 3 3 3 0 0 1 3-3h4a2 2 0 0 1 2 1.5V18a1 1 0 0 1-1 1h-5a3 3 0 0 0-3 2 3 3 0 0 0-3-2H4a1 1 0 0 1-1-1z"/></svg></span>Vocabulary</a>
+          <a class="dd-link" href="#features"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M14 2v4h4"/><path d="M8 12h8M8 16h6M8 8h3"/></svg></span>Grammar</a>
+          <a class="dd-link" href="#features"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M14 2v4h4"/><path d="M8 12h8M8 16h6M8 8h3"/></svg></span>Reading</a>
+          <a class="dd-link" href="#features"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="2.5" y="13" width="4.5" height="7" rx="2"/><rect x="17" y="13" width="4.5" height="7" rx="2"/></svg></span>Listening</a>
+          <a class="dd-link" href="#features"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h11a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H9l-4 3v-3H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M20 9c1.2.8 1.2 4.2 0 5"/></svg></span>Speaking</a>
+          <a class="dd-link" href="#writing"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1 11-11a2.5 2.5 0 0 0-3.5-3.5L4.5 15.5z"/><path d="M14 6l3.5 3.5"/><path d="M4 20h6"/></svg></span>AI Writing</a>
+        </div></div></div>
+      </div>
+      <div class="nav-item">
+        <a class="link" href="#games">Games</a>
+        <div class="dropdown"><div class="dropdown-inner"><div class="dd-grid">
+          <a class="dd-link" href="#games"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22V3"/><path d="M5 4h13l-2.5 4L18 12H5z"/></svg></span>Vocab Race</a>
+          <a class="dd-link" href="#games"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l3-.8 10-10a2 2 0 0 0-2.8-2.8l-10 10z"/><path d="M13 6l3 3"/></svg></span>Grammar Race</a>
+          <a class="dd-link" href="#games"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l-1.5 3h-3z"/><path d="M13.5 6c3 1.5 5 4.5 5 8a5.5 5.5 0 0 1-13 0c0-3.5 2-6.5 5-8"/></svg></span>The Heist</a>
+          <a class="dd-link" href="#games"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8c3-1 5-1 9 0 4-1 6-1 9 0 0 5-2 8-5.5 8-2 0-2.5-1.5-3.5-1.5S9 15 7 15C3.5 15 3 12 3 8z"/><circle cx="8" cy="11" r="1"/><circle cx="16" cy="11" r="1"/></svg></span>Trust No One</a>
+          <a class="dd-link" href="#games"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h5M17 12h5"/><path d="M7 9c2 0 3 1.5 5 1.5S15 9 17 9v6c-2 0-3-1.5-5-1.5S9 15 7 15z"/></svg></span>Tug of War</a>
+          <a class="dd-link" href="#games"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M4 15h16M9 4v16M15 4v16"/></svg></span>Vocab Bingo</a>
+        </div></div></div>
+      </div>
+      <a class="link" href="#audience">Who it's for</a>
+      <a class="link" href="#how">How it works</a>
+      <a class="link" href="#faq">FAQ</a>
+      <a class="btn btn-primary btn-sm" href="#contact"><span class="shine"></span>Get in touch</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</nav>
+<span id="top"></span>
+
+<!-- COMPONENT 3 + 4: hero + tilt/spotlight mock -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div class="reveal">
+      <span class="eyebrow">All-in-one English platform</span>
+      <h1>English learning<br>that feels like <span class="rot grad-text" id="rot"><span class="on">play</span></span></h1>
+      <p class="lead">Vocabulary, grammar, reading, listening and AI-assisted writing, plus a CEFR placement test and live classroom games, in one fast, mobile-friendly app built for university English prep.</p>
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-primary"><span class="shine"></span>Request a demo
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#features" class="btn btn-ghost">Explore features</a>
+      </div>
+      <div class="hero-note">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Works on any phone or laptop, nothing to install.
+      </div>
+    </div>
+
+    <div class="mock reveal" id="mock">
+      <div class="float-badge fb1">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="13" width="4.5" height="8" rx="1.5" fill="#3b82f6"/><rect x="9.75" y="8" width="4.5" height="13" rx="1.5" fill="#22d3ee"/><rect x="16.5" y="4" width="4.5" height="17" rx="1.5" fill="#67e8f9"/></svg>
+        Live scores
+      </div>
+      <div class="float-badge fb2"><span class="fbic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg></span>CEFR A2 &rarr; B2</div>
+      <div class="tilt" id="tilt">
+        <div class="mock-card">
+          <div class="mock-top"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span></div>
+          <div class="mock-q">Find the meaning of <b style="color:#67e8f9;">"reliable"</b>:</div>
+          <div class="mock-opt ok">able to be trusted or depended on <span class="k">✓</span></div>
+          <div class="mock-opt">happening very often <span class="k">A</span></div>
+          <div class="mock-opt">extremely large in size <span class="k">B</span></div>
+          <div class="mock-lead">
+            <div class="mock-row"><span class="rank">1</span><span class="av av1"><svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg></span>Aylin <span class="pts">1,240</span></div>
+            <div class="mock-row"><span class="rank">2</span><span class="av av2"><svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg></span>Mert <span class="pts">1,120</span></div>
+            <div class="mock-row"><span class="rank">3</span><span class="av av3"><svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg></span>Elif <span class="pts">980</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPONENT 5: marquee -->
+  <div class="wrap">
+    <div class="marquee reveal">
+      <div class="marquee-track" id="mqTrack"></div>
+    </div>
+  </div>
+</header>
+
+<!-- COMPONENT 6: stats -->
+<div class="wrap reveal">
+  <div class="stats-grid" id="stats">
+    <div class="stat"><div class="num" data-count="4" data-suffix="M+">0</div><div class="lbl">Students supported</div></div>
+    <div class="stat"><div class="num" data-count="6">0</div><div class="lbl">Skill areas</div></div>
+    <div class="stat"><div class="num" data-count="9">0</div><div class="lbl">Live classroom games</div></div>
+    <div class="stat"><div class="num" data-count="8000" data-suffix="+">0</div><div class="lbl">Practice questions</div></div>
+  </div>
+</div>
+
+<!-- COMPONENT 7: bento -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Every skill, one app</span>
+      <h2>Everything to learn English, in one place</h2>
+      <p>Real, level-graded content from A2 to B2, drawn from a curated word bank and thousands of grammar items, never random filler.</p>
+    </div>
+    <div class="bento reveal" id="bento">
+      <div class="tile lg"><div class="ic" style="background:rgba(59,130,246,0.16);color:#60a5fa;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v13"/><path d="M3 5.5A2 2 0 0 1 5 4h4a3 3 0 0 1 3 3 3 3 0 0 1 3-3h4a2 2 0 0 1 2 1.5V18a1 1 0 0 1-1 1h-5a3 3 0 0 0-3 2 3 3 0 0 0-3-2H4a1 1 0 0 1-1-1z"/></svg></div><h3>Vocabulary &amp; Grammar</h3><p>Meaning, gap-fill and matching drills from a curated word bank, plus thousands of level-graded grammar questions with hints and clear explanations, always matched to the class unit.</p><span class="big-emoji" style="color:#60a5fa;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v13"/><path d="M3 5.5A2 2 0 0 1 5 4h4a3 3 0 0 1 3 3 3 3 0 0 1 3-3h4a2 2 0 0 1 2 1.5V18a1 1 0 0 1-1 1h-5a3 3 0 0 0-3 2 3 3 0 0 0-3-2H4a1 1 0 0 1-1-1z"/></svg></span></div>
+      <div class="tile md"><div class="ic" style="background:rgba(251,113,133,0.16);color:#fb7185;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M14 2v4h4"/><path d="M8 12h8M8 16h6M8 8h3"/></svg></div><h3>Reading exams</h3><p>Full exam-style papers with a clean per-question review.</p></div>
+      <div class="tile sm"><div class="ic" style="background:rgba(56,189,248,0.16);color:#38bdf8;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="2.5" y="13" width="4.5" height="7" rx="2"/><rect x="17" y="13" width="4.5" height="7" rx="2"/></svg></div><h3>Listening</h3><p>Audio exams with smart transcribed tracking.</p></div>
+      <div class="tile sm"><div class="ic" style="background:rgba(245,158,11,0.16);color:#fbbf24;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h11a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H9l-4 3v-3H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M20 9c1.2.8 1.2 4.2 0 5"/></svg></div><h3>Speaking</h3><p>Guided practice.</p></div>
+      <div class="tile md"><div class="ic" style="background:rgba(168,85,247,0.16);color:#c084fc;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1 11-11a2.5 2.5 0 0 0-3.5-3.5L4.5 15.5z"/><path d="M14 6l3.5 3.5"/><path d="M4 20h6"/></svg></div><h3>Writing + AI feedback</h3><p>Students write; AI highlights issues and suggests fixes for the teacher to release.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENT 5b (games) + marquee already above; games section -->
+<section id="games">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Classroom mode</span>
+      <h2>Learning that feels like play</h2>
+      <p>Project a game on the board, students scan a QR code to join in seconds, and the whole class competes live, every result saved for the teacher.</p>
+    </div>
+    <div class="quotes reveal" style="grid-template-columns:repeat(3,1fr);">
+      <div class="tile" style="border-radius:18px;"><div class="ic" style="background:rgba(59,130,246,0.16);color:#60a5fa;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22V3"/><path d="M5 4h13l-2.5 4L18 12H5z"/><path d="M5 6h4v3H5M9 8h4M13 4v4"/></svg></div><h3 style="font-size:1.1rem;">Race &amp; quiz games</h3><p>Vocab Race and Grammar Race, fastest correct answers climb the live leaderboard.</p></div>
+      <div class="tile" style="border-radius:18px;"><div class="ic" style="background:rgba(168,85,247,0.16);color:#c084fc;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8c3-1 5-1 9 0 4-1 6-1 9 0 0 5-2 8-5.5 8-2 0-2.5-1.5-3.5-1.5S9 15 7 15C3.5 15 3 12 3 8z"/><circle cx="8" cy="11" r="1"/><circle cx="16" cy="11" r="1"/></svg></div><h3 style="font-size:1.1rem;">Social &amp; team games</h3><p>The Heist, Trust No One and Tug of War turn revision into a whole-class event.</p></div>
+      <div class="tile" style="border-radius:18px;"><div class="ic" style="background:rgba(34,211,238,0.16);color:#22d3ee;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H6a2 2 0 0 0-2 2v4c1.5 0 2.5 1 2.5 2S5.5 14 4 14v4a2 2 0 0 0 2 2h4c0-1.5 1-2.5 2-2.5s2 1 2 2.5h4a2 2 0 0 0 2-2v-4c-1.5 0-2.5-1-2.5-2s1-2 2.5-2V6a2 2 0 0 0-2-2h-4c0 1.5-1 2.5-2 2.5S10 5.5 10 4z"/></svg></div><h3 style="font-size:1.1rem;">Word play</h3><p>Vocab Bingo and Sentence Scramble, plus live Reading and Listening exams.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENT 8: gradient-border Writing AI showcase -->
+<section id="writing">
+  <div class="wrap reveal">
+    <div class="gborder">
+      <div class="gborder-inner">
+        <div class="split">
+          <div>
+            <div class="essay-mock">
+              In my opinion, technology <span class="hl r">have changed</span> our lives in many ways. People can now <span class="hl g">communicate</span> instantly, <span class="hl a">but sometimes they forget to talk face to face</span>. Overall, the benefits are <span class="hl g">significant</span>.
+              <div class="essay-tags"><span class="tag r">Grammar</span><span class="tag a">Cohesion</span><span class="tag g">Good vocabulary</span></div>
+            </div>
+          </div>
+          <div>
+            <span class="eyebrow">Writing AI</span>
+            <h2>Feedback that reads like a teacher</h2>
+            <p class="lead">Students submit an essay and get instant, colour-coded feedback across task, coherence, grammar and vocabulary, with suggested rewrites. The teacher stays in control and releases the final version.</p>
+            <div class="check"><span class="cm">✓</span><span><b>Severity-aware highlights</b> so learners see what matters most first.</span></div>
+            <div class="check"><span class="cm">✓</span><span><b>Criterion scoring</b> teachers can adjust before sending back.</span></div>
+            <div class="check"><span class="cm">✓</span><span><b>One home for writing</b>, assignment and placement essays land in the same review screen.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENT 9: tabs -->
+<section id="audience">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Built for both sides of the class</span>
+      <h2>One platform, two experiences</h2>
+    </div>
+    <div style="text-align:center;" class="reveal">
+      <div class="tabs" id="tabs">
+        <button class="tab-btn active" data-tab="students">For students</button>
+        <button class="tab-btn" data-tab="teachers">For teachers</button>
+      </div>
+    </div>
+    <div class="tab-panels reveal">
+      <div class="tab-panel active" data-panel="students">
+        <div class="mini"><div class="ic" style="background:rgba(34,211,238,0.14);color:#22d3ee;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg></div><h4>Know your level</h4><p>A CEFR placement test recommends where to start, no guessing.</p></div>
+        <div class="mini"><div class="ic" style="background:rgba(245,158,11,0.14);color:#fbbf24;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c2 3 5 5 5 9a5 5 0 0 1-10 0c0-1.5.5-2.5 1.5-3.5C9 9 9 11 10 12c0-3 1-6 2-10z"/></svg></div><h4>Practise daily</h4><p>Bite-size drills and full exams on any device, at your own pace.</p></div>
+        <div class="mini"><div class="ic" style="background:rgba(168,85,247,0.14);color:#c084fc;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3"/><path d="M12 14v3M9 20h6M10 20l.5-3h3l.5 3"/></svg></div><h4>Compete &amp; have fun</h4><p>Join live class games with a quick QR scan and climb the board.</p></div>
+      </div>
+      <div class="tab-panel" data-panel="teachers">
+        <div class="mini"><div class="ic" style="background:rgba(59,130,246,0.14);color:#60a5fa;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><rect x="8" y="2.5" width="8" height="4" rx="1.2"/><path d="M9 11h6M9 15h4"/></svg></div><h4>Assign &amp; grade</h4><p>Set work across every skill and track completion live.</p></div>
+        <div class="mini"><div class="ic" style="background:rgba(34,211,238,0.14);color:#22d3ee;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><rect x="7" y="12" width="3" height="5"/><rect x="12" y="8" width="3" height="9"/><rect x="17" y="5" width="3" height="12"/></svg></div><h4>Report &amp; export</h4><p>Class, game and placement results, with CSV export built in.</p></div>
+        <div class="mini"><div class="ic" style="background:rgba(168,85,247,0.14);color:#c084fc;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h10M18 8h2M4 16h2M10 16h10"/><circle cx="16" cy="8" r="2.4"/><circle cx="8" cy="16" r="2.4"/></svg></div><h4>Full control</h4><p>Configure placement, switch features and hide content per class.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENT 10: beam steps -->
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Three simple steps</span>
+      <h2>From first login to real progress</h2>
+    </div>
+    <div class="steps reveal">
+      <div class="beam"></div>
+      <div class="step"><div class="n">1</div><h3>Take the placement test</h3><p>A CEFR ladder from A2 to B2, language, reading, listening and a short writing task, recommends each learner's level.</p></div>
+      <div class="step"><div class="n">2</div><h3>Practise every skill</h3><p>Daily drills, full exams and AI writing feedback keep learners moving, on their own device.</p></div>
+      <div class="step"><div class="n">3</div><h3>Play &amp; track</h3><p>Teachers run live games in class and follow every result on the dashboard.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENT 11: value / testimonial cards
+     (illustrative copy, replace the quotes with real ones when you have them) -->
+<section id="why">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Why it works</span>
+      <h2>Designed for real classrooms</h2>
+    </div>
+    <div class="quotes reveal">
+      <div class="quote"><div class="qm">&ldquo;</div><p>Everything a prep programme needs, practice, exams, writing feedback and games, without juggling five different tools.</p><div class="who">All-in-one by design</div></div>
+      <div class="quote"><div class="qm">&ldquo;</div><p>Content is level-graded and pulled from a real word and grammar bank, so every question fits the class, nothing random.</p><div class="who">Curriculum-aligned content</div></div>
+      <div class="quote"><div class="qm">&ldquo;</div><p>Live games get the whole class involved in seconds, and every result flows straight into the teacher's reports.</p><div class="who">Engagement that's measurable</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENT 12: accordion FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Good to know</span>
+      <h2>Frequently asked</h2>
+    </div>
+    <div class="faq reveal" id="faqList">
+      <div class="acc"><button class="acc-q">Do students need to install anything?<span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></span></button><div class="acc-a"><p>No. Lingualab runs in any modern browser on phones and laptops, and installs as an app if they want.</p></div></div>
+      <div class="acc"><button class="acc-q">Where does the content come from?<span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></span></button><div class="acc-a"><p>From a curated vocabulary bank and a large set of level-graded grammar questions, organised by CEFR level and unit, not randomly generated.</p></div></div>
+      <div class="acc"><button class="acc-q">How do the classroom games work?<span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></span></button><div class="acc-a"><p>The teacher starts a game on the board; students scan a QR code or enter a short code to join live. Scores update in real time and are saved to the teacher's reports.</p></div></div>
+      <div class="acc"><button class="acc-q">Can teachers track progress?<span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></span></button><div class="acc-a"><p>Yes, a full dashboard covers assignments, live progress, placement results and CSV exports, scoped to each teacher's own classes.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENT 13: CTA + contact -->
+<section id="contact">
+  <div class="wrap">
+    <div class="cta-box reveal">
+      <span class="eyebrow">Get in touch</span>
+      <h2>See Lingualab in action</h2>
+      <p>Want a walkthrough or a demo account for your programme? Send a message and we'll set you up.</p>
+      <a class="btn btn-primary" target="_top" href="mailto:akabiriaslifar@fsm.edu.tr?subject=Lingualab%20demo%20request&amp;body=Hi%2C%20I%27d%20like%20to%20see%20a%20demo%20of%20Lingualab.">
+        <span class="shine"></span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        Email us
+      </a>
+      <div class="cta-mail">or write to <a target="_top" href="mailto:akabiriaslifar@fsm.edu.tr">akabiriaslifar@fsm.edu.tr</a></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <a href="#top" class="brand" style="font-size:1.05rem;">
+      <span class="mark" style="width:28px;height:28px;border-radius:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 3h6M10 3v5.5L5.5 17a2 2 0 0 0 1.8 3h9.4a2 2 0 0 0 1.8-3L14 8.5V3" stroke="#04121f" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 14h8" stroke="#04121f" stroke-width="1.9" stroke-linecap="round"/></svg>
+      </span>
+      Lingualab
+    </a>
+    <span class="muted">English learning platform for university prep.</span>
+    <span class="muted">&copy; <span id="yr"></span> Lingualab</span>
+  </div>
+</footer>
+
+<script>
+  // Nav shadow
+  var nav = document.getElementById('nav');
+  addEventListener('scroll', function () { nav.classList.toggle('scrolled', scrollY > 12); });
+
+  // Mobile nav
+  var toggle = document.getElementById('navToggle'), links = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () { links.classList.toggle('open'); });
+
+  // IN-PAGE NAVIGATION (this is what makes the top bar work).
+  // Google Sites serves this page inside an iframe. A plain "#section" link
+  // there tries to move the PARENT page, which is cross-origin, so the browser
+  // blocks it and nothing happens. Scrolling ourselves works in the embed, in
+  // an Apps Script web app, and as a standalone file.
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    if (!id) return;
+    var el = document.getElementById(id);
+    if (!el) return;                       // unknown anchor: leave it alone
+    e.preventDefault();
+    links.classList.remove('open');        // close the mobile menu
+    if (id === 'top') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // COMPONENT 3: word rotator
+  (function () {
+    var words = ['play', 'a game', 'effortless', 'yours'];
+    var host = document.getElementById('rot'), i = 0;
+    var cur = host.querySelector('span'); cur.textContent = words[0];
+    setInterval(function () {
+      var next = document.createElement('span'); next.textContent = words[(i + 1) % words.length];
+      host.appendChild(next); void next.offsetWidth;
+      cur.classList.remove('on'); cur.style.opacity = 0; cur.style.transform = 'translateY(-0.35em)';
+      next.classList.add('on');
+      var old = cur; setTimeout(function () { old.remove(); }, 500);
+      cur = next; i = (i + 1) % words.length;
+    }, 2400);
+  })();
+
+  // COMPONENT 4: tilt + spotlight on the hero mock
+  (function () {
+    var mock = document.getElementById('mock'), tilt = document.getElementById('tilt');
+    var card = mock.querySelector('.mock-card');
+    mock.addEventListener('mousemove', function (e) {
+      var r = mock.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+      tilt.style.transform = 'rotateY(' + (px - 0.5) * 12 + 'deg) rotateX(' + (0.5 - py) * 12 + 'deg)';
+      card.style.setProperty('--mx', px * 100 + '%');
+      card.style.setProperty('--my', py * 100 + '%');
+    });
+    mock.addEventListener('mouseleave', function () { tilt.style.transform = ''; });
+  })();
+
+  // Spotlight for stat + bento tiles
+  document.querySelectorAll('.stat, .tile, .mini, .step').forEach(function (el) {
+    el.addEventListener('mousemove', function (e) {
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  // COMPONENT 5: build the games marquee (duplicated for a seamless loop)
+  (function () {
+    var ic = {
+      flag: "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 22V3\"/><path d=\"M5 4h13l-2.5 4L18 12H5z\"/><path d=\"M5 6h4v3H5M9 8h4M13 4v4\"/></svg>", note: "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 20l3-.8 10-10a2 2 0 0 0-2.8-2.8l-10 10z\"/><path d=\"M13 6l3 3\"/></svg>", bag: "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 3h6l-1.5 3h-3z\"/><path d=\"M13.5 6c3 1.5 5 4.5 5 8a5.5 5.5 0 0 1-13 0c0-3.5 2-6.5 5-8\"/><path d=\"M12 10v6M10.5 11.5h2a1.2 1.2 0 0 1 0 2.4H11a1.2 1.2 0 0 0 0 2.4h2\"/></svg>", mask: "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 8c3-1 5-1 9 0 4-1 6-1 9 0 0 5-2 8-5.5 8-2 0-2.5-1.5-3.5-1.5S9 15 7 15C3.5 15 3 12 3 8z\"/><circle cx=\"8\" cy=\"11\" r=\"1\"/><circle cx=\"16\" cy=\"11\" r=\"1\"/></svg>",
+      rope: "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2 12h5M17 12h5\"/><path d=\"M7 9c2 0 3 1.5 5 1.5S15 9 17 9v6c-2 0-3-1.5-5-1.5S9 15 7 15z\"/></svg>", bingo: "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/><path d=\"M4 10h16M4 15h16M9 4v16M15 4v16\"/></svg>", shuffle: "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M16 3h5v5\"/><path d=\"M4 20 21 3\"/><path d=\"M21 16v5h-5\"/><path d=\"M15 15l6 6\"/><path d=\"M4 4l5 5\"/></svg>", doc: "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 2h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z\"/><path d=\"M14 2v4h4\"/><path d=\"M8 12h8M8 16h6M8 8h3\"/></svg>", head: "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 13v-1a8 8 0 0 1 16 0v1\"/><rect x=\"2.5\" y=\"13\" width=\"4.5\" height=\"7\" rx=\"2\"/><rect x=\"17\" y=\"13\" width=\"4.5\" height=\"7\" rx=\"2\"/></svg>"
+    };
+    var games = [[ic.flag,'Vocab Race'],[ic.note,'Grammar Race'],[ic.bag,'The Heist'],[ic.mask,'Trust No One'],[ic.rope,'Tug of War'],[ic.bingo,'Vocab Bingo'],[ic.shuffle,'Sentence Scramble'],[ic.doc,'Reading Exam'],[ic.head,'Listening Exam']];
+    var html = games.map(function (g) { return '<span class="mq-item"><span class="gi">' + g[0] + '</span>' + g[1] + '</span>'; }).join('');
+    document.getElementById('mqTrack').innerHTML = html + html;
+  })();
+
+  // COMPONENT 9: tabs
+  (function () {
+    var tabs = document.getElementById('tabs');
+    tabs.addEventListener('click', function (e) {
+      var b = e.target.closest('.tab-btn'); if (!b) return;
+      tabs.querySelectorAll('.tab-btn').forEach(function (x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      var t = b.getAttribute('data-tab');
+      document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-panel') === t); });
+    });
+  })();
+
+  // COMPONENT 12: accordion
+  document.querySelectorAll('#faqList .acc-q').forEach(function (q) {
+    q.addEventListener('click', function () {
+      var acc = q.parentElement, a = acc.querySelector('.acc-a');
+      var open = acc.classList.toggle('open');
+      a.style.maxHeight = open ? a.scrollHeight + 'px' : 0;
+    });
+  });
+
+  // Reveal on scroll (robust: reduced-motion + no-IO show all; safety timeout)
+  (function () {
+    var reveals = document.querySelectorAll('.reveal');
+    function showAll() { reveals.forEach(function (el) { el.classList.add('in'); }); }
+    if ((matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) || !('IntersectionObserver' in window)) { showAll(); return; }
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.12 });
+    reveals.forEach(function (el) { io.observe(el); });
+    setTimeout(showAll, 4000);
+  })();
+
+  // Count-up
+  (function () {
+    function run(el) {
+      var target = parseInt(el.getAttribute('data-count'), 10), suffix = el.getAttribute('data-suffix') || '', start = null, dur = 1500;
+      function fmt(n) { return n >= 1000 ? n.toLocaleString('en-US') : String(n); }
+      function step(ts) { if (!start) start = ts; var p = Math.min((ts - start) / dur, 1); el.textContent = fmt(Math.floor((1 - Math.pow(1 - p, 3)) * target)) + suffix; if (p < 1) requestAnimationFrame(step); }
+      requestAnimationFrame(step);
+    }
+    if (!('IntersectionObserver' in window)) { document.querySelectorAll('.num[data-count]').forEach(run); return; }
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { run(e.target); io.unobserve(e.target); } }); }, { threshold: 0.6 });
+    document.querySelectorAll('.num[data-count]').forEach(function (el) { io.observe(el); });
+  })();
+
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  // COMPONENT 22: variable-font hover on every heading (splits text nodes into per-word, per-letter spans)
+  (function () {
+    function split(h) {
+      var chars = [];
+      Array.prototype.slice.call(h.childNodes).forEach(function (node) {
+        if (node.nodeType !== 3 || !node.nodeValue.trim()) return;
+        var frag = document.createDocumentFragment();
+        node.nodeValue.split(/(\s+)/).forEach(function (tok) {
+          if (!tok) return;
+          if (/^\s+$/.test(tok)) { frag.appendChild(document.createTextNode(tok)); return; }
+          var w = document.createElement('span'); w.className = 'vw';
+          tok.split('').forEach(function (c) {
+            var s = document.createElement('span'); s.className = 'ch'; s.textContent = c; w.appendChild(s); chars.push(s);
+          });
+          frag.appendChild(w);
+        });
+        h.replaceChild(frag, node);
+      });
+      if (!chars.length) return;
+      h.addEventListener('mouseenter', function () { chars.forEach(function (s, i) { setTimeout(function () { s.style.fontVariationSettings = "'wght' 700"; }, i * 16); }); });
+      h.addEventListener('mouseleave', function () { chars.forEach(function (s, i) { setTimeout(function () { s.style.fontVariationSettings = "'wght' 600"; }, i * 16); }); });
+    }
+    document.querySelectorAll('h1, h2, h3').forEach(split);
+  })();
+
+  // COMPONENT 23: page-wide cursor-following glow
+  (function () {
+    var g = document.createElement('div'); g.id = 'cursor-glow'; document.body.appendChild(g);
+    var mx = 0, my = 0, raf = null;
+    addEventListener('mousemove', function (e) {
+      mx = e.clientX; my = e.clientY; g.classList.add('on');
+      if (raf) return;
+      raf = requestAnimationFrame(function () { g.style.setProperty('--cx', mx + 'px'); g.style.setProperty('--cy', my + 'px'); raf = null; });
+    });
+    document.addEventListener('mouseleave', function () { g.classList.remove('on'); });
+  })();
+</script>
+</body>
+</html>

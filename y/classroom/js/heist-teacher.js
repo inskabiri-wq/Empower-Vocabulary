@@ -1,5 +1,5 @@
 /* ============================================================
-   THE HEIST — Teacher (host) controller
+   THE HEIST - Teacher (host) controller
    ----------------------------------------------------------------
    The teacher's browser is the REFEREE for this game. Why:
      • No Cloud Functions are available on the current plan, so we
@@ -52,7 +52,7 @@
   // on window so the inline onclick handlers on the music-control
   // buttons in the HTML can reach them (the rest of this file is
   // wrapped in an IIFE so functions aren't global by default).
-  // Heist-flavoured track set — different songs than Vocab Race /
+  // Heist-flavoured track set - different songs than Vocab Race /
   // Trust classrooms use, so the heist has its own sonic identity
   // ("vault-cracking heist movie" vibe).
   const musicTracks = [
@@ -106,7 +106,7 @@
   let unsubHacks      = null;
   let unsubSession    = null;
   let timerInterval   = null;
-  // Tracks whether a game is "live in progress" — set true once the
+  // Tracks whether a game is "live in progress" - set true once the
   // host hits Start, set false on results/cleanup. Drives the
   // beforeunload warning + the back-link confirmations so the teacher
   // doesn't accidentally nuke a class mid-round.
@@ -153,7 +153,7 @@
       return;
     }
     currentUser = user;
-    // Verify teacher role — we don't want students hosting Heist
+    // Verify teacher role - we don't want students hosting Heist
     // games from a stolen URL.
     try {
       const doc = await db.collection('users').doc(user.uid).get();
@@ -173,7 +173,7 @@
     // Auto-create path. classroom-teacher.html's inline Heist setup
     // form hands off to this page via URL params (auto=1). When we
     // see those, we pre-fill the hidden form fields and immediately
-    // call createSession() — but show a "Creating room…" placeholder
+    // call createSession() - but show a "Creating room…" placeholder
     // INSTEAD of the setup view so the teacher doesn't see the form
     // flash for a frame before the lobby loads.
     const params = new URLSearchParams(location.search);
@@ -199,7 +199,7 @@
       // auto-create. replaceState keeps the back stack intact so
       // browser-back still lands on classroom-teacher.html.
       try { history.replaceState(null, '', location.pathname); } catch (_) {}
-      // Show the "Setting up the heist…" placeholder — NOT the setup
+      // Show the "Setting up the heist…" placeholder - NOT the setup
       // form. createSession() will switch to lobby-waiting on success.
       setView('auto-creating');
       await createSession();
@@ -210,7 +210,7 @@
       return;
     }
 
-    // Standalone path — no ?auto=1 and no active session in memory.
+    // Standalone path - no ?auto=1 and no active session in memory.
     // This means the teacher either hit a legacy bookmark or
     // refreshed the page mid-flight (which loses session state).
     // Rather than maintain a duplicate setup form that looks different
@@ -302,7 +302,7 @@
     urlEl.textContent = url;
     urlEl.href = url;
 
-    // QR code uses qrserver — same pattern as the existing classroom.
+    // QR code uses qrserver - same pattern as the existing classroom.
     // Students point their phone camera at the QR → opens the heist
     // join page with the code already filled in. Faster than typing
     // a 4-letter code 25 times across the classroom.
@@ -330,7 +330,7 @@
       return;
     }
     // Use the Vocab-Race `.player-card` markup so the heist lobby
-    // looks identical to the vocab race lobby — same avatar circle,
+    // looks identical to the vocab race lobby - same avatar circle,
     // same status pill underneath. We swap the status text out for
     // the heist-specific "Vault Set" / "Locking…" state.
     el.innerHTML = players.map(p => {
@@ -415,7 +415,7 @@
         renderLiveBoard(players);
       });
 
-    // Subscribe to PENDING hacks — referee action queue
+    // Subscribe to PENDING hacks - referee action queue
     unsubHacks = db.collection('heist_sessions').doc(sessionCode).collection('hacks')
       .where('status', '==', 'pending')
       .onSnapshot(snap => {
@@ -492,7 +492,7 @@
         const fee = hack.feeBurned || 0;
 
         if (success) {
-          // Take half of target's CURRENT balance — but READ it inside
+          // Take half of target's CURRENT balance - but READ it inside
           // the transaction (already done via tx.get(targetRef)) so
           // concurrent successful hacks against the same target serialize.
           // Without this, two attackers cracking the same target in the
@@ -516,7 +516,7 @@
           });
         } else {
           // Burn the fee (already deducted from attacker on the client
-          // side as an optimistic deduction — we just confirm here. We
+          // side as an optimistic deduction - we just confirm here. We
           // do NOT deduct again, otherwise the fee gets charged twice.)
           tx.update(attackerRef, {
             hacksAttempted: (a.hacksAttempted || 0) + 1
@@ -554,7 +554,7 @@
           );
           if (candidates.length > 0) {
             const next = candidates[Math.floor(Math.random() * candidates.length)];
-            // Two separate writes — `passwords/{uid}` is private (only
+            // Two separate writes - `passwords/{uid}` is private (only
             // owner + host can read), `players/{uid}.vaultHint` is the
             // public hint everyone trying to hack reads. Both must
             // update together so the new hint actually corresponds to
@@ -562,12 +562,12 @@
             await pwRef.set({ word: next.word });
             await targetRef.update({ vaultHint: next.tabooHint || '' });
             addEvent(
-              `🔄 ${hack.targetName}'s vault rotated — new password + new hint`,
+              `🔄 ${hack.targetName}'s vault rotated - new password + new hint`,
               'info'
             );
           }
         } catch (e) {
-          // Non-fatal — the hack itself already resolved. Worst case
+          // Non-fatal - the hack itself already resolved. Worst case
           // the vault keeps the old password until the next host
           // restart; better than crashing the resolver loop.
           console.warn('vault rotation failed (non-fatal):', e);
@@ -619,6 +619,21 @@
       // ReferenceError that was aborting showResults before the CSV got wired.
       const reward = (sessSnap.exists && Number(sessSnap.data().questionReward)) || 0;
       const players = playersSnap.docs.map(d => d.data());
+
+      // Persist a compact record for Admin > Reports (fail-silent).
+      if (window.saveGameReport) {
+        const s = sessSnap.exists ? sessSnap.data() : {};
+        window.saveGameReport(db, {
+          game: 'heist',
+          mode: s.questionSource || 'vocab',
+          code: sessionCode,
+          teacherId: s.hostUid || '',
+          teacherName: s.hostName || '',
+          level: s.grammarLevel || '',
+          unit: s.packName || '',
+          players: players.map(p => ({ name: p.name || '', score: p.balance || 0 }))
+        });
+      }
       const hacks   = hacksSnap.docs.map(d => d.data())
         .sort((a, b) => {
           const ta = a.resolvedAt && a.resolvedAt.toMillis ? a.resolvedAt.toMillis() : 0;
@@ -685,13 +700,13 @@
           <td style="padding:8px 10px; color:var(--heist-gold-2); font-weight:700;">💸 ${p.balance || 0}</td>
           <td style="padding:8px 10px;">💸 ${earned}</td>
           <td style="padding:8px 10px; color:${stolen > 0 ? 'var(--heist-green)' : 'var(--heist-text-mut)'};">
-            ${stolen > 0 ? '+💸 ' + stolen : '—'}
+            ${stolen > 0 ? '+💸 ' + stolen : '-'}
           </td>
           <td style="padding:8px 10px;">${correct} / ${answered}</td>
-          <td style="padding:8px 10px;">${answered ? acc + '%' : '—'}</td>
+          <td style="padding:8px 10px;">${answered ? acc + '%' : '-'}</td>
           <td style="padding:8px 10px;">${hOk} / ${hAtt}</td>
           <td style="padding:8px 10px; color:${hacked > 0 ? 'var(--heist-red)' : 'var(--heist-text-mut)'};">
-            ${hacked > 0 ? hacked : '—'}
+            ${hacked > 0 ? hacked : '-'}
           </td>
         </tr>
       `;
@@ -768,7 +783,7 @@
     if (unsubSession) { unsubSession(); unsubSession = null; }
   }
 
-  // ── Themed confirm modal — replaces window.confirm() ──────
+  // ── Themed confirm modal - replaces window.confirm() ──────
   // The browser dialog jars against the dark cyber-bank aesthetic.
   // This wires up #heistConfirm in the HTML with a Promise-based API
   // so the existing call sites read like `if (await ask(...)) {}`.
@@ -802,7 +817,7 @@
 
   // ── Wire DOM ───────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
-    // Music init — match the Vocab Race classroom behaviour:
+    // Music init - match the Vocab Race classroom behaviour:
     // moderate default volume, no loop (advance to next random track).
     const audio = document.getElementById('bgMusic');
     if (audio) {
@@ -823,7 +838,7 @@
     });
     // "Run another round" used to reload the heist page, which dumped
     // the teacher onto the now-deleted standalone setup view. Send
-    // them back to the unified Classroom Mode picker instead — one
+    // them back to the unified Classroom Mode picker instead - one
     // click to land on the Heist card again with their previous pack
     // / settings remembered by the browser.
     document.getElementById('newGameBtn').addEventListener('click', () => {
@@ -839,7 +854,7 @@
       const href = e.currentTarget.getAttribute('href');
       ask(
         'Leave the heist?',
-        `A game is in progress. Leaving to ${label} will leave students in the lobby — the game will keep running on Firestore, but you won't be refereeing hack attempts from this tab. End the game first?`,
+        `A game is in progress. Leaving to ${label} will leave students in the lobby - the game will keep running on Firestore, but you won't be refereeing hack attempts from this tab. End the game first?`,
         'Leave anyway'
       ).then(ok => { if (ok) window.location.href = href; });
     }
@@ -849,7 +864,7 @@
     if (b2) b2.addEventListener('click', (e) => confirmLeave(e, 'the dashboard'));
   });
 
-  // beforeunload guard — the *browser's* close/back button. Modern
+  // beforeunload guard - the *browser's* close/back button. Modern
   // browsers ignore custom strings (they show their own generic
   // "Leave site?" prompt), but setting returnValue is what triggers
   // the dialog. We only enable it during a live game so the teacher

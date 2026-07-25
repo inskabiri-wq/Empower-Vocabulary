@@ -538,9 +538,10 @@
     const GP = window.GRAMMAR_PRACTICE;
     const topics = (GP && GP.byLevel && GP.byLevel[session.grammarLevel]) || [];
     const unitOf = t => { const m = String(t.blurb || '').match(/Units?\s+(\d+)/i); return m ? parseInt(m[1], 10) : 0; };
-    let list = topics;
+    // Drop topics the admin hid from CLASSROOM (classroomHidden.grammar).
+    let list = topics.filter(t => !(typeof window.ccClassroomGrammarHidden === 'function' && window.ccClassroomGrammarHidden(t.id)));
     if (session.grammarUnit && session.grammarUnit !== 'all') {
-      list = topics.filter(t => unitOf(t) === parseInt(session.grammarUnit, 10));
+      list = list.filter(t => unitOf(t) === parseInt(session.grammarUnit, 10));
     }
     const out = [];
     list.forEach(t => (t.questions || []).forEach(q => out.push({

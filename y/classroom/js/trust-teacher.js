@@ -1,5 +1,5 @@
 /* ============================================================
-   TRUST NO ONE — Teacher (host) controller — Phase 1
+   TRUST NO ONE - Teacher (host) controller - Phase 1
    ----------------------------------------------------------------
    Same trust model as The Heist: teacher's tab is the referee.
    Phase 1 scope (this build):
@@ -89,9 +89,9 @@
   let sessionCode     = null;
   let unsubPlayers    = null;
   let unsubSession    = null;
-  let unsubSabotages  = null;          // Phase 2 — pending sabotages from impostors
+  let unsubSabotages  = null;          // Phase 2 - pending sabotages from impostors
   let timerInterval   = null;
-  let clueInterval    = null;          // Phase 2 — fires the clue engine every N seconds
+  let clueInterval    = null;          // Phase 2 - fires the clue engine every N seconds
   let liftoffTimer    = null;
   let gameInFlight    = false;
 
@@ -109,7 +109,7 @@
 
   // ── Phase 4 state ─────────────────────────────────────────
   let unsubDonations    = null;        // listens to /donations status=pending
-  let cachedSession     = null;        // last session snapshot — used for win check
+  let cachedSession     = null;        // last session snapshot - used for win check
   let winFired          = false;       // guard so we don't double-fire the win
 
   // ── Helpers ────────────────────────────────────────────────
@@ -141,7 +141,7 @@
     });
   }
 
-  // Themed confirm modal — used for End-mission etc.
+  // Themed confirm modal - used for End-mission etc.
   function ask(title, msg, okLabel) {
     return new Promise(resolve => {
       const bg   = document.getElementById('trustConfirm');
@@ -216,14 +216,14 @@
       setView('auto-creating');
       await createSession(settings);
       if (!sessionCode) {
-        // creation failed — fall back to picker so the teacher can retry
+        // creation failed - fall back to picker so the teacher can retry
         window.location.replace('classroom-teacher.html');
       }
       return;
     }
 
-    // Manual entry (shouldn't happen — the pre-paint script bounces
-    // out — but defensive fallback).
+    // Manual entry (shouldn't happen - the pre-paint script bounces
+    // out - but defensive fallback).
     window.location.replace('classroom-teacher.html');
   });
 
@@ -241,7 +241,7 @@
   // ── Create session ─────────────────────────────────────────
   async function createSession(settings) {
     activePack = packs.find(p => p.id === settings.packId);
-    if (!activePack) { toast('Hint pack missing — bouncing back to picker', 'fail'); return; }
+    if (!activePack) { toast('Hint pack missing - bouncing back to picker', 'fail'); return; }
 
     let code = generateCode();
     for (let i = 0; i < 5; i++) {
@@ -399,7 +399,7 @@
   function enterLiftoff(players, impostorSet) {
     setView('liftoff');
 
-    // Host's briefing shows ALL roles — they need to moderate.
+    // Host's briefing shows ALL roles - they need to moderate.
     const list = document.getElementById('liftoffRoster');
     list.innerHTML = players.map(p => {
       const isImp = impostorSet.has(p.uid);
@@ -456,7 +456,7 @@
         if (d.status === 'meeting' && d.activeMeetingId) {
           openHostMeetingView(d.activeMeetingId);
         } else if (d.status === 'playing') {
-          // Coming OUT of a meeting (or first entry) — make sure
+          // Coming OUT of a meeting (or first entry) - make sure
           // we're showing the live board.
           const liveVisible = document.getElementById('view-live') &&
                               document.getElementById('view-live').style.display !== 'none';
@@ -498,7 +498,7 @@
         });
         renderLiveBoard(players);
         // Phase 4: investigations-target win check fires every time a
-        // player doc updates. Cheap — early-bails if game's done.
+        // player doc updates. Cheap - early-bails if game's done.
         checkInvestigationsWin(players);
       });
 
@@ -519,7 +519,7 @@
 
     // Phase 3: listen for newly-opened meetings. When a STUDENT
     // calls an emergency meeting they can only create the /meetings
-    // doc — they can't flip session.status (rules block non-host
+    // doc - they can't flip session.status (rules block non-host
     // writes to the session doc). So the host's tab detects the new
     // meeting and flips status here.
     db.collection('trust_sessions').doc(sessionCode).collection('meetings')
@@ -531,14 +531,14 @@
           const sref = db.collection('trust_sessions').doc(sessionCode);
           const sdoc = await sref.get();
           const sdata = sdoc.data() || {};
-          // Already in a meeting? Ignore (race protection — should be
+          // Already in a meeting? Ignore (race protection - should be
           // rare because the cooldown banner disables new triggers).
           if (sdata.status === 'meeting' && sdata.activeMeetingId) return;
           // Cooldown still in effect? Ignore the trigger and log.
           const cdMs = sdata.meetingCooldownUntil && sdata.meetingCooldownUntil.toMillis
             ? sdata.meetingCooldownUntil.toMillis() : 0;
           if (Date.now() < cdMs) {
-            console.warn('meeting created during cooldown — ignoring', meetingId);
+            console.warn('meeting created during cooldown - ignoring', meetingId);
             return;
           }
           try {
@@ -547,7 +547,7 @@
         });
       });
 
-    // Phase 2: subscribe to pending sabotages — apply each as the
+    // Phase 2: subscribe to pending sabotages - apply each as the
     // referee. Effect = 💸20 from target + a public clue firing.
     if (unsubSabotages) unsubSabotages();
     unsubSabotages = db.collection('trust_sessions').doc(sessionCode).collection('sabotages')
@@ -596,7 +596,7 @@
         ? c.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
         : '';
       // Host-only debug: tag whether the clue was true / false / injected.
-      // Students never see these tags — just the text.
+      // Students never see these tags - just the text.
       const tag = c.injected
         ? '<span style="background:rgba(245,158,11,0.18); color:var(--t-amber-2); border:1px solid rgba(245,158,11,0.4); padding:1px 6px; border-radius:999px; font-size:9px; font-weight:800; letter-spacing:0.08em;">PLANTED</span>'
         : (c.isTrue
@@ -622,7 +622,7 @@
       if (r <= 0) {
         clearInterval(timerInterval);
         timerInterval = null;
-        // Phase 4: timer hit zero with no win condition — flag this
+        // Phase 4: timer hit zero with no win condition - flag this
         // as stalemate so the results banner can call it out.
         endGame('stalemate_time').catch(() => {});
       }
@@ -637,12 +637,12 @@
     );
     let totalInvestigations = 0;
     tbody.innerHTML = sorted.map((p, i) => {
-      const role = p.role || '—';
+      const role = p.role || '-';
       const alive = p.alive !== false;
       totalInvestigations += (p.investigationsCompleted || 0);
       const acc = (p.questionsAnswered || 0)
         ? Math.round((p.questionsCorrect || 0) / (p.questionsAnswered || 1) * 100) + '%'
-        : '—';
+        : '-';
       return `
         <tr class="${alive ? '' : 'ghost'}">
           <td>${i + 1}</td>
@@ -682,7 +682,7 @@
         .filter(p => p.alive !== false);
       if (alivePlayers.length < 2) return;
 
-      // Coin-flip the reliability — TRUE clue from real stats, or
+      // Coin-flip the reliability - TRUE clue from real stats, or
       // FALSE clue from a random template.
       const isTrue = Math.random() < reliability;
       const clue = isTrue
@@ -729,7 +729,7 @@
         };
       }
     }
-    // Nobody had a strong recent pattern — fall back to a leader/lagger
+    // Nobody had a strong recent pattern - fall back to a leader/lagger
     // observation on aggregate stats.
     if (ranked.length) {
       const leader = ranked[0];
@@ -780,7 +780,7 @@
         if (!tSnap.exists) return;
         const t = tSnap.data();
         // Don't tax a player who's already dead in the water (alive=false)
-        // — they can't really be "sabotaged".
+        // - they can't really be "sabotaged".
         if (t.alive === false) return;
         const bal = Math.max(0, t.balance || 0);
         amountTaken = Math.min(20, bal);
@@ -818,7 +818,7 @@
     if (!sessionCode) return;
     const sref = db.collection('trust_sessions').doc(sessionCode);
     try {
-      // Cooldown guard — don't open a meeting if the previous one's
+      // Cooldown guard - don't open a meeting if the previous one's
       // cooldown is still ticking. (Belt-and-braces; the buttons that
       // call this are already disabled by the same check.)
       const sdoc = await sref.get();
@@ -860,14 +860,14 @@
     unsubActiveMeeting = mref.onSnapshot(doc => {
       const m = doc.data();
       if (!m) return;
-      document.getElementById('meetingCalledByHost').textContent = m.calledByName || '—';
+      document.getElementById('meetingCalledByHost').textContent = m.calledByName || '-';
       const rRow = document.getElementById('meetingReasonRowHost');
       rRow.textContent = m.reason ? `"${m.reason}"` : '';
       // Start the local countdown the first time we see startedAt.
       const startedAt = m.startedAt && m.startedAt.toMillis ? m.startedAt.toMillis() : null;
       if (startedAt && !meetingTimerInt) startMeetingTimer(startedAt, m.duration || 60, meetingId);
       if (m.status === 'resolved') {
-        // Move to eject reveal — host owns the reveal animation.
+        // Move to eject reveal - host owns the reveal animation.
         if (meetingTimerInt) { clearInterval(meetingTimerInt); meetingTimerInt = null; }
         showHostEjectReveal(m);
       }
@@ -881,7 +881,7 @@
   }
 
   // Live tally + tile rendering during the meeting (host POV).
-  // Tiles show vote counts here (host-only — students don't see counts
+  // Tiles show vote counts here (host-only - students don't see counts
   // until reveal).
   function renderHostMeetingGrid(votes) {
     const grid = document.getElementById('meetingGridHost');
@@ -947,7 +947,7 @@
         if (tally[uid] > highest) { highest = tally[uid]; winners = [uid]; }
         else if (tally[uid] === highest) { winners.push(uid); }
       }
-      // Skip wins all ties (no one is ejected — safer default).
+      // Skip wins all ties (no one is ejected - safer default).
       let ejectedUid = null;
       let ejectedName = '';
       let ejectedRole = null;
@@ -1007,7 +1007,7 @@
         return;
       }
 
-      // No game-ending result — flip back to playing with cooldown.
+      // No game-ending result - flip back to playing with cooldown.
       // The student snapshot handlers will see status flip back and
       // route them through the eject-reveal then back to the question
       // stream. Host's onSnapshot in this file does the same.
@@ -1041,7 +1041,7 @@
       labelEl.textContent = `was ${meeting.ejectedRole === 'impostor' ? 'an IMPOSTOR' : 'a CREWMATE'}`;
       headingEl.textContent = '🚀 Ejected!';
     } else {
-      // Skip won — no one ejected.
+      // Skip won - no one ejected.
       card.className = 'role-card crewmate';
       card.style.borderStyle = 'dashed';
       avaEl.textContent  = '🕊️';
@@ -1058,7 +1058,7 @@
       if (el) el.textContent = String(r);
       if (r <= 0) {
         clearInterval(cdInt);
-        // Sub-cleanup of the meeting listeners — the next meeting
+        // Sub-cleanup of the meeting listeners - the next meeting
         // re-subscribes via openHostMeetingView.
         if (unsubActiveMeeting) { unsubActiveMeeting(); unsubActiveMeeting = null; }
         if (unsubMeetingVotes)  { unsubMeetingVotes();  unsubMeetingVotes  = null; }
@@ -1114,7 +1114,7 @@
       await db.runTransaction(async tx => {
         const rSnap = await tx.get(recRef);
         if (!rSnap.exists) {
-          // Recipient vanished — refund the donor.
+          // Recipient vanished - refund the donor.
           tx.update(donorRef, {
             balance: firebase.firestore.FieldValue.increment(amount)
           });
@@ -1221,6 +1221,23 @@
       const winner = s.winner || 'aborted';
       const winReason = s.winReason || '';
 
+      // Persist a compact record for Admin > Reports (fail-silent).
+      if (window.saveGameReport) {
+        sref.collection('players').get().then(ps => {
+          window.saveGameReport(db, {
+            game: 'trust',
+            mode: s.questionSource || 'vocab',
+            code: sessionCode,
+            teacherId: s.hostUid || '',
+            teacherName: s.hostName || '',
+            level: s.grammarLevel || '',
+            unit: s.packName || '',
+            outcome: winner,
+            players: ps.docs.map(d => { const p = d.data(); return { name: p.name || '', score: p.balance || 0 }; })
+          });
+        }).catch(() => {});
+      }
+
       // ── Winner banner ───────────────────────────────────
       const banner = document.getElementById('resultsBanner');
       const winIconEl  = document.getElementById('winIcon');
@@ -1244,7 +1261,7 @@
         } else if (winner === 'stalemate') {
           banner.classList.add('win-stalemate');
           winIconEl.textContent = '⏱️';
-          winTitleEl.textContent = 'Stalemate — time\'s up';
+          winTitleEl.textContent = 'Stalemate - time\'s up';
           winSubEl.textContent = 'The mission timer ran out before either side could close it out.';
         } else {
           banner.classList.add('win-aborted');
@@ -1323,10 +1340,10 @@
       // ── Per-player table (collapsible) ─────────────────
       const tbody = document.getElementById('resultsTable');
       tbody.innerHTML = players.map((p, i) => {
-        const role = p.role || '—';
+        const role = p.role || '-';
         const acc = (p.questionsAnswered || 0)
           ? Math.round((p.questionsCorrect || 0) / (p.questionsAnswered || 1) * 100) + '%'
-          : '—';
+          : '-';
         return `
           <tr class="${p.alive === false ? 'ghost' : ''}">
             <td>${i + 1}</td>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocab Bingo | Lingualab</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css">
+<!-- UNIVERSAL classroom look; the game only adds its own widgets. -->
+<link rel="stylesheet" href="classroom/css/styles.css">
+<link rel="stylesheet" href="classroom/css/minigames.css?v=3">
+</head>
+<body class="bingo">
+
+<!-- Animated Background - same as every classroom page -->
+<div class="gradient-bg"></div>
+<div class="floating-shapes">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <div class="shape shape-4"></div>
+</div>
+
+<!-- Music Control -->
+<div class="music-control">
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
+  <button class="music-btn" onclick="nextTrack()" title="Next Track">🎶</button>
+  <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" onchange="setVolume(this.value)">
+</div>
+<audio id="bgMusic" preload="none"></audio>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-title">
+    <span style="font-size: 1.5rem;">🎱</span>
+    <h1>Vocab Bingo</h1>
+  </div>
+  <div class="header-actions">
+    <span style="color: var(--text-secondary); font-weight: 600;">⭐ <span id="myScore">0</span></span>
+  </div>
+</header>
+
+<!-- Join - same shape as the Classroom Mode join screen -->
+<div id="view-join" class="lobby-container">
+  <div class="lobby-icon">🎱</div>
+  <h1 class="lobby-title">Join the Game</h1>
+  <p class="lobby-subtitle">Enter the session code from your teacher</p>
+
+  <div class="card" style="max-width: 400px; margin: 24px auto;">
+    <div class="form-group">
+      <label class="form-label">Session Code</label>
+      <input type="text" id="codeInput" class="form-input code-input" maxlength="5" placeholder="ABCDE" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Your Name</label>
+      <input type="text" id="nameInput" class="form-input" maxlength="24" placeholder="e.g. Alex" autocomplete="off">
+    </div>
+    <button id="joinBtn" class="btn btn-primary btn-large" style="width: 100%;">🎟️ Get My Card</button>
+  </div>
+</div>
+
+<!-- Wait -->
+<div id="view-wait" class="lobby-container" style="display: none;">
+  <div class="lobby-icon">🎟️</div>
+  <h1 class="lobby-title">Card Dealt!</h1>
+  <p class="lobby-subtitle">Waiting for the teacher to start...</p>
+
+  <div class="card" style="max-width: 400px; margin: 24px auto; text-align: center;">
+    <p style="color: var(--text-secondary); font-size: 0.9rem;">Watch the board - when a clue appears, find the matching word on your card and tap it.</p>
+    <div class="waiting-animation">
+      <div class="waiting-dot"></div>
+      <div class="waiting-dot"></div>
+      <div class="waiting-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Play -->
+<div id="view-play" class="container" style="display: none;">
+  <div class="mg-banner" id="myBingoBanner" style="display: none;">🎉 BINGO! Keep marking for points.</div>
+  <div class="card" style="max-width: 640px; margin: 0 auto;">
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 4px;" id="statusLine">Watch the board.</p>
+    <div class="bingo-grid" id="bingoGrid"></div>
+    <div class="mg-feedback" id="cardFeedback" style="text-align: center;"></div>
+  </div>
+</div>
+
+<!-- Done -->
+<div id="view-done" class="container" style="display: none;">
+  <div class="card" style="max-width: 640px; margin: 0 auto; text-align: center;">
+    <h2 class="card-title" style="justify-content: center; font-size: 1.5rem;">🏁 Game Over!</h2>
+    <div style="font-size: 2.2rem; font-weight: 700; color: var(--accent-primary); margin: 10px 0 2px;" id="doneScore">0 pts</div>
+    <p style="color: var(--text-secondary);">You placed <strong id="doneRank">-</strong></p>
+    <h3 style="margin: 20px 0 12px;">📊 Leaderboard</h3>
+    <div class="leaderboard-list" id="doneList" style="text-align: left;"></div>
+    <div style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;">
+      <a href="classroom-student.html" class="btn btn-secondary btn-large" style="flex: 1;">➕ Join Another Game</a>
+      <a href="student-dashboard.html" class="btn btn-primary btn-large" style="flex: 1;">← Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="classroom/js/refresh-guard.js"></script>
+<script src="classroom/js/minigame-core.js?v=3"></script>
+<script src="classroom/js/bingo-student.js?v=3"></script>
+
+</body>
+</html>

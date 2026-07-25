@@ -105,15 +105,22 @@
   // the header cell to ASCII before matching. Bare "no" is intentionally OMITTED
   // from studentNo, since the row-number column "NO" must NOT win over "ÖĞRENCİ NO".
   var HEADER_ALIASES = {
-    email:     ['email', 'e-mail', 'e mail', 'mail', 'eposta', 'e-posta', 'e-posta adresi'],
-    name:      ['name', 'name surname', 'full name', 'fullname', 'student name',
-                'ad soyad', 'ad-soyad', 'adi soyadi', 'isim', 'isim soyisim',
-                'ogrenci adi - soyadi', 'ogrenci adi-soyadi', 'ogrenci adi soyadi'],
-    studentNo: ['student no', 'studentno', 'student number', 'okul no',
-                'ogrenci no', 'numara', 'ogrenci numarasi'],
-    class:     ['class', 'class code', 'section', 'sinif', 'sinifi', 'sube'],
-    level:     ['level', 'cefr', 'seviye', 'seviyesi', 'duzey'],
-    dept:      ['department', 'bolum', 'program', 'programi']
+    email:     ['email', 'e-mail', 'e mail', 'mail', 'eposta', 'e-posta', 'e-posta adresi',
+                'email adresi', 'e-mail adresi', 'mail adresi', 'eposta adresi', 'e posta',
+                'ogrenci e-posta', 'ogrenci email', 'ogrenci mail', 'kurumsal e-posta',
+                'kurumsal email', 'email address', 'e-mail address'],
+    name:      ['name', 'name surname', 'name-surname', 'full name', 'fullname', 'student name',
+                'student full name', 'ad soyad', 'ad-soyad', 'adi soyadi', 'isim', 'isim soyisim',
+                ' isim soyad', 'ogrenci', 'ogrenci adi', 'ogrenci adi soyadi',
+                'ogrenci adi - soyadi', 'ogrenci adi-soyadi', 'adisoyadi'],
+    studentNo: ['student no', 'studentno', 'student number', 'okul no', 'okul numarasi',
+                'ogrenci no', 'ogr no', 'ogr. no', 'ogrenci no.', 'numara', 'ogrenci numarasi',
+                'student id', 'id no'],
+    class:     ['class', 'class code', 'class no', 'section', 'sinif', 'sinifi', 'sinif kodu',
+                'sube', 'grup', 'group'],
+    level:     ['level', 'cefr', 'seviye', 'seviyesi', 'duzey', 'kur', 'ingilizce seviyesi',
+                'english level'],
+    dept:      ['department', 'bolum', 'program', 'programi', 'fakulte']
   };
   // Normalize a header cell for matching: fold Turkish letters to ASCII
   // (I/İ/ı -> i, ş->s, ğ->g, ç->c, ö->o, ü->u), strip remaining accents,
@@ -160,31 +167,121 @@
   };
   function normalizeLevel(v) { var k = normKey(v); return LEVEL_WORD[k] || String(v == null ? '' : v).trim(); }
 
+  // ---- content-based column classifier -------------------------------
+  // The headers can be missing, mislabelled or in an unexpected order. So we
+  // ALSO read the actual cell values and let CONTENT decide which column is
+  // which: an email column is full of addresses, a student-number column is
+  // full of long digit strings, etc. This makes email <-> student-no swaps
+  // impossible - email is whatever column truly holds emails.
+  var RE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var RE_NUM   = /^\d{4,}$/;                                   // student no: 4+ digits (row-No 1,2,3 will not match)
+  var RE_CLASS = /^([A-Za-z]{1,5}[-\s/]?\d{1,4}[A-Za-z]?|\d{1,3}[-\s/]?[A-Za-z]{1,4})$/;  // B101, A1, 9-C, HAZ3
+  var RE_NAMEY = /^[^\d@]+[ .][^\d@]+$/;                       // 2+ words, no digits/@
+  function isLevelVal(v) { var k = normKey(v); return !!LEVEL_WORD[k] || /^(a1|a2|b1|b1\+|b2|c1|c2)$/.test(k); }
+  function classifyColumns(aoa, startRow) {
+    var cols = 0, r, c;
+    for (r = startRow; r < aoa.length; r++) cols = Math.max(cols, (aoa[r] || []).length);
+    var sig = [];
+    for (c = 0; c < cols; c++) sig[c] = { email: 0, num: 0, cls: 0, level: 0, name: 0, n: 0 };
+    for (r = startRow; r < aoa.length; r++) {
+      var row = aoa[r] || [];
+      for (c = 0; c < cols; c++) {
+        var v = String(row[c] == null ? '' : row[c]).trim();
+        if (!v) continue;
+        var s = sig[c]; s.n++;
+        if (RE_EMAIL.test(v)) { s.email++; continue; }          // an email is never also a number/name
+        if (RE_NUM.test(v)) s.num++;
+        if (RE_CLASS.test(v)) s.cls++;
+        if (isLevelVal(v)) s.level++;
+        if (RE_NAMEY.test(v)) s.name++;
+      }
+    }
+    return sig;
+  }
+  function frac(sig, c, m) { return (sig[c] && sig[c].n) ? sig[c][m] / sig[c].n : 0; }
+  function bestCol(sig, m, used, floor) {
+    var bi = -1, bs = floor;
+    for (var c = 0; c < sig.length; c++) { if (used[c]) continue; var f = frac(sig, c, m); if (f > bs) { bs = f; bi = c; } }
+    return bi;
+  }
+  // Merge the header map with content signals into the final field->column map.
+  // Email is the anchor (always the addresses column). Student-no is a numeric
+  // column and never the email column. Notes explain any content override.
+  function reconcile(headerMap, sig) {
+    var map = {}, notes = [], used = {};
+    var hm = headerMap || {};
+    // EMAIL - content wins so it can never be the No column.
+    var eC = bestCol(sig, 'email', used, 0.5);
+    var eH = ('email' in hm) ? hm.email : -1;
+    if (eC >= 0) { map.email = eC; used[eC] = 1; if (eH >= 0 && eH !== eC) notes.push('Email taken from the column that actually holds addresses (the header pointed elsewhere).'); else if (eH < 0) notes.push('Email column identified from its contents (no matching header).'); }
+    else if (eH >= 0) { map.email = eH; used[eH] = 1; }
+    // STUDENT NO - numeric, never the email column.
+    var nH = ('studentNo' in hm) ? hm.studentNo : -1;
+    if (nH >= 0 && !used[nH] && frac(sig, nH, 'num') >= 0.3) { map.studentNo = nH; used[nH] = 1; }
+    else { var nC = bestCol(sig, 'num', used, 0.5); if (nC >= 0) { map.studentNo = nC; used[nC] = 1; if (nH >= 0 && nH !== nC) notes.push('Student number taken from the numeric column (the header pointed elsewhere).'); else if (nH < 0) notes.push('Student number column identified from its contents.'); } else if (nH >= 0 && !used[nH]) { map.studentNo = nH; used[nH] = 1; } }
+    // CLASS
+    var clH = ('class' in hm) ? hm.class : -1;
+    if (clH >= 0 && !used[clH]) { map.class = clH; used[clH] = 1; }
+    else { var clC = bestCol(sig, 'cls', used, 0.4); if (clC >= 0) { map.class = clC; used[clC] = 1; notes.push('Class column identified from its contents.'); } }
+    // LEVEL
+    var lvH = ('level' in hm) ? hm.level : -1;
+    if (lvH >= 0 && !used[lvH]) { map.level = lvH; used[lvH] = 1; }
+    else { var lvC = bestCol(sig, 'level', used, 0.4); if (lvC >= 0) { map.level = lvC; used[lvC] = 1; notes.push('Level column identified from its contents.'); } }
+    // NAME - remaining text column.
+    var nmH = ('name' in hm) ? hm.name : -1;
+    if (nmH >= 0 && !used[nmH]) { map.name = nmH; used[nmH] = 1; }
+    else { var nmC = bestCol(sig, 'name', used, 0.3); if (nmC >= 0) { map.name = nmC; used[nmC] = 1; notes.push('Name column identified from its contents.'); } }
+    if ('dept' in hm && !used[hm.dept]) { map.dept = hm.dept; }
+    return { map: map, notes: notes };
+  }
+  function firstEmailRow(aoa) {
+    for (var r = 0; r < aoa.length; r++) { var row = aoa[r] || []; for (var c = 0; c < row.length; c++) { if (RE_EMAIL.test(String(row[c] == null ? '' : row[c]).trim())) return r; } }
+    return -1;
+  }
+
+  // Detect field->column mapping for a parsed sheet (array of arrays). Pure
+  // (no DOM), so it is unit-testable and exposed on window.RosterImport.
+  function columnsForAoa(aoa) {
+    var det = detectHeader(aoa);
+    var startRow, headerMap;
+    if (det.idx >= 0) { startRow = det.idx + 1; headerMap = det.map; }
+    else {
+      // No recognizable header - start at the first row with an email and let
+      // content classification carry it.
+      startRow = firstEmailRow(aoa);
+      if (startRow < 0) throw new Error('No header row and no email addresses found - the sheet needs at least a Name or Email column (NAME / Ad Soyad, EMAIL / E-posta).');
+      headerMap = {};
+    }
+    var sig = classifyColumns(aoa, startRow);
+    var rec = reconcile(headerMap, sig);
+    if (!('email' in rec.map) && !('name' in rec.map)) {
+      throw new Error('Could not identify a Name or Email column - please make sure the sheet has those.');
+    }
+    return { map: rec.map, notes: rec.notes, startRow: startRow };
+  }
+
   function parseFile(file) {
     return ensureXlsx().then(function () {
       return readArrayBuffer(file).then(function (buf) {
         var wb = XLSX.read(buf, { type: 'array' });
         var ws = wb.Sheets[wb.SheetNames[0]];
         var aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
-        var det = detectHeader(aoa);
-        if (det.idx < 0) {
-          var e = new Error('No header row found - the sheet needs at least a Name or Email column (e.g. NAME / Ad Soyad, or EMAIL / E-posta).');
-          throw e;
-        }
+        var cf = columnsForAoa(aoa);
+        var map = cf.map;
         var rows = [];
-        for (var r = det.idx + 1; r < aoa.length; r++) {
+        for (var r = cf.startRow; r < aoa.length; r++) {
           var raw = aoa[r] || [];
           if (raw.every(function (c) { return String(c == null ? '' : c).trim() === ''; })) continue;
           var obj = {};
-          for (var logical in det.map) {
-            if (!det.map.hasOwnProperty(logical)) continue;
-            var val = raw[det.map[logical]];
+          for (var logical in map) {
+            if (!map.hasOwnProperty(logical)) continue;
+            var val = raw[map[logical]];
             obj[logical] = (val == null ? '' : String(val).trim());
           }
           if (obj.level) obj.level = normalizeLevel(obj.level);
           rows.push(obj);
         }
-        return rows;
+        return { rows: rows, mapping: map, notes: cf.notes };
       });
     });
   }
@@ -319,6 +416,33 @@
     return '<div style="max-height:460px; overflow:auto; background:var(--t2-surface,#161b22); border:1px solid ' + (accentBorder || 'var(--t2-border,#30363d)') + '; border-radius:10px;">' + inner + '</div>';
   }
 
+  // Spreadsheet column letter for a 0-based index (0->A, 26->AA).
+  function colLetter(i) {
+    if (i == null || i < 0) return '?';
+    var s = ''; i = Number(i);
+    do { s = String.fromCharCode(65 + (i % 26)) + s; i = Math.floor(i / 26) - 1; } while (i >= 0);
+    return s;
+  }
+  var FIELD_LABEL = { name: 'Name', email: 'Email', studentNo: 'Student no', class: 'Class', level: 'Level', dept: 'Department' };
+  function mappingLine(kind, map, notes) {
+    if (!map) return '';
+    var order = ['name', 'email', 'studentNo', 'class', 'level'];
+    var parts = order.filter(function (k) { return k in map; }).map(function (k) {
+      return '<span style="margin-right:14px; white-space:nowrap;"><span style="color:var(--t2-text-muted,#7d8590);">' + FIELD_LABEL[k] + '</span> &rarr; col ' + colLetter(map[k]) + '</span>';
+    }).join('');
+    var missing = ['name', 'email'].filter(function (k) { return !(k in map); });
+    var noteHtml = (notes && notes.length) ? notes.map(function (n) { return '<div style="color:#f59e0b; margin-top:3px;">note: ' + esc(n) + '</div>'; }).join('') : '';
+    var missHtml = missing.length ? '<div style="color:#f87171; margin-top:3px;">could not find a ' + missing.join(' or ') + ' column</div>' : '';
+    return '<div style="margin-bottom:6px;"><span style="font-weight:700; color:var(--t2-text,#e6edf3);">' + kind + ' sheet:</span> ' + parts + noteHtml + missHtml + '</div>';
+  }
+  function columnsBanner() {
+    var sHtml = (state.students && state.students.length) ? mappingLine('Students', state.studentMap, state.studentNotes) : '';
+    var tHtml = (state.teachers && state.teachers.length) ? mappingLine('Teachers', state.teacherMap, state.teacherNotes) : '';
+    if (!sHtml && !tHtml) return '';
+    return '<div style="background:var(--t2-surface,#161b22); border:1px solid var(--t2-border,#30363d); border-radius:10px; padding:11px 14px; margin-bottom:14px; font-size:12px;">' +
+      '<div style="color:var(--t2-text-muted,#7d8590); margin-bottom:6px;">📑 Detected columns - check these are right before creating accounts:</div>' + sHtml + tHtml + '</div>';
+  }
+
   function renderPreview(sV, tV, crossDup) {
     var problems = sV.problems.concat(tV.problems).concat(crossDup);
     var hard = problems.filter(function (p) { return !p.warn; });
@@ -409,7 +533,7 @@
       return '<div class="ri-tabpanel" data-tabid="' + t.id + '" style="display:' + (i === 0 ? 'block' : 'none') + ';">' + t.html + '</div>';
     }).join('');
 
-    $('riReport').innerHTML = cards + bar + panels;
+    $('riReport').innerHTML = cards + columnsBanner() + bar + panels;
     wireReportClicks();
     return { hard: hard.length, valid: (sV.clean.length + tV.clean.length) };
   }
@@ -470,10 +594,12 @@
     // Parse each sheet independently so one bad sheet does not block the other.
     function safeParse(file) {
       if (!file) return Promise.resolve({ rows: [] });
-      return parseFile(file).then(function (rows) { return { rows: rows }; }, function (e) { return { rows: [], err: (e && e.message) || String(e) }; });
+      return parseFile(file).then(function (out) { return { rows: out.rows, mapping: out.mapping, notes: out.notes }; }, function (e) { return { rows: [], err: (e && e.message) || String(e) }; });
     }
     Promise.all([safeParse(sf), safeParse(tf)]).then(function (res) {
       state.students = res[0].rows || []; state.teachers = res[1].rows || [];
+      state.studentMap = res[0].mapping || null; state.studentNotes = res[0].notes || [];
+      state.teacherMap = res[1].mapping || null; state.teacherNotes = res[1].notes || [];
       revalidate();
       var probs = [];
       if (res[0].err) probs.push('Student sheet: ' + res[0].err);
@@ -694,5 +820,5 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 
   // Small surface for the verification harness (and handy for debugging).
-  window.RosterImport = { renderClassCards: renderClassCards, ensureQr: ensureQr, buildJoinUrl: buildJoinUrl };
+  window.RosterImport = { renderClassCards: renderClassCards, ensureQr: ensureQr, buildJoinUrl: buildJoinUrl, columnsForAoa: columnsForAoa };
 })();

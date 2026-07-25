@@ -1,0 +1,205 @@
+/* ============================================================
+   MINIGAMES - game-specific widgets for Tug of War / Vocab Bingo
+   / Sentence Scramble.
+   ------------------------------------------------------------
+   THE UNIVERSAL LOOK COMES FROM classroom/css/styles.css: body
+   font/background, .header, .container, .card, .btn*, form
+   elements, .session-code-display, .players-grid/.player-card,
+   .leaderboard-list/.leaderboard-item, .podium, .game-timer,
+   .confirm-modal - the game pages use those classes directly so
+   everything matches the other classroom games exactly.
+
+   This file only adds what the mini-games introduce (rope,
+   bingo card, scramble chips, QR card) plus a PER-GAME ACCENT
+   (--game-accent) that is applied ONLY to those game widgets -
+   never to the page basics.
+   ============================================================ */
+
+body.tug      { --game-accent: #f59e0b; --game-accent-2: #ef4444; }
+body.bingo    { --game-accent: #a855f7; --game-accent-2: #ec4899; }
+body.scramble { --game-accent: #10b981; --game-accent-2: #06b6d4; }
+
+/* ── Session QR card - identical to the one in classroom-teacher.html
+   (copied so every game lobby shows the exact same QR block). ── */
+.session-qr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 24px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+}
+.session-qr-tile {
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 12px;
+  line-height: 0;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+.session-qr-tile img { display: block; width: 220px; height: 220px; }
+.session-qr-label {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--text-secondary, #94a3b8);
+  text-align: center;
+}
+.session-qr-small {
+  border-radius: 8px;
+  background: #fff;
+  padding: 3px;
+}
+
+/* ── Shared layout helper for host live views ── */
+.mg-live-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 860px) { .mg-live-grid { grid-template-columns: 1fr; } }
+
+/* Extra timer state on top of styles.css .game-timer(.warning) */
+.game-timer.crit { color: var(--error); animation: timerPulse 0.5s ease-in-out infinite; }
+
+/* Question feedback line (same tones the classroom uses) */
+.mg-feedback { min-height: 26px; margin-top: 10px; font-weight: 700; font-size: 0.95em; }
+.mg-feedback.ok { color: var(--success); }
+.mg-feedback.no { color: var(--error); }
+
+/* MCQ option buttons - mirror the classroom answer-button feel */
+.mg-opts { display: flex; flex-direction: column; gap: 10px; }
+.mg-opt {
+  cursor: pointer; text-align: left; font-family: inherit; font-size: 0.95rem;
+  padding: 14px 16px; border-radius: 12px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-item); color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+.mg-opt:hover { border-color: var(--accent-primary); }
+.mg-opt.correct { border-color: var(--success); background: rgba(16, 185, 129, 0.15); }
+.mg-opt.wrong   { border-color: var(--error);   background: rgba(239, 68, 68, 0.15); }
+.mg-opt:disabled { cursor: default; }
+
+/* Question stem */
+.mg-stem {
+  font-size: 1.1rem; font-weight: 600; line-height: 1.55;
+  white-space: pre-line; margin: 6px 0 16px;
+}
+
+/* ── Tug of War rope (game widget - accent allowed) ── */
+.tug-rope-wrap { margin: 22px 0 8px; }
+.tug-teams { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.05rem; margin-bottom: 8px; }
+.tug-teams .red  { color: #f87171; }
+.tug-teams .blue { color: #60a5fa; }
+.tug-track {
+  position: relative; height: 46px; border-radius: 999px;
+  background: linear-gradient(90deg, rgba(239,68,68,0.25) 0%, var(--bg-item) 50%, rgba(59,130,246,0.25) 100%);
+  border: 1px solid var(--border-color);
+}
+.tug-center-line {
+  position: absolute; left: 50%; top: -6px; bottom: -6px; width: 2px;
+  background: rgba(255, 255, 255, 0.35); transform: translateX(-50%);
+}
+.tug-knot {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.1em; line-height: 1;
+  transition: left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+}
+.tug-goal { position: absolute; top: -10px; bottom: -10px; width: 3px; border-radius: 2px; }
+.tug-goal.red  { background: rgba(239, 68, 68, 0.8); }
+.tug-goal.blue { background: rgba(59, 130, 246, 0.8); }
+.tug-team-pill {
+  display: inline-block; font-weight: 700; border-radius: 999px; padding: 6px 16px; font-size: 0.9rem;
+}
+.tug-team-pill.red  { background: rgba(239, 68, 68, 0.16); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); }
+.tug-team-pill.blue { background: rgba(59, 130, 246, 0.16); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.5); }
+.player-card.tug-red  { border-color: rgba(239, 68, 68, 0.55); }
+.player-card.tug-blue { border-color: rgba(59, 130, 246, 0.55); }
+
+/* Result banner (win line) - classroom card tones + game accent border */
+.mg-banner {
+  text-align: center; font-weight: 700; font-size: 1.15rem;
+  background: var(--bg-item);
+  border: 1px solid var(--game-accent, var(--accent-primary));
+  border-radius: 14px;
+  padding: 14px; margin-bottom: 16px;
+}
+
+/* ── Bingo (game widgets - accent allowed) ── */
+.bingo-call-card {
+  text-align: center; padding: 28px 22px; border-radius: 16px;
+  background: var(--bg-item); border: 2px dashed var(--game-accent, var(--accent-primary));
+  margin-bottom: 16px;
+}
+.bingo-call-count {
+  color: var(--text-secondary); font-size: 0.85rem;
+  letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
+}
+.bingo-call-text { font-size: 1.6rem; font-weight: 600; line-height: 1.45; margin-top: 10px; white-space: pre-line; }
+.bingo-history { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.bingo-hist-chip {
+  font-size: 0.8rem; font-weight: 600; border-radius: 999px; padding: 5px 11px;
+  background: var(--bg-item); border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+.bingo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+.bingo-cell {
+  cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.88rem;
+  min-height: 64px; padding: 6px; border-radius: 12px; line-height: 1.25;
+  border: 2px solid var(--border-color);
+  background: var(--bg-item); color: var(--text-primary);
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  word-break: break-word;
+  transition: all 0.15s ease;
+}
+.bingo-cell:hover { border-color: var(--accent-primary); }
+.bingo-cell.marked {
+  background: linear-gradient(135deg, var(--game-accent, #a855f7), var(--game-accent-2, #ec4899));
+  border-color: transparent;
+  color: #fff;
+  text-decoration: line-through;
+}
+.bingo-cell.shake { animation: mgShake 0.4s; }
+@keyframes mgShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* ── Scramble chips (game widgets - accent allowed) ── */
+.scr-answer-line {
+  min-height: 58px; border-radius: 14px; padding: 10px;
+  border: 2px dashed var(--game-accent, var(--accent-primary));
+  background: var(--bg-item);
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  margin-bottom: 14px;
+}
+.scr-pool { display: flex; flex-wrap: wrap; gap: 8px; min-height: 48px; }
+.scr-chip {
+  cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.95rem;
+  padding: 10px 14px; border-radius: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-item); color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+.scr-chip:hover { border-color: var(--accent-primary); transform: translateY(-1px); }
+.scr-answer-line .scr-chip { border-color: var(--game-accent, var(--accent-primary)); }
+.scr-result-ok { color: var(--success); font-weight: 700; font-size: 1.15rem; }
+.scr-result-no { color: var(--error); font-weight: 700; font-size: 1.15rem; }
+
+/* ── Toast - classroom card tones ── */
+.mg-toast {
+  position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%);
+  z-index: 4000; padding: 12px 20px; border-radius: 12px;
+  background: var(--bg-card); border: 1px solid var(--border-color);
+  color: var(--text-primary); font-weight: 600; font-size: 0.92rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: mgToastIn 0.25s ease-out;
+}
+.mg-toast.success { border-color: rgba(16, 185, 129, 0.6); }
+.mg-toast.fail    { border-color: rgba(239, 68, 68, 0.6); }
+@keyframes mgToastIn { from { opacity: 0; transform: translate(-50%, 12px); } }
+
+@media (max-width: 640px) {
+  .bingo-call-text { font-size: 1.25rem; }
+}

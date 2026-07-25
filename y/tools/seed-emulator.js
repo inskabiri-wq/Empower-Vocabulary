@@ -37,6 +37,11 @@ function fdoc(obj) { var f = {}; Object.keys(obj).forEach(function (k) { f[k] = 
 // (verify-gate modal), plus level/class/module/book so the dashboard renders.
 var STUDENT = { uid: 'demo-student-uid', email: 'demo.student@fsm.edu.tr', password: 'Passw0rd!', name: 'Demo Student' };
 var TEACHER = { uid: 'demo-teacher-uid', email: 'demo.teacher@fsm.edu.tr', password: 'Passw0rd!', name: 'Demo Teacher' };
+// The ADMIN identity: firestore.rules isAdmin() matches this exact email, so
+// admin-only writes (settings/contentControls etc.) can be exercised locally.
+// Role stays 'teacher' so the login redirect lands on the teacher dashboard.
+var ADMIN = { uid: 'demo-admin-uid', email: 'akabiriaslifar@fsm.edu.tr', password: 'Passw0rd!', name: 'Demo Admin' };
+var adminDoc = { email: ADMIN.email, name: ADMIN.name, role: 'teacher', active: true, createdAt: ts() };
 var studentDoc = { email: STUDENT.email, name: STUDENT.name, role: 'student', active: true, level: 'B1', studentClass: 'B101', module: 'Module 2', academicYear: '2025-26', book: 'empower', registeredAt: ts(), lastVerifiedAt: ts(), createdAt: ts(), lastLogin: ts() };
 var teacherDoc = { email: TEACHER.email, name: TEACHER.name, role: 'teacher', active: true, createdAt: ts() };
 var classDoc = { name: 'Pilot Class B101', level: 'B1', book: 'empower', teacherId: TEACHER.uid, code: 'DEMO01', createdAt: ts() };
@@ -60,10 +65,13 @@ async function main() {
   console.log((DRY ? '[DRY RUN] ' : '') + 'Seed emulators  project=' + PROJECT + '  auth=' + AUTH + '  firestore=' + FS);
   await authCreate(STUDENT);
   await authCreate(TEACHER);
+  await authCreate(ADMIN);
   await fsWrite('users', STUDENT.uid, studentDoc);
   await fsWrite('users', TEACHER.uid, teacherDoc);
+  await fsWrite('users', ADMIN.uid, adminDoc);
   await fsWrite('classes', 'demo-class', classDoc);
   console.log('\nDone. Sign in as  ' + STUDENT.email + ' / ' + STUDENT.password + '  (student)');
   console.log('           or as  ' + TEACHER.email + ' / ' + TEACHER.password + '  (teacher)');
+  console.log('           or as  ' + ADMIN.email + ' / ' + ADMIN.password + '  (admin)');
 }
 main().catch(function (e) { console.error('seed failed: ' + e.message + '\n(are the emulators running? see README-emulator-e2e.md)'); process.exit(1); });

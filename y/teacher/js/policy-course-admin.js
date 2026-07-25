@@ -72,12 +72,10 @@
     }
     const btn = $('pcAdminToggleBtn');
     if (btn) {
-      // Activation / deactivation is admin-only. Teachers still see the status
-      // pill and their class's completions, but not the toggle. (Firestore
-      // rules also reject non-admin writes to settings/policyCourse.)
-      var admin = (typeof isAdmin === 'function') && isAdmin();
-      btn.style.display = admin ? '' : 'none';
-      btn.textContent = (cfg && cfg.active) ? 'Deactivate' : 'Activate';
+      // The course ON/OFF switch moved to Admin > Content (single home for all
+      // activate/deactivate controls, per app convention). The status pill above
+      // still shows the current state here.
+      btn.style.display = 'none';
     }
   }
 
@@ -87,6 +85,10 @@
   function renderModuleToggles() {
     const box = $('pcModulesBox');
     if (!box) return;
+    // Module activate/deactivate moved to Admin > Content > Mini courses
+    // (single home for every on/off control). This box stays empty here.
+    box.innerHTML = '';
+    if (true) return;
     const admin = (typeof isAdmin === 'function') && isAdmin();
     const mods = COURSE.modules || [];
     if (!admin || !mods.length) { box.innerHTML = ''; return; }

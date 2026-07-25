@@ -302,6 +302,13 @@ service cloud.firestore {
       allow write: if isTeacher();
     }
 
+    // Placement test activation + targeting (classes/levels/modules/years).
+    // Teachers run placement days, so they (not just admin) switch it on/off.
+    match /settings/placementConfig {
+      allow read: if isAuth();
+      allow write: if isTeacher();
+    }
+
     // ── courseProgress collection — policy mini course ──
     // One doc per student: module/final results, restudy + ban state,
     // certificate. The 2-day test ban is anchored on lastFailAt server
@@ -581,6 +588,58 @@ service cloud.firestore {
         resource.data.createdBy == request.auth.uid;
     }
 
+    // ── AI usage log ─────────────────────────────────────────
+    // Writing-AI calls log here (written server-side by analyzeWriting via the
+    // Admin SDK, which bypasses rules; these client rules just allow the
+    // Reports panel to read + admin to prune). Never client-written.
+    match /aiUsage/{usageId} {
+      allow read: if isTeacher();
+      allow delete: if isAdmin();
+      allow create, update: if false;
+    }
+
+    // ── Access audit trail ───────────────────────────────────
+    // Every grant/revoke in Admin > Access writes one row (who did what to
+    // whom, when). Immutable: no updates, admin-only pruning.
+    match /accessAudit/{entryId} {
+      allow create: if isTeacher();
+      allow read: if isTeacher();
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    // ── Placement test results ───────────────────────────────
+    // One doc per student (docId = uid). The ONE-ATTEMPT policy is enforced
+    // here: students may CREATE their own result but never update it, so a
+    // finished test cannot be overwritten. Teachers read all (Placement tab +
+    // Reports) and delete to reset an attempt. The result is a RECOMMENDATION
+    // only - nothing here writes the student profile.
+    match /placementResults/{studentId} {
+      allow create: if canWriteAsRealUser() &&
+        isOwner(studentId) &&
+        request.resource.data.userId == request.auth.uid;
+      // Nobody updates a finished attempt (one attempt, immutable).
+      // Teacher writing review lives on the {uid}_placement doc in
+      // /writingSubmissions (the normal grading pipeline), not here.
+      allow update: if false;
+      allow read: if isTeacher() || isOwner(studentId);
+      allow delete: if isTeacher();
+    }
+
+    // ── Game reports ─────────────────────────────────────────
+    // Compact permanent record of a finished classroom game (written by
+    // the host page's showResults via classroom/js/game-report.js; the
+    // live session docs may be deleted afterwards). Surfaced in
+    // Admin > Reports with retention cleanup.
+    //   create/update: the hosting teacher (idempotent set-merge rewrite)
+    //   read:          teachers + admin (Reports panel is admin-only UI)
+    //   delete:        admin only (retention cleanup)
+    match /gameReports/{reportId} {
+      allow create, update: if isTeacher();
+      allow read: if isTeacher();
+      allow delete: if isAdmin();
+    }
+
     match /classroom_sessions/{sessionCode} {
       // Create: any teacher, but they must stamp themselves as creator
       // (admin bypasses for backfills).
@@ -789,6 +848,61 @@ service cloud.firestore {
           request.resource.data.amount > 0;
         allow update, delete: if _isTrustHost(code);
         allow read: if isAuth();
+      }
+    }
+
+    // ── Mini-game sessions: Tug of War / Vocab Bingo / Sentence Scramble ──
+    //
+    // Same trust posture as heist_sessions: a teacher hosts, students
+    // (including anonymous sign-ins) join via a 5-char code, the host's
+    // tab referees. Each player owns their own player doc; the host can
+    // also write any player doc in their session. No restricted
+    // subcollections - the question content in the session doc is the
+    // same content the student is answering, so there is nothing secret.
+    function _isMiniHost(coll, code) {
+      return isAuth() &&
+        exists(/databases/$(database)/documents/$(coll)/$(code)) &&
+        get(/databases/$(database)/documents/$(coll)/$(code)).data.hostUid == request.auth.uid;
+    }
+    function _ownsMiniSession() {
+      return isAdmin() ||
+        !('hostUid' in resource.data) ||
+        resource.data.hostUid == request.auth.uid;
+    }
+
+    match /tug_sessions/{code} {
+      allow create: if isTeacher() &&
+        (isAdmin() || request.resource.data.hostUid == request.auth.uid);
+      allow update, delete: if isTeacher() && _ownsMiniSession();
+      allow read: if isAuth();
+      match /players/{uid} {
+        allow create, update: if isOwner(uid) || _isMiniHost('tug_sessions', code);
+        allow read: if isAuth();
+        allow delete: if _isMiniHost('tug_sessions', code);
+      }
+    }
+
+    match /bingo_sessions/{code} {
+      allow create: if isTeacher() &&
+        (isAdmin() || request.resource.data.hostUid == request.auth.uid);
+      allow update, delete: if isTeacher() && _ownsMiniSession();
+      allow read: if isAuth();
+      match /players/{uid} {
+        allow create, update: if isOwner(uid) || _isMiniHost('bingo_sessions', code);
+        allow read: if isAuth();
+        allow delete: if _isMiniHost('bingo_sessions', code);
+      }
+    }
+
+    match /scramble_sessions/{code} {
+      allow create: if isTeacher() &&
+        (isAdmin() || request.resource.data.hostUid == request.auth.uid);
+      allow update, delete: if isTeacher() && _ownsMiniSession();
+      allow read: if isAuth();
+      match /players/{uid} {
+        allow create, update: if isOwner(uid) || _isMiniHost('scramble_sessions', code);
+        allow read: if isAuth();
+        allow delete: if _isMiniHost('scramble_sessions', code);
       }
     }
 

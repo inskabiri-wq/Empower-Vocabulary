@@ -1,19 +1,37 @@
 /* ============================================================
    CONTENT CONTROLS - admin panel (#tab-admin)
    ------------------------------------------------------------
-   Per-item "hide from practice" for reading + listening exams AND
-   grammar topics, browsed by LEVEL tabs (A1/A2/B1/B1+/B2). Hidden
-   items are assignment-only: they disappear from free practice but
-   still work when assigned. Stored in settings/contentControls:
-     { practiceHidden: { reading:[examId], listening:[examId],
-                         grammar:[topicId] } }
-   Writes are admin-only (general /settings rule); the student side
-   reads it via content-controls-student.js. Nothing is deleted.
+   Every content item (reading + listening exams, grammar topics,
+   vocabulary word-lists) has per-item THREE-SCOPE visibility. Each
+   item has independent toggles for where it appears:
+     - Practice     (student free-practice)
+     - Classroom    (live classroom games)
+     - Assignments  (teacher assignment pickers)
+   Browsed by LEVEL tabs.
+
+   Stored in settings/contentControls:
+     { practiceHidden:    { reading:[examId], listening:[examId],
+                            grammar:[topicId], vocabulary:[unitId] },
+       classroomHidden:   { reading:[], listening:[], grammar:[], vocabulary:[] },
+       assignmentsHidden: { reading:[], listening:[], grammar:[], vocabulary:[] },
+       hiddenLevels:      { reading:[lvl], ... } }
+   Vocabulary unit ids are level-qualified ("A2::Unit 1").
+
+   Writes are admin-only (general /settings rule). Enforcement:
+   practice via content-controls-student.js; classroom via
+   cc-classroom.js (games) + classroom-teacher picker (exams);
+   assignments via exam-form.js + grammar-form.js + the vocab
+   unit gating in teacher-assignments.js.
    ============================================================ */
 (function () {
   'use strict';
 
-  var cfg = { practiceHidden: { reading: [], listening: [], grammar: [], vocabulary: [] }, hiddenLevels: { reading: [], listening: [], grammar: [], vocabulary: [] } };
+  var cfg = {
+    practiceHidden: { reading: [], listening: [], grammar: [], vocabulary: [] },
+    classroomHidden: { reading: [], listening: [], grammar: [], vocabulary: [] },
+    assignmentsHidden: { reading: [], listening: [], grammar: [], vocabulary: [] },
+    hiddenLevels: { reading: [], listening: [], grammar: [], vocabulary: [] }
+  };
   var activeLevel = null;
   var activeSkill = 'all';   // 'all' | 'reading' | 'listening' | 'grammar'
   var LEVEL_ORDER = ['A1', 'A2', 'B1', 'B1+', 'B2', 'C1'];
@@ -26,7 +44,11 @@
     { id: 'vocabulary', label: '📚 Vocabulary' },
     { id: 'reading', label: '📖 Reading' },
     { id: 'listening', label: '🎧 Listening' },
-    { id: 'grammar', label: '✏️ Grammar' }
+    { id: 'grammar', label: '✏️ Grammar' },
+    // Mini courses get their own tab (next to Grammar): the course on/off AND
+    // its per-module toggles live here - the single home for every
+    // activate/deactivate control. Future courses appear as more blocks.
+    { id: 'courses', label: '🎓 Mini courses' }
   ];
 
   var $ = function (id) { return document.getElementById(id); };
@@ -39,6 +61,22 @@
     return cfg.practiceHidden[skill];
   }
   function isHidden(skill, id) { return hiddenSet(skill).indexOf(id) !== -1; }
+
+  // Three-scope helpers (reading/listening exams only). scope is one of
+  // 'practice' | 'classroom' | 'assignments', mapping to the cfg key.
+  var SCOPES = [
+    { id: 'practice', key: 'practiceHidden', label: 'Practice' },
+    { id: 'classroom', key: 'classroomHidden', label: 'Classroom' },
+    { id: 'assignments', key: 'assignmentsHidden', label: 'Assignments' }
+  ];
+  function scopeKey(scope) {
+    for (var i = 0; i < SCOPES.length; i++) if (SCOPES[i].id === scope) return SCOPES[i].key;
+    return 'practiceHidden';
+  }
+  function isScopeHidden(scope, skill, id) {
+    var map = cfg[scopeKey(scope)] || {};
+    return Array.isArray(map[skill]) && map[skill].indexOf(id) !== -1;
+  }
 
   function allLevels() {
     var set = {};
@@ -58,7 +96,7 @@
 
   function section(title, inner) {
     return '<div style="background:var(--t2-surface,#161b22); border:1px solid var(--t2-border,#30363d); border-radius:12px; padding:16px 18px; margin-bottom:16px;">' +
-      '<div style="font-weight:800; font-size:14px; color:var(--t2-text,#e6edf3); margin-bottom:10px;">' + title + '</div>' + inner + '</div>';
+      '<div style="font-weight:800; font-size:15px; color:var(--t2-text,#e6edf3); margin-bottom:10px;">' + title + '</div>' + inner + '</div>';
   }
 
   function toggleRow(skill, id, label) {
@@ -67,17 +105,46 @@
         (hidden ? 'rgba(245,158,11,0.5)' : 'var(--t2-border,#30363d)') + '; border-radius:8px; margin-bottom:6px; ' +
         (hidden ? 'background:rgba(245,158,11,0.06);' : '') + '">' +
       '<div style="flex:1; min-width:0;">' +
-        '<div style="font-size:13px; color:var(--t2-text,#e6edf3); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + esc(label) + '</div>' +
-        '<div style="font-size:11px; font-weight:600; margin-top:1px; color:' + (hidden ? '#f59e0b' : 'var(--t2-green,#22c55e)') + ';">' +
+        '<div style="font-size:14px; color:var(--t2-text,#e6edf3); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + esc(label) + '</div>' +
+        '<div style="font-size:12px; font-weight:600; margin-top:1px; color:' + (hidden ? '#f59e0b' : 'var(--t2-green,#22c55e)') + ';">' +
           (hidden ? 'Hidden from practice · assignment-only' : 'In practice') + '</div>' +
       '</div>' +
       '<button type="button" class="cc-toggle" data-skill="' + skill + '" data-id="' + esc(id) + '" ' +
-        'style="cursor:pointer; font-family:inherit; font-size:12px; font-weight:500; color:var(--t2-text-muted,#7d8590); background:transparent; border:1px solid var(--t2-border,#30363d); border-radius:20px; padding:5px 14px; white-space:nowrap;">' +
+        'style="cursor:pointer; font-family:inherit; font-size:13px; font-weight:500; color:var(--t2-text-muted,#7d8590); background:transparent; border:1px solid var(--t2-border,#30363d); border-radius:20px; padding:5px 14px; white-space:nowrap;">' +
         (hidden ? 'Show in practice' : 'Hide from practice') + '</button>' +
     '</div>';
   }
 
   function scrollWrap(rows) { return '<div style="max-height:340px; overflow:auto; padding-right:6px;">' + rows + '</div>'; }
+
+  // Reading/listening exam row: one pill per scope. Green = visible there,
+  // amber = hidden there. Clicking a pill flips only that scope.
+  function examScopeRow(skill, id, label) {
+    var hiddenScopes = SCOPES.filter(function (s) { return isScopeHidden(s.id, skill, id); });
+    var anyHidden = hiddenScopes.length > 0;
+    var status = anyHidden
+      ? 'Hidden from: ' + hiddenScopes.map(function (s) { return s.label.toLowerCase(); }).join(', ')
+      : 'Visible everywhere';
+    var pills = SCOPES.map(function (s) {
+      var off = isScopeHidden(s.id, skill, id);
+      return '<button type="button" class="cc-scope" data-scope="' + s.id + '" data-skill="' + skill + '" data-id="' + esc(id) + '" ' +
+        'title="' + (off ? 'Show in ' : 'Hide from ') + s.label.toLowerCase() + '" ' +
+        'style="cursor:pointer; font-family:inherit; font-size:12px; font-weight:700; padding:4px 11px; border-radius:14px; white-space:nowrap; ' +
+        'border:1px solid ' + (off ? 'rgba(245,158,11,0.55)' : 'rgba(34,197,94,0.45)') + '; ' +
+        'background:' + (off ? 'rgba(245,158,11,0.12)' : 'rgba(34,197,94,0.08)') + '; ' +
+        'color:' + (off ? '#f59e0b' : 'var(--t2-green,#22c55e)') + ';">' +
+        (off ? '✕ ' : '✓ ') + s.label + '</button>';
+    }).join('');
+    return '<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:8px 10px; border:1px solid ' +
+        (anyHidden ? 'rgba(245,158,11,0.5)' : 'var(--t2-border,#30363d)') + '; border-radius:8px; margin-bottom:6px; ' +
+        (anyHidden ? 'background:rgba(245,158,11,0.06);' : '') + '">' +
+      '<div style="flex:1; min-width:180px;">' +
+        '<div style="font-size:14px; color:var(--t2-text,#e6edf3); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + esc(label) + '</div>' +
+        '<div style="font-size:12px; font-weight:600; margin-top:1px; color:' + (anyHidden ? '#f59e0b' : 'var(--t2-green,#22c55e)') + ';">' + status + '</div>' +
+      '</div>' +
+      '<div style="display:flex; gap:6px; flex-wrap:wrap;">' + pills + '</div>' +
+    '</div>';
+  }
 
   // Whole-level on/off (deactivates every item of a skill at a level).
   function isLevelOff(skill, level) {
@@ -87,7 +154,7 @@
   function levelToggle(skill, level) {
     var off = isLevelOff(skill, level);
     return '<button type="button" class="cc-level-toggle" data-skill="' + skill + '" data-level="' + esc(level) + '" ' +
-      'style="cursor:pointer; font-family:inherit; font-size:11px; font-weight:800; padding:3px 12px; border-radius:14px; margin-left:8px; white-space:nowrap; ' +
+      'style="cursor:pointer; font-family:inherit; font-size:12px; font-weight:800; padding:3px 12px; border-radius:14px; margin-left:8px; white-space:nowrap; ' +
       'border:1px solid ' + (off ? 'rgba(248,113,113,0.55)' : 'var(--t2-border,#30363d)') + '; ' +
       'background:' + (off ? 'rgba(248,113,113,0.14)' : 'transparent') + '; ' +
       'color:' + (off ? '#f87171' : 'var(--t2-text-muted,#7d8590)') + ';">' +
@@ -140,10 +207,12 @@
     } else if (!units.length) {
       inner = '<div style="font-size:12px; color:var(--t2-text-muted,#7d8590); padding:4px 2px;">No word lists found for ' + esc(level) + '.</div>';
     } else {
-      var n = units.filter(function (u) { return isHidden('vocabulary', level + '::' + u); }).length;
-      if (n) title += ' &middot; <span style="color:#f59e0b;">' + n + ' hidden</span>';
-      var rows = units.map(function (u) { return toggleRow('vocabulary', level + '::' + u, u); }).join('');
-      inner = '<div style="font-size:12px; color:var(--t2-text-muted,#7d8590); padding:2px 2px 8px;">Deactivate individual word lists. A hidden list vanishes from free practice but still works when assigned.</div>' + scrollWrap(rows);
+      var n = units.filter(function (u) {
+        return SCOPES.some(function (s) { return isScopeHidden(s.id, 'vocabulary', level + '::' + u); });
+      }).length;
+      if (n) title += ' &middot; <span style="color:#f59e0b;">' + n + ' restricted</span>';
+      var rows = units.map(function (u) { return examScopeRow('vocabulary', level + '::' + u, u); }).join('');
+      inner = '<div style="font-size:12px; color:var(--t2-text-muted,#7d8590); padding:2px 2px 8px;">Toggle each word list per surface: Practice (free practice), Classroom (live games) and Assignments.</div>' + scrollWrap(rows);
     }
     return section(title, inner);
   }
@@ -153,9 +222,11 @@
     var exams = (window.EXAM_REGISTRY.examsForLevel(skill, level) || []).filter(function (e) { return e.available !== false; });
     if (!exams.length) return '';
     var off = isLevelOff(skill, level);
-    var n = exams.filter(function (e) { return isHidden(skill, e.id); }).length;
-    var rows = exams.map(function (e) { return toggleRow(skill, e.id, e.title || e.id); }).join('');
-    var title = icon + ' ' + name + ' &middot; ' + esc(level) + (!off && n ? (' &middot; <span style="color:#f59e0b;">' + n + ' hidden</span>') : '') + levelToggle(skill, level);
+    var n = exams.filter(function (e) {
+      return SCOPES.some(function (s) { return isScopeHidden(s.id, skill, e.id); });
+    }).length;
+    var rows = exams.map(function (e) { return examScopeRow(skill, e.id, e.title || e.id); }).join('');
+    var title = icon + ' ' + name + ' &middot; ' + esc(level) + (!off && n ? (' &middot; <span style="color:#f59e0b;">' + n + ' restricted</span>') : '') + levelToggle(skill, level);
     return section(title, (off ? offBanner() : '') + scrollWrap(rows));
   }
 
@@ -167,13 +238,79 @@
     topics.forEach(function (t) { var u = unitNo(t.blurb); (groups[u] = groups[u] || []).push(t); });
     var rows = '';
     Object.keys(groups).sort(function (a, b) { return (parseInt(a, 10) || 0) - (parseInt(b, 10) || 0); }).forEach(function (u) {
-      rows += '<div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--t2-text-muted,#7d8590); margin:10px 0 4px;">Unit ' + esc(u) + '</div>';
-      groups[u].forEach(function (t) { rows += toggleRow('grammar', t.id, t.title || t.id); });
+      rows += '<div style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--t2-text-muted,#7d8590); margin:10px 0 4px;">Unit ' + esc(u) + '</div>';
+      groups[u].forEach(function (t) { rows += examScopeRow('grammar', t.id, t.title || t.id); });
     });
     var off = isLevelOff('grammar', level);
-    var n = topics.filter(function (t) { return isHidden('grammar', t.id); }).length;
-    var title = '✏️ Grammar topics &middot; ' + esc(level) + (!off && n ? (' &middot; <span style="color:#f59e0b;">' + n + ' hidden</span>') : '') + levelToggle('grammar', level);
+    var n = topics.filter(function (t) {
+      return SCOPES.some(function (s) { return isScopeHidden(s.id, 'grammar', t.id); });
+    }).length;
+    var title = '✏️ Grammar topics &middot; ' + esc(level) + (!off && n ? (' &middot; <span style="color:#f59e0b;">' + n + ' restricted</span>') : '') + levelToggle('grammar', level);
     return section(title, (off ? offBanner() : '') + scrollWrap(rows));
+  }
+
+  // ── Mini course (policy course) activation ───────────────────
+  // Moved here from the Courses tab so every activate/deactivate control has
+  // ONE home. Targeting (who sees it) stays in the Courses tab.
+  var pcCfg = null, pcLoading = false;
+  function loadPcCfg() {
+    if (pcLoading) return;
+    pcLoading = true;
+    db.collection('settings').doc('policyCourse').get().then(function (s) {
+      pcCfg = s.exists ? (s.data() || {}) : {};
+      render();
+    }).catch(function () { pcCfg = {}; });
+  }
+  function courseBlock() {
+    if (pcCfg === null) { loadPcCfg(); return ''; }
+    var on = !!pcCfg.active;
+    var head = '<div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">' +
+      '<span style="font-size:20px;">🎓</span>' +
+      '<div style="flex:1; min-width:0;">' +
+        '<div style="font-weight:800; font-size:15px; color:var(--t2-text,#e6edf3);">Mini course (policy / onboarding)</div>' +
+        '<div style="font-size:12px; font-weight:600; margin-top:1px; color:' + (on ? 'var(--t2-green,#22c55e)' : '#f59e0b') + ';">' + (on ? 'Active - targeted students see it' : 'Deactivated - hidden from students') + '</div>' +
+      '</div>' +
+      '<button type="button" id="ccCourseToggle" style="cursor:pointer; font-family:inherit; font-size:13px; font-weight:700; padding:7px 16px; border-radius:20px; border:1px solid ' + (on ? 'rgba(248,113,113,0.5)' : 'var(--t2-green,#22c55e)') + '; background:transparent; color:' + (on ? '#f87171' : 'var(--t2-green,#22c55e)') + ';">' + (on ? 'Deactivate' : 'Activate') + '</button>' +
+      '</div>';
+    // Per-module toggles (moved here from the Courses tab). Deactivating a
+    // module drops it from the course AND from certificate completion.
+    var mods = (window.POLICY_COURSE && Array.isArray(window.POLICY_COURSE.modules)) ? window.POLICY_COURSE.modules : [];
+    var hidden = Array.isArray(pcCfg.hiddenModules) ? pcCfg.hiddenModules : [];
+    var rows = mods.map(function (m) {
+      var off = hidden.indexOf(m.id) !== -1;
+      var name = (m.title && (m.title.en || m.title)) || m.id;
+      return '<div style="display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid ' +
+          (off ? 'rgba(248,113,113,0.5)' : 'var(--t2-border,#30363d)') + '; border-radius:8px; margin-bottom:6px; ' + (off ? 'background:rgba(248,113,113,0.06);' : '') + '">' +
+        '<span style="font-size:18px;">' + esc(m.icon || '📘') + '</span>' +
+        '<div style="flex:1; min-width:0;">' +
+          '<div style="font-size:14px; color:var(--t2-text,#e6edf3); font-weight:600;">' + esc(name) + '</div>' +
+          '<div style="font-size:12px; font-weight:600; margin-top:1px; color:' + (off ? '#f87171' : 'var(--t2-green,#22c55e)') + ';">' + (off ? 'Deactivated' : 'Active') + '</div>' +
+        '</div>' +
+        '<button type="button" class="cc-course-mod" data-mid="' + esc(m.id) + '" style="cursor:pointer; font-family:inherit; font-size:13px; font-weight:600; color:var(--t2-text-muted,#7d8590); background:transparent; border:1px solid var(--t2-border,#30363d); border-radius:20px; padding:5px 14px;">' +
+          (off ? 'Activate' : 'Deactivate') + '</button>' +
+      '</div>';
+    }).join('');
+    var modBlock = mods.length
+      ? '<div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--t2-text-muted,#7d8590); margin:6px 2px 8px;">Modules (deactivate to drop from the course + certificate)</div>' + rows
+      : '';
+    return section('🎓 Mini courses', head + modBlock);
+  }
+  function flipCourseModule(mid) {
+    pcCfg = pcCfg || {};
+    var arr = Array.isArray(pcCfg.hiddenModules) ? pcCfg.hiddenModules.slice() : [];
+    var i = arr.indexOf(mid);
+    if (i === -1) arr.push(mid); else arr.splice(i, 1);
+    pcCfg.hiddenModules = arr;
+    db.collection('settings').doc('policyCourse').set({ hiddenModules: arr, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true })
+      .catch(function (e) { if (window.AppDialog) AppDialog.alert('Could not save: ' + e.message); });
+    render();
+  }
+  function flipCourse() {
+    pcCfg = pcCfg || {};
+    pcCfg.active = !pcCfg.active;
+    db.collection('settings').doc('policyCourse').set({ active: pcCfg.active, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true })
+      .catch(function (e) { if (window.AppDialog) AppDialog.alert('Could not save: ' + e.message); });
+    render();
   }
 
   function render() {
@@ -187,7 +324,7 @@
     var tabs = '<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">' + levels.map(function (l) {
       var on = l === activeLevel;
       return '<button type="button" class="cc-tab" data-level="' + esc(l) + '" ' +
-        'style="cursor:pointer; font-family:inherit; font-weight:800; font-size:13px; padding:7px 16px; border-radius:20px; ' +
+        'style="cursor:pointer; font-family:inherit; font-weight:800; font-size:14px; padding:7px 16px; border-radius:20px; ' +
         'border:1px solid ' + (on ? 'var(--t2-green,#22c55e)' : 'var(--t2-border,#30363d)') + '; ' +
         'background:' + (on ? 'rgba(34,197,94,0.12)' : 'transparent') + '; ' +
         'color:' + (on ? 'var(--t2-green,#22c55e)' : 'var(--t2-text-muted,#7d8590)') + ';">' + esc(l) + '</button>';
@@ -197,11 +334,21 @@
     var skillTabs = '<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">' + SKILL_TABS.map(function (s) {
       var on = s.id === activeSkill;
       return '<button type="button" class="cc-skill-tab" data-skilltab="' + s.id + '" ' +
-        'style="cursor:pointer; font-family:inherit; font-weight:800; font-size:12px; padding:6px 14px; border-radius:20px; ' +
+        'style="cursor:pointer; font-family:inherit; font-weight:800; font-size:13px; padding:6px 14px; border-radius:20px; ' +
         'border:1px solid ' + (on ? 'var(--t2-blue,#3b82f6)' : 'var(--t2-border,#30363d)') + '; ' +
         'background:' + (on ? 'rgba(59,130,246,0.14)' : 'transparent') + '; ' +
         'color:' + (on ? '#60a5fa' : 'var(--t2-text-muted,#7d8590)') + ';">' + esc(s.label) + '</button>';
     }).join('') + '</div>';
+
+    // Mini courses tab: level tabs do not apply - just the course blocks.
+    if (activeSkill === 'courses') {
+      box.innerHTML = skillTabs + courseBlock();
+      var pcBtn2 = box.querySelector('#ccCourseToggle');
+      if (pcBtn2) pcBtn2.addEventListener('click', flipCourse);
+      box.querySelectorAll('.cc-course-mod').forEach(function (b) { b.addEventListener('click', function () { flipCourseModule(b.getAttribute('data-mid')); }); });
+      box.querySelectorAll('.cc-skill-tab').forEach(function (b) { b.addEventListener('click', function () { activeSkill = b.getAttribute('data-skilltab'); render(); }); });
+      return;
+    }
 
     var content = '';
     if (activeSkill === 'all' || activeSkill === 'vocabulary') content += vocabBlock(activeLevel);
@@ -214,9 +361,12 @@
     }
 
     box.innerHTML = skillTabs + tabs + content;
+    var pcBtn = box.querySelector('#ccCourseToggle');
+    if (pcBtn) pcBtn.addEventListener('click', flipCourse);
     box.querySelectorAll('.cc-skill-tab').forEach(function (b) { b.addEventListener('click', function () { activeSkill = b.getAttribute('data-skilltab'); render(); }); });
     box.querySelectorAll('.cc-tab').forEach(function (b) { b.addEventListener('click', function () { activeLevel = b.getAttribute('data-level'); render(); }); });
     box.querySelectorAll('.cc-toggle').forEach(function (b) { b.addEventListener('click', function () { flip(b.getAttribute('data-skill'), b.getAttribute('data-id')); }); });
+    box.querySelectorAll('.cc-scope').forEach(function (b) { b.addEventListener('click', function () { flipScope(b.getAttribute('data-scope'), b.getAttribute('data-skill'), b.getAttribute('data-id')); }); });
     box.querySelectorAll('.cc-level-toggle').forEach(function (b) { b.addEventListener('click', function () { flipLevel(b.getAttribute('data-skill'), b.getAttribute('data-level')); }); });
   }
 
@@ -226,6 +376,8 @@
     // merge:true keeps any other fields (e.g. a legacy grammarQuestionCount) intact.
     return db.collection('settings').doc('contentControls').set({
       practiceHidden: cfg.practiceHidden,
+      classroomHidden: cfg.classroomHidden,
+      assignmentsHidden: cfg.assignmentsHidden,
       hiddenLevels: cfg.hiddenLevels,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedBy: u.uid
@@ -241,6 +393,17 @@
     var i = arr.indexOf(id);
     if (i === -1) arr.push(id); else arr.splice(i, 1);
     cfg.practiceHidden[skill] = arr;
+    save();
+    render();
+  }
+
+  function flipScope(scope, skill, id) {
+    var key = scopeKey(scope);
+    cfg[key] = cfg[key] || {};
+    var arr = Array.isArray(cfg[key][skill]) ? cfg[key][skill].slice() : [];
+    var i = arr.indexOf(id);
+    if (i === -1) arr.push(id); else arr.splice(i, 1);
+    cfg[key][skill] = arr;
     save();
     render();
   }
@@ -264,6 +427,20 @@
         listening: Array.isArray(ph.listening) ? ph.listening : [],
         grammar: Array.isArray(ph.grammar) ? ph.grammar : [],
         vocabulary: Array.isArray(ph.vocabulary) ? ph.vocabulary : []
+      };
+      var ch = (d.classroomHidden && typeof d.classroomHidden === 'object') ? d.classroomHidden : {};
+      cfg.classroomHidden = {
+        reading: Array.isArray(ch.reading) ? ch.reading : [],
+        listening: Array.isArray(ch.listening) ? ch.listening : [],
+        grammar: Array.isArray(ch.grammar) ? ch.grammar : [],
+        vocabulary: Array.isArray(ch.vocabulary) ? ch.vocabulary : []
+      };
+      var ah = (d.assignmentsHidden && typeof d.assignmentsHidden === 'object') ? d.assignmentsHidden : {};
+      cfg.assignmentsHidden = {
+        reading: Array.isArray(ah.reading) ? ah.reading : [],
+        listening: Array.isArray(ah.listening) ? ah.listening : [],
+        grammar: Array.isArray(ah.grammar) ? ah.grammar : [],
+        vocabulary: Array.isArray(ah.vocabulary) ? ah.vocabulary : []
       };
       var hl = (d.hiddenLevels && typeof d.hiddenLevels === 'object') ? d.hiddenLevels : {};
       cfg.hiddenLevels = {

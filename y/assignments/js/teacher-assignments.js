@@ -5,7 +5,7 @@
 // ============================================
 let allAssignments = [];
 let allCompletions = {}; // { odUserId_assignmentId: { completed, bestScore, ... } }
-// Phase G fix — writing submissions, keyed `${uid}_${aid}`. Used by
+// Phase G fix - writing submissions, keyed `${uid}_${aid}`. Used by
 // calculateAssignmentCompletion() to count a writing essay as "Done"
 // even when the assignmentCompletions doc is missing (legacy bug:
 // writing-exam.js was writing userId not odUserId, so its completion
@@ -41,7 +41,7 @@ function hexToRgb(hex) {
 }
 
 // ============================================
-// SKILL PICKER + FILTER STRIP — Phase 1 of the skill-based architecture.
+// SKILL PICKER + FILTER STRIP - Phase 1 of the skill-based architecture.
 // ============================================
 function renderSkillFilterStrip() {
   const strip = document.getElementById('assignmentsSkillStrip');
@@ -55,7 +55,7 @@ function renderSkillFilterStrip() {
     html += `<button class="skill-pill ${isActive ? 'active' : ''}" data-skill="${s.id}" role="tab" aria-selected="${isActive}" style="${dim}">${s.icon} ${s.name}</button>`;
   });
   strip.innerHTML = html;
-  // One click handler on the strip — delegates to pills inside.
+  // One click handler on the strip - delegates to pills inside.
   if (!strip.dataset.wired) {
     strip.addEventListener('click', (e) => {
       const pill = e.target.closest('.skill-pill');
@@ -70,7 +70,7 @@ function renderSkillFilterStrip() {
 
 function openSkillPickerModal() {
   if (typeof SKILL_REGISTRY === 'undefined') {
-    console.warn('SKILL_REGISTRY not loaded — falling back to vocabulary form');
+    console.warn('SKILL_REGISTRY not loaded - falling back to vocabulary form');
     openVocabularyAssignmentModal();
     return;
   }
@@ -135,7 +135,7 @@ function closeSkillPickerModal() {
 function showComingSoon(skill) {
   const modal = document.getElementById('comingSoonModal');
   document.getElementById('comingSoonIcon').textContent  = skill.icon;
-  document.getElementById('comingSoonTitle').textContent = `${skill.name} — Coming soon`;
+  document.getElementById('comingSoonTitle').textContent = `${skill.name} - Coming soon`;
   document.getElementById('comingSoonBody').textContent  =
     `${skill.name} assignments are structurally supported but the creation form isn't built yet. ` +
     `We'll wire it up in the next phase. Other skills (currently available: ` +
@@ -151,7 +151,7 @@ function closeComingSoonModal() {
 }
 
 // Routes the picker's skill choice to the right creation form.
-// For Phase 1 only 'vocabulary' has a real form — the others land here
+// For Phase 1 only 'vocabulary' has a real form - the others land here
 // but the registry says they're coming-soon so the picker already
 // short-circuited above. This switch is the hook point for Phase 2+.
 function routeToCreationForm(skill) {
@@ -196,7 +196,7 @@ window.closeComingSoonModal    = closeComingSoonModal;
 window.openVocabularyAssignmentModal = openVocabularyAssignmentModal;
 
 // ============================================================
-// PREVIEW AS STUDENT — Phase C (extended in Phase F)
+// PREVIEW AS STUDENT - Phase C (extended in Phase F)
 // Lets a teacher click any assignment row and see what the
 // student sees. Routing per skill:
 //   • writing  → writing-exam.html?preview=1&assignmentId=X
@@ -268,7 +268,7 @@ function showAssignmentPreviewModal(a, skill) {
   const deadline = a.deadline?.toDate ? a.deadline.toDate() : new Date(a.deadline);
   const dueText  = deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-  // Body varies by skill — show what the student will see when they
+  // Body varies by skill - show what the student will see when they
   // click into the assignment.
   let bodySpecific = '';
   if (skill === 'reading' || skill === 'listening') {
@@ -288,7 +288,7 @@ function showAssignmentPreviewModal(a, skill) {
         <div style="font-weight:700; color:${accent}; margin-bottom:8px;">📚 Vocabulary practice details</div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:0.92em;">
           <div><span style="color:var(--text-muted);">Book:</span> ${(a.book === 'gateway' ? '📗 Gateway' : '📘 Empower')}</div>
-          <div><span style="color:var(--text-muted);">Level:</span> ${a.level || '—'}</div>
+          <div><span style="color:var(--text-muted);">Level:</span> ${a.level || '-'}</div>
           <div><span style="color:var(--text-muted);">Unit:</span> ${a.unit || 'All Units'}</div>
           <div><span style="color:var(--text-muted);">Activity:</span> ${a.activity === 'all' ? 'Any Activity' : (a.activity || 'Any Activity')}</div>
         </div>
@@ -301,7 +301,7 @@ function showAssignmentPreviewModal(a, skill) {
   } else {
     bodySpecific = `
       <p style="margin-top:14px; color: var(--text-muted);">
-        The ${name} skill runner isn't built yet — preview will follow when it is.
+        The ${name} skill runner isn't built yet - preview will follow when it is.
       </p>
     `;
   }
@@ -339,7 +339,7 @@ function closeAssignmentPreviewModal() {
 }
 window.closeAssignmentPreviewModal = closeAssignmentPreviewModal;
 
-// Local hex→rgb helper — keeps preview's translucent backgrounds in
+// Local hex→rgb helper - keeps preview's translucent backgrounds in
 // sync with the skill accent without depending on the global hexToRgb.
 function _hexToRgbForPreview(hex) {
   const m = /^#?([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})$/.exec(String(hex || ''));
@@ -348,12 +348,12 @@ function _hexToRgbForPreview(hex) {
 
 // `_normCls` is declared once in teacher/js/students.js (loads first
 // among the teacher scripts). All teacher-side classic scripts share
-// the same top-level scope, so we just USE it here — declaring again
+// the same top-level scope, so we just USE it here - declaring again
 // would throw a "Identifier has already been declared" SyntaxError
 // that breaks every script after this one.
 
 // ============================================
-// LOAD ASSIGNMENT COMPLETIONS — live via onSnapshot
+// LOAD ASSIGNMENT COMPLETIONS - live via onSnapshot
 // Resolves on the FIRST snapshot so existing `await
 // loadAssignmentCompletions()` callers still work. Stays attached
 // after that, re-rendering rows when any /assignmentCompletions
@@ -373,7 +373,7 @@ function loadAssignmentCompletions() {
         allCompletions = {};
         snap.forEach(doc => { allCompletions[doc.id] = doc.data(); });
         // Re-render the assignment list on every change (skip the
-        // first one — loadAssignments will trigger its own render).
+        // first one - loadAssignments will trigger its own render).
         if (!isFirst && typeof renderAssignments === 'function') {
           renderAssignments();
           if (typeof updateAssignmentStats === 'function') updateAssignmentStats();
@@ -382,7 +382,7 @@ function loadAssignmentCompletions() {
           isFirst = false;
           console.log('[live] completions: initial', Object.keys(allCompletions).length, 'records');
           // Kick the writing-submissions listener once completions
-          // are seeded. Parallel listener — keeps the card counts
+          // are seeded. Parallel listener - keeps the card counts
           // honest for writing assignments where the legacy bug
           // meant assignmentCompletions docs never made it into the
           // odUserId query above.
@@ -398,7 +398,7 @@ function loadAssignmentCompletions() {
   });
 }
 
-// Phase G fix — live snapshot of every writingSubmission visible to
+// Phase G fix - live snapshot of every writingSubmission visible to
 // this teacher (rules allow `teacherHasScope() || isAdmin()`). Used
 // by calculateAssignmentCompletion to mark a writing as Done when
 // the canonical doc says 'submitted' / 'graded' / 'returned', even
@@ -415,7 +415,7 @@ function _attachWritingSubsListener() {
         allWritingSubs = {};
         snap.forEach(d => { allWritingSubs[d.id] = d.data(); });
         // Re-render after the first paint of completions has already
-        // happened. Cheap — same render path as the completions
+        // happened. Cheap - same render path as the completions
         // listener.
         if (typeof renderAssignments === 'function') {
           renderAssignments();
@@ -423,7 +423,7 @@ function _attachWritingSubsListener() {
         }
       },
       (err) => {
-        // Permission errors expected for teachers without scope —
+        // Permission errors expected for teachers without scope -
         // those teachers simply don't see writing-submission counts.
         console.warn('[live] writingSubmissions snapshot error:', err.message || err);
       }
@@ -444,9 +444,9 @@ window.addEventListener('beforeunload', () => {
 // writingSubmissions) while the dashboard tab is HIDDEN (teacher switched to
 // another tab/app, or minimised). Left open in a background tab they re-read
 // every student's completion/submission write across the whole school, all
-// day — a major idle drain. While hidden nothing is rendered, so pausing is
+// day - a major idle drain. While hidden nothing is rendered, so pausing is
 // invisible; on return we re-attach (one fresh read) and live updates resume
-// exactly as before. The SCOPED assignments listener is left alone — it's
+// exactly as before. The SCOPED assignments listener is left alone - it's
 // cheap and only fires on the teacher's own assignment changes.
 let _pausedWhileHidden = false;
 document.addEventListener('visibilitychange', () => {
@@ -455,11 +455,11 @@ document.addEventListener('visibilitychange', () => {
       if (typeof _completionsUnsub === 'function') { try { _completionsUnsub(); } catch (_) {} _completionsUnsub = null; }
       if (typeof _writingSubsUnsub === 'function') { try { _writingSubsUnsub(); } catch (_) {} _writingSubsUnsub = null; }
       _pausedWhileHidden = true;
-      console.log('[reads] dashboard hidden — paused completion/submission listeners');
+      console.log('[reads] dashboard hidden - paused completion/submission listeners');
     }
   } else if (_pausedWhileHidden) {
     _pausedWhileHidden = false;
-    console.log('[reads] dashboard visible — resuming completion/submission listeners');
+    console.log('[reads] dashboard visible - resuming completion/submission listeners');
     // loadAssignmentCompletions() re-attaches BOTH (it kicks the writing-subs
     // listener on its first snapshot) and refreshes the data. It tears down
     // any prior listener first, so this is safe to call repeatedly.
@@ -468,11 +468,11 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // ============================================
-// LOAD ASSIGNMENTS — live via onSnapshot
+// LOAD ASSIGNMENTS - live via onSnapshot
 // Resolves on the FIRST snapshot so existing `await loadAssignments()`
 // callers (the dashboard bootstrap) still work as before. After that,
 // the listener stays attached and re-renders on every assignment
-// create / update / delete — same UX as the Submissions dashboard.
+// create / update / delete - same UX as the Submissions dashboard.
 // Detaches on `beforeunload` (see the global hook near the top of
 // this file).
 // ============================================
@@ -488,7 +488,7 @@ function loadAssignments() {
       _assignmentsUnsub = null;
     }
 
-    // Build the query — non-admin teachers see only their own
+    // Build the query - non-admin teachers see only their own
     // assignments. The composite-index fallback path is preserved.
     function makeQuery(withOrderBy) {
       let q = db.collection('assignments');
@@ -552,7 +552,7 @@ function renderAssignments() {
   const container = document.getElementById('assignmentsList');
   if (!container) return;
 
-  // Ensure the skill filter strip is rendered (idempotent — safe to call
+  // Ensure the skill filter strip is rendered (idempotent - safe to call
   // every render; it only re-wires the click handler once).
   renderSkillFilterStrip();
 
@@ -601,7 +601,7 @@ function renderAssignments() {
       'pronunciation': 'Pronunciation'
     };
     
-    // Skill badge — shows the icon + name from the registry. Legacy
+    // Skill badge - shows the icon + name from the registry. Legacy
     // rows (no skill field) render as Vocabulary.
     const skillMeta = (typeof SKILL_REGISTRY !== 'undefined')
       ? SKILL_REGISTRY.get(SKILL_REGISTRY.skillOf(assignment))
@@ -718,7 +718,7 @@ function renderAssignments() {
               if (sk === 'reading' || sk === 'listening') {
                 // Reading / listening rows: show the picked exam title +
                 // its level (mirrored at save time from EXAM_REGISTRY).
-                const examTitle = assignment.examTitle || assignment.examId || '— No exam selected —';
+                const examTitle = assignment.examTitle || assignment.examId || '- No exam selected -';
                 const examLvl   = assignment.examLevel ? `📊 ${assignment.examLevel}` : '';
                 return `<span>📝 ${examTitle}</span>${examLvl ? '<span>•</span><span>' + examLvl + '</span>' : ''}`;
               }
@@ -745,7 +745,7 @@ function renderAssignments() {
           ${(function () {
             const _sk = (typeof SKILL_REGISTRY !== 'undefined') ? SKILL_REGISTRY.skillOf(assignment) : 'vocabulary';
             // "View Details" opens the attempts-based "Student Progress"
-            // panel — good for vocabulary / reading / listening where
+            // panel - good for vocabulary / reading / listening where
             // a numeric bestScore + attempt count make sense. For
             // WRITING that view is misleading because:
             //   • bestScore is always 0/null until teacher grades
@@ -762,7 +762,7 @@ function renderAssignments() {
             // Phase C: Preview-as-student. Writing opens its dedicated
             // exam page in preview mode; other skills get a generic
             // modal explaining what the student will see (the actual
-            // runners aren't wired for preview yet — Phase C+ work).
+            // runners aren't wired for preview yet - Phase C+ work).
             const previewBtn = `<button class="assignment-btn view" onclick="previewAssignmentAsStudent('${assignment.id}')">
                  <span>👤</span> Preview
                </button>`;
@@ -776,7 +776,7 @@ function renderAssignments() {
             return viewDetailsBtn + previewBtn + submissionsBtn;
           })()}
           ${(function () {
-            // Phase H follow-up — ownership-aware Edit/Delete buttons.
+            // Phase H follow-up - ownership-aware Edit/Delete buttons.
             // Mirror the firestore.rules `_ownsAssignment()` logic so
             // the UI doesn't dangle buttons that the rule layer would
             // reject. Three cases:
@@ -814,7 +814,7 @@ function renderAssignments() {
 // CALCULATE COMPLETION
 // ============================================
 function calculateAssignmentCompletion(assignment) {
-  // ── Resolve the target roster — same logic as the live Submissions
+  // ── Resolve the target roster - same logic as the live Submissions
   //    dashboard so the two stay in sync. All four scopes supported:
   //    class · level · module · individual.
   let targetStudents = [];
@@ -857,24 +857,24 @@ function calculateAssignmentCompletion(assignment) {
     const completionKey = `${student.id}_${assignment.id}`;
     const completionRecord = allCompletions[completionKey];
 
-    // Explicit completion record wins for every skill — it's the
+    // Explicit completion record wins for every skill - it's the
     // canonical "this student is done" signal.
     if (completionRecord && completionRecord.completed) {
       completed++;
       return;
     }
 
-    // Writing assignments don't have a "score-100%" gate — submission
+    // Writing assignments don't have a "score-100%" gate - submission
     // alone counts. Two sources of truth, in priority order:
     //   1. assignmentCompletions doc (the canonical "this is done"
     //      flag; works once the legacy odUserId bug is fixed)
     //   2. writingSubmissions doc with status 'submitted' or 'graded'
     //      (canonical writing store; covers legacy docs where the
     //      completion write was wrong-keyed). 'returned' is NOT
-    //      done — student still owes a revision.
+    //      done - student still owes a revision.
     if (sk === 'writing') {
       if (completionRecord && completionRecord.completed) {
-        // Already counted as completed above (line 779) — defensive.
+        // Already counted as completed above (line 779) - defensive.
         completed++;
         return;
       }
@@ -885,7 +885,7 @@ function calculateAssignmentCompletion(assignment) {
         return;
       }
       if (wsRec && wsRec.status === 'returned') {
-        // Teacher returned for revision — student has done WORK but
+        // Teacher returned for revision - student has done WORK but
         // hasn't finished the loop. Count as "in progress" so the
         // card doesn't lie about the state.
         inProgress++;
@@ -898,7 +898,7 @@ function calculateAssignmentCompletion(assignment) {
 
     // Reading / listening: the solo exam runners (reading-exam.js /
     // listening-exam.js) record a /sessions doc but no completion doc,
-    // so we session-match here — same idea as vocab below, but keyed on
+    // so we session-match here - same idea as vocab below, but keyed on
     // the EXAM the assignment targets. A session counts when:
     //   • it's the right exam activity (reading-exam / listening-exam),
     //   • it was created after the assignment, and
@@ -928,7 +928,7 @@ function calculateAssignmentCompletion(assignment) {
       return;
     }
 
-    // Vocabulary — original logic kept intact. Match sessions by
+    // Vocabulary - original logic kept intact. Match sessions by
     // book / level / unit / activity and look for a 100% score.
     const matchingSessions = allSessions.filter(sess => {
       if (sess.userId !== student.id) return false;
@@ -993,12 +993,14 @@ function openCreateAssignmentModal() {
   document.getElementById('assignmentActivity').value = 'all';
   document.getElementById('assignmentTargetType').value = 'class';
   document.getElementById('assignmentDeadline').value = '';
+  // Hide word-lists the admin deactivated for assignments (fresh form: safe to reset).
+  if (window.gateVocabAssignUnits) window.gateVocabAssignUnits(true);
   
   // Set minimum date to today
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('assignmentDeadline').setAttribute('min', today);
 
-  // Role-based scope — hide Entire Level / Entire Module options for
+  // Role-based scope - hide Entire Level / Entire Module options for
   // non-admin teachers + narrow the class dropdown to their assigned
   // classes only.
   if (typeof applyRoleScopeToTargetDropdown === 'function') {
@@ -1058,7 +1060,7 @@ function populateAssignmentClasses() {
 
 function populateAssignmentStudents() {
   const container = document.getElementById('assignmentStudentsList');
-  // Role scope — admins see all students; non-admin teachers see only
+  // Role scope - admins see all students; non-admin teachers see only
   // students in their assigned classes.
   const visible = (typeof studentsAllowedForCurrentUser === 'function')
     ? studentsAllowedForCurrentUser()
@@ -1155,8 +1157,8 @@ async function saveAssignment() {
     { id: 'assignmentTargetLevel',   msg: 'Please select a level.',  when: () => targetType === 'level' },
     { id: 'assignmentTargetModule',  msg: 'Please select a module.', when: () => targetType === 'module' }
   ]);
-  // "Specific Students" needs a custom check — the input isn't a single
-  // <select>, it's a list of checkboxes — so we collect it manually.
+  // "Specific Students" needs a custom check - the input isn't a single
+  // <select>, it's a list of checkboxes - so we collect it manually.
   if (targetType === 'individual') {
     const checked = document.querySelectorAll('.assignment-student-checkbox:checked').length;
     if (checked === 0) {
@@ -1188,7 +1190,7 @@ async function saveAssignment() {
     return;
   }
 
-  // Four target scopes — class / level / module / individual.
+  // Four target scopes - class / level / module / individual.
   // Each writes its own dedicated field on the assignment doc so
   // the student-side matcher (student-assignments.js) can check
   // exactly which scope it belongs to without ambiguity.
@@ -1197,7 +1199,7 @@ async function saveAssignment() {
   let targetModule = '';
   let targetStudents = [];
 
-  // Values are read from the inputs — validation already happened above
+  // Values are read from the inputs - validation already happened above
   // via validateAll(), so we just collect cleanly here.
   if (targetType === 'class') {
     // Normalize on write so the assignment doc always stores the
@@ -1218,7 +1220,7 @@ async function saveAssignment() {
   saveBtn.innerHTML = '<span class="btn-spinner"></span> Saving...';
   saveBtn.classList.add('saving');
   
-  // Skill field — populated by the picker. Falls back to 'vocabulary'
+  // Skill field - populated by the picker. Falls back to 'vocabulary'
   // for safety if the hidden input is somehow blank (legacy behaviour).
   const skill = (document.getElementById('assignmentSkill')?.value || 'vocabulary');
 
@@ -1336,6 +1338,8 @@ async function openEditAssignmentModal(assignmentId) {
   document.getElementById('assignmentBook').value = assignment.book || 'empower';
   document.getElementById('assignmentLevel').value = assignment.level || 'A2';
   document.getElementById('assignmentUnit').value = assignment.unit || 'all';
+  // Gate hidden word-lists but keep this assignment's existing unit selection.
+  if (window.gateVocabAssignUnits) window.gateVocabAssignUnits(false);
   document.getElementById('assignmentActivity').value = assignment.activity || 'all';
   document.getElementById('assignmentTargetType').value = assignment.targetType || 'class';
   
@@ -1409,7 +1413,7 @@ function viewAssignmentDetails(assignmentId) {
   const assignment = allAssignments.find(a => a.id === assignmentId);
   if (!assignment) return;
 
-  // Get target students — full four-scope support (class / level /
+  // Get target students - full four-scope support (class / level /
   // module / individual). Previously this only handled class + the
   // legacy targetStudents shape, so level/module-scoped assignments
   // came up empty in the Student Progress list.
@@ -1518,31 +1522,31 @@ function viewAssignmentDetails(assignmentId) {
       ${assignment.level     ? '<span>•</span><span>📊 ' + escapeHtml(assignment.level)              + '</span>' : ''}
       ${assignment.timeLimit ? '<span>•</span><span>⏱ ' + assignment.timeLimit + ' min'              + '</span>' : ''}`;
   } else if (_sk === 'reading' || _sk === 'listening') {
-    const examTitle = escapeHtml(assignment.examTitle || assignment.examId || '— No exam selected —');
+    const examTitle = escapeHtml(assignment.examTitle || assignment.examId || '- No exam selected -');
     metaLine = `
       <span>${_sk === 'reading' ? '📖 Reading' : '🎧 Listening'}</span>
       <span>•</span>
       <span>📝 ${examTitle}</span>
       ${assignment.examLevel ? '<span>•</span><span>📊 ' + escapeHtml(assignment.examLevel) + '</span>' : ''}`;
   } else {
-    // Vocabulary (and any other unrecognized skill — keeps the legacy
-    // fields visible) — guarded against undefined.
+    // Vocabulary (and any other unrecognized skill - keeps the legacy
+    // fields visible) - guarded against undefined.
     metaLine = `
       <span>${bookIcon} ${assignment.book === 'gateway' ? 'Gateway' : 'Empower'}</span>
       <span>•</span>
-      <span>📊 ${escapeHtml(assignment.level || '—')}</span>
+      <span>📊 ${escapeHtml(assignment.level || '-')}</span>
       <span>•</span>
       <span>📖 ${escapeHtml(assignment.unit || 'All Units')}</span>
       <span>•</span>
       <span>🎮 ${escapeHtml(activityNames[assignment.activity] || assignment.activity || 'Any Activity')}</span>`;
   }
 
-  // Target line — supports all four scopes, falls back to a generic
+  // Target line - supports all four scopes, falls back to a generic
   // count for any unknown shape so it can never render undefined.
   let targetLine;
-  if (assignment.targetType === 'class')      targetLine = 'Class ' + (assignment.targetClass || '—');
-  else if (assignment.targetType === 'level')  targetLine = 'Level ' + (assignment.targetLevel || '—');
-  else if (assignment.targetType === 'module') targetLine = 'Module ' + (assignment.targetModule || '—');
+  if (assignment.targetType === 'class')      targetLine = 'Class ' + (assignment.targetClass || '-');
+  else if (assignment.targetType === 'level')  targetLine = 'Level ' + (assignment.targetLevel || '-');
+  else if (assignment.targetType === 'module') targetLine = 'Module ' + (assignment.targetModule || '-');
   else                                         targetLine = targetStudents.length + ' Students';
 
   document.getElementById('assignmentDetailContent').innerHTML = `

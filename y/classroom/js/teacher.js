@@ -23,6 +23,19 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// LOCAL TESTING ONLY: talk to the Firebase emulators instead of production.
+// Runs only when BOTH are true: the page is served from localhost AND the
+// tester has set localStorage.useEmulators = '1'. Production domains and
+// normal local previews are untouched. See y/tools/README-emulator-e2e.md.
+try {
+  if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') &&
+      localStorage.getItem('useEmulators') === '1') {
+    auth.useEmulator('http://127.0.0.1:9099');
+    db.useEmulator('127.0.0.1', 8080);
+    console.warn('[emulator] connected to LOCAL Auth (9099) + Firestore (8080)');
+  }
+} catch (e) { /* never block app boot */ }
+
 // ============================================
 // PARTICLES ANIMATION
 // ============================================
@@ -166,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('bgMusic');
   if (audio) {
     audio.volume = 0.3;
-    audio.loop = false; // Don't loop single track — play next random instead
+    audio.loop = false; // Don't loop single track - play next random instead
     audio.addEventListener('ended', () => {
       if (musicPlaying) playRandomTrack();
     });
@@ -216,10 +229,10 @@ let currentSession = null;
 let currentSessionData = null;
 let playersListener = null;
 
-// beforeunload guard — if the teacher has an active session and tries
+// beforeunload guard - if the teacher has an active session and tries
 // to close the tab / hit browser back, give them a chance to bail.
 // Browsers show their own generic "Leave site?" prompt (custom strings
-// are ignored on every modern browser since 2016) — setting returnValue
+// are ignored on every modern browser since 2016) - setting returnValue
 // is what triggers it. We only enable when the session is "active"
 // (game in flight), not during setup or after results.
 window.addEventListener('beforeunload', (e) => {
@@ -239,7 +252,7 @@ async function checkTeacherAccess() {
   try {
     const doc = await db.collection('users').doc(currentUser.uid).get();
     if (!doc.exists || doc.data().role !== 'teacher') {
-      // Access denied is terminal — the page can't function as a teacher
+      // Access denied is terminal - the page can't function as a teacher
       // host without teacher role. Show a brief toast, then redirect.
       // We can't use showError here because the toast CSS is appended
       // to <body> during init and we're about to navigate away; use
@@ -372,7 +385,13 @@ function getWordsForSession(level, unit, count) {
     pos: w.pos,
     unit: w.unit
   }));
-  
+
+  // Drop any word-list the admin hid from CLASSROOM (settings/contentControls
+  // .classroomHidden.vocabulary). Fail open if cc-classroom.js has not loaded.
+  if (typeof window.ccClassroomVocabUnitHidden === 'function') {
+    availableWords = availableWords.filter(w => !window.ccClassroomVocabUnitHidden(level, w.unit));
+  }
+
   // Shuffle and limit
   availableWords = shuffleArray(availableWords);
   return availableWords.slice(0, count);
@@ -387,7 +406,7 @@ function shuffleArray(array) {
   return shuffled;
 }
 
-// Grammar Race question source — pulls from the same generated bank the
+// Grammar Race question source - pulls from the same generated bank the
 // solo grammar practice uses (grammar-content.js must be loaded on the page).
 function getGrammarQuestionsForSession(level, unit, count) {
   const GP = window.GRAMMAR_PRACTICE;
@@ -397,6 +416,9 @@ function getGrammarQuestionsForSession(level, unit, count) {
   }
   const unitOf = t => { const m = String(t.blurb || '').match(/Units?\s+(\d+)/i); return m ? parseInt(m[1], 10) : 0; };
   let topics = GP.byLevel[level];
+  // Drop any topic the admin hid from CLASSROOM (classroomHidden.grammar).
+  // Fail open if cc-classroom.js has not loaded.
+  if (typeof window.ccClassroomGrammarHidden === 'function') topics = topics.filter(t => !window.ccClassroomGrammarHidden(t.id));
   if (unit && unit !== 'all') topics = topics.filter(t => unitOf(t) === parseInt(unit, 10));
   const qs = [];
   topics.forEach(t => (t.questions || []).forEach(q => qs.push({
@@ -432,7 +454,7 @@ function showSessionLobby(code, data) {
   // pre-filled, then encode it into a QR. Using location.origin +
   // the page's directory makes this work whether the app is hosted
   // at root or under a subpath (e.g. github-pages projects).
-  // qrserver is a free public QR generator — no library needed.
+  // qrserver is a free public QR generator - no library needed.
   const dir = location.pathname.replace(/[^/]+$/, '');
   const joinUrl = `${location.origin}${dir}classroom-student.html?code=${encodeURIComponent(code)}`;
   const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${encodeURIComponent(joinUrl)}`;
@@ -623,6 +645,23 @@ async function showResults() {
     date: new Date().toISOString().slice(0, 10)
   };
 
+  // Persist a compact record for Admin > Reports (fail-silent; the live
+  // results screen never depends on it). Must happen HERE because Race
+  // deletes its session doc when the teacher closes the game.
+  if (window.saveGameReport) {
+    window.saveGameReport(db, {
+      game: 'race',
+      mode: currentSessionData?.mode || 'vocab',
+      code: currentSession,
+      teacherId: currentSessionData?.createdBy || '',
+      teacherName: currentSessionData?.teacherName || '',
+      level: cachedSessionMeta.level,
+      unit: cachedSessionMeta.unit,
+      wordCount: cachedSessionMeta.wordCount,
+      players: players.map(p => ({ name: p.name || '', score: p.score || 0 }))
+    });
+  }
+
   // Show podium for top 3
   const podiumHtml = createPodium(players.slice(0, 3));
   document.getElementById('podiumContainer').innerHTML = podiumHtml;
@@ -734,7 +773,7 @@ async function loadPerQuestionReview(players) {
 
     words.forEach((w, i) => {
       const ans = answers[String(i)];
-      let cell = '<span style="color:var(--text-muted);">—</span>';
+      let cell = '<span style="color:var(--text-muted);">-</span>';
       if (ans) {
         if (ans.isCorrect) {
           correctCount++;
@@ -779,7 +818,7 @@ async function loadPerQuestionReview(players) {
     <div style="display:flex; gap:16px; margin-top:12px; font-size:0.8rem; color:var(--text-muted); flex-wrap:wrap;">
       <span><span style="color:var(--success);">✓</span> = Correct</span>
       <span><span style="color:var(--error);">✗</span> = Wrong (hover to see student's answer)</span>
-      <span><span>—</span> = No data</span>
+      <span><span>-</span> = No data</span>
     </div>
   `;
 
@@ -934,9 +973,9 @@ function logout() {
 // UTILITIES
 // ============================================
 
-// Themed toast — replaces the old plain `alert()`. Floats top-right,
+// Themed toast - replaces the old plain `alert()`. Floats top-right,
 // auto-dismisses, dark-mode card matching the rest of the classroom UI.
-// `kind` is 'error' (default), 'info', or 'success' — controls the
+// `kind` is 'error' (default), 'info', or 'success' - controls the
 // left-border accent color.
 function showError(message, kind) {
   kind = kind || 'error';

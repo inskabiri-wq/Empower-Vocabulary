@@ -1,0 +1,219 @@
+{
+ "id": "c1-r1",
+ "level": "C1",
+ "title": "C1 Reading 1 - Detecting Disease by Smell",
+ "subtitle": "One passage · MCQ, sentence-fit, short-answer",
+ "timeLimitMin": 20,
+ "passages": [
+  {
+   "passageNumber": 1,
+   "title": "Detecting Disease by Smell",
+   "introHtml": "",
+   "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Hundreds of volatile organic compounds are emitted from the human body, and the components of these compounds usually reflect the metabolic condition of an individual. Therefore, contracting an infectious disease often results in a change in body odour. A dog interprets the world predominantly by smell and, while a dog's brain is only one-tenth the size of a human brain, the part that controls smell is 40 times larger than in humans, so they can sense the change in scent that diseases can cause. One of the first reports of a dog detecting cancer came from a woman whose dog persistently licked, nipped and barked at a suspicious mole on her leg, which she then mentioned to a doctor. Several studies have now concluded that dogs can smell cancer in people, but why would a dog want to smell cancer?</p><p class=\"rd-para\" data-para=\"2\">Dogs have lived side by side with man, co-evolving for well over 100,000 years. Man provided shelter and food for the dog, and in turn the dog warned man against danger, pointed towards prey and food, and eventually guarded his livestock and crops. If something is wrong with us, this affects the dog. If we are sick, this could directly affect our ability to provide nourishment and shelter for the dog, so the dog 'notices' small changes that could signify that we are in trouble. <span class=\"rd-gap\" data-gap=\"1\"></span> The slowest or sickest are the easiest to catch. Dogs have evolved to notice a 'sick' scent, and this has been positively reinforced by the reward of eating prey that was sick. Smelling disease therefore helps the dog catch its own prey, as well as larger prey for man, so the sick scent is very important for a dog's survival.</p><p class=\"rd-para\" data-para=\"3\">Dogs play an astonishing range of roles in human society. Many individuals are saved by rescue dogs when stranded in the wilderness or capsized in cold water. Others rely on guide dogs to get them safely to multiple destinations on a daily basis. Drug dogs, de-mining dogs and police dogs are trained and utilised as substance detectors, even in the face of competition from the latest technology. Now the role of dogs smelling disease has arrived. Most oncologists will tell you that humans can actually smell cancer in the latter stages through a patient's breath, so of course a dog would be able to detect the scent much earlier. Dogs can differentiate smells much better than humans and, while a human will smell something like spaghetti sauce as one smell, a dog smells each individual ingredient.</p><p class=\"rd-para\" data-para=\"4\">Specialist doctors have diverse reactions to the notion of dogs detecting cancer. While some are extremely enthusiastic, others are more guarded. Dr Miranda Tompkins explains her reservations. 'Although the olfactory test appears to be a promising tool for the detection of cancer, the main challenge is to determine whether the test can sufficiently discriminate between patients at risk, patients with benign disease, and patients with malignant disease. We need to gain a deeper understanding before applying dogs as an assessment tool for cancer in clinical settings.'</p><p class=\"rd-para\" data-para=\"5\">Training dogs to smell cancer is done in the same way that bomb and narcotics dogs are trained: pairing the target odour with a high value reward. With breath, however, things can get a little tricky. <span class=\"rd-gap\" data-gap=\"2\"></span> In order for the dogs to generalise the cancer scent, many samples with the common odour must be used. The dogs must also be trained to ignore healthy breath, and breath carrying diseases other than cancer. This means that very large numbers of samples have to be used for a dog's training, including cancer samples, disease controls and healthy controls.</p><p class=\"rd-para\" data-para=\"6\">Work toward the development of an 'electronic nose' for cancer detection has been underway for several decades. However, nothing has achieved the high sensitivity and specificity seen with dogs. Whether or not sniffer dogs actually make it into the continuum of diagnostic evaluation has yet to be seen, but if their image could be employed in public health screening, it may encourage people with worrisome symptoms to take earlier action. This on its own would be the definitive benefit for some sick people.</p>",
+   "sections": [
+    {
+     "id": "mcq",
+     "type": "mcq",
+     "label": "Part A",
+     "instructions": "Circle the best answer according to the text.",
+     "items": [
+      {
+       "id": "m1",
+       "question": "What is the best title for this text?",
+       "options": [
+        {
+         "id": "a",
+         "text": "Sniffer Dogs and Crime"
+        },
+        {
+         "id": "b",
+         "text": "A New Illness Affecting Dogs"
+        },
+        {
+         "id": "c",
+         "text": "The Long History of Dogs and People"
+        },
+        {
+         "id": "d",
+         "text": "A Possible New Role for Dogs"
+        }
+       ],
+       "answer": "d"
+      },
+      {
+       "id": "m2",
+       "question": "A dog can sense disease in a person because _____.",
+       "options": [
+        {
+         "id": "a",
+         "text": "the part of its brain that controls smell is far larger than a human’s"
+        },
+        {
+         "id": "b",
+         "text": "its brain is larger than a human brain overall"
+        },
+        {
+         "id": "c",
+         "text": "it has been trained to recognise every illness"
+        },
+        {
+         "id": "d",
+         "text": "it can taste changes in a person’s skin"
+        }
+       ],
+       "answer": "a"
+      },
+      {
+       "id": "m3",
+       "question": "According to the text, noticing a sick scent helped dogs survive because _____.",
+       "options": [
+        {
+         "id": "a",
+         "text": "sick or injured prey is easier to catch"
+        },
+        {
+         "id": "b",
+         "text": "humans rewarded them with shelter"
+        },
+        {
+         "id": "c",
+         "text": "it warned them to avoid diseased animals"
+        },
+        {
+         "id": "d",
+         "text": "it made them faster hunters"
+        }
+       ],
+       "answer": "a"
+      },
+      {
+       "id": "m4",
+       "question": "Dr Tompkins believes that _____.",
+       "options": [
+        {
+         "id": "a",
+         "text": "dogs are already reliable enough for hospital use"
+        },
+        {
+         "id": "b",
+         "text": "more understanding is needed before dogs are used clinically"
+        },
+        {
+         "id": "c",
+         "text": "the olfactory test cannot detect cancer at all"
+        },
+        {
+         "id": "d",
+         "text": "machines will always outperform dogs"
+        }
+       ],
+       "answer": "b"
+      }
+     ]
+    },
+    {
+     "id": "gaps",
+     "type": "match-gaps",
+     "label": "Part B",
+     "instructions": "A sentence has been removed from two places in the text, each marked with a gap. Choose the sentence that best fits each gap. There is ONE extra sentence.",
+     "options": [
+      {
+       "id": "a",
+       "text": "Most prey that is caught and killed by predators is sick or injured in some way."
+      },
+      {
+       "id": "b",
+       "text": "The odours of drugs and gunpowder can be isolated, but a cancer scent is only one of the thousands of organic compounds within a person’s breath."
+      },
+      {
+       "id": "c",
+       "text": "Dogs are widely regarded as the most loyal of all domestic animals."
+      }
+     ],
+     "items": [
+      {
+       "id": "1",
+       "label": "Gap 1",
+       "answer": "a"
+      },
+      {
+       "id": "2",
+       "label": "Gap 2",
+       "answer": "b"
+      }
+     ]
+    },
+    {
+     "id": "shortanswer",
+     "type": "find-word",
+     "label": "Part C",
+     "instructions": "Find the answers from the text. Do not use more than 3 words.",
+     "items": [
+      {
+       "id": "s1",
+       "definition": "A woman’s dog showed interest in a suspicious mole on her leg; what was the mark called?",
+       "answer": "mole",
+       "acceptable": [
+        "mole",
+        "a mole",
+        "a suspicious mole"
+       ]
+      },
+      {
+       "id": "s2",
+       "definition": "Besides food, what did a sick owner risk being unable to provide for the dog?",
+       "answer": "shelter",
+       "acceptable": [
+        "shelter"
+       ]
+      },
+      {
+       "id": "s3",
+       "definition": "Noticing a sick smell helped a dog catch what, for itself and for people?",
+       "answer": "prey",
+       "acceptable": [
+        "prey"
+       ]
+      },
+      {
+       "id": "s4",
+       "definition": "Dogs are still used as detectors despite what from the latest technology?",
+       "answer": "competition",
+       "acceptable": [
+        "competition"
+       ]
+      },
+      {
+       "id": "s5",
+       "definition": "Unlike a human, a dog can smell each what in a complex scent?",
+       "answer": "ingredient",
+       "acceptable": [
+        "ingredient",
+        "individual ingredient",
+        "each ingredient"
+       ]
+      },
+      {
+       "id": "s6",
+       "definition": "Along with cancer samples and disease controls, what third kind of sample is needed for training?",
+       "answer": "healthy controls",
+       "acceptable": [
+        "healthy controls",
+        "healthy control"
+       ]
+      },
+      {
+       "id": "s7",
+       "definition": "What device for cancer detection has still not matched the accuracy of dogs?",
+       "answer": "electronic nose",
+       "acceptable": [
+        "electronic nose",
+        "an electronic nose"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

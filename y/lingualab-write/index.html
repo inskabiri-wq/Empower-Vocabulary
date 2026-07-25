@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="cor-checking">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lingualab Write · Demo</title>
+  <title>Lingualab Write</title>
   <meta name="robots" content="noindex, nofollow">
+  <!-- Fail-closed gate: the tool stays hidden until js/auth-gate.js confirms a
+       signed-in teacher with Writing AI access. Inline + before any stylesheet
+       so it never flashes on screen for a signed-out visitor. -->
+  <style>html.cor-checking .cor-app { visibility: hidden; }</style>
 
   <!-- Theme tokens from the real app (now in y/, so one level up) -->
   <link rel="stylesheet" href="../index/css/variables.css">
-  <link rel="stylesheet" href="css/corrector.css?v=2">
+  <link rel="stylesheet" href="css/corrector.css?v=3">
 </head>
 <body>
   <div class="cor-app">
@@ -17,14 +21,14 @@
       <div class="cor-brand">
         <span class="cor-logo">✍️</span>
         <div>
-          <h1>Lingualab Write <span class="cor-tag">demo</span></h1>
+          <h1>Lingualab Write</h1>
         </div>
       </div>
       <div class="cor-topactions">
         <button id="corReset" class="cor-btn">↺ Reset</button>
         <button id="corEdit" class="cor-btn">✏️ Edit all</button>
         <button id="corPrint" class="cor-btn">🖨️ Print / PDF</button>
-        <button id="corRelease" class="cor-btn cor-btn-primary">Release to student ▶</button>
+        <button id="corRelease" class="cor-btn cor-btn-primary" hidden>Release to student ▶</button>
       </div>
     </header>
 
@@ -83,16 +87,42 @@
     </section>
 
     <footer class="cor-foot">
-      Demo preview · seeded sample essays render instantly · live AI marking runs once this corrector is mounted in the teacher tools.
+      Paste a student's writing, pick a depth, and get AI feedback. Sample essays render instantly; your own essays are marked live by AI. Always review the feedback before sharing it with a student.
     </footer>
   </div>
+
+  <!-- Signed in, but Writing AI is not granted for this account. -->
+  <div id="corGateDenied" class="cor-gate-denied" hidden>
+    <div class="cor-gate-box">
+      <h2>Writing AI is not enabled for your account</h2>
+      <p>Ask your administrator to turn on Writing AI for you, then reload this page.</p>
+      <p class="cor-gate-mail">akabiriaslifar@fsm.edu.tr</p>
+      <a class="cor-btn cor-btn-primary" href="../teacher-dashboard.html">&larr; Back to dashboard</a>
+    </div>
+  </div>
+
+  <!-- Firebase (compat): auth + the analyzeWriting callable for LIVE AI. -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js" integrity="sha384-nr3XW2E61lv+rhFoxO+G+2MytvPBcAHRBkVN+clME9hVhZBH+LxuUkYSsrIEUON+" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script>
+    (function () {
+      var cfg = { apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU", authDomain: "empower-vocabulary-practice.firebaseapp.com", projectId: "empower-vocabulary-practice", storageBucket: "empower-vocabulary-practice.firebasestorage.app", messagingSenderId: "136270199832", appId: "1:136270199832:web:174222066ef1cbdc8f576d" };
+      if (window.firebase && firebase.apps && !firebase.apps.length) firebase.initializeApp(cfg);
+    })();
+  </script>
+
+  <!-- Page gate: runs right after firebase init and before the corrector, so a
+       signed-out visitor is bounced to the login page instead of seeing the tool. -->
+  <script src="js/auth-gate.js?v=1"></script>
 
   <!-- REAL app engine + comment bank (now in y/, so one level up) -->
   <script src="../assignments/js/writing-comment-bank.js"></script>
   <script src="../assignments/js/writing-annotations.js"></script>
-  <!-- Corrector (demo) -->
+  <!-- Corrector -->
   <script src="js/corrector-config.js?v=2"></script>
   <script src="js/sample.js?v=3"></script>
-  <script src="js/corrector.js?v=2"></script>
+  <script src="js/corrector.js?v=8"></script>
 </body>
 </html>

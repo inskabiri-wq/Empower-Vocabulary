@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Placement Test - Lingualab</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index/css/variables.css">
+  <link rel="stylesheet" href="css/brand.css?v=14">
+  <link rel="stylesheet" href="student/css/reading-exam.css">
+  <link rel="stylesheet" href="student/css/extra.css">
+  <style>
+    /* Same visual language as the student dashboard: token background gradient,
+       radial glow, glassy cards (see student/css/styles.css .container). */
+    body { margin: 0; min-height: 100vh; color: var(--text-primary, #f8fafc); font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary, #0f172a) 0%, var(--bg-secondary, #1e293b) 60%, var(--bg-primary, #0f172a) 100%); }
+    body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(59,130,246,0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(20,184,166,0.08) 0%, transparent 50%); }
+    .pl-title { font-family: 'Outfit', 'Nunito', sans-serif; }
+    /* Placement mode: the listening transcript must never be shown. */
+    #examTranscriptDrawer, #transcriptToggle, .exam-mobile-tabs { display: none !important; }
+    /* The drawer is hidden, so the post-submit drawer-open padding (which
+       squeezes the whole listening screen to the left) must not apply -
+       the layout stays exactly as it was before Submit. */
+    #listeningExamScreen.drawer-open { padding-right: 0 !important; }
+    /* One exit only: the fixed placement Exit button already covers leaving,
+       and the exam's own Back button overlaps it top-left. */
+    #listeningExamScreen .exam-back-btn { display: none !important; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .pl-wrap { max-width: 860px; margin: 0 auto; padding: 28px 18px 60px; }
+    .pl-card { background: var(--bg-card, rgba(255,255,255,0.04)); backdrop-filter: blur(20px); border: 1px solid var(--border-color, rgba(59,130,246,0.2)); border-radius: 24px; padding: 28px; box-shadow: 0 25px 80px rgba(0,0,0,0.35); position: relative; z-index: 1; }
+    #plBetweenBody { white-space: pre-line; }
+    .pl-title { font-size: 1.5em; font-weight: 800; margin: 0 0 6px; }
+    .pl-sub { color: var(--text-muted, #94a3b8); font-size: 0.95em; line-height: 1.55; }
+    .pl-btn { cursor: pointer; font-family: inherit; font-weight: 800; font-size: 15px; padding: 12px 26px; border-radius: 12px; border: none; background: var(--accent-primary, #3b82f6); color: #fff; }
+    .pl-btn[disabled] { opacity: 0.5; cursor: default; }
+    .pl-progress { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; margin: 14px 0 22px; }
+    .pl-progress > div { height: 100%; background: var(--accent-primary, #3b82f6); width: 0; transition: width 0.25s; }
+    .pl-stem { font-size: 1.15em; font-weight: 600; line-height: 1.5; margin: 12px 0 18px; white-space: pre-line; }
+    .pl-opt { display: block; width: 100%; text-align: left; cursor: pointer; font-family: inherit; font-size: 15px; padding: 13px 16px; margin-bottom: 10px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.12)); background: var(--bg-item, rgba(255,255,255,0.03)); color: var(--text-primary, #f8fafc); }
+    .pl-opt:hover { border-color: var(--accent-primary, #3b82f6); }
+    .pl-meta { font-size: 0.82em; color: var(--text-muted, #94a3b8); letter-spacing: 0.04em; text-transform: uppercase; font-weight: 700; }
+    .pl-continue { position: fixed; right: 22px; bottom: 22px; z-index: 99999; box-shadow: 0 8px 30px rgba(0,0,0,0.45); display: none; }
+    .pl-badge { display: inline-block; font-weight: 800; color: var(--accent-primary, #3b82f6); font-size: 2.2em; }
+    /* Score screens reuse the READING exam's result classes (rd-result-*)
+       so both parts look identical. Those classes read --rd-* variables that
+       normally live on #readingExamScreen, so mirror them here. */
+    #plScore, #plDone {
+      --rd-surface: #131a30; --rd-surface-2: #1a2240;
+      --rd-border: rgba(255,255,255,0.08); --rd-border-soft: rgba(255,255,255,0.05);
+      --rd-text: #e8edf7; --rd-text-muted: #8b96b3; --rd-text-dim: #5a6585;
+      --rd-accent: #2dd4bf; --rd-accent-2: #38bdf8;
+      --rd-warning: #f59e0b; --rd-error: #ef4444; --rd-success: #22c55e; --rd-score-low: #fbbf24;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Intro / gate -->
+  <div id="plIntro" class="screen active">
+    <div class="pl-wrap"><div class="pl-card" id="plIntroCard">
+      <div class="pl-title">🎯 Placement Test</div>
+      <div class="pl-sub" id="plIntroBody">Checking your access...</div>
+      <div style="margin-top:20px;"><button type="button" class="pl-btn" id="plStartBtn" style="display:none;">Start the test</button></div>
+    </div></div>
+  </div>
+
+  <!-- MC stage (grammar + vocabulary) -->
+  <div id="plStage" class="screen">
+    <div class="pl-wrap"><div class="pl-card">
+      <div class="pl-meta" id="plStageMeta"></div>
+      <div class="pl-progress"><div id="plBar"></div></div>
+      <div class="pl-stem" id="plStem"></div>
+      <div id="plOpts"></div>
+    </div></div>
+  </div>
+
+  <!-- Ladder score - the same result UI as the reading exam (rd-result-*
+       classes from reading-exam.css, vars mirrored on #plScore above). -->
+  <div id="plScore" class="screen">
+    <div class="pl-wrap"><div class="pl-card">
+      <div class="pl-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="vertical-align:-4px;margin-right:8px;"><rect x="3" y="13" width="4.5" height="8" rx="1.5" fill="#3b82f6"/><rect x="9.75" y="8" width="4.5" height="13" rx="1.5" fill="#06b6d4"/><rect x="16.5" y="4" width="4.5" height="17" rx="1.5" fill="#38bdf8"/></svg>Language part complete - your score</div>
+      <div id="plScoreMain" style="margin-top:14px;"></div>
+      <div class="pl-sub" id="plScoreNext" style="margin-top:16px;"></div>
+      <div style="margin-top:20px;"><button type="button" class="pl-btn" id="plScoreBtn">Continue</button></div>
+    </div></div>
+  </div>
+
+  <!-- Between sections -->
+  <div id="plBetween" class="screen">
+    <div class="pl-wrap"><div class="pl-card">
+      <div class="pl-title" id="plBetweenTitle"></div>
+      <div class="pl-sub" id="plBetweenBody"></div>
+      <div style="margin-top:20px;"><button type="button" class="pl-btn" id="plBetweenBtn">Continue</button></div>
+    </div></div>
+  </div>
+
+  <!-- Writing rung: the text is always saved with the result for teacher
+       review (AI mode = the teacher runs it through the corrector after). -->
+  <div id="plWriting" class="screen">
+    <div class="pl-wrap"><div class="pl-card">
+      <div class="pl-meta">Writing</div>
+      <div class="pl-stem" id="plWritingPrompt"></div>
+      <textarea id="plWritingText" rows="10" spellcheck="false" autocomplete="off" autocorrect="off" placeholder="Write your answer here (about 100 words)..." style="width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;line-height:1.6;padding:14px;border-radius:12px;border:1px solid var(--border-color,rgba(255,255,255,0.12));background:var(--bg-item,rgba(255,255,255,0.03));color:var(--text-primary,#f8fafc);resize:vertical;"></textarea>
+      <div style="margin-top:16px;"><button type="button" class="pl-btn" id="plWritingSubmit">Finish the test</button></div>
+    </div></div>
+  </div>
+
+  <!-- Done -->
+  <div id="plDone" class="screen">
+    <div class="pl-wrap"><div class="pl-card" style="text-align:center;">
+      <div class="pl-title">Placement complete</div>
+      <div class="pl-sub">Recommended level</div>
+      <div class="pl-badge" id="plDoneLevel">-</div>
+      <div class="pl-sub" id="plDoneDetail" style="margin-top:12px;"></div>
+      <div style="margin-top:22px;"><a class="pl-btn" href="student-dashboard.html" style="text-decoration:none;display:inline-block;">Back to Lingualab</a></div>
+    </div></div>
+  </div>
+
+  <!-- Exam hosts (the real runners render into these) -->
+  <div id="readingExamScreen" class="screen"></div>
+  <div id="listeningExamScreen" class="screen">
+    <div class="exam-header">
+      <button class="exam-back-btn" onclick="backFromExam()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5m0 0l7 7m-7-7l7-7"/></svg>
+        <span>Back</span>
+      </button>
+      <h2 id="examTitle">Listening Exam</h2>
+    </div>
+
+    <!-- Modern Audio Player -->
+    <div class="exam-player">
+      <div class="exam-player-top">
+        <div class="exam-now-playing">
+          <div class="exam-vinyl">
+            <div class="exam-vinyl-inner" id="examVinyl">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="rgba(255,255,255,0.7)"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+            </div>
+          </div>
+          <div class="exam-track-info">
+            <span class="exam-track-title" id="examTrackTitle">FSMEPT Listening</span>
+            <span class="exam-track-sub">Sample Exam Audio</span>
+          </div>
+        </div>
+        <div class="exam-player-controls">
+          <button class="exam-ctrl-btn" onclick="rewindExamAudio()" title="Rewind 10s">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/><text x="12" y="15.5" text-anchor="middle" font-size="7" fill="currentColor" stroke="none" font-weight="700">10</text></svg>
+          </button>
+          <button class="exam-ctrl-btn exam-play-btn" id="examPlayBtn" onclick="toggleExamAudio()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+          <button class="exam-ctrl-btn" onclick="forwardExamAudio()" title="Forward 10s">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10"/><text x="12" y="15.5" text-anchor="middle" font-size="7" fill="currentColor" stroke="none" font-weight="700">10</text></svg>
+          </button>
+          <button class="exam-ctrl-btn exam-speed-btn" id="examSpeedBtn" onclick="changeExamSpeed()">1x</button>
+        </div>
+      </div>
+      <div class="exam-progress-wrap">
+        <span class="exam-time-label" id="examAudioTime">0:00</span>
+        <div class="exam-progress-bar" onclick="seekExamAudio(event)">
+          <div class="exam-progress-fill" id="examProgressFill"></div>
+          <div class="exam-progress-knob" id="examProgressKnob"></div>
+        </div>
+        <span class="exam-time-label" id="examAudioDuration">0:00</span>
+      </div>
+      <audio id="examAudio" preload="auto"></audio>
+    </div>
+
+    <!-- Mobile-only tab switcher (shown once has-transcript is set on the screen).
+         Replaces the slide-up bottom-sheet drawer with a clean [Answers]/[Transcript]
+         toggle. Only one view is visible at a time; each gets full screen width. -->
+    <div class="exam-mobile-tabs" id="examMobileTabs">
+      <button type="button" class="exam-mobile-tab active" data-view="answers" onclick="switchExamMobileView('answers')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Your Answers</span>
+      </button>
+      <button type="button" class="exam-mobile-tab" data-view="transcript" onclick="switchExamMobileView('transcript')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Transcript</span>
+      </button>
+    </div>
+
+    <!-- Questions (full-width); transcript lives in a slide-in drawer below -->
+    <div class="exam-split">
+      <div class="exam-split-main">
+        <!-- Exam Sections -->
+        <div id="examSectionsContainer"></div>
+
+        <!-- Submit -->
+        <div style="text-align:center;margin:24px 0;">
+          <button class="exam-submit-btn" id="examSubmitBtn" onclick="submitListeningExam()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Submit Answers
+          </button>
+        </div>
+
+        <!-- Results -->
+        <div id="examResultsArea" style="display:none;"></div>
+      </div>
+
+      <!-- Transcript drawer (slides in from the right) -->
+      <aside class="exam-split-side" id="examTranscriptDrawer">
+        <button class="transcript-close" onclick="toggleTranscriptDrawer(false)" title="Close transcript" aria-label="Close transcript">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div id="examTranscript"></div>
+      </aside>
+    </div>
+
+    <!-- Floating toggle tab (shown once transcript is available) -->
+    <button class="transcript-toggle" id="transcriptToggle" onclick="toggleTranscriptDrawer()" title="Show transcript" aria-label="Show transcript">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>Transcript</span>
+    </button>
+  </div>
+
+  <!-- Floating continue button shown after an exam is submitted -->
+  <button type="button" class="pl-btn pl-continue" id="plContinueBtn">Continue &rarr;</button>
+
+  <!-- Universal exit: always available, themed AppDialog confirm while the
+       test is in progress (an unsaved run is simply abandoned - no result
+       doc is written, so the student can retake). -->
+  <button type="button" id="plExitBtn" title="Exit the placement test"
+    style="position:fixed;left:18px;top:14px;z-index:99999;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;padding:8px 14px;border-radius:10px;border:1px solid var(--border-color,rgba(59,130,246,0.2));background:var(--bg-card,rgba(255,255,255,0.05));color:var(--text-primary,#f8fafc);backdrop-filter:blur(10px);">
+    &#8592; Exit
+  </button>
+
+  <!-- Firebase (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script>
+    (function () {
+      var cfg = { apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU", authDomain: "empower-vocabulary-practice.firebaseapp.com", projectId: "empower-vocabulary-practice", storageBucket: "empower-vocabulary-practice.firebasestorage.app", messagingSenderId: "136270199832", appId: "1:136270199832:web:174222066ef1cbdc8f576d" };
+      if (window.firebase && firebase.apps && !firebase.apps.length) firebase.initializeApp(cfg);
+      window.auth = firebase.auth();
+      window.db = firebase.firestore();
+    })();
+  </script>
+
+  <script src="js/app-dialog.js"></script>
+  <script src="activity-tracker/js/activity-config.js"></script>
+  <script src="activity-tracker/js/activity-logger.js"></script>
+  <script src="assignments/js/exam-registry.js"></script>
+  <script src="student/js/skills/grammar-content.js?v=34"></script>
+  <script src="student/js/course-target.js"></script>
+  <script src="student/js/reading-exam.js?v=3"></script>
+  <script src="student/js/listening-exam.js?v=2"></script>
+  <script src="student/js/placement.js?v=6"></script>
+</body>
+</html>

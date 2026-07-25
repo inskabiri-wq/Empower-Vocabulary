@@ -40,7 +40,7 @@ function allNouns(wordsArray) {
 // Everything else falls back to the simple vowel-letter check.
 // ============================================
 const ARTICLE_OVERRIDES_AN = new Set([
-  // Silent-h words — start with consonant letter but vowel sound
+  // Silent-h words - start with consonant letter but vowel sound
   'hour', 'hours', 'hourly',
   'honest', 'honesty', 'honestly',
   'honor', 'honors', 'honorable', 'honorary',
@@ -49,7 +49,7 @@ const ARTICLE_OVERRIDES_AN = new Set([
   'mri', 'fbi', 'rsvp', 'sql', 'xml', 'html'  // initialisms whose first letter sounds like a vowel
 ]);
 const ARTICLE_OVERRIDES_A = new Set([
-  // "yu-" sound — start with vowel letter but consonant sound
+  // "yu-" sound - start with vowel letter but consonant sound
   'university', 'universities', 'universal', 'universe',
   'unit', 'units', 'unite', 'united', 'union', 'unions',
   'unique', 'uniform', 'uniforms',
@@ -66,7 +66,7 @@ function pickArticleForWord(word) {
   const w = (word || '').trim().toLowerCase();
   if (!w) return 'a';
   // Take the first space-separated token in case the answer is a
-  // phrase like "an order" — we want to article based on the first
+  // phrase like "an order" - we want to article based on the first
   // sound, not the whole phrase.
   const head = w.split(/\s+/)[0].replace(/[^a-z']/g, '');
   if (ARTICLE_OVERRIDES_AN.has(head)) return 'an';
@@ -78,7 +78,7 @@ function pickArticleForWord(word) {
 // HELPER: Resolve the "a / an" giveaway placeholder
 // During the question phase, loadFillBlank / loadReverse rewrite
 // any visible "a" or "an" before the blank into a `.art-aan`
-// placeholder showing "a / an" — see those functions for the
+// placeholder showing "a / an" - see those functions for the
 // reasoning. On answer reveal, we resolve the placeholder to the
 // correct article based on the answer's actual first sound, so the
 // final sentence reads naturally:
@@ -136,10 +136,10 @@ function escapeAroundMatches(text, regex, matchFn) {
 // Two layers prevent synonym distractors from making MC questions unfair
 // (e.g. "delete" appearing with "remove" as an option):
 //
-//   1. SYNONYM_PAIRS — hardcoded pairs the def-overlap audit caught and
+//   1. SYNONYM_PAIRS - hardcoded pairs the def-overlap audit caught and
 //      I (admin) approved. Bidirectional. Currently empower-only.
 //
-//   2. looksLikeSynonym() — runtime def-keyword overlap heuristic.
+//   2. looksLikeSynonym() - runtime def-keyword overlap heuristic.
 //      Catches anything else that scores ≥ 4 shared content words AND
 //      ≥ 60% of the smaller def's keyword set.
 //
@@ -225,7 +225,7 @@ if (typeof db !== 'undefined') {
 }
 window.loadConfusingPairs = loadConfusingPairs;
 
-// Runtime def-overlap heuristic — catches synonyms not in the hardcoded list.
+// Runtime def-overlap heuristic - catches synonyms not in the hardcoded list.
 const SYN_STOPWORDS_RT = new Set([
   'a','an','the','to','of','in','is','it','on','at','or','and','for',
   'that','this','with','you','not','no','be','as','by','from','are','was','do','if','can','has',
@@ -260,7 +260,15 @@ function isLikelySynonym(targetObj, candidateObj) {
   // 2. Teacher-flagged
   const teacher = TEACHER_FLAGGED_LOOKUP.get(tw);
   if (teacher && teacher.has(cw)) return true;
-  // 3. Runtime def-overlap heuristic
+  // 3. Phrase-family rule: multi-word phrases that share their first THREE
+  //    words ("as far as is concerned" / "as far as I know" / "as far as I'm
+  //    concerned") read as near-identical options to a learner, and their
+  //    dictionary defs share no keywords so the def-overlap heuristic below
+  //    can't catch them. Same family -> unfair distractor.
+  const twp = tw.split(/\s+/), cwp = cw.split(/\s+/);
+  if (twp.length >= 3 && cwp.length >= 3 &&
+      twp[0] === cwp[0] && twp[1] === cwp[1] && twp[2] === cwp[2]) return true;
+  // 4. Runtime def-overlap heuristic
   return looksLikeSynonym(targetObj, candidateObj);
 }
 
@@ -323,7 +331,7 @@ function generateMultipleChoiceOptions(correctWord, optionCount = 3, forFillBlan
   };
 
   let wrongWords = [];
-  // When true the synonym filter is bypassed — used by the fallback pass
+  // When true the synonym filter is bypassed - used by the fallback pass
   // when the strict filter shrunk the pool below `optionCount`.
   let relaxSynonymFilter = false;
 
@@ -407,7 +415,7 @@ function generateMultipleChoiceOptions(correctWord, optionCount = 3, forFillBlan
   if (wrongWords.length < optionCount)
     add(fromLevel(curLevel));
 
-  // Synonym-filter relaxation pass — if the synonym filter shrank the
+  // Synonym-filter relaxation pass - if the synonym filter shrank the
   // pool too aggressively (rare; happens when nearly every same-level
   // same-POS word is flagged), drop the filter and run Step 7 + 8 again
   // so the user always gets a complete set of options. This is a
@@ -670,7 +678,7 @@ function loadChoice() {
     trEl.textContent = '';
   }
   
-  // CHECK OVERRIDES FIRST (case-insensitive — override keys are normalized
+  // CHECK OVERRIDES FIRST (case-insensitive - override keys are normalized
   // to lowercase at load time in config.js, so we lowercase the lookup too).
   let otherDefs;
   const overrideKey = cur.word ? String(cur.word).toLowerCase() : null;
@@ -768,7 +776,7 @@ function loadReverse() {
     }
     return '<span class="blank-word"></span>';
   });
-  // Same article giveaway fix as Fill in Blank — see loadFillBlank().
+  // Same article giveaway fix as Fill in Blank - see loadFillBlank().
   // Wraps the notation in `.art-aan` so checkReverse can resolve it
   // back to the correct "a" or "an" once the answer is revealed.
   reverseSentence = reverseSentence.replace(
@@ -782,7 +790,7 @@ function loadReverse() {
 
   setTimeout(() => speak(cur.def), 300);
 
-  // Listening shows WORDS as options — always use auto-generated word distractors
+  // Listening shows WORDS as options - always use auto-generated word distractors
   // Use forFillBlank=true so word-count matching applies (single words get single-word options)
   const otherWords = generateMultipleChoiceOptions(cur, 3, true);
 
@@ -1017,7 +1025,7 @@ function inflectDistractorToMatchForm(distractorWord, correctBase, correctMatche
   const isNonVerbIng = distractorPOS && /\b(adjective|noun)\b/i.test(distractorPOS);
 
   if (!correctMatched || correctMatched.toLowerCase() === correctBase.toLowerCase()) {
-    // No inflection in the sentence — but if the distractor is stored in gerund (-ing) form
+    // No inflection in the sentence - but if the distractor is stored in gerund (-ing) form
     // while the correct answer is in base form, de-inflect to avoid a morphological giveaway
     // e.g. "getting older" stored as gerund vs answer "make a suggestion" in base form.
     // Skip this for -ing adjectives/nouns ("outgoing" is its own base, not a gerund of "outgo").
@@ -1041,7 +1049,7 @@ function inflectDistractorToMatchForm(distractorWord, correctBase, correctMatche
   // fall through to inconsistent guesses ("save life" → "saved life", "get a
   // refund" → "getting a refund"), which read as broken English. Leave the
   // distractor in its base form so at least the phrase stays grammatical on
-  // its own — students still see the mismatch but not mangled tokens.
+  // its own - students still see the mismatch but not mangled tokens.
   const BE_FORMS = new Set(['be','am','is','are','was','were','been','being']);
   if (BE_FORMS.has(matchedFirst) && !BE_FORMS.has(distractorFirst)) {
     return distractorWord;
@@ -1051,17 +1059,17 @@ function inflectDistractorToMatchForm(distractorWord, correctBase, correctMatche
   let target = null;
 
   if (matchedFirst.endsWith('ing')) {
-    // Gerund / present-participle — find the -ing form regardless of array position
+    // Gerund / present-participle - find the -ing form regardless of array position
     target = distractorForms.find(f => f.endsWith('ing'));
   } else if (matchedFirst !== baseFirst && matchedFirst.endsWith('s')) {
-    // 3rd-person singular — always index 1
+    // 3rd-person singular - always index 1
     target = distractorForms[1];
   } else {
     // Past tense or past participle.
     //
     // Finding #9 fix: we used to index IRREGULAR_VERBS positionally
     // (`distractorIrr[sameIdxAsCorrect]`), which broke whenever the
-    // correct and distractor verbs had different array layouts — e.g.
+    // correct and distractor verbs had different array layouts - e.g.
     // past of 'take' sits at slot 2, but slot 2 of 'put' is 'putting'
     // (a gerund), so a past-tense correct answer rendered with a
     // gerund distractor. Now we classify the correct form's
@@ -1077,7 +1085,7 @@ function inflectDistractorToMatchForm(distractorWord, correctBase, correctMatche
     if (correctSlot) {
       // Try to pull the distractor's same-slot form out of the keyed
       // map. If the distractor is in the keyed map, use whatever it
-      // returns — even if that form equals the base (e.g. past of
+      // returns - even if that form equals the base (e.g. past of
       // 'put' is 'put'); it's the RIGHT answer for that verb, and
       // returning unchanged is handled by the base/same check at the
       // end of this function. Only fall through to morphology-based
@@ -1101,8 +1109,8 @@ function inflectDistractorToMatchForm(distractorWord, correctBase, correctMatche
     //    The surface form doesn't live in the keyed map, but the
     //    distractor might be irregular, in which case we want its
     //    past slot (not a positional guess). Same rule as step 1:
-    //    if the keyed lookup returns anything — including the base
-    //    form itself (past of 'put' IS 'put') — use it. Only fall
+    //    if the keyed lookup returns anything - including the base
+    //    form itself (past of 'put' IS 'put') - use it. Only fall
     //    through to -ed derivation when the distractor is regular
     //    (i.e. not in the keyed map at all).
     if (!target && matchedFirst.endsWith('ed')) {
@@ -1118,7 +1126,7 @@ function inflectDistractorToMatchForm(distractorWord, correctBase, correctMatche
 
     // 3) Final fallback: align by position through the regular
     //    getWordForms arrays. Only fires when the correct form is
-    //    neither slot-classifiable nor -ed — rare residual cases.
+    //    neither slot-classifiable nor -ed - rare residual cases.
     if (!target) {
       const baseForms = getWordForms(baseFirst);
       const idx = baseForms.indexOf(matchedFirst);
@@ -1133,7 +1141,7 @@ function inflectDistractorToMatchForm(distractorWord, correctBase, correctMatche
     // the original word might be title-case ("Make a difference" as a
     // dataset entry) or upper-case ("MAKE A DIFFERENCE" from a
     // heading). Without this, "Made a difference" would render as
-    // "made a difference" — minor but visibly sloppy.
+    // "made a difference" - minor but visibly sloppy.
     parts[0] = matchCase(parts[0], target);
     return parts.join(' ');
   }
@@ -1191,7 +1199,7 @@ function loadFillBlank() {
   // Build sentence with blank.
   // escapeAroundMatches escapes non-matched text; selectiveBlanks escapes its own
   // interior. The literal "<span class=\"blank\">" inserts and the post-hoc a/an
-  // rewrite regex operate on a string whose non-HTML parts are already escaped — the
+  // rewrite regex operate on a string whose non-HTML parts are already escaped - the
   // article regex only looks for ASCII "a|an", which is unaffected by escaping.
   let sentence = escapeAroundMatches(cur.ex, regex, (m) => {
     const match = m[0];
@@ -1232,7 +1240,7 @@ function loadFillBlank() {
     trEl.textContent = '';
   }
   
-  // Fill in Blank shows WORDS as options — always use auto-generated word distractors
+  // Fill in Blank shows WORDS as options - always use auto-generated word distractors
   // (overrides are definition-based, only for Multiple Choice)
   // A "loose match" means the pattern picked up extra words between the phrase words
   // (e.g. "put my feelings into words" for phrase "put into words").
@@ -1276,7 +1284,7 @@ function checkFill(btn, selected, correct) {
   // Get the matched form to display in the blank
   const displayForm = cur._matchedForm || correct;
 
-  // Fill all blank spans — selectiveBlanks may have created multiple tagged blanks
+  // Fill all blank spans - selectiveBlanks may have created multiple tagged blanks
   const fillAllBlanks = (color) => {
     const blanks = document.querySelectorAll('.blank');
     if (blanks.length > 1) {
@@ -1336,8 +1344,9 @@ function nextFill() {
 function splitOrderTokens(sentence) {
   const tokens = [];
   sentence.split(/\s+/).forEach(w => {
-    // Extract trailing punctuation (.,!?;:—–-)
-    const match = w.match(/^(.+?)([.,!?;:—–-]+)$/);
+    // Extract trailing punctuation: . , ! ? ; : hyphen, en/em dash. The two
+    // dashes are written as backslash-u escapes so the source stays dash-free.
+    const match = w.match(/^(.+?)([.,!?;:\u2013\u2014-]+)$/);
     if (match) {
       tokens.push(match[1].toLowerCase());
       tokens.push(match[2]); // punctuation as its own token
@@ -1372,7 +1381,7 @@ function loadOrder() {
   orderAttempts = 0;
   
   document.getElementById('orderAnswer').innerHTML = '';
-  const punctPattern = /^[.,!?;:—–-]+$/;
+  const punctPattern = /^[.,!?;:\u2013\u2014-]+$/;
   // Tokens come from splitting cur.ex; escape the body so dataset content can't
   // inject HTML. data-index is a numeric index, no escaping needed. Downstream
   // addToAnswer reads el.textContent, which returns the decoded original token.
@@ -1394,7 +1403,7 @@ function loadOrder() {
 function updateOrderCapitalization() {
   const answerArea = document.getElementById('orderAnswer');
   const tokens = answerArea.children;
-  const punctuation = /^[.,!?;:—–-]+$/;
+  const punctuation = /^[.,!?;:\u2013\u2014-]+$/;
   let firstWordFound = false;
   for (let i = 0; i < tokens.length; i++) {
     const text = tokens[i].textContent;
@@ -1482,7 +1491,7 @@ function checkOrder() {
       document.getElementById('orderAttemptInfo').style.display = 'block';
       missedWords.push(cur);
     } else if (orderAttempts > 3) {
-      // Already shown the answer — user is still trying, keep feedback visible
+      // Already shown the answer - user is still trying, keep feedback visible
       document.getElementById('orderAttemptInfo').textContent = `No more points - arrange the sentence correctly to continue.`;
       document.getElementById('orderAttemptInfo').style.display = 'block';
     } else {
@@ -1555,7 +1564,7 @@ function loadUnscramble() {
   const cur = currentWords[currentIndex];
   const wordParts = cur.word.split(' ');
 
-  // Nightmare mode hides all clues — just the scrambled letters
+  // Nightmare mode hides all clues - just the scrambled letters
   if (unscrambleDifficulty === 'nightmare') {
     document.getElementById('unscrambleDef').textContent = '';
     document.getElementById('unscramblePOS').textContent = '';
@@ -1739,7 +1748,7 @@ function showCompletion() {
 
   if (missedWords.length > 0) {
     document.getElementById('reviewSection').style.display = 'block';
-    // All three values flow in from dataset entries — escape each before
+    // All three values flow in from dataset entries - escape each before
     // interpolation. The literal fallback string "No definition available" is
     // static, but we route it through the same slot for consistency.
     document.getElementById('reviewList').innerHTML = missedWords.map(w => {

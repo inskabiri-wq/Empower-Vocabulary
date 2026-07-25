@@ -1,5 +1,5 @@
 /* ============================================================
-   READING CLASSROOM — Teacher (host) controller
+   READING CLASSROOM - Teacher (host) controller
    ----------------------------------------------------------------
    Architecture mirrors the Trust No One host:
      • Teacher's tab is the REFEREE (no Cloud Functions).
@@ -7,12 +7,12 @@
        key + passageHtml before writing the student-safe
        manifest to Firestore.
      • Students read ONLY the safe manifest from /reading_sessions
-       /{code}.questionsManifest — they never get the answer key
+       /{code}.questionsManifest - they never get the answer key
        and never fetch the source JSON via Firestore.
      • Scoring happens host-side: this tab compares each student's
        /answers subcollection against the in-memory answer key.
      • At reveal time, the host writes the answer key to
-       session.revealedAnswers — students then render per-question
+       session.revealedAnswers - students then render per-question
        breakdown for class discussion.
 
    Firestore shape:
@@ -52,7 +52,7 @@
   // ── State ──────────────────────────────────────────────────
   let currentUser    = null;
   let sessionCode    = null;
-  let examData       = null;          // FULL exam (with answers) — host only
+  let examData       = null;          // FULL exam (with answers) - host only
   let answerKey      = null;          // { 'sectionId__itemId': correctValue }
   let unsubPlayers   = null;
   let unsubSession   = null;
@@ -63,7 +63,7 @@
   let allAnswersCache = {};           // map of "uid__sectionId__itemId" → value
 
   // ── Projector-safe eye toggle ──────────────────────────────
-  // OFF by default — the teacher's screen is safe to mirror to the
+  // OFF by default - the teacher's screen is safe to mirror to the
   // class projector (no green/red dots, no scores, no answer key).
   // Toggling ON reveals everything. State persisted to localStorage
   // so it survives reloads within the same browser.
@@ -222,7 +222,7 @@
     // Build the safe manifest + the parallel answer key.
     // We only emit sections of supported types (mcq / match-gaps /
     // match-headings / find-word). Other types (free-text / writing)
-    // would require teacher grading after the fact — out of scope here.
+    // would require teacher grading after the fact - out of scope here.
     const safeSections = [];
     const akey = {};
     const supported = new Set(['mcq', 'match-gaps', 'match-headings', 'find-word']);
@@ -469,9 +469,9 @@
         let ans = '';
         if (a) {
           if (sec.type === 'mcq' || sec.type === 'match-gaps' || sec.type === 'match-headings') {
-            ans = String(a.answer || '—').toUpperCase();
+            ans = String(a.answer || '-').toUpperCase();
           } else if (sec.type === 'find-word') {
-            ans = a.answer || '—';
+            ans = a.answer || '-';
           }
         }
         rows.push(`<div class="ak-row"><span class="ak-id">${escHtml(it.id)}</span><span class="ak-ans">${escHtml(ans)}</span></div>`);
@@ -480,7 +480,7 @@
     el.innerHTML = rows.join('');
   }
 
-  // Lenient compare for free-text grading — case-insensitive,
+  // Lenient compare for free-text grading - case-insensitive,
   // strip leading articles + punctuation, accept any item in
   // the acceptable[] array.
   function freeTextMatch(input, ak) {
@@ -546,7 +546,7 @@
       const submitted = !!p.submitted;
       const submittedClass = submitted ? 'submitted' : '';
       // Per-question dots. When eyes are OFF (projector-safe default),
-      // we ONLY signal answered/unanswered with a neutral colour —
+      // we ONLY signal answered/unanswered with a neutral colour -
       // no green/red, so the projected screen can't be reverse-engineered
       // by students staring at it. With eyes ON the host sees the
       // right/wrong colours.
@@ -554,7 +554,7 @@
         const has = allAnswersCache[p.uid + '__' + k] != null && allAnswersCache[p.uid + '__' + k] !== '';
         if (!has) return '<span class="ak-dot empty"></span>';
         if (!eyesOn) return '<span class="ak-dot answered"></span>';
-        // Eyes on — show right/wrong.
+        // Eyes on - show right/wrong.
         const isRight = (function () {
           const a = answerKey[k];
           const v = allAnswersCache[p.uid + '__' + k];
@@ -567,7 +567,7 @@
         })();
         return `<span class="ak-dot ${isRight ? 'right' : 'wrong'}"></span>`;
       }).join('');
-      // Stats line — answered count is always safe to show; correct
+      // Stats line - answered count is always safe to show; correct
       // + percentage are gated behind eyes-on.
       const statsHtml = eyesOn
         ? `<span class="pt-stat">${answered}/${totalQ} answered</span>
@@ -621,7 +621,7 @@
   async function revealAnswers() {
     if (!sessionCode || !answerKey) return;
     // Strip out the .acceptable[] (only the host's grader needed
-    // those) — students see the canonical .answer for display.
+    // those) - students see the canonical .answer for display.
     const revealed = {};
     Object.keys(answerKey).forEach(k => {
       revealed[k] = answerKey[k].answer || '';
@@ -652,7 +652,7 @@
   async function endExam() {
     if (!sessionCode) return;
     try {
-      // Final-score persistence (idempotent — reveal already did it
+      // Final-score persistence (idempotent - reveal already did it
       // if we passed through that state, but we re-do it here so
       // "end without reveal" also captures scores).
       const sref = db.collection('reading_sessions').doc(sessionCode);
@@ -681,6 +681,25 @@
       const psnap = await sref.collection('players').orderBy('score', 'desc').get();
       const players = psnap.docs.map(d => d.data());
 
+      // Persist a compact record for Admin > Reports (fail-silent).
+      if (window.saveGameReport) {
+        sref.get().then(sd => {
+          const s = sd.exists ? sd.data() : {};
+          window.saveGameReport(db, {
+            game: 'reading',
+            mode: 'exam',
+            code: sessionCode,
+            teacherId: s.hostUid || '',
+            teacherName: s.hostName || '',
+            level: s.examLevel || '',
+            unit: s.examTitle || s.examId || '',
+            examId: s.examId || '',
+            examTitle: s.examTitle || '',
+            players: players.map(p => ({ name: p.name || '', score: p.score || 0 }))
+          });
+        }).catch(() => {});
+      }
+
       // Mission stats grid
       const totalQ = Object.keys(answerKey).length;
       const totalStudents = players.length;
@@ -696,7 +715,7 @@
           <div class="stat-tile"><div class="stat-num">${totalSubmitted}</div><div class="stat-lbl">📤 Submitted</div></div>
           <div class="stat-tile"><div class="stat-num">${avgScore}%</div><div class="stat-lbl">📊 Avg score</div></div>
           <div class="stat-tile"><div class="stat-num">${totalQ}</div><div class="stat-lbl">❓ Questions</div></div>
-          <div class="stat-tile"><div class="stat-num">${top ? Math.round(top.score || 0) + '%' : '—'}</div><div class="stat-lbl">🥇 Top</div></div>
+          <div class="stat-tile"><div class="stat-num">${top ? Math.round(top.score || 0) + '%' : '-'}</div><div class="stat-lbl">🥇 Top</div></div>
         `;
       }
 
@@ -705,13 +724,13 @@
       if (titleEl) titleEl.textContent = 'Exam complete';
       if (subEl)   subEl.textContent   = `${totalSubmitted} of ${totalStudents} students submitted · class average ${avgScore}%.`;
 
-      // Per-question breakdown — for each question, what % of students
+      // Per-question breakdown - for each question, what % of students
       // got it right + which option was the most common choice.
       const perQEl = document.getElementById('perQuestionGrid');
       if (perQEl) {
         const rows = [];
         examData.questionsManifest.sections.forEach(sec => {
-          rows.push(`<div class="per-q-section-h">${escHtml(sec.label || sec.id)} — <span style="color:var(--r-text-mut); font-weight:400;">${sec.type}</span></div>`);
+          rows.push(`<div class="per-q-section-h">${escHtml(sec.label || sec.id)} - <span style="color:var(--r-text-mut); font-weight:400;">${sec.type}</span></div>`);
           sec.items.forEach(it => {
             const k = sec.id + '__' + it.id;
             const ak = answerKey[k];
@@ -754,7 +773,7 @@
           <td>${escHtml(p.avatar || avatarFor(p.name || ''))} ${escHtml(p.name)}</td>
           <td><strong>${p.score || 0}%</strong></td>
           <td>${p.correctCount || 0} / ${totalQ}</td>
-          <td>${p.submitted ? '✓' : '—'}</td>
+          <td>${p.submitted ? '✓' : '-'}</td>
         </tr>`).join('');
     } catch (e) {
       console.error('showResults', e);
@@ -787,7 +806,7 @@
         'Reveal');
       if (ok) revealAnswers();
     });
-    // Projector-safe eye toggle — default OFF (set once on load via
+    // Projector-safe eye toggle - default OFF (set once on load via
     // applyEyesUI). Clicking flips the saved state + re-renders the
     // progress grid and answer-key panel.
     const eyesBtn = document.getElementById('eyesToggleBtn');

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentence Scramble - Host | Lingualab</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css">
+<!-- UNIVERSAL classroom look; the game only adds its own widgets. -->
+<link rel="stylesheet" href="classroom/css/styles.css">
+<link rel="stylesheet" href="classroom/css/minigames.css?v=3">
+</head>
+<body class="scramble">
+
+<!-- Animated Background - same as every classroom page -->
+<div class="gradient-bg"></div>
+<div class="floating-shapes">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <div class="shape shape-4"></div>
+</div>
+
+<!-- Music Control -->
+<div class="music-control">
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
+  <button class="music-btn" onclick="nextTrack()" title="Next Track">🎶</button>
+  <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" onchange="setVolume(this.value)">
+</div>
+<audio id="bgMusic" preload="none"></audio>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-title">
+    <span style="font-size: 1.5rem;">🔀</span>
+    <h1>Sentence Scramble</h1>
+  </div>
+  <div class="header-actions">
+    <span style="color: var(--text-secondary); margin-right: 12px;">Hello, <span id="teacherName"></span></span>
+    <a id="backToClassroom" href="classroom-teacher.html" class="btn btn-secondary">← Classroom</a>
+    <a id="backToDashboard" href="teacher-dashboard.html" class="btn btn-secondary">🏠 Dashboard</a>
+  </div>
+</header>
+
+<!-- Creating -->
+<div id="view-auto-creating" class="container">
+  <div class="card" style="text-align: center; padding: 60px 20px;">
+    <div style="font-size: 3rem; margin-bottom: 12px;">🔀</div>
+    <h2 class="card-title" style="justify-content: center;">Scrambling the sentences...</h2>
+    <p style="color: var(--text-secondary);">Picking sentences from the word bank and creating the room.</p>
+  </div>
+</div>
+
+<!-- Lobby - same layout as the Classroom Mode lobby -->
+<div id="view-lobby" class="container" style="display: none;">
+  <div class="card">
+    <div class="session-code-display">
+      <div class="session-code-label">Session Code</div>
+      <div class="session-code" id="roomCode">-----</div>
+      <div class="session-code-hint">Share this code with your students</div>
+    </div>
+
+    <div class="session-qr-card">
+      <div class="session-qr-tile">
+        <img id="qrImg" alt="Scan to join this session" width="220" height="220">
+      </div>
+      <div class="session-qr-label">📱 Scan with phone camera to join</div>
+      <a id="joinUrl" href="#" style="color: var(--text-muted); font-size: 0.8rem; word-break: break-all;"></a>
+    </div>
+
+    <div id="lobbyMeta" style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;"></div>
+
+    <div class="players-section">
+      <div class="players-header">
+        <h3 class="players-count">👥 Players: <span id="rosterCount">0</span></h3>
+      </div>
+      <div class="players-grid" id="roster"></div>
+    </div>
+
+    <div style="margin-top: 24px;">
+      <button type="button" id="startBtn" class="btn btn-success btn-large" style="width: 100%;" disabled>▶️ Waiting for players...</button>
+    </div>
+  </div>
+</div>
+
+<!-- Live -->
+<div id="view-live" class="container" style="display: none;">
+  <div class="card">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+      <div class="session-code" style="font-size: 1.4rem; letter-spacing: 4px;" id="liveCode"></div>
+      <div class="game-timer" id="timer">⏱ --</div>
+      <img id="liveQrImg" class="session-qr-small" alt="QR" width="72" height="72">
+    </div>
+
+    <div class="bingo-call-card" style="margin-top: 14px;">
+      <div class="bingo-call-count" id="roundCount">Ready</div>
+      <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 10px;">Teacher's answer key (not on student phones):</div>
+      <div class="bingo-call-text" id="roundAnswer" style="font-size: 1.25rem;"></div>
+      <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px;" id="roundWordChip"></div>
+    </div>
+
+    <div class="mg-live-grid">
+      <div>
+        <h3 style="margin-bottom: 12px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="vertical-align:-4px;margin-right:6px;"><rect x="3" y="13" width="4.5" height="8" rx="1.5" fill="#3b82f6"/><rect x="9.75" y="8" width="4.5" height="13" rx="1.5" fill="#06b6d4"/><rect x="16.5" y="4" width="4.5" height="17" rx="1.5" fill="#38bdf8"/></svg>Live Scores <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 400;" id="submitNote"></span></h3>
+        <div class="leaderboard-list" id="liveBoard"></div>
+      </div>
+      <div>
+        <h3 style="margin-bottom: 12px;">Controls</h3>
+        <button type="button" id="nextRoundBtn" class="btn btn-primary btn-large" style="width: 100%;">⏭️ Next sentence</button>
+        <button type="button" id="endBtn" class="btn btn-danger btn-large" style="width: 100%; margin-top: 10px;">🏳️ End Game</button>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 12px;">Rounds also advance by themselves when the timer runs out or everyone has submitted.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Results - same layout as the Classroom Mode results -->
+<div id="view-results" class="container" style="display: none;">
+  <div class="card">
+    <h2 class="card-title" style="text-align: center; justify-content: center; font-size: 1.5rem;">🏆 Final Results</h2>
+    <div class="podium" id="podium" style="margin: 32px 0;"></div>
+    <h3 style="margin-bottom: 16px;">Full Leaderboard</h3>
+    <div class="leaderboard-list" id="perPlayerBody"></div>
+    <h3 style="margin: 24px 0 16px;">📋 Sentence Review</h3>
+    <div class="leaderboard-list" id="sentenceReview"></div>
+    <div style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;">
+      <button type="button" id="downloadResultsBtn" class="btn btn-secondary btn-large" style="flex: 1;">📥 Download Data</button>
+      <button type="button" id="newGameBtn" class="btn btn-primary btn-large" style="flex: 1;">🔄 New Session</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<!-- Content controls: the HOST picks the sentences. -->
+<script src="classroom/js/cc-classroom.js"></script>
+<script src="classroom/js/game-report.js?v=1"></script>
+<script src="classroom/js/minigame-core.js?v=3"></script>
+<script src="classroom/js/scramble-teacher.js?v=3"></script>
+
+</body>
+</html>

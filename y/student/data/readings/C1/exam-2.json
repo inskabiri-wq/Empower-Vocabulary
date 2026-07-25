@@ -1,0 +1,240 @@
+{
+ "id": "c1-r2",
+ "level": "C1",
+ "title": "C1 Reading 2 - Bats and Wind Turbines",
+ "subtitle": "One passage · Headings, MCQ, short-answer",
+ "timeLimitMin": 20,
+ "passages": [
+  {
+   "passageNumber": 1,
+   "title": "Bats and Wind Turbines",
+   "introHtml": "",
+   "passageHtml": "<p class=\"rd-para\" data-para=\"1\">Wind energy production is one of the fastest-growing industries in the world and represents an important step towards reducing dependence on non-renewable sources of power. However, the widespread deployment of industrial wind turbines is having unprecedented adverse effects on certain species of bats.</p><p class=\"rd-para\" data-para=\"2\">Dead bats are being found beneath wind turbines all over the world. Bat fatalities have now been documented at most wind facilities in North America, and it is estimated that tens to hundreds of thousands die at wind turbines there each year. This issue has moved to the forefront of conservation efforts towards this poorly understood group of mammals, particularly due to the concurrent effects of a new bat disease, white-nose syndrome.</p><p class=\"rd-para\" data-para=\"3\">Although the key question of why bats die at industrial wind turbine sites remains unsolved, potential clues can be found in the patterns of fatalities. Foremost, the majority of bat fatalities at industrial turbines are species that migrate long distances and rely on trees as roosts throughout the year. Tree bats compose more than three quarters of the bat fatalities observed at wind energy sites. The other striking pattern is that the vast majority of fatalities occur during late summer and autumn, which coincides with the autumn migration and mating behaviour of tree bats. As one environmentalist summarises, this seasonal involvement of species with shared behaviours indicates that behaviour plays a key role, and that migratory tree bats might actually be drawn to turbines.</p><p class=\"rd-para\" data-para=\"4\">Bats are beneficial consumers of agricultural insect pests, and migratory species provide free pest-control services across ecosystems and international borders. The value of these services to agriculture in one country alone ranges from a low of $3.7 billion to a high of $53 billion a year. Because bats eat tremendous quantities of flying pest insects, their loss is likely to have long-term effects on agricultural and ecological systems. Consequently, the conservation of bats is important not only for the well-being of ecosystems but also for the interests of national and global trade, because the natural pest-control services they provide save farmers a great deal of money.</p><p class=\"rd-para\" data-para=\"5\">Over the past decade, scientists and their research partners have been studying bat deaths at wind turbines, with the ultimate goal of understanding why they are happening so that solutions can be developed. In addition to synthesising existing information, research has focused on better understanding aspects of tree-bat ecology that might offer important clues to their susceptibility. This work has shed new light on the migratory movements, mating behaviours and feeding habits of migratory tree bats, which may help explain their disproportionate representation among turbine fatalities.</p><p class=\"rd-para\" data-para=\"6\">Continuing on the same trajectory, scientists have built an active research program to investigate the causes and consequences of bat fatalities at wind turbines. In collaboration with several science centres, universities and conservation organisations, the specific focus is to better identify the seasonal distributions, habitat needs and migration patterns of the most susceptible species, to assess the potential roles of mating and feeding behaviours in turbine collisions, to use motion sensor video for studying and monitoring bats and birds flying around turbines at night, and to test whether bats are attracted to turbines.</p><p class=\"rd-para\" data-para=\"7\">One solution has already been presented. Some studies have demonstrated that bat fatalities occur primarily on nights with low wind speed and typically increase immediately before and after storm fronts, which is a time of high activity for bats. Weather patterns are therefore a probable predictor of bat activity and fatalities, and mitigation efforts that focus on these high-risk periods may reduce fatalities substantially. Scientists have proposed that bat fatalities could be lowered by reducing the amount of turbine operating hours during low wind periods, by increasing the minimum wind speed, known as the inception velocity, at which the turbine's blades begin rotating to produce electricity. Three studies worldwide tested this and demonstrated that bat fatalities were reduced by 50 to 87 per cent. However, if the solution is to succeed, the companies who operate the wind farms need to be consulted so that they can analyse its cost-effectiveness and decide whether they might agree.</p><p class=\"rd-para\" data-para=\"8\">Whilst most people accept that a focus on renewable sources of energy is vital, it is hard to come to terms with the destruction of so many of an innocent and valuable species. Only through further research will we make progress toward minimising the impact of this new form of sustainable energy on the planet's wildlife.</p>",
+   "sections": [
+    {
+     "id": "headings",
+     "type": "match-headings",
+     "label": "Part A",
+     "instructions": "Match the paragraphs with the headings. There is ONE extra heading.",
+     "options": [
+      {
+       "id": "A",
+       "text": "A clean energy source with a hidden cost"
+      },
+      {
+       "id": "B",
+       "text": "Measuring the scale of the deaths"
+      },
+      {
+       "id": "C",
+       "text": "Why bats matter to farming"
+      },
+      {
+       "id": "D",
+       "text": "Studying bat behaviour for clues"
+      },
+      {
+       "id": "E",
+       "text": "A workable fix and a question of cost"
+      },
+      {
+       "id": "F",
+       "text": "The invention of the wind turbine"
+      }
+     ],
+     "items": [
+      {
+       "id": "p1",
+       "label": "Paragraph 1",
+       "answer": "A"
+      },
+      {
+       "id": "p2",
+       "label": "Paragraph 2",
+       "answer": "B"
+      },
+      {
+       "id": "p4",
+       "label": "Paragraph 4",
+       "answer": "C"
+      },
+      {
+       "id": "p5",
+       "label": "Paragraph 5",
+       "answer": "D"
+      },
+      {
+       "id": "p7",
+       "label": "Paragraph 7",
+       "answer": "E"
+      }
+     ]
+    },
+    {
+     "id": "mcq",
+     "type": "mcq",
+     "label": "Part B",
+     "instructions": "Circle the best answer according to the text.",
+     "items": [
+      {
+       "id": "m1",
+       "question": "Most of the bats killed at wind turbines are species that _____.",
+       "options": [
+        {
+         "id": "a",
+         "text": "live near the turbines all year round"
+        },
+        {
+         "id": "b",
+         "text": "migrate long distances and roost in trees"
+        },
+        {
+         "id": "c",
+         "text": "are already infected with white-nose syndrome"
+        },
+        {
+         "id": "d",
+         "text": "feed only during the winter"
+        }
+       ],
+       "answer": "b"
+      },
+      {
+       "id": "m2",
+       "question": "Most bat deaths at turbines happen during _____.",
+       "options": [
+        {
+         "id": "a",
+         "text": "spring and early summer"
+        },
+        {
+         "id": "b",
+         "text": "the coldest winter months"
+        },
+        {
+         "id": "c",
+         "text": "late summer and autumn"
+        },
+        {
+         "id": "d",
+         "text": "periods of very high wind"
+        }
+       ],
+       "answer": "c"
+      },
+      {
+       "id": "m3",
+       "question": "The solution proposed by scientists is to _____.",
+       "options": [
+        {
+         "id": "a",
+         "text": "move turbines away from forests"
+        },
+        {
+         "id": "b",
+         "text": "raise the wind speed at which the blades start turning"
+        },
+        {
+         "id": "c",
+         "text": "shut all turbines down during migration"
+        },
+        {
+         "id": "d",
+         "text": "play sounds that frighten bats away"
+        }
+       ],
+       "answer": "b"
+      },
+      {
+       "id": "m4",
+       "question": "The studies that tested this solution reduced bat fatalities by _____.",
+       "options": [
+        {
+         "id": "a",
+         "text": "about 10 per cent"
+        },
+        {
+         "id": "b",
+         "text": "25 to 40 per cent"
+        },
+        {
+         "id": "c",
+         "text": "50 to 87 per cent"
+        },
+        {
+         "id": "d",
+         "text": "almost 100 per cent"
+        }
+       ],
+       "answer": "c"
+      }
+     ]
+    },
+    {
+     "id": "shortanswer",
+     "type": "find-word",
+     "label": "Part C",
+     "instructions": "Find the answers from the text. Do not use more than 3 words.",
+     "items": [
+      {
+       "id": "s1",
+       "definition": "What new disease is affecting bats at the same time as the turbine deaths?",
+       "answer": "white-nose syndrome",
+       "acceptable": [
+        "white-nose syndrome",
+        "white nose syndrome"
+       ]
+      },
+      {
+       "id": "s2",
+       "definition": "Tree bats make up more than what fraction of the bat deaths at wind sites?",
+       "answer": "three quarters",
+       "acceptable": [
+        "three quarters",
+        "three-quarters"
+       ]
+      },
+      {
+       "id": "s3",
+       "definition": "What technology will scientists use to watch bats around turbines at night?",
+       "answer": "motion sensor video",
+       "acceptable": [
+        "motion sensor video",
+        "motion-sensor video"
+       ]
+      },
+      {
+       "id": "s4",
+       "definition": "Bats are especially active immediately before and after what weather feature?",
+       "answer": "storm fronts",
+       "acceptable": [
+        "storm fronts",
+        "storm front",
+        "storms"
+       ]
+      },
+      {
+       "id": "s5",
+       "definition": "What is the term for the wind speed at which a turbine’s blades begin to move?",
+       "answer": "inception velocity",
+       "acceptable": [
+        "inception velocity",
+        "the inception velocity"
+       ]
+      },
+      {
+       "id": "s6",
+       "definition": "What must wind-farm operators analyse for the proposed solution to succeed?",
+       "answer": "cost-effectiveness",
+       "acceptable": [
+        "cost-effectiveness",
+        "its cost-effectiveness",
+        "cost effectiveness"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

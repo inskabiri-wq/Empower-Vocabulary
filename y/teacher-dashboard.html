@@ -435,19 +435,24 @@
 .av-search-input:focus { border-color: var(--av-blue); }
 
 /* Select */
+/* Unified dropdown look across the whole app (matches the Students filter bar).
+   .ll-select is the shared class; .av-sel mirrors it so the admin content
+   dropdowns look identical to Reports / Writing AI / the student filters. */
+.ll-select,
 .av-sel {
-  background: var(--av-surface2);
-  border: 1px solid var(--av-border);
-  color: var(--av-text-muted);
+  background: var(--bg-item);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   border-radius: 8px;
-  padding: 7px 12px;
-  font-size: 12px;
+  padding: 10px 16px;
+  font-size: 14px;
   font-family: inherit;
   cursor: pointer;
   outline: none;
 }
-.av-sel:focus { border-color: var(--av-blue); }
-.av-sel-full { width: 100%; color: var(--av-text); }
+.ll-select:focus,
+.av-sel:focus { border-color: var(--accent-primary); }
+.av-sel-full { width: 100%; }
 
 /* Buttons */
 .av-btn {
@@ -1130,8 +1135,20 @@
       <button type="button" class="t2-nav-item" data-tab="assignments" onclick="switchTab('assignments')">
         <span class="ico" data-icon="clipboard-list"></span><span class="label">Assignments</span>
       </button>
+      <!-- Writing AI: always visible to teachers; ai-writing-admin.js intercepts
+           the click and shows a permission popup unless the teacher is granted
+           in settings/aiWritingAccess (the function enforces server-side too). -->
+      <a class="t2-nav-item" href="lingualab-write/index.html" target="_blank" rel="noopener" id="aiWritingNav" style="text-decoration:none">
+        <span class="ico" data-icon="pen-line"></span><span class="label">Writing AI</span>
+      </a>
       <button type="button" class="t2-nav-item" data-tab="courses" onclick="switchTab('courses')">
         <span class="ico" data-icon="graduation-cap"></span><span class="label">Courses</span>
+      </button>
+      <!-- Placement: hidden until auth resolves; placement-admin.js reveals it
+           for every teacher (admin/granted = manage view, other teachers =
+           read-only reports of their assignedClasses). -->
+      <button type="button" class="t2-nav-item" data-tab="placement" onclick="switchTab('placement')" style="display:none">
+        <span class="ico" data-icon="target"></span><span class="label">Placement</span>
       </button>
       <button type="button" class="t2-nav-item" data-tab="activity" onclick="switchTab('activity')">
         <span class="ico" data-icon="activity"></span><span class="label">Activity</span>
@@ -1143,7 +1160,7 @@
       <div class="t2-sidebar-spacer"></div>
 
       <div class="t2-sidebar-section-lbl">Account</div>
-      <!-- Classroom widgets launcher — sits above Lingualab. Clicking it
+      <!-- Classroom widgets launcher - sits above Lingualab. Clicking it
            floats a small popover (Class Timer, more later). Wired by
            js/widgets-tray.js, which binds to this #wtSidebarBtn. -->
       <button type="button" class="t2-nav-item" id="wtSidebarBtn" title="Classroom widgets">
@@ -1159,10 +1176,7 @@
       <a class="t2-nav-item" href="classroom-teacher.html" style="text-decoration:none">
         <span class="ico" data-icon="gamepad"></span><span class="label">Classroom</span>
       </a>
-      <!-- Export Report is admin-only (revealed in config.js isAdmin() block). -->
-      <button type="button" class="t2-nav-item" id="exportReportNav" style="display:none" onclick="exportToCSV()">
-        <span class="ico" data-icon="download"></span><span class="label">Export Report</span>
-      </button>
+      <!-- Export Report moved into Admin > Reports (teacher/js/reports-admin.js). -->
       <button type="button" class="t2-nav-item" onclick="openLogoutModal()">
         <span class="ico" data-icon="log-out"></span><span class="label">Logout</span>
       </button>
@@ -1196,10 +1210,8 @@
             <option value="7" selected>Last 7 days</option>
             <option value="30">Last 30 days</option>
           </select>
-          <button type="button" class="t2-btn solid" onclick="t2NewAssignment()">
-            <span data-icon="plus" data-icon-size="14"></span>
-            <span>New Assignment</span>
-          </button>
+          <!-- (The "+ New Assignment" header button was removed: assignments are
+               created from the Assignments tab, their single home.) -->
         </div>
       </header>
 
@@ -1216,7 +1228,7 @@
           <div class="more-menu-dropdown" id="moreMenuDropdown">
             <a href="student-dashboard.html" class="more-menu-item">🧪 Lingualab</a>
             <a href="classroom-teacher.html" class="more-menu-item">🎮 Classroom Mode</a>
-            <button class="more-menu-item" id="exportReportMore" style="display:none" onclick="exportToCSV(); closeMoreMenu()">📥 Export Report</button>
+            <a href="lingualab-write/index.html" target="_blank" rel="noopener" class="more-menu-item" id="aiWritingMore">✍️ Writing AI</a>
           </div>
         </div>
         <button class="btn btn-secondary" onclick="openLogoutModal()">🚪 Logout</button>
@@ -1575,7 +1587,7 @@
     </div>
 
     <!-- Tab Content: Assignments -->
-    <!-- Tab Content: Courses — mini courses (Coursera-style), the first
+    <!-- Tab Content: Courses - mini courses (Coursera-style), the first
          one is the AI Use Guidelines policy course. Each course card has
          its own activate/deactivate + completion tracking. More courses
          get their own card here later.
@@ -1619,6 +1631,20 @@
           </div>
           <div id="pcVerifyResult" style="margin-top:12px; font-size:0.88em;"></div>
         </div>
+      </div>
+    </div>
+
+    <!-- Tab Content: Placement - entrance placement test. Activation targeting
+         (classes/levels/modules/years, mini-course style), results list with
+         recommended levels, and per-student attempt reset. Rendered by
+         teacher/js/placement-admin.js into #placementBody. The result is a
+         RECOMMENDATION only - it never writes the student profile. -->
+    <div id="tab-placement" class="tab-content">
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">🎯 Placement Test</h2>
+        </div>
+        <div id="placementBody"><div style="color:var(--text-muted);font-size:0.9em;">Loading placement panel...</div></div>
       </div>
     </div>
 
@@ -1688,6 +1714,9 @@
         /* When shown alone, drop the big stacking top-margins. */
         #tab-admin.adminsub-on #featureActivationPanel,
         #tab-admin.adminsub-on #contentControlsPanel,
+        #tab-admin.adminsub-on #reportsPanel,
+        #tab-admin.adminsub-on #aiWritingPanel,
+        #tab-admin.adminsub-on #demoAccountPanel,
         #tab-admin.adminsub-on #rosterImportPanel,
         #tab-admin.adminsub-on #orgAdminPanel { margin-top:0 !important; }
       </style>
@@ -1695,12 +1724,15 @@
         <button type="button" class="admin-subtab active" data-target="teachersList">👩‍🏫 Teachers</button>
         <button type="button" class="admin-subtab" data-target="featureActivationPanel">🎛️ Features</button>
         <button type="button" class="admin-subtab" data-target="contentControlsPanel">🗂️ Content</button>
+        <button type="button" class="admin-subtab" data-target="reportsPanel">📈 Reports</button>
+        <button type="button" class="admin-subtab" data-target="aiWritingPanel">🔑 Access</button>
+        <button type="button" class="admin-subtab" data-target="demoAccountPanel">🎫 Demo accounts</button>
         <button type="button" class="admin-subtab" data-target="rosterImportPanel">📥 Roster import</button>
         <button type="button" class="admin-subtab" data-target="orgAdminPanel">🏢 Organizations</button>
       </div>
       <script>
         (function () {
-          var IDS = ['teachersList', 'featureActivationPanel', 'contentControlsPanel', 'rosterImportPanel', 'orgAdminPanel'];
+          var IDS = ['teachersList', 'featureActivationPanel', 'contentControlsPanel', 'reportsPanel', 'aiWritingPanel', 'demoAccountPanel', 'rosterImportPanel', 'orgAdminPanel'];
           function show(target) {
             IDS.forEach(function (id) { var el = document.getElementById(id); if (el) el.style.display = (id === target) ? '' : 'none'; });
             document.querySelectorAll('#adminSubNav .admin-subtab').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-target') === target); });
@@ -1750,6 +1782,148 @@
         </p>
         <div id="contentControlsBody">
           <p style="color: var(--t2-text-muted, #7d8590); font-size: 12px;">Loading...</p>
+        </div>
+      </div>
+
+      <!-- ════ Reports (admin only) ════
+           The single results-reporting home: KPI tiles, SVG charts, Excel
+           workbook export, and the classroom-games history (persisted by
+           classroom/js/game-report.js into /gameReports) with per-game
+           download + manual retention cleanup. Replaces the old sidebar
+           "Export Report" CSV + the Activity tab Excel button.
+           Logic: teacher/js/reports-admin.js. -->
+      <div id="reportsPanel" style="max-width: 1380px; margin: 26px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif; display:none;">
+        <style>
+          /* Hover cue on zoomable chart cards: lift + glow so it reads as
+             clickable before you click. */
+          #reportsBody .rep-zoom { transition: transform .12s cubic-bezier(.2,.7,.3,1), border-color .12s ease, box-shadow .12s ease; }
+          #reportsBody .rep-zoom:hover { transform: translateY(-3px); border-color: #3b82f6 !important; box-shadow: 0 10px 26px rgba(0,0,0,0.38); }
+          #reportsBody .rep-zoom:hover svg rect { opacity: 1 !important; }
+          /* Zoom lightbox entrance - quick + smoothly eased */
+          @keyframes repZoomFade { from { opacity: 0; } to { opacity: 1; } }
+          @keyframes repZoomPop { from { transform: scale(0.975); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+          #repZoomOverlay { animation: repZoomFade .12s ease-out; }
+          #repZoomOverlay > div { animation: repZoomPop .14s cubic-bezier(.2,.8,.2,1); }
+          #repZoomOverlay svg rect { transition: none; }
+        </style>
+        <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">📈 Reports</h2>
+        <p style="font-size: 12px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 14px;">
+          Practice, games and class results in one place. Filter by period, level, class, module or year - every chart and the Excel download follow the filters. Classroom game results are saved here automatically when a game finishes.
+        </p>
+        <div id="reportsBody">
+          <p style="color: var(--t2-text-muted, #7d8590); font-size: 12px;">Loading...</p>
+        </div>
+      </div>
+
+      <!-- ════ Writing AI (admin only) ════
+           Grant specific teachers access to live AI writing feedback (Gemini,
+           via the analyzeWriting function) and see who is enabled. Usage is
+           tracked to /aiUsage and reported in Admin > Reports.
+           Logic: teacher/js/ai-writing-admin.js. -->
+      <div id="aiWritingPanel" style="max-width: 900px; margin: 26px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif; display:none;">
+        <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">🔑 Access</h2>
+        <p style="font-size: 13px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 14px;">
+          The single home for every teacher permission: Writing AI, the Deep tier and its limits, Placement management - and every future capability. Every change is audited below.
+        </p>
+        <div id="aiWritingBody">
+          <p style="color: var(--t2-text-muted, #7d8590); font-size: 12px;">Loading...</p>
+        </div>
+      </div>
+
+      <!-- ════ Demo / test accounts (admin only) ════
+           Create a single pre-verified login with an admin-chosen ACTIVATION
+           DATE (registeredAt -> 1-year expiry). Calls the createDemoAccount
+           Cloud Function (Admin SDK sets emailVerified + registeredAt server
+           side). Logic: teacher/js/demo-account-admin.js. -->
+      <div id="demoAccountPanel" style="max-width: 760px; margin: 26px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif; display:none;">
+        <style>
+          #demoAccountPanel .da-label { display:block; font-size:12px; font-weight:700; color:var(--t2-text-muted,#7d8590); margin:0 0 5px; }
+          #demoAccountPanel .da-in { width:100%; box-sizing:border-box; font-family:inherit; font-size:14px; padding:9px 11px;
+            border-radius:9px; border:1px solid var(--t2-border,#30363d); background:var(--t2-bg,#0d1117); color:var(--t2-text,#e6edf3); }
+          #demoAccountPanel .da-in:focus { outline:none; border-color:#2563eb; }
+          #demoAccountPanel .da-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+          @media (max-width:560px){ #demoAccountPanel .da-grid { grid-template-columns:1fr; } }
+          #demoAccountPanel .da-btn { cursor:pointer; font-family:inherit; font-weight:800; font-size:14px; padding:11px 22px;
+            border-radius:10px; border:none; background:#2563eb; color:#fff; }
+          #demoAccountPanel .da-btn:disabled { opacity:.6; cursor:default; }
+          #demoAccountPanel code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+        </style>
+        <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">🎫 Demo / test accounts</h2>
+        <p style="font-size: 12px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 16px;">
+          Create a single ready-to-use login (email already verified) and choose the activation date - the account expires one year after that date. Handy for demos, stakeholder reviews or testing the expiry gate. Every account made here is tagged so you can find and remove them later.
+        </p>
+        <div style="background: var(--t2-surface,#161b22); border:1px solid var(--t2-border,#30363d); border-radius:12px; padding:18px;">
+          <div class="da-grid">
+            <div>
+              <label class="da-label" for="daRole">Account type</label>
+              <select id="daRole" class="da-in">
+                <option value="student">🎓 Student</option>
+                <option value="teacher">👩‍🏫 Teacher</option>
+              </select>
+            </div>
+            <div>
+              <label class="da-label" for="daActivation">Activation date <span style="font-weight:600;">(expires 1 year later)</span></label>
+              <input id="daActivation" type="date" class="da-in">
+            </div>
+          </div>
+          <div class="da-grid">
+            <div>
+              <label class="da-label" for="daName">Full name</label>
+              <input id="daName" type="text" class="da-in" placeholder="Demo Student" autocomplete="off">
+            </div>
+            <div>
+              <label class="da-label" for="daEmail">Email (used to log in)</label>
+              <input id="daEmail" type="email" class="da-in" placeholder="demo.student@fsm.edu.tr" autocomplete="off">
+            </div>
+          </div>
+          <div class="da-grid">
+            <div>
+              <label class="da-label" for="daPassword">Password</label>
+              <input id="daPassword" type="text" class="da-in" placeholder="leave blank to auto-generate" autocomplete="off">
+            </div>
+            <div></div>
+          </div>
+          <div id="daStudentFields">
+            <div class="da-grid">
+              <div>
+                <label class="da-label" for="daLevel">Level</label>
+                <select id="daLevel" class="da-in">
+                  <option value="A2">A2</option>
+                  <option value="B1" selected>B1</option>
+                  <option value="B1+">B1+</option>
+                  <option value="B2">B2</option>
+                  <option value="C1">C1</option>
+                </select>
+              </div>
+              <div>
+                <label class="da-label" for="daClass">Class</label>
+                <input id="daClass" type="text" class="da-in" placeholder="B101" value="B101" autocomplete="off">
+              </div>
+            </div>
+            <div class="da-grid">
+              <div>
+                <label class="da-label" for="daModule">Module</label>
+                <input id="daModule" type="text" class="da-in" placeholder="Module 2" value="Module 2" autocomplete="off">
+              </div>
+              <div>
+                <label class="da-label" for="daYear">Academic year</label>
+                <input id="daYear" type="text" class="da-in" placeholder="2025-26" value="2025-26" autocomplete="off">
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:14px; margin-top:4px; flex-wrap:wrap;">
+            <button type="button" id="daCreateBtn" class="da-btn">Create account</button>
+            <span id="daExpiryHint" style="font-size:12px; color:var(--t2-text-muted,#7d8590);"></span>
+          </div>
+          <div id="daResult" style="margin-top:16px;"></div>
+
+          <div style="margin-top:22px; border-top:1px solid var(--t2-border,#30363d); padding-top:16px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+              <h3 style="font-size:14px; font-weight:800; color:var(--t2-text,#e6edf3); margin:0;">Existing demo accounts <span id="daListCount" style="color:var(--t2-text-muted,#7d8590); font-weight:600;"></span></h3>
+              <button type="button" id="daRefreshBtn" style="cursor:pointer; font-family:inherit; font-weight:700; font-size:12px; padding:7px 14px; border-radius:8px; background:transparent; color:var(--t2-text-muted,#7d8590); border:1px solid var(--t2-border,#30363d);">🔄 Refresh</button>
+            </div>
+            <div id="daList"><div style="font-size:12px;color:var(--t2-text-muted,#7d8590);">Loading demo accounts...</div></div>
+          </div>
         </div>
       </div>
 
@@ -1930,9 +2104,7 @@
               <button class="activity-filter-btn secondary" onclick="ActivityAdmin.clearFilters()">
                 ↺ Clear
               </button>
-              <button class="activity-filter-btn export" onclick="ActivityAdmin.exportToExcel()">
-                📥 Export Excel
-              </button>
+              <!-- Excel export moved into Admin > Reports (reports-admin.js). -->
             </div>
           </div>
 
@@ -2572,7 +2744,7 @@
         <div class="ai-tab-head">✨ AI correction <span class="ai-soon">PREVIEW</span></div>
         <p class="ai-tab-desc">This is the AI version of the panel you use to correct papers. It marks up a student's essay the same way you do by hand with the comment bank: the same rubric, the same style of comments and highlights, and no scores. The only difference is that the AI drafts the marking for you through the API, at the depth you choose (Light / Medium / Deep). You stay in charge: review, edit, add or delete any comment, then release it. It is a teacher tool, not an automatic grader for students. Open the working preview to see exactly how it looks.</p>
         <a class="modal-btn modal-btn-save" href="lingualab-write/" target="_blank" rel="noopener" style="display:inline-block; text-decoration:none;">Open the working preview ▶</a>
-        <p class="ai-tab-note">The full working demo — pick a sample essay and a depth (Light / Medium / Deep) to see exactly what it produces. Once approved, this AI correction panel mounts right here, beside your manual comment-bank one.</p>
+        <p class="ai-tab-note">The full working demo - pick a sample essay and a depth (Light / Medium / Deep) to see exactly what it produces. Once approved, this AI correction panel mounts right here, beside your manual comment-bank one.</p>
       </div>
     </div>
 
@@ -2835,15 +3007,24 @@ document.addEventListener('DOMContentLoaded', () => {
      chaining off the previous override so multiple skills can each
      have their own form. -->
 <script src="assignments/js/exam-form.js"></script>
+<!-- Gates the vocab-assignment Unit dropdown by assignmentsHidden.vocabulary. -->
+<script src="assignments/js/vocab-assign-gating.js?v=1"></script>
 <script src="assignments/js/writing-form.js"></script>
 <!-- Grammar assignment: content (levels/topics) + form. Mirrors exam-form.js. -->
-<script src="student/js/skills/grammar-content.js?v=33"></script>
+<script src="student/js/skills/grammar-content.js?v=34"></script>
 <!-- Policy mini course: content (module count for the panel) + teacher admin panel. -->
 <script src="student/js/policy-course-content.js?v=7"></script>
-<script src="teacher/js/policy-course-admin.js?v=11"></script>
-<script src="teacher/js/feature-activation.js?v=5"></script>
-<script src="teacher/js/content-controls.js?v=7"></script>
-<script src="teacher/js/roster-import.js?v=5"></script>
+<script src="teacher/js/policy-course-admin.js?v=13"></script>
+<script src="teacher/js/feature-activation.js?v=6"></script>
+<script src="teacher/js/content-controls.js?v=11"></script>
+<!-- Reports (admin): KPIs, charts, Excel workbook, game history. -->
+<script src="teacher/js/reports-admin.js?v=11"></script>
+<!-- Writing AI access manager (admin): grant teachers + open the corrector. -->
+<script src="teacher/js/ai-writing-admin.js?v=8"></script>
+<script src="teacher/js/placement-admin.js?v=6"></script>
+<!-- Demo/test account creator (admin) - calls the createDemoAccount function. -->
+<script src="teacher/js/demo-account-admin.js?v=2"></script>
+<script src="teacher/js/roster-import.js?v=6"></script>
 <script src="teacher/js/org-admin.js?v=1"></script>
 <script src="assignments/js/grammar-form.js"></script>
 <!-- Writing feedback v2: comment bank (data) + annotation engine.
@@ -2859,7 +3040,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- v2 Overview render layer - loaded after all data-loading scripts so
      it can read the same `allStudents` / `allSessions` / `currentUserData`
      globals they populate. -->
-<script src="teacher/js/overview-v2.js"></script>
+<script src="teacher/js/overview-v2.js?v=2"></script>
 <!-- Assignments Overview card - loaded LAST so it can patch both
      renderAssignments (from teacher-assignments.js) and renderOverviewV2
      (from overview-v2.js) and re-render itself on every snapshot tick.
