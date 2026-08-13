@@ -5,15 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Heist · Teacher | Lingualab</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
 <!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css">
+<link rel="stylesheet" href="css/brand.css?v=17">
 <!-- Load the shared classroom stylesheet FIRST so the heist-specific
      overrides in heist.css win where needed (vault list, modals, etc.).
      The lobby's code-display + QR-card reuse the EXACT classes from
      styles.css so the visual is identical to the Vocab Race lobby. -->
-<link rel="stylesheet" href="classroom/css/styles.css">
-<link rel="stylesheet" href="classroom/css/heist.css">
+<link rel="stylesheet" href="classroom/css/styles.css?v=7">
+<link rel="stylesheet" href="classroom/css/heist.css?v=3">
+  <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=38">
+  <script src="js/app-settings.js?v=22"></script>
 </head>
 <body class="heist">
 
@@ -82,7 +88,7 @@
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
       <span style="color:var(--heist-text-mut); font-size:0.9em;">Hello, <span id="teacherName">…</span></span>
-      <a href="teacher-dashboard.html" id="backToDashboard" class="heist-btn" style="text-decoration:none; padding: 7px 14px; font-size:0.85em;">← Dashboard</a>
+      <a href="teacher-dashboard.html" id="backToDashboard" class="heist-btn ll-navbtn">← Dashboard</a>
     </div>
   </div>
 

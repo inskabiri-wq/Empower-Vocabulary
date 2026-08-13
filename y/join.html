@@ -26,6 +26,10 @@
       margin:10px auto; animation:spin 0.8s linear infinite; } @keyframes spin { to { transform:rotate(360deg); } }
     .row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
   </style>
+  <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=38">
+  <script src="js/app-settings.js?v=22"></script>
 </head>
 <body>
   <div class="card" id="card">

@@ -24,6 +24,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "5173", "--directory", "E:/vocab-trainer/y", "--bind", "127.0.0.1"],
       "port": 5173
+    },
+    {
+      "name": "static-y-alt",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5174", "--directory", "E:/vocab-trainer/y", "--bind", "127.0.0.1"],
+      "port": 5174
     }
   ]
 }

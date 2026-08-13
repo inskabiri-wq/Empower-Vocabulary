@@ -265,11 +265,26 @@
       '<p>You have mastered <strong>' + info.mastered + '</strong> of <strong>' + info.units.length + '</strong> units at <strong>' + esc(level) + '</strong>. Keep going!</p>' +
       '</div><div class="gr-welcome-ava">' + esc(liveAvatar()) + '</div></div>';
 
-    var xpBlock = '<div class="gr-xp"><div class="gr-xp-top">' +
-      '<div class="gr-xp-pill">Level ' + glvl + ' · ' + rank + '</div>' +
-      '<div class="gr-xp-num">' + xpIn + ' / 100 XP</div></div>' +
-      '<div class="gr-xp-bar"><div class="gr-xp-fill" style="width:' + xpIn + '%"></div></div>' +
-      '<div class="gr-xp-miles"><span class="hit">0</span><span>25</span><span>50</span><span>75</span><span>100</span></div></div>';
+    // Vocabulary's XP block, class for class (.dash-xp-block / .xp-bar-*  /
+    // .xp-milestone), not a grammar-shaped copy of it. The old .gr-xp markup
+    // drifted: a 10px flat track instead of a 9px --dash-elevated one, a fill
+    // with no shine animation and no top sheen, and a grey "X / 100 XP" where
+    // vocabulary shows amber. The milestone pips light up from the real XP
+    // rather than always marking 0 as hit.
+    var xpMiles = [0, 25, 50, 75, 100].map(function (m) {
+      return '<span class="xp-milestone' + (xpIn >= m ? ' hit' : '') + '" data-xp="' + m + '">' + m + '</span>';
+    }).join('');
+    var xpBlock = '<div class="dash-xp-block">' +
+      '<div class="dash-xp-top">' +
+        '<div class="xp-badge-pill">Level ' + glvl + ' · ' + esc(rank) + '</div>' +
+        '<div class="xp-num">' + xpIn + ' / 100 XP</div>' +
+      '</div>' +
+      '<div class="xp-bar-container">' +
+        '<div class="xp-bar-fill" style="width:' + xpIn + '%"></div>' +
+        '<div class="xp-bar-glow"></div>' +
+      '</div>' +
+      '<div class="xp-milestones">' + xpMiles + '</div>' +
+    '</div>';
 
     var GR_SVG = {
       trophy: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>',
@@ -316,21 +331,62 @@
   }
 
   // ── Map modal: the unit Quest Board (donuts + per-unit games) ──
+  // Built from the SAME chrome as vocabulary's Quest Board: .modal-overlay >
+  // .modal-content.learning-map-modal, with the shared .level-tabs row. It used
+  // to be a bespoke .gr-map-modal / .gr-map-sheet pair, which is why it had no
+  // level tabs at all and why its cards came out a different shape - a 900px
+  // sheet with 18px padding gives 423x305 cards, vocabulary's 810px sheet with
+  // 36/44px padding gives 350x297. Same box now, so the same card.
   function openMap() {
-    var level = state.assignment ? state.assignment.level : state.level;
-    var info = buildUnitCards(level);
+    var browseLevel = state.assignment ? state.assignment.level : state.level;
     var old = document.getElementById('grMapModal'); if (old) old.remove();
+
     var ov = document.createElement('div');
-    ov.id = 'grMapModal'; ov.className = 'gr-map-modal';
-    ov.innerHTML = '<div class="gr-map-sheet"><div class="gr-map-head"><h3>🗺️ Grammar Map &middot; ' + esc(level) + '</h3><button type="button" class="gr-map-close" id="grMapClose" aria-label="Close">&times;</button></div>' +
-      '<div class="qc-grid learning-map-container">' + (info.cards || '<div class="gr-empty">No units yet.</div>') + '</div></div>';
+    ov.id = 'grMapModal';
+    ov.className = 'modal-overlay active';
+    ov.innerHTML =
+      '<div class="modal-content learning-map-modal">' +
+        '<button type="button" class="modal-close-btn" id="grMapClose" aria-label="Close">&times;</button>' +
+        '<h2 class="modal-title">🗺️ Grammar Quest Board</h2>' +
+        '<p class="qc-board-sub">Complete challenges to master each unit</p>' +
+        '<div class="level-tabs" id="grMapTabs"></div>' +
+        '<div class="learning-map-container" id="grMapContainer"></div>' +
+      '</div>';
     document.body.appendChild(ov);
+
+    var tabs = ov.querySelector('#grMapTabs');
+    var box  = ov.querySelector('#grMapContainer');
+
+    function paint(level) {
+      browseLevel = level;
+      tabs.innerHTML = (DATA.levels || []).map(function (lv) {
+        return '<button type="button" class="level-tab' + (lv === level ? ' active' : '') + '"'
+          + ' data-level="' + esc(lv) + '">' + esc(lv) + '</button>';
+      }).join('');
+      tabs.querySelectorAll('.level-tab').forEach(function (t) {
+        t.onclick = function () { paint(t.getAttribute('data-level')); };
+      });
+
+      var info = buildUnitCards(level);
+      box.innerHTML = '<div class="qc-grid">'
+        + (info.cards || '<div class="gr-empty">No units yet for ' + esc(level) + '.</div>')
+        + '</div>';
+      box.querySelectorAll('.qc-challenge').forEach(function (el) {
+        el.onclick = function () {
+          // Browsing the map does not change the menu's level (vocabulary works
+          // the same way), but STARTING a drill from another level must.
+          state.level = level;
+          state.selectedUnit = 'all';
+          close();
+          startGame(parseInt(el.getAttribute('data-unit'), 10), el.getAttribute('data-game'));
+        };
+      });
+    }
+
     function close() { ov.remove(); }
     ov.querySelector('#grMapClose').onclick = close;
     ov.onclick = function (e) { if (e.target === ov) close(); };
-    ov.querySelectorAll('.qc-challenge').forEach(function (el) {
-      el.onclick = function () { close(); startGame(parseInt(el.getAttribute('data-unit'), 10), el.getAttribute('data-game')); };
-    });
+    paint(browseLevel);
   }
 
   // ── Start a unit's game ────────────────────────────────────
@@ -632,7 +688,7 @@
       var scope = (typeof studentScopeFields === 'function') ? studentScopeFields() : null;
       if (scope) { for (var k in scope) { if (Object.prototype.hasOwnProperty.call(scope, k)) doc[k] = scope[k]; } }
       db.collection('sessions').add(doc)                   // same collection the teacher dashboard reads
-        .then(function () { console.log('[grammar] session saved →', doc.activity, doc.percentage + '%'); })
+        .then(function () { console.log('[grammar] session saved ->', doc.activity, doc.percentage + '%'); })
         .catch(function (e) { console.warn('[grammar] session write REJECTED:', e && e.code, e && e.message); });
     } catch (e) { console.warn('[grammar] session log failed (non-fatal):', e); }
   }

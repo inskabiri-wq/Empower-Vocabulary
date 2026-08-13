@@ -28,14 +28,14 @@
   padding: 0 4px;
 }
 #hubScreen .hub-greeting h2 {
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 800;
   color: var(--text-primary, #f1f5f9);
   margin: 0 0 4px;
   letter-spacing: -0.01em;
 }
 #hubScreen .hub-greeting p {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--text-secondary, #94a3b8);
   margin: 0;
 }
@@ -44,10 +44,10 @@
   max-width: 900px;
   margin: 8px auto 10px;
   padding: 0 4px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-tertiary, #64748b);
+  color: var(--text-tertiary, var(--text-muted, #64748b));
   font-weight: 700;
 }
 
@@ -107,18 +107,18 @@
   gap: 6px;
   margin: 2px 0 14px;
   padding-bottom: 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 #hubScreen .student-info-chips .info-chip {
   display: inline-flex;
   align-items: center;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: .02em;
   padding: 3px 9px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   color: var(--text-secondary, #94a3b8);
   white-space: nowrap;
 }
@@ -153,8 +153,8 @@
 
 /* ---------- Card ---------- */
 #hubScreen .hub-card {
-  background: var(--dash-surface, #0f172a);
-  border: 1px solid var(--dash-border-md, rgba(255,255,255,0.06));
+  background: var(--dash-surface, var(--bg-primary, #0f172a));
+  border: 1px solid var(--dash-border-md, rgba(255, 255, 255, 0.06));
   border-radius: 16px;
   overflow: hidden;
   padding: 18px;
@@ -205,12 +205,12 @@
   position: absolute;
   inset: 4px;
   border-radius: 50%;
-  background: var(--dash-surface, #0f172a);
+  background: var(--dash-surface, var(--bg-primary, #0f172a));
 }
 #hubScreen .hub-ring .hub-icon {
   position: relative;
   z-index: 1;
-  font-size: 24px;
+  font-size: 1.5rem;
   line-height: 1;
 }
 
@@ -222,13 +222,13 @@
   min-width: 0;
 }
 #hubScreen .hub-name {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 800;
   color: var(--text-primary, #f1f5f9);
   letter-spacing: -0.005em;
 }
 #hubScreen .hub-sub {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--text-secondary, #94a3b8);
   line-height: 1.35;
   overflow: hidden;
@@ -239,7 +239,7 @@
   position: absolute;
   top: 14px;
   right: 16px;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 800;
   color: var(--skill-accent, var(--dash-primary-lt));
   font-variant-numeric: tabular-nums;
@@ -253,7 +253,7 @@
   opacity: 1;
 }
 #hubScreen .hub-card.is-empty .hub-pct {
-  color: var(--text-tertiary, #64748b);
+  color: var(--text-tertiary, var(--text-muted, #64748b));
 }
 
 /* Left accent bar — pulls the skill's hue into the card body */
@@ -276,8 +276,8 @@
    measure). Keeps the same shape so it still feels "alongside" them. */
 #hubScreen .hub-card.is-classroom {
   background: linear-gradient(135deg,
-    color-mix(in srgb, var(--skill-accent) 18%, var(--dash-surface, #0f172a)),
-    var(--dash-surface, #0f172a));
+    color-mix(in srgb, var(--skill-accent) 18%, var(--dash-surface, var(--bg-primary, #0f172a))),
+    var(--dash-surface, var(--bg-primary, #0f172a)));
   border-color: color-mix(in srgb, var(--skill-accent) 45%, var(--dash-border-md, rgba(255,255,255,0.06)));
 }
 #hubScreen .hub-card.is-classroom:hover {
@@ -298,7 +298,7 @@
   background: color-mix(in srgb, var(--skill-accent) 22%, transparent);
   border: 1px solid color-mix(in srgb, var(--skill-accent) 55%, transparent);
   color: var(--skill-accent);
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -332,9 +332,9 @@
 #hubScreen .hub-off-pill {
   background: rgba(148, 163, 184, 0.18);
   border-color: rgba(148, 163, 184, 0.45);
-  color: #94a3b8;
+  color: var(--text-secondary, #94a3b8);
 }
-#hubScreen .hub-off-pill::before { animation: none; background: #94a3b8; box-shadow: none; }
+#hubScreen .hub-off-pill::before { animation: none; background: var(--text-secondary, #94a3b8); box-shadow: none; }
 
 /* ============================================================
    ASSIGNMENTS BOX (always-visible, under the skill grid)
@@ -353,3 +353,51 @@
      stack of cards) — on the hub it sits flush under the grid. */
   margin-top: 0;
 }
+
+/* ── Placement tile placeholder ───────────────────────────────
+   The skill cards render from a local array with no network at all, so the
+   placement tile - which needs Firestore reads first - used to appear a beat
+   later and the grid visibly re-flowed. This holds its slot from the first
+   paint at the same size, then the real card replaces it. Purely visual: it
+   carries aria-hidden and is removed if the student is out of scope.
+   (The assignments box already had its own "Loading assignments..." state.) */
+.hub-card.as-skeleton {
+  pointer-events: none;
+  opacity: 0.55;
+  animation: as-sk-pulse 1.4s ease-in-out infinite;
+}
+.hub-card.as-skeleton .hub-ring {
+  background: var(--bg-item, rgba(255, 255, 255, 0.06));
+  border-color: transparent;
+}
+.hub-card.as-skeleton .sk-line {
+  height: 10px; border-radius: 999px;
+  background: var(--bg-item, rgba(255, 255, 255, 0.08));
+}
+.hub-card.as-skeleton .sk-line-lg { width: 84px; margin-bottom: 7px; }
+.hub-card.as-skeleton .sk-line-sm { width: 122px; height: 8px; }
+
+@keyframes as-sk-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 0.3; } }
+
+/* Respect a reduced-motion preference: keep the placeholder, drop the pulse. */
+@media (prefers-reduced-motion: reduce) {
+  .hub-card.as-skeleton { animation: none; }
+}
+
+/* Skill screens use EXACTLY vocabulary's card: 1200px wide, 720px min-height.
+   The hub is the one deliberate exception at 1900px, because it lays out five
+   columns of tiles. An earlier attempt gave the skill screens the hub's width
+   instead, which made them match the hub but not vocabulary - and vocabulary
+   is the reference. Every non-hub screen is now one box.
+
+   The empty area under a screen with few cards is the CONTENT, not the box:
+   vocabulary fills its 720px, listening has one activity. Both boxes are the
+   same size. */
+/* .skill-screen matches nothing (see app-settings.css), so this was inert.
+   Kept as ids for the record: these screens already inherit .container's own
+   1200px / 720px, which is exactly vocabulary's box - verified on the live
+   page: both 1200 wide, same max-width, same min-height. The height a screen
+   ENDS UP at differs only because vocabulary has more content than listening. */
+.container:has(#listeningScreen.active),
+.container:has(#grammarScreen.active),
+.container:has(#readingScreen.active) { max-width: 1200px; min-height: 720px; }

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shared header diagnostics</title>
+</head>
+<body>
+<div id="out" style="font:12px monospace;padding:8px;color:#ccc">loading...</div>
+<script>
+/* Renders any page's markup WITHOUT its scripts (so auth guards cannot
+   redirect) and then loads js/app-settings.js on top, to check what the shared
+   header injects there: the wheel, the nav buttons and the Lingualab lockup.
+
+   Usage: header-diag.html?page=courses.html
+   Read-only diagnostics harness - not shipped UI. */
+(async function () {
+  const params = new URLSearchParams(location.search);
+  const page = params.get('page') || 'courses.html';
+  const bust = params.get('bust') || String(page.length);
+  const res = await fetch('../../' + page + '?bust=' + bust, { cache: 'reload' });
+  let html = await res.text();
+  html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const fix = h => (h && !/^(https?:|\/\/|data:)/.test(h)) ? '../../' + h : h;
+  doc.querySelectorAll('link[href]').forEach(l =>
+    l.setAttribute('href', fix(l.getAttribute('href')) + (l.getAttribute('href').indexOf('?') > -1 ? '&' : '?') + 'bust=' + bust));
+  document.head.innerHTML += doc.head.innerHTML;
+  document.body.innerHTML = doc.body.innerHTML;
+  // Copy EVERY body attribute, not just class: data-app-settings="off" is a
+  // body attribute, and dropping it made opted-out pages look as though they
+  // still build the shared wheel and lockup.
+  Array.prototype.forEach.call(doc.body.attributes, a =>
+    document.body.setAttribute(a.name, a.value));
+
+  // Pages hide their app shell until Firestore answers; reveal it so the
+  // header can be measured.
+  ['pcApp', 'crsApp', 'corApp', 'app'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = '';
+  });
+  ['pcLoading', 'corLoading'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  await new Promise(r => {
+    const s = document.createElement('script');
+    s.src = '../../js/app-settings.js?bust=' + bust;
+    s.onload = r; s.onerror = r;
+    document.head.appendChild(s);
+  });
+  window.__page = page;
+  window.__diagReady = true;
+  const out = document.getElementById('out');
+  if (out) out.remove();
+})();
+</script>
+</body>
+</html>

@@ -20,7 +20,11 @@
         body { border-top: 16px solid #ffa100; }
       }
     </style>
-  </head>
+    <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=38">
+  <script src="js/app-settings.js?v=22"></script>
+</head>
   <body>
     <div id="message">
       <h2>404</h2>

@@ -1158,7 +1158,7 @@ async function saveAssignment() {
     { id: 'assignmentTargetModule',  msg: 'Please select a module.', when: () => targetType === 'module' }
   ]);
   // "Specific Students" needs a custom check - the input isn't a single
-  // <select>, it's a list of checkboxes - so we collect it manually.
+  // <select class="ll-select">, it's a list of checkboxes - so we collect it manually.
   if (targetType === 'individual') {
     const checked = document.querySelectorAll('.assignment-student-checkbox:checked').length;
     if (checked === 0) {

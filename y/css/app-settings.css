@@ -1,0 +1,757 @@
+/* ============================================================
+   APP DISPLAY SETTINGS - shared, every page
+   ------------------------------------------------------------
+   The text-size / line-spacing controls the writing exam had,
+   lifted out so ONE panel serves the whole app (student hub,
+   teacher dashboard, assignments, courses, exams, classroom).
+   Preference is saved once and follows the user everywhere.
+
+   HOW SCALING WORKS (and why it is safe):
+   Nothing in this app pins a font-size on <html> or <body>, and
+   NO padding / margin / gap anywhere uses rem - they are all px.
+   So scaling the root font-size grows TEXT ONLY and leaves every
+   layout box exactly where it was. That is what makes this safe
+   to switch on app-wide, phones included.
+
+   Default state is a no-op: --app-scale is 1 (100%, unchanged)
+   and line spacing applies only when html carries data-app-line,
+   which it does not until the user picks a value. So a student
+   who never opens the panel sees the app exactly as before.
+   ============================================================ */
+
+:root { --app-scale: 1; }
+
+/* ── Themes ──────────────────────────────────────────────────
+   The writing exam's four palettes, lifted to the whole app. Light keeps
+   using the app's existing `.light-mode` (144 rules already written for it);
+   Sepia and Contrast are token overrides, so every surface built on
+   var(--bg-card) / var(--text-primary) / ... follows automatically - the same
+   reach light mode has. Values match student/css/writing-exam.css so the two
+   look identical.
+
+   Every theme is a COMPLETE token set. It has to be: a partial set leaves
+   whichever token it omits at its dark value, which is what made a theme
+   change look like it only recoloured the buttons. `y/tools/theme-sanity.js`
+   fails the build if any theme is missing a key. */
+body.light-mode {
+  --bg-primary-rgb: 238, 242, 248;
+  --bg-secondary-rgb: 255, 255, 255;
+  --bg-card-rgb: 255, 255, 255;
+  --bg-item-rgb: 241, 245, 249;
+  --text-primary-rgb: 15, 23, 42;
+  --text-secondary-rgb: 71, 85, 105;
+  --overlay-rgb: 15, 23, 42;
+  --bg-primary:   #eef2f8;
+  --bg-secondary: #ffffff;
+  --bg-card:      #ffffff;
+  --bg-item:      #f1f5f9;
+  --bg-tertiary:  #e2e8f0;
+  --bg-hover:     rgba(59,130,246,0.10);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted:   #64748b;
+  --border-color: rgba(15,23,42,0.14);
+}
+body.theme-sepia {
+  --bg-primary-rgb: 244, 236, 216;
+  --bg-secondary-rgb: 239, 228, 200;
+  --bg-card-rgb: 251, 243, 223;
+  --bg-item-rgb: 239, 228, 200;
+  --text-primary-rgb: 61, 46, 26;
+  --text-secondary-rgb: 107, 86, 61;
+  --overlay-rgb: 61, 46, 26;
+  --bg-tertiary:  #e7d9b6;
+  --bg-hover:     rgba(124,58,237,0.10);
+  --bg-primary:   #f4ecd8;
+  --bg-secondary: #efe4c8;
+  --bg-card:      #fbf3df;
+  --bg-item:      #efe4c8;
+  --text-primary: #3d2e1a;
+  --text-secondary: #6b563d;
+  --text-muted:   #8c7a5c;
+  --border-color: rgba(61,46,26,0.16);
+  --accent-primary: #7c3aed;
+}
+body.theme-contrast {
+  --bg-primary-rgb: 0, 0, 0;
+  --bg-secondary-rgb: 10, 10, 10;
+  --bg-card-rgb: 10, 10, 10;
+  --bg-item-rgb: 24, 24, 24;
+  --text-primary-rgb: 255, 255, 255;
+  --text-secondary-rgb: 209, 213, 219;
+  --overlay-rgb: 255, 255, 255;
+  --bg-tertiary:  #202020;
+  --bg-hover:     rgba(196,181,253,0.16);
+  --bg-primary:   #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-card:      #0a0a0a;
+  --bg-item:      #181818;
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-muted:   #9ca3af;
+  --border-color: rgba(255,255,255,0.30);
+  --accent-primary: #c4b5fd;
+}
+
+/* The one line that does the work. calc on % keeps the browser's own
+   default (and any OS accessibility font size) as the base, rather than
+   hard-coding 16px over the top of it. */
+html { font-size: calc(100% * var(--app-scale, 1)); }
+
+/* Line spacing: attribute-gated so "no choice made" changes nothing. */
+html[data-app-line="tight"]  body { line-height: 1.35; }
+html[data-app-line="loose"]  body { line-height: 1.85; }
+
+/* ── Unstyled form controls ──────────────────────────────────
+   button / input / select / textarea do NOT inherit font-size - the
+   browser gives them their own (13.3333px in Chrome). Any control the app
+   already styles is fine, because those rules are in rem and follow the
+   root. But a control NO stylesheet gives a font-size to would sit frozen
+   at 13.3333px while every label around it grew.
+
+   Restating that exact default in rem fixes it: 0.8333rem x 16px =
+   13.3333px, so at the default setting nothing moves by a single pixel,
+   and now it scales with everything else.
+
+   :where() is deliberate - it contributes ZERO specificity, so literally
+   any other rule (even a bare `button {}` in another stylesheet) still
+   wins. This can only fill a gap, never override a real decision. */
+:where(button, input, select, textarea, optgroup) { font-size: 0.8333rem; }
+
+/* ── Launcher ────────────────────────────────────────────────
+   Bottom-RIGHT. The teacher dashboard's widgets tray owns
+   bottom-left, so the two never collide. */
+/* TOP-LEFT, matching where the gear sits in the dashboards' header rather than
+   floating at the bottom of the page. Pages that already own the top-left slot
+   push it aside below. */
+/* THE RULE: the wheel is the first item of the page's header control cluster,
+   in the SAME place on every page. Pages that have no header of their own get
+   this injected cluster, styled to match `.header-icon-btn` on the dashboard -
+   a rounded square, not a floating circle - and pinned to the same top-left
+   offset, so it reads as page chrome rather than a floating action button.
+   The teacher dashboard is the one deliberate exception (sidebar row). */
+.as-launch {
+  position: fixed; left: 18px; top: 14px; z-index: 99965;
+  /* EXACTLY the student dashboard's .header-icon-btn: 44px, radius 12, the
+     same --bg-item fill and --border-color edge. That gear is the reference
+     the whole app matches, so the wheel is the same object everywhere it
+     appears rather than a smaller cousin of it. */
+  width: 44px; height: 44px; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bg-card, #152035);
+  border: 1px solid var(--border-color, rgba(59,130,246,0.35));
+  color: var(--text-secondary, #94a3b8);
+  cursor: pointer; padding: 0;
+  box-shadow: 0 6px 20px rgba(2,6,23,0.45);
+  transition: color .15s, border-color .15s, transform .15s;
+}
+.as-launch:hover {
+  color: var(--text-primary, #f8fafc);
+  border-color: var(--accent-primary, #3b82f6);
+  transform: translateY(-1px);
+}
+.as-launch:focus-visible {
+  outline: 2px solid rgba(99,102,241,0.6); outline-offset: 3px;
+}
+.as-launch svg { width: 20px; height: 20px; }
+
+/* ── Overlay + panel ─────────────────────────────────────── */
+.as-overlay {
+  position: fixed; inset: 0; z-index: 99966;
+  background: rgba(2,6,23,0.55);
+  opacity: 0; pointer-events: none; transition: opacity .18s ease;
+}
+.as-overlay.open { opacity: 1; pointer-events: auto; }
+
+/* CENTRED dialog, not a right-hand drawer. Pages that own a #settingsModal
+   (the dashboards) already showed a centred, scrolling box; classroom,
+   courses and placement got this panel instead and it slid in from the right.
+   Same control, two different presentations. It is centred everywhere now,
+   with the same max-height + scroll so a long panel never runs off screen. */
+/* ── The panel owns its palette ──────────────────────────────
+   Measured drift: the SAME panel rendered rgba(15,23,42,0.95) on the student
+   dashboard and #152035 on a classroom page, with two different border alphas,
+   because it read --bg-card / --border-color from whatever the page happened to
+   declare - and those pages declare different values (or none, falling back).
+   Same lesson the gear taught: a shared control cannot borrow page tokens.
+
+   So the panel declares its own, and each theme overrides them at higher
+   specificity (body.<theme> .as-panel beats .as-panel). Theming still works;
+   page-to-page drift cannot. Values are lifted from the theme blocks above so
+   the panel stays in step with the rest of the app. */
+.as-panel {
+  --as-surface: #152035;
+  --as-inset:   #0f1729;
+  --as-line:    rgba(59,130,246,0.25);
+  --as-fg:      #f8fafc;
+  --as-fg-2:    #94a3b8;
+  --as-fg-3:    #64748b;
+  --as-accent:  #3b82f6;
+}
+body.light-mode .as-panel {
+  --as-surface: #ffffff;
+  --as-inset:   #f1f5f9;
+  --as-line:    rgba(15,23,42,0.14);
+  --as-fg:      #0f172a;
+  --as-fg-2:    #475569;
+  --as-fg-3:    #64748b;
+  --as-accent:  #3b82f6;
+}
+body.theme-sepia .as-panel {
+  --as-surface: #fbf3df;
+  --as-inset:   #efe4c8;
+  --as-line:    rgba(61,46,26,0.16);
+  --as-fg:      #3d2e1a;
+  --as-fg-2:    #6b563d;
+  --as-fg-3:    #8c7a5c;
+  --as-accent:  #7c3aed;
+}
+body.theme-contrast .as-panel {
+  --as-surface: #0a0a0a;
+  --as-inset:   #181818;
+  --as-line:    rgba(255,255,255,0.30);
+  --as-fg:      #ffffff;
+  --as-fg-2:    #d1d5db;
+  --as-fg-3:    #9ca3af;
+  --as-accent:  #c4b5fd;
+}
+
+.as-panel {
+  position: fixed; z-index: 99967;
+  top: 50%; left: 50%; right: auto; bottom: auto;
+  max-height: min(86vh, 86dvh);
+  /* min() rather than width+max-width: with four theme buttons in one row the
+     content could push the box wider than the screen, and because the panel is
+     anchored to the RIGHT the overflow ran off the LEFT edge - which is why the
+     labels read "EME" / "XT SIZE". Now it can never exceed the viewport. */
+  width: min(340px, 100vw);
+  box-sizing: border-box;
+  overflow-x: hidden;
+  background: var(--as-surface);
+  padding: 20px 20px 28px;
+  overflow-y: auto;
+  transform: translate(-50%, -50%) scale(0.96);
+  opacity: 0;
+  /* A CLOSED panel must not exist as far as the mouse is concerned. `opacity: 0`
+     alone hides it visually but leaves it hit-testable, and this thing is a
+     326px column pinned dead-centre at z-index 99967 - so it silently ate every
+     click that landed on it. On the student hub that was 4 of the 8 tiles
+     (listening, reading, classroom, courses); the tiles outside its rectangle
+     kept working, which is why it read as "the Reading tile is broken".
+     visibility also takes it out of the accessibility tree and tab order.
+     The delayed visibility transition lets the fade-out still play. */
+  visibility: hidden;
+  pointer-events: none;
+  border-radius: 16px;
+  border: 1px solid var(--as-line);
+  box-shadow: 0 24px 60px rgba(2,6,23,0.55);
+  transition: transform .18s cubic-bezier(.4,0,.2,1), opacity .18s ease, visibility 0s linear .18s;
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+}
+.as-panel.open {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: transform .18s cubic-bezier(.4,0,.2,1), opacity .18s ease, visibility 0s;
+}
+
+.as-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+.as-head h3 {
+  margin: 0; font-size: 1.05rem; font-weight: 800;
+  color: var(--as-fg);
+}
+.as-x {
+  background: none; border: none; cursor: pointer; padding: 6px;
+  font-size: 1rem; line-height: 1;
+  color: var(--as-fg-2); border-radius: 8px;
+}
+.as-x:hover { color: var(--as-fg); background: rgba(127, 127, 127, 0.14); }
+
+.as-section { margin-bottom: 20px; }
+.as-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--as-fg-3);
+  margin-bottom: 8px;
+}
+/* Grid, not flex: four theme buttons in a flex row refused to wrap tidily and
+   dragged the panel wider than the screen. A 2-up grid always fits, and the
+   3-button rows (Tight/Normal/Loose, Serif/Sans/Mono) get their own track
+   count so nothing is left orphaned on its own line. */
+.as-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.as-row:has(> button:nth-child(3):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.as-row:has(> button:only-child) { grid-template-columns: 1fr; }
+.as-row button {
+  min-width: 0;
+  padding: 9px 10px;
+  background: var(--as-inset);
+  border: 1px solid var(--as-line);
+  border-radius: 9px;
+  color: var(--as-fg-2);
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 0.9rem;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.as-row button:hover {
+  color: var(--as-fg);
+  border-color: var(--as-accent);
+}
+.as-row button.active {
+  background: rgba(99,102,241,0.18);
+  border-color: #6366f1;
+  color: var(--as-fg);
+}
+.as-row button:focus-visible {
+  outline: 2px solid rgba(99,102,241,0.6); outline-offset: 2px;
+}
+
+/* The `.as-inline` variant and the `#settingsModal` height cap that used to sit
+   here are gone with the dashboard's own settings modal. There is one panel in
+   the app now, styled by the rules above, and nothing to inject it into. */
+
+/* ── Switch rows (Sound effects / Turkish hints) ─────────────
+   The dashboard's original rows, moved into the panel and restyled on the
+   panel's own --as-* tokens rather than the page's. Same shape as before:
+   icon, name, description, sliding switch. */
+.as-switches { display: grid; gap: 10px; }
+.as-switch {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px;
+  background: var(--as-inset);
+  border: 1px solid var(--as-line);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease;
+}
+.as-switch:hover { border-color: var(--as-accent); }
+.as-switch.on { border-color: #6366f1; background: rgba(99,102,241,0.12); }
+.as-switch:focus-visible { outline: 2px solid rgba(99,102,241,0.6); outline-offset: 2px; }
+.as-switch-ic { font-size: 1.35rem; width: 30px; text-align: center; flex-shrink: 0; }
+.as-switch-txt { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.as-switch-name { font-weight: 700; font-size: 0.9rem; color: var(--as-fg); }
+.as-switch-desc { font-size: 0.75rem; line-height: 1.35; color: var(--as-fg-3); margin-top: 2px; }
+.as-switch-track {
+  position: relative; flex-shrink: 0;
+  width: 46px; height: 26px; border-radius: 13px;
+  background: var(--as-surface);
+  border: 1px solid var(--as-line);
+  transition: background .2s ease, border-color .2s ease;
+}
+.as-switch-track::after {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--as-fg-2);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  transition: left .2s ease, background .2s ease;
+}
+.as-switch.on .as-switch-track { background: #6366f1; border-color: #6366f1; }
+.as-switch.on .as-switch-track::after { left: 23px; background: #fff; }
+@media (prefers-reduced-motion: reduce) {
+  .as-switch, .as-switch-track, .as-switch-track::after { transition: none; }
+}
+
+/* Preview line so the change is visible without closing the panel. */
+.as-preview {
+  margin-top: 4px; padding: 10px 12px;
+  background: var(--as-inset);
+  border: 1px dashed var(--as-line);
+  border-radius: 9px;
+  color: var(--as-fg-2);
+  font-size: 0.95rem;
+}
+
+.as-note {
+  margin-top: 14px; font-size: 0.78rem; line-height: 1.5;
+  color: var(--as-fg-3);
+}
+
+/* Phones: full-width sheet, and keep the launcher clear of the
+   bottom-centred UI some pages dock there. */
+/* NOTE: no per-page offset for the wheel. The rule is that it occupies the
+   same slot on every page, so a page that already had something there moves
+   ITS control instead - see placement.html, whose Exit button now starts to
+   the right of the wheel. */
+
+@media (max-width: 560px) {
+  .as-panel { width: 100vw; }
+  .as-launch { left: 12px; top: 10px; width: 42px; height: 42px; }
+}
+
+/* The launcher is chrome, not content - never print it. */
+@media print {
+  .as-launch, .as-overlay, .as-panel { display: none !important; }
+}
+
+/* An opener supplied by a page (sidebar row, header button). The gear artwork
+   is injected by app-settings.js so every wheel is the same inline SVG, never
+   a per-OS emoji. Sizing follows the host's font-size so it sits correctly in
+   a sidebar row and in a header bar alike. */
+.as-opener svg {
+  width: 1.15em; height: 1.15em;
+  vertical-align: -0.2em;
+  color: currentColor;
+}
+
+/* ── The wheel INSIDE a page's own header ──────────────────────
+   Classroom, courses, live mode and the writing lab already own a
+   header bar. There the wheel stops floating and becomes the first
+   control of that bar, which is the same spot it holds on the
+   dashboard. !important because the floating defaults live on
+   .as-launch itself and the two variants of one component must not
+   depend on cascade order to settle it. */
+.as-launch.as-inheader {
+  position: static !important;
+  left: auto !important; right: auto !important; top: auto !important;
+  width: 44px !important; height: 44px !important;
+  flex: none;
+  margin: 0 10px 0 0;
+  box-shadow: none;
+  align-self: center;
+}
+.as-launch.as-inheader svg { width: 20px; height: 20px; }
+
+/* ── Header layout when the wheel joins it ─────────────────────
+   classroom's .header and the writing lab's .cor-header are both
+   justify-content: space-between. Adding the wheel as a third child
+   would have pushed the page title into the middle of the bar. Switch
+   those headers to flex-start and let the LAST cluster (the actions)
+   claim the free space instead, so the title stays beside the wheel
+   exactly where it was. */
+.as-hosthdr { justify-content: flex-start !important; }
+.as-hosthdr > *:last-child { margin-left: auto; }
+
+/* ── One nav button for the whole app ──────────────────────────
+   Dashboard / Exit / Back controls were written five different ways:
+   .btn.btn-secondary on classroom, bare inline styles on placement, a
+   plain text link on courses, and .heist-btn / .trust-btn /
+   .reading-btn / .listening-btn with per-page inline padding on the
+   game and exam hosts. Same job, five looks. This is the single one.
+   Doubled class (.ll-navbtn.ll-navbtn) so it outranks those page-level
+   rules on specificity rather than relying on load order, and without
+   needing !important. */
+.ll-navbtn.ll-navbtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  box-sizing: border-box;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color, rgba(59, 130, 246, 0.2));
+  background: var(--bg-item, rgba(255, 255, 255, 0.04));
+  color: var(--text-secondary, #94a3b8);
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; font-size: 0.85rem; font-weight: 700; line-height: 1;
+  text-decoration: none; white-space: nowrap; cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.ll-navbtn.ll-navbtn:hover {
+  border-color: var(--accent-primary, #3b82f6);
+  color: var(--text-primary, #f8fafc);
+  background: var(--bg-hover, rgba(59, 130, 246, 0.10));
+}
+.ll-navbtn.ll-navbtn:focus-visible {
+  outline: 2px solid var(--accent-primary, #3b82f6); outline-offset: 2px;
+}
+
+/* The wheel is one of these buttons, just square. Same height, same
+   border, same radius, same background - so a gear sitting next to an
+   Exit reads as one set instead of two unrelated controls. */
+.as-launch.as-inheader,
+.as-launch:not(.as-inheader) {
+  border-radius: 12px;
+  border: 1px solid var(--border-color, rgba(59, 130, 246, 0.2));
+  background: var(--bg-item, rgba(255, 255, 255, 0.04));
+  color: var(--text-secondary, #94a3b8);
+  /* No drop shadow: .ll-navbtn has none, and a shadow on only one of the two
+     controls is exactly what made the gear and Exit look unrelated. */
+  box-shadow: none;
+}
+/* The floating variant still sits over page content, so it keeps the blur that
+   placement's Exit button already uses. */
+.as-launch:not(.as-inheader) { backdrop-filter: blur(10px); }
+.as-launch.as-inheader { width: 44px !important; height: 44px !important; }
+.as-launch:hover { border-color: var(--accent-primary, #3b82f6); color: var(--text-primary, #f8fafc); }
+
+
+
+/* One header title size. classroom set 1.4rem on .header-title h1 while
+   courses and the policy course set 1.05em on .pc-header-title, so the page
+   name was visibly bigger on one than the other. Scoped to .as-hosthdr, which
+   is only ever the header the wheel joined, so no other heading moves. */
+.as-hosthdr .header-title h1,
+.as-hosthdr .pc-header-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  /* classroom paints its h1 with --accent-gradient and transparent fill, while
+     courses uses solid text. Same size and weight still read as two different
+     titles when one is a gradient. Both are solid here. */
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  -webkit-text-fill-color: currentColor;
+  color: var(--text-primary, #f8fafc);
+}
+
+/* ── Every nav / exit control reads the same ───────────────────
+   "Dashboard", "Logout", "Exit", "Back" are the same job wherever
+   they appear, but each page shipped its own weight and let the
+   button inherit whatever font the browser gave it (form controls
+   do NOT inherit font-family on their own). That is why Dashboard
+   looked bold on classroom and light on courses.
+
+   Family and weight only. Sizes are deliberately left alone, since
+   these buttons sit in headers, footers and end screens of very
+   different scales. */
+.ll-navbtn,
+.pc-back,
+.logout-btn,
+.skill-back-btn,
+.exam-back-btn,
+.gr-back,
+.back-btn,
+.rd-back {
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+}
+
+/* ── ONE box for every nav control, no exceptions ──────────────
+   Last pass unified font and weight but left each control its own
+   shape, so "Dashboard" was a 999px pill on the skill screens and a
+   10px rounded rectangle in the headers. Same word, same job, four
+   different boxes. This is the whole box: height, radius, padding,
+   border, background, colour.
+
+   Doubled selectors so this outranks each page's own rule without
+   !important. Everything here is the same set of values as
+   .ll-navbtn above - they are deliberately duplicated rather than
+   grouped, so a later edit to one cannot silently split them again;
+   ui-sanity flags any drift. */
+.skill-back-btn.skill-back-btn,
+.pc-back.pc-back,
+.gr-back.gr-back,
+.back-btn.back-btn,
+.exam-back-btn.exam-back-btn,
+.rd-back.rd-back {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  box-sizing: border-box;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color, rgba(59, 130, 246, 0.2));
+  background: var(--bg-item, rgba(255, 255, 255, 0.04));
+  color: var(--text-secondary, #94a3b8);
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; font-size: 0.85rem; font-weight: 700; line-height: 1;
+  text-decoration: none; white-space: nowrap; cursor: pointer;
+}
+.skill-back-btn.skill-back-btn:hover,
+.pc-back.pc-back:hover,
+.gr-back.gr-back:hover,
+.back-btn.back-btn:hover,
+.exam-back-btn.exam-back-btn:hover,
+.rd-back.rd-back:hover {
+  border-color: var(--accent-primary, #3b82f6);
+  color: var(--text-primary, #f8fafc);
+}
+
+/* Same gear, same colour, same size, wherever it appears. The dashboard's
+   button painted its icon white while the wheel used --text-secondary, so
+   even once the boxes matched the glyphs did not. */
+.as-gearicon svg { width: 20px; height: 20px; }
+/* Vocabulary's gear was the colour emoji, so its glyph was lavender while the
+   SVG ones were plain white. Same icon everywhere now, and it keeps that
+   colour rather than losing it - so all of them read the way vocab's did. */
+.as-launch.as-launch,
+.as-gearicon.as-gearicon { color: #c4b5fd; }
+.as-launch.as-launch:hover,
+.as-gearicon.as-gearicon:hover { color: #ddd6fe; }
+
+/* ── Shared page header ────────────────────────────────────────
+   For pages that never had one of their own (placement, and any
+   future standalone page). Same shape as the courses / policy
+   header so a page cannot look like a different app just because
+   nobody wrote it a header: sticky, one border, the wheel first,
+   then the nav buttons, then the title. */
+.ll-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border-color, rgba(59, 130, 246, 0.18));
+  background: var(--bg-secondary, rgba(13, 20, 38, 0.85));
+  position: sticky; top: 0; z-index: 99964;
+  backdrop-filter: blur(8px);
+}
+.ll-header-title {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 800; font-size: 1.15rem;
+  color: var(--text-primary, #f8fafc);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ll-header-end { flex: 1 1 auto; min-width: 0; }
+
+/* ── Load skeletons: reserve the space, never shift the page ────
+   The hub paints its skill tiles with no network at all, then the
+   placement tile and the assignments panel arrive from Firestore
+   and used to push everything below them down. These hold the exact
+   slot from first paint so the data fills in silently. */
+
+/* ── The Lingualab lockup in a page header ─────────────────────
+   Injected by app-settings.js on every page that had no branding of its own
+   (placement, courses, the policy course, the 18 classroom game pages). Mirrors
+   the skill screens: cap mark + wordmark, page name on the line below.
+
+   Declared AFTER `.as-hosthdr .header-title h1 / .pc-header-title` above, which
+   sizes a page title at 1.15rem. Those selectors and `.ll-brand-sub.ll-brand-sub`
+   have equal specificity, so source order is what makes the demoted title
+   render as a subtitle. Keep this block below them. */
+.ll-brand {
+  display: flex; flex-direction: column; justify-content: center;
+  gap: 1px; min-width: 0;
+}
+.ll-brand-name {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  font-size: 1.15rem; font-weight: 900; letter-spacing: -0.02em;
+  line-height: 1.15; white-space: nowrap;
+  background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 55%, #3b82f6 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.ll-brand-cap { width: 1.05em; height: 1.05em; flex-shrink: 0; }
+/* The page's own title element, demoted to the subtitle line. Doubled class so
+   it outranks whatever that element was styled as on its own page. */
+.ll-brand-sub.ll-brand-sub {
+  display: flex; align-items: center; gap: 6px;
+  margin: 0; padding: 0; min-width: 0;
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.8rem; font-weight: 700; line-height: 1.3;
+  color: var(--text-secondary, #94a3b8);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* Page titles are variously an <h1>, a <span> pair, or a gradient-filled
+   heading. Flatten all of them onto the subtitle's own type. */
+.ll-brand-sub.ll-brand-sub h1,
+.ll-brand-sub.ll-brand-sub h2,
+.ll-brand-sub.ll-brand-sub span {
+  font-size: inherit; font-weight: inherit; line-height: inherit;
+  margin: 0; letter-spacing: normal;
+  background: none; -webkit-background-clip: initial; background-clip: initial;
+  -webkit-text-fill-color: currentColor; color: inherit;
+}
+@media (max-width: 560px) {
+  .ll-brand-name { font-size: 1rem; }
+  .ll-brand-sub.ll-brand-sub { font-size: 0.72rem; }
+}
+
+.as-skeleton, .as-asg-skeleton { pointer-events: none; }
+.as-asg-skeleton { display: flex; flex-direction: column; gap: 10px; padding: 4px 0; }
+.as-asg-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: 44px; padding: 10px 12px; border-radius: 12px;
+  background: var(--bg-item, rgba(255,255,255,0.04));
+  border: 1px solid var(--border-color, rgba(59,130,246,0.15));
+}
+.sk-line {
+  display: block; height: 10px; border-radius: 999px;
+  background: linear-gradient(90deg,
+    rgba(148,163,184,0.14) 25%, rgba(148,163,184,0.26) 37%, rgba(148,163,184,0.14) 63%);
+  background-size: 400% 100%;
+  animation: as-sk 1.4s ease-in-out infinite;
+}
+.sk-line-lg { width: 58%; }
+.sk-line-sm { width: 22%; height: 8px; }
+@keyframes as-sk { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+@media (prefers-reduced-motion: reduce) { .sk-line { animation: none; } }
+
+/* ══ THE GEAR. One definition. No tokens. ══════════════════════
+   Every previous attempt used var(--bg-item, ...) / var(--border-color, ...).
+   Those tokens are NOT defined on every page in the default dark theme -
+   student/css/styles.css and classroom/css/styles.css each declare their own,
+   placement and courses declare none - so the identical rule resolved to a
+   different colour depending on which page you were looking at. That is why
+   the box and its edge kept coming back different.
+
+   Literal values here on purpose. A page cannot override what it does not
+   supply, so every gear is the same object everywhere, in every theme.
+   Covers all three gears that exist: the injected launcher, the dashboard's
+   own header button, and a page-supplied opener. */
+.as-launch.as-launch,
+.as-gearicon.as-gearicon,
+.header-icon-btn.header-icon-btn,
+[data-app-settings-open].as-opener {
+  box-sizing: border-box !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  background: #1c2a42 !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #c4b5fd !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+}
+/* DESCENDANT, not child: the sweep drops the icon into a .ico wrapper when a
+   button has one, so `> svg` matched nothing there. Combined with font-size:0
+   below that left a correctly-sized box with no icon in it at all. */
+.as-launch.as-launch svg,
+.as-gearicon.as-gearicon svg,
+.header-icon-btn.header-icon-btn svg,
+[data-app-settings-open].as-opener svg {
+  width: 20px !important;
+  height: 20px !important;
+  stroke: currentColor !important;
+  fill: none !important;
+}
+.as-launch.as-launch:hover,
+.as-gearicon.as-gearicon:hover,
+.header-icon-btn.header-icon-btn:hover {
+  background: #243450 !important;
+  border-color: rgba(59, 130, 246, 0.55) !important;
+  color: #ddd6fe !important;
+  transform: none !important;
+}
+
+/* Skill-screen back button: lift it onto the same line as the gear / profile /
+   logout cluster on the right, and give it breathing room above the Lingualab
+   title instead of sitting right on top of it. */
+.dashboard-header .header-left > .skill-back-btn {
+  margin-top: 0;
+  margin-bottom: 14px;
+  align-self: flex-start;
+}
+
+/* One "Lingualab" title on every skill screen, matching vocabulary's
+   (#menuScreen) exactly: 1.4rem / 900 / Nunito. The skill screens rendered it
+   at 2.2rem / 700, and listening was not even resolving Nunito - it fell back
+   to Segoe UI, so that page had a different typeface as well as a different
+   size. The main dashboard (#hubScreen) is deliberately left alone. */
+/* Targeted by ID, NOT by .skill-screen. That class appears in
+   student/css/skills.css and in no HTML or JS anywhere - the screens are all
+   plain class="screen" - so every .skill-screen rule matched nothing and the
+   titles stayed different however many times the rule was rewritten. */
+#listeningScreen .dashboard-header h1,
+#grammarScreen  .dashboard-header h1,
+#readingScreen  .dashboard-header h1,
+#writingScreen  .dashboard-header h1,
+#speakingScreen .dashboard-header h1 {
+  font-size: 1.4rem !important;
+  font-weight: 900 !important;
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif !important;
+}
+
+/* The rule under the header. The skill screens draw it because their header
+   sits inside .skill-screen; vocabulary's #menuScreen header is not wrapped in
+   one, so it had no line. Declared for BOTH here so they cannot drift apart. */
+#menuScreen > .dashboard-header,
+#listeningScreen .dashboard-header,
+#grammarScreen  .dashboard-header,
+#readingScreen  .dashboard-header,
+#writingScreen  .dashboard-header,
+#speakingScreen .dashboard-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  padding-bottom: 18px;
+  margin-bottom: 22px;
+}

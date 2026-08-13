@@ -6,8 +6,8 @@
 <title>Lingualab</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css">
-<link rel="stylesheet" href="css/fsmvu-loader.css">
+<link rel="stylesheet" href="css/brand.css?v=17">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
 <style>
 :root {
   --bg-primary: #0a0f1a;
@@ -660,6 +660,10 @@ body {
   }
 }
 </style>
+  <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=38">
+  <script src="js/app-settings.js?v=22"></script>
 </head>
 <body>
 
@@ -705,7 +709,7 @@ body {
       
       <div class="controls">
         <label style="color: var(--text-secondary);">Level:</label>
-        <select id="levelSelect" class="select" onchange="changeLevel(this.value)">
+        <select id="levelSelect" class="select ll-select" onchange="changeLevel(this.value)">
           <option value="A2">A2 (966 words)</option>
           <option value="B1">B1 (644 words)</option>
           <option value="B1+">B1+ (604 words)</option>

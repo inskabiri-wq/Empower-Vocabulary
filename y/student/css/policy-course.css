@@ -6,10 +6,10 @@
 
 body {
   font-family: 'Nunito', 'Segoe UI', sans-serif;
-  background: #0d1426;
+  background: var(--bg-secondary, #0d1426);
   background-image: radial-gradient(1100px 500px at 80% -10%, rgba(59, 130, 246, 0.14), transparent),
                     radial-gradient(900px 480px at 10% 110%, rgba(251, 146, 60, 0.10), transparent);
-  color: #f1f5f9;
+  color: var(--text-primary, #f1f5f9);
   min-height: 100vh;
   margin: 0;
 }
@@ -37,18 +37,18 @@ body {
   background: rgba(13, 20, 38, 0.85);
   position: sticky; top: 0; z-index: 5; backdrop-filter: blur(8px);
 }
-.pc-back { color: #94a3b8; text-decoration: none; font-weight: 700; font-size: 0.9em; white-space: nowrap; }
-.pc-back:hover { color: #f1f5f9; }
+.pc-back { color: var(--text-secondary, #94a3b8); text-decoration: none; font-weight: 700; font-size: 0.9em; white-space: nowrap; }
+.pc-back:hover { color: var(--text-primary, #f1f5f9); }
 .pc-header-title { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 1.05em; flex: 1; min-width: 0; }
 .pc-header-title span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pc-header-right { display: flex; align-items: center; gap: 10px; }
 .pc-lang {
   cursor: pointer; font: inherit; font-weight: 800; font-size: 0.8em;
-  color: #f1f5f9; background: rgba(59, 130, 246, 0.15);
+  color: var(--text-primary, #f1f5f9); background: rgba(59, 130, 246, 0.15);
   border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 999px; padding: 6px 12px;
 }
 .pc-lang:hover { background: rgba(59, 130, 246, 0.3); }
-.pc-student-chip { font-size: 0.85em; color: #94a3b8; font-weight: 700; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pc-student-chip { font-size: 0.85em; color: var(--text-secondary, #94a3b8); font-weight: 700; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ── Layout ── */
 .pc-wrap { max-width: 780px; margin: 0 auto; padding: 26px 18px 60px; }
@@ -56,7 +56,7 @@ body {
 
 .pc-progressbar { height: 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
 .pc-progressbar-fill { height: 100%; border-radius: 999px; width: 0; background: linear-gradient(90deg, #3b82f6, #14b8a6); transition: width 0.4s ease; }
-.pc-progress-label { font-size: 0.85em; color: #94a3b8; font-weight: 700; margin: 8px 2px 22px; }
+.pc-progress-label { font-size: 0.85em; color: var(--text-secondary, #94a3b8); font-weight: 700; margin: 8px 2px 22px; }
 
 /* ── Module cards ── */
 .pc-module-list { display: flex; flex-direction: column; gap: 12px; }
@@ -73,7 +73,7 @@ body {
 .pc-module-info { flex: 1; min-width: 0; }
 .pc-module-title { font-weight: 800; margin-bottom: 3px; }
 .pc-module-sub { font-size: 0.84em; font-weight: 700; }
-.pc-muted { color: #94a3b8; }
+.pc-muted { color: var(--text-secondary, #94a3b8); }
 .pc-ok { color: #34d399; }
 .pc-warn { color: #fbbf24; }
 .pc-ban { color: #f87171; }
@@ -86,14 +86,14 @@ body {
 }
 .pc-btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; }
 .pc-btn-primary:hover { filter: brightness(1.1); }
-.pc-btn-ghost { background: rgba(255, 255, 255, 0.06); color: #e2e8f0; border-color: rgba(148, 163, 184, 0.3); }
+.pc-btn-ghost { background: rgba(255, 255, 255, 0.06); color: var(--text-secondary, #e2e8f0); border-color: rgba(148, 163, 184, 0.3); }
 .pc-btn-ghost:hover { border-color: rgba(148, 163, 184, 0.6); }
 .pc-btn-gold { background: linear-gradient(135deg, #f5c842, #f59e0b); color: #2a2008; }
 .pc-btn-gold:hover { filter: brightness(1.06); }
 
 /* ── Lesson reader ── */
 .pc-lesson-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.pc-step-label { font-size: 0.85em; font-weight: 800; color: #94a3b8; }
+.pc-step-label { font-size: 0.85em; font-weight: 800; color: var(--text-secondary, #94a3b8); }
 .pc-lesson-card {
   background: rgba(21, 32, 53, 0.9);
   border: 1px solid rgba(59, 130, 246, 0.22);
@@ -106,7 +106,7 @@ body {
 /* Optional lesson media (image / embedded video / external link) */
 .pc-media { margin: 18px 0 6px; }
 .pc-media img { max-width: 100%; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.25); display: block; }
-.pc-media figcaption { font-size: 0.82em; color: #94a3b8; margin-top: 6px; }
+.pc-media figcaption { font-size: 0.82em; color: var(--text-secondary, #94a3b8); margin-top: 6px; }
 .pc-video { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 18px 0 6px; }
 .pc-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 12px; background: #000; }
 .pc-ext-link {
@@ -132,7 +132,7 @@ body {
 .pc-quiz-opts { display: flex; flex-direction: column; gap: 10px; }
 .pc-opt {
   cursor: pointer; font: inherit; font-size: 1em; font-weight: 600; text-align: left;
-  color: #f1f5f9; background: rgba(28, 42, 66, 0.85);
+  color: var(--text-primary, #f1f5f9); background: rgba(28, 42, 66, 0.85);
   border: 2px solid rgba(100, 116, 150, 0.4); border-radius: 12px; padding: 13px 16px;
   transition: border-color 0.15s, background 0.15s;
 }
@@ -190,8 +190,8 @@ body {
 /* Department lockup */
 .pc-cert-dept { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .pc-cert-deptlogo { height: 52px; object-fit: contain; }
-.pc-cert-dept-tr { font-size: 12px; font-weight: 800; letter-spacing: 0.12em; color: #c8102e; }
-.pc-cert-dept-en { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; color: #1b3a6b; }
+.pc-cert-dept-tr { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; color: #c8102e; }
+.pc-cert-dept-en { font-size: 0.625rem; font-weight: 800; letter-spacing: 0.14em; color: #1b3a6b; }
 
 /* Script calligraphy heading + name */
 .pc-cert-script {
@@ -200,7 +200,7 @@ body {
   line-height: 1.1; margin: 2.2% 0 1.2%;
 }
 .pc-cert-presented {
-  font-size: 12px; font-weight: 800; letter-spacing: 0.08em;
+  font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em;
   color: #1d2230;
 }
 .pc-cert-name-script {
@@ -253,11 +253,11 @@ body {
   white-space: nowrap;
 }
 .pc-cert-sig-line { border-top: 1.5px solid #1d2230; width: 82%; margin: 0 auto 5px; }
-.pc-cert-sig-name { font-size: 12px; font-weight: 800; color: #16202e; letter-spacing: 0.02em; line-height: 1.25; min-height: 1.25em; }
+.pc-cert-sig-name { font-size: 0.75rem; font-weight: 800; color: #16202e; letter-spacing: 0.02em; line-height: 1.25; min-height: 1.25em; }
 /* Reserve room for a two-line title so all columns are the same height and
    the row stays even when some titles wrap and others do not. */
-.pc-cert-sig-title { font-family: Georgia, serif; font-style: italic; font-size: 10px; color: #4a5364; margin-top: 2px; line-height: 1.3; min-height: 2.6em; }
-.pc-cert-meta { text-align: center; font-size: 9px; color: #8b93a2; line-height: 1.6; }
+.pc-cert-sig-title { font-family: Georgia, serif; font-style: italic; font-size: 0.625rem; color: #4a5364; margin-top: 2px; line-height: 1.3; min-height: 2.6em; }
+.pc-cert-meta { text-align: center; font-size: 0.5625rem; color: #8b93a2; line-height: 1.6; }
 .pc-cert-meta strong { color: #4a5364; font-weight: 700; }
 
 /* Print: the certificate only, full landscape page. */
@@ -277,10 +277,10 @@ body {
   .pc-cert-inner { padding: 3% 3%; }
   .pc-cert-sealwrap { width: 50px; height: 50px; }
   .pc-cert-sealimg { width: 34px; height: 34px; }
-  .pc-cert-meta { font-size: 7px; }
-  .pc-cert-sig-script { font-size: 13px; min-height: 1.2em; }
-  .pc-cert-sig-name { font-size: 8.5px; }
-  .pc-cert-sig-title { font-size: 7.5px; }
+  .pc-cert-meta { font-size: 0.4375rem; }
+  .pc-cert-sig-script { font-size: 0.8125rem; min-height: 1.2em; }
+  .pc-cert-sig-name { font-size: 0.5313rem; }
+  .pc-cert-sig-title { font-size: 0.4688rem; }
   /* Four signatures are too tight for one phone row, so wrap to 2 x 2. */
   .pc-cert-signrow { flex-wrap: wrap; gap: 14px 4%; }
   .pc-cert-sig { max-width: 46%; flex: 1 1 42%; }

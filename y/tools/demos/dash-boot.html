@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dashboard boot harness</title>
+</head>
+<body>
+<div id="out" style="font:12px monospace;padding:8px;color:#ccc">booting...</div>
+<script>
+/* Boots student-dashboard.html's REAL scripts against a stubbed Firebase, so
+   screens, maps and modals can be opened and measured without a login. Only the
+   Firebase SDK and student/js/auth.js are withheld (the guard redirects).
+   Read-only diagnostics harness - not shipped UI. */
+window.__errors = [];
+window.addEventListener('error', e => window.__errors.push('ERROR ' + e.message + ' @ ' + (e.filename || '').split('/').pop() + ':' + e.lineno));
+window.addEventListener('unhandledrejection', e => window.__errors.push('REJECT ' + e.reason));
+(function () {
+  const warn = console.warn, err = console.error;
+  window.__warns = [];
+  console.warn = function () { window.__warns.push('warn: ' + Array.from(arguments).join(' ')); warn.apply(console, arguments); };
+  console.error = function () { window.__warns.push('error: ' + Array.from(arguments).join(' ')); err.apply(console, arguments); };
+})();
+
+function stubDoc() {
+  return {
+    get: () => Promise.resolve({ exists: false, data: () => ({}) }),
+    set: () => Promise.resolve(), update: () => Promise.resolve(),
+    collection: stubCol, onSnapshot: () => () => {}
+  };
+}
+function stubCol() {
+  const q = {
+    doc: stubDoc, where: () => q, orderBy: () => q, limit: () => q,
+    get: () => Promise.resolve({ empty: true, docs: [], forEach: () => {}, size: 0 }),
+    onSnapshot: () => () => {}, add: () => Promise.resolve({ id: 'x' })
+  };
+  return q;
+}
+window.firebase = {
+  apps: [], initializeApp() { this.apps.push(1); return {}; },
+  auth: () => ({ currentUser: { uid: 'diag', email: 'diag@fsm.edu.tr' }, onAuthStateChanged() {}, signOut: () => Promise.resolve() }),
+  firestore: Object.assign(() => ({ collection: stubCol, doc: stubDoc }), {
+    FieldValue: { serverTimestamp: () => null, increment: n => n, arrayUnion: v => v }
+  })
+};
+
+(async function () {
+  const bust = location.search.slice(1) || '0';
+  const res = await fetch('../../student-dashboard.html?bust=' + bust, { cache: 'reload' });
+  let html = await res.text();
+  const scripts = [];
+  html = html.replace(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi, (m, attrs, body) => {
+    const src = (attrs.match(/src=["']([^"']+)["']/) || [])[1];
+    scripts.push(src ? { src } : { code: body });
+    return '';
+  });
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const fix = h => (h && !/^(https?:|\/\/|data:)/.test(h)) ? '../../' + h : h;
+  doc.querySelectorAll('link[href]').forEach(l =>
+    l.setAttribute('href', fix(l.getAttribute('href')) + (l.getAttribute('href').indexOf('?') > -1 ? '&' : '?') + 'bust=' + bust));
+  document.head.innerHTML += doc.head.innerHTML;
+  document.body.innerHTML = doc.body.innerHTML;
+  document.body.className = doc.body.className;
+
+  const SKIP = /firebasejs|student\/js\/auth\.js|service-worker/;
+  window.__loaded = [];
+  for (const s of scripts) {
+    if (s.code) { try { (0, eval)(s.code); } catch (e) { window.__errors.push('INLINE ' + e.message); } continue; }
+    if (!s.src || SKIP.test(s.src)) continue;
+    await new Promise(r => {
+      const el = document.createElement('script');
+      el.src = fix(s.src) + (s.src.indexOf('?') > -1 ? '&' : '?') + 'bust=' + bust;
+      el.onload = () => { window.__loaded.push(s.src); r(); };
+      el.onerror = () => { window.__errors.push('LOAD FAILED ' + s.src); r(); };
+      document.head.appendChild(el);
+    });
+  }
+  document.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true }));
+  window.__diagReady = true;
+  const out = document.getElementById('out');
+  if (out) out.remove();
+})();
+</script>
+</body>
+</html>

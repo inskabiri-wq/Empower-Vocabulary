@@ -45,6 +45,22 @@ const activityNames = {
 // a second time. Reset on each loadJourneyStats run (per page-view).
 let _sessionsCache = null;
 
+// Which hub skill a session belongs to. Grammar stamps `skill` on its docs;
+// the exams are identified by their activity name; everything else is a
+// vocabulary game (match / choice / spelling / order / unscramble / ...).
+// Keep this in step with the six writers of the `sessions` collection:
+// auth.js (vocab), skills/grammar.js, reading-exam.js, listening-exam.js,
+// writing-exam.js.
+function sessionSkill(s) {
+  if (s && s.skill) return String(s.skill);
+  const a = String((s && s.activity) || '');
+  if (a === 'reading-exam') return 'reading';
+  if (a === 'listening-exam') return 'listening';
+  if (a === 'writing-exam') return 'writing';
+  if (a.indexOf('grammar-') === 0) return 'grammar';
+  return 'vocabulary';
+}
+
 async function loadJourneyStats() {
   const user = auth.currentUser;
   if (!user) return;
@@ -69,14 +85,25 @@ async function loadJourneyStats() {
     let uniqueWords = new Set();
     let recentSession = null;
     let recentTime = 0;
-    
+    const bySkill = {};
+
     sessionsSnapshot.forEach(doc => {
       const session = doc.data();
       if (_sessionsCache) _sessionsCache.push(session);
       // Handle both old and new field names
-      totalCorrect += session.correctAnswers || session.score || 0;
-      totalQuestions += session.totalQuestions || session.total || 0;
-      
+      const sCorrect = session.correctAnswers || session.score || 0;
+      const sQuestions = session.totalQuestions || session.total || 0;
+      totalCorrect += sCorrect;
+      totalQuestions += sQuestions;
+
+      // Same numbers, split per skill, so each hub card gets its own ring
+      // instead of every non-vocabulary skill being hardcoded to 0%.
+      const sk = sessionSkill(session);
+      const b = bySkill[sk] || (bySkill[sk] = { sessions: 0, correct: 0, questions: 0, pct: 0 });
+      b.sessions++;
+      b.correct += sCorrect;
+      b.questions += sQuestions;
+
       // Track activities
       const activity = session.activity || 'unknown';
       activitiesMap[activity] = (activitiesMap[activity] || 0) + 1;
@@ -94,6 +121,11 @@ async function loadJourneyStats() {
       }
     });
     
+    Object.keys(bySkill).forEach(k => {
+      const b = bySkill[k];
+      b.pct = b.questions > 0 ? Math.round((b.correct / b.questions) * 100) : 0;
+    });
+
     journeyStats = {
       totalSessions: sessionsSnapshot.size,
       totalWordsLearned: uniqueWords.size,
@@ -101,6 +133,7 @@ async function loadJourneyStats() {
       totalQuestions: totalQuestions,
       averageScore: totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0,
       activitiesCompleted: activitiesMap,
+      bySkill: bySkill,
       recentActivity: recentSession
     };
     

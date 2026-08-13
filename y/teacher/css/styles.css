@@ -1,6 +1,6 @@
 /* Teacher Dashboard Styles - Extracted from teacher-dashboard.html
    ============================================================
-   PALETTE RULE — read this before adding new colors anywhere.
+   PALETTE RULE - read this before adding new colors anywhere.
 
    The app uses TWO accent families on purpose:
 
@@ -14,7 +14,7 @@
        reading exam, listening exam UI.
 
    Inside a screen, pick the family that matches the screen's
-   PURPOSE — chrome → blue, learning → teal. Do NOT mix them
+   PURPOSE - chrome → blue, learning → teal. Do NOT mix them
    inside a single component. For dashboard variants (cyan,
    purple, etc.) extend --t2-* in dashboard-v2.css; do not
    inline new hex literals.
@@ -50,7 +50,7 @@ body {
   background: 
     radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.08), transparent 50%),
     radial-gradient(ellipse at bottom right, rgba(14, 165, 233, 0.06), transparent 50%),
-    linear-gradient(135deg, #0a0f17 0%, #0c1425 50%, #0f1729 100%);
+    linear-gradient(135deg, #0a0f17 0%, #0c1425 50%, var(--bg-secondary, #0f1729) 100%);
 }
 
 .container {
@@ -247,7 +247,7 @@ body {
   border-radius: 8px;
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 0.9em;
+  font-size: 0.875rem;
   cursor: pointer;
 }
 
@@ -288,7 +288,7 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* First column holds the student name + email stack — let those
+/* First column holds the student name + email stack - let those
    wrap to multiple lines so full names and full emails are readable.
    The rest of the columns keep the nowrap+ellipsis behaviour. */
 .students-table td:first-child,

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>FSMVÜ Seal — Loader Animations</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="stylesheet" href="css/fsmvu-loader.css">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
 <style>
   html,body{margin:0;min-height:100%;}
   body{
@@ -36,6 +36,10 @@
   .foot{max-width:1040px;margin:38px auto 0;color:rgba(40,30,28,.5);font-size:13px;line-height:1.6;font-style:italic;}
   .foot code{font-family:ui-monospace,Menlo,Consolas,monospace;font-style:normal;background:rgba(0,0,0,.05);padding:1px 6px;border-radius:5px;}
 </style>
+  <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=38">
+  <script src="js/app-settings.js?v=22"></script>
 </head>
 <body>
   <div class="head">

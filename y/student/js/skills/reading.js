@@ -73,7 +73,7 @@
     if (!idx.length) {
       list.innerHTML = `
         <div class="rd-exam-empty">
-          No exams yet for ${escHtml(activeLevel)} — coming soon.
+          No exams yet for ${escHtml(activeLevel)} - coming soon.
         </div>`;
       return;
     }

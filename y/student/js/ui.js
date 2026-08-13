@@ -1,33 +1,29 @@
 /* Student Dashboard - UI Controls, Settings, Screens */
 
-// SETTINGS MODAL
+// SETTINGS PANEL
+// The dashboard no longer owns a settings modal. Every gear on the page carries
+// data-app-settings-open and drives the shared panel in js/app-settings.js - the
+// same one classroom, placement and courses open. These two remain as the named
+// entry points any other code may still call.
 function openSettingsModal() {
-  document.getElementById('settingsModal').classList.add('active');
-  document.body.style.overflow = 'hidden';
+  if (window.AppSettings) window.AppSettings.open();
 }
 
 function closeSettingsModal() {
-  document.getElementById('settingsModal').classList.remove('active');
-  document.body.style.overflow = '';
+  if (window.AppSettings) window.AppSettings.close();
 }
 
-// Close settings modal on background click
-document.addEventListener('DOMContentLoaded', () => {
-  const settingsModal = document.getElementById('settingsModal');
-  if (settingsModal) {
-    settingsModal.addEventListener('click', (e) => {
-      if (e.target === settingsModal) closeSettingsModal();
-    });
-  }
-});
-
 // SETTINGS TOGGLES
+// The shared panel calls these and then re-reads the localStorage key each one
+// writes, so the panel can never disagree with the page. The element lookups
+// are optional: the old modal rows they used to update are gone, and the game
+// screens' own indicators may or may not be on screen.
 function toggleSound() {
   soundEnabled = !soundEnabled;
   const btn = document.getElementById('soundToggle');
   const icon = document.getElementById('soundIcon');
-  btn.classList.toggle('active', soundEnabled);
-  icon.textContent = soundEnabled ? '🔊' : '🔇';
+  if (btn) btn.classList.toggle('active', soundEnabled);
+  if (icon) icon.textContent = soundEnabled ? '🔊' : '🔇';
   localStorage.setItem('soundEnabled', soundEnabled);
 }
 
@@ -35,21 +31,9 @@ function toggleTurkish() {
   turkishEnabled = !turkishEnabled;
   const btn = document.getElementById('trToggle');
   const info = document.getElementById('turkishInfo');
-  btn.classList.toggle('active', turkishEnabled);
+  if (btn) btn.classList.toggle('active', turkishEnabled);
   if (info) info.classList.toggle('visible', turkishEnabled);
   localStorage.setItem('turkishEnabled', turkishEnabled);
-}
-
-function toggleTheme() {
-  document.body.classList.toggle('light-mode');
-  const btn = document.getElementById('themeToggle');
-  const icon = document.getElementById('themeIcon');
-  const label = document.getElementById('themeLabel');
-  const isLight = document.body.classList.contains('light-mode');
-  btn.classList.toggle('active', isLight);
-  icon.textContent = isLight ? '☀️' : '🌙';
-  label.textContent = isLight ? 'Light Mode' : 'Dark Mode';
-  localStorage.setItem('theme', isLight ? 'light' : 'dark');
 }
 
 function loadSettings() {
@@ -58,18 +42,17 @@ function loadSettings() {
     soundEnabled = true; // Reset to true first
     toggleSound(); // Then toggle to false
   }
-  
+
   // Turkish toggle - default is OFF
   if (localStorage.getItem('turkishEnabled') === 'true') {
     turkishEnabled = false; // Reset to false first
     toggleTurkish(); // Then toggle to true
   }
-  
-  // Theme toggle - default is dark
-  if (localStorage.getItem('theme') === 'light') {
-    toggleTheme();
-  }
-  
+
+  // Theme is NOT applied here. app-settings.js reads the same 'theme' key in
+  // <head>, before first paint, and owns all four palettes (dark / light /
+  // sepia / contrast). Re-applying it here toggled the class back off.
+
   // Load best streak
   const savedStreak = localStorage.getItem('bestStreak');
   if (savedStreak) document.getElementById('bestStreak').textContent = savedStreak;
@@ -289,7 +272,7 @@ function updateStreakDisplays() {
 // BOOK, LEVEL & UNIT
 //
 // Each of these mutates global state (selectedBook/Level/Unit) AND must
-// keep the visible pill UI in sync. The pills mirror hidden <select>
+// keep the visible pill UI in sync. The pills mirror hidden <select class="ll-select">
 // elements via syncPillsToSelect(); programmatic callers like
 // startAssignment() (from the assignments box) used to bypass that
 // sync entirely, so the pills stayed on the previous value and the UI

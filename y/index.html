@@ -15,12 +15,11 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css">
+<link rel="stylesheet" href="css/brand.css?v=17">
 <!-- Shared themed dialog (alert/confirm/prompt) — replaces native browser popups app-wide. -->
 <script src="js/app-dialog.js"></script>
-<link rel="stylesheet" href="index/css/styles.css">
-<link rel="stylesheet" href="css/fsmvu-loader.css">
-</head>
+<link rel="stylesheet" href="index/css/styles.css?v=7">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=3"></head>
 <body>
 
 <!-- Launch splash — animated FSMVÜ seal that continues the PWA OS-splash
@@ -137,7 +136,7 @@
       
       <div class="form-group">
         <label class="form-label">Level</label>
-        <select id="regLevel" class="form-select" required>
+        <select id="regLevel" class="form-select ll-select" required>
           <option value="">Select your level</option>
           <option value="A2">A2 - Elementary</option>
           <option value="B1">B1 - Intermediate</option>
@@ -150,7 +149,7 @@
       <div class="form-group">
         <label class="form-label">Class</label>
         <div class="form-row">
-          <select id="regClassLetter" class="form-select form-select-small" required>
+          <select id="regClassLetter" class="form-select form-select-small ll-select" required>
             <option value="">--</option>
             <option value="B">B</option>
             <option value="C">C</option>
@@ -162,7 +161,7 @@
       
       <div class="form-group">
         <label class="form-label">Module</label>
-        <select id="regModule" class="form-select" required>
+        <select id="regModule" class="form-select ll-select" required>
           <option value="">Select current module</option>
           <option value="Module 1">Module 1</option>
           <option value="Module 2">Module 2</option>
@@ -173,7 +172,7 @@
       
       <div class="form-group">
         <label class="form-label">Academic Year</label>
-        <select id="regYear" class="form-select" required>
+        <select id="regYear" class="form-select ll-select" required>
           <option value="">Select academic year</option>
           <option value="2025-2026">2025-2026</option>
           <option value="2026-2027">2026-2027</option>

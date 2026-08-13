@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════
-   BRAND RESET — loaded on every page of the app.
+   BRAND RESET - loaded on every page of the app.
    ----------------------------------------------------------------
    Single source of truth for the small, brand-wide visual rules
    that keep the app feeling like one product across login,
@@ -13,7 +13,7 @@
 /* ── Number inputs ──────────────────────────────────────────────
    The default browser number-spinner buttons look like Windows 98
    next to the rest of our dark-glass UI. Hide them everywhere.
-   The input is still numeric — only the visual chrome is gone.
+   The input is still numeric - only the visual chrome is gone.
    • Webkit (Chrome / Edge / Safari) needs ::-webkit-*-spin-button
      plus appearance:none on the input itself.
    • Firefox needs -moz-appearance:textfield on the input.            */
@@ -31,7 +31,7 @@ input[type="number"] {
 /* ── Search inputs ─────────────────────────────────────────────
    Hide Webkit's native clear-X (looks bolted on, not branded).
    Most pages style the surrounding wrapper; the X is the only
-   uncontrolled bit. Safe everywhere — no current search input
+   uncontrolled bit. Safe everywhere - no current search input
    needs the native clear button. */
 input[type="search"]::-webkit-search-cancel-button,
 input[type="search"]::-webkit-search-decoration {
@@ -62,8 +62,8 @@ input[type="search"]::-webkit-search-decoration {
 /* ── Checkboxes & radios ───────────────────────────────────────
    Recolor every native checkbox/radio to the brand indigo so they
    match across the whole app (login, dashboards, forms, admin).
-   `accent-color` keeps the native control's behaviour + sizing —
-   it only changes the tick/fill colour — so it CANNOT break the
+   `accent-color` keeps the native control's behaviour + sizing -
+   it only changes the tick/fill colour - so it CANNOT break the
    layout of any existing checkbox, and it correctly does nothing
    to the assignment student-picker (which hides its native input
    and draws its own custom box). Pointer cursor + a soft indigo
@@ -118,4 +118,38 @@ label:has(> input[type="radio"]) {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
+}
+
+/* ============================================================
+   ONE DROPDOWN, EVERYWHERE  (.ll-select)
+   ------------------------------------------------------------
+   The app has a single dropdown look, modelled on the Students
+   filter bar. Any <select> that carries `ll-select` gets it, on
+   every page - login, student hub, teacher dashboard, placement.
+   Enforced by y/tools/ui-sanity.js, which FAILS the build when a
+   <select> ships without this class (allowlist for game themes).
+
+   Kept last in this file and scoped to the class only, so a page
+   can still override a single property (e.g. a narrow width) by
+   adding its own class after this one.
+   ============================================================ */
+select.ll-select {
+  padding: 10px 16px;
+  background: var(--bg-item, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border-color, rgba(59, 130, 246, 0.2));
+  border-radius: 8px;
+  color: var(--text-primary, #f8fafc);
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  outline: none;
+}
+
+select.ll-select:focus {
+  border-color: var(--accent-primary, #3b82f6);
+}
+
+select.ll-select:disabled {
+  opacity: 0.55;
+  cursor: default;
 }

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Screen diagnostics harness</title>
+</head>
+<body>
+<div id="out" style="font:12px monospace;padding:8px">loading...</div>
+<script>
+/* Loads student-dashboard.html WITHOUT its Firebase/auth scripts so the auth
+   guard cannot redirect, then re-adds only the presentation modules we want to
+   measure. Read-only diagnostics harness - not shipped UI. */
+(async function () {
+  const bust = location.search.slice(1) || '0';
+  const res = await fetch('../../student-dashboard.html?bust=' + bust, { cache: 'reload' });
+  let html = await res.text();
+  // Keep the page's inline subtitle-cycle script so it can be exercised here.
+  // Its setInterval is captured rather than run: a hidden tab throttles timers
+  // to about once a minute, so ticks are driven manually via __cycleTick().
+  const inlineCycle = (html.match(/<script>\s*\/\/ [^\n]*subtitle text cycle[\s\S]*?<\/script>/i) || [])[0] || '';
+  html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const fix = h => (h && !/^(https?:|\/\/|data:)/.test(h)) ? '../../' + h : h;
+  doc.querySelectorAll('link[href]').forEach(l =>
+    l.setAttribute('href', fix(l.getAttribute('href')) + (l.getAttribute('href').indexOf('?') > -1 ? '&' : '?') + 'bust=' + bust));
+  document.head.innerHTML += doc.head.innerHTML;
+  document.body.innerHTML = doc.body.innerHTML;
+  document.body.className = doc.body.className;
+
+  // Stand-ins for the page globals the shared panel reads. Same names, same
+  // localStorage keys as student/js/ui.js, so the Sound / Turkish sections
+  // render and behave exactly as they do on the real dashboard.
+  let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+  let turkishEnabled = localStorage.getItem('turkishEnabled') === 'true';
+  window.toggleSound = function () {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem('soundEnabled', soundEnabled);
+  };
+  window.toggleTurkish = function () {
+    turkishEnabled = !turkishEnabled;
+    localStorage.setItem('turkishEnabled', turkishEnabled);
+  };
+
+  await new Promise(r => {
+    const s = document.createElement('script');
+    // Cache-bust: this harness is re-loaded constantly while iterating on the
+    // panel, and a cached copy silently measures the previous build.
+    s.src = '../../js/app-settings.js?diag=' + (location.search.slice(1) || '0');
+    s.onload = r; s.onerror = r;
+    document.head.appendChild(s);
+  });
+
+  if (inlineCycle) {
+    const realSetInterval = window.setInterval;
+    window.setInterval = fn => { window.__cycleTick = fn; return 0; };
+    (0, eval)(inlineCycle.replace(/^<script>|<\/script>$/gi, ''));
+    document.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true }));
+    window.setInterval = realSetInterval;
+  }
+  window.__diagReady = true;
+})();
+</script>
+</body>
+</html>

@@ -592,7 +592,7 @@
       <label for="wsGradeStatus" style="display:block; font-weight: 600;
                                          color: var(--text-primary); margin-bottom: 4px;
                                          font-size: 0.92em;">Status</label>
-      <select id="wsGradeStatus"
+      <select class="ll-select" id="wsGradeStatus"
               style="padding: 8px 10px; border-radius: 8px; width: 100%; box-sizing: border-box;
                      background: var(--bg-item, rgba(255,255,255,0.04));
                      color: var(--text-primary); border: 1px solid var(--border-color);

@@ -975,7 +975,15 @@
       return byCrit[score] || [];
     },
     // Helper: display label for a criterion under a rubric.
+    // Exam rubrics (IELTS / GRE / TOEFL / CELPIP / PTE) declare their own
+    // criteria in the shared registry, so ask that first when it is loaded;
+    // the three classroom rubrics keep the fixed CC/TA/GR/VO labels here.
     label: function (rubric, criterion) {
+      const R = window.WRITING_RUBRICS;
+      if (R && R.isExam(rubric)) {
+        const l = R.label(rubric, criterion);
+        if (l) return l;
+      }
       const m = RUBRIC_META[rubric] || RUBRIC_META.essay;
       return (m.criteria && m.criteria[criterion]) || criterion;
     }

@@ -245,23 +245,13 @@ const ActivityAdmin = {
           ${labelInfo.icon}
         </div>
         <div class="activity-log-content">
-          <div class="activity-log-header">
+          <div class="activity-log-line">
             <span class="activity-log-action">${labelInfo.text}</span>
-            <span class="activity-log-category" style="background: ${categoryInfo.color}20; color: ${categoryInfo.color};">
-              ${categoryInfo.text}
-            </span>
-          </div>
-          <div class="activity-log-user">
-            <span class="user-role-icon">${roleIcon}</span>
-            <span class="user-name">${escapeHtml(log.userName) || escapeHtml(log.userEmail)}</span>
-            ${log.userClass ? `<span class="user-class">(${escapeHtml(log.userClass)})</span>` : ''}
+            <span class="activity-log-category" style="background: ${categoryInfo.color}20; color: ${categoryInfo.color};">${categoryInfo.text}</span>
+            <span class="activity-log-who">${roleIcon} ${escapeHtml(log.userName) || escapeHtml(log.userEmail)}${log.userClass ? ` <span class="user-class">(${escapeHtml(log.userClass)})</span>` : ''}</span>
+            <span class="activity-log-when" title="${timestamp.toLocaleString('en-GB')} &middot; ${escapeHtml(log.device || 'Unknown')} / ${escapeHtml(log.browser || 'Unknown')}">${timeAgo} &middot; ${timestamp.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} ${timestamp.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
           </div>
           ${detailsHtml}
-          <div class="activity-log-meta">
-            <span class="meta-item">🕐 ${timeAgo}</span>
-            <span class="meta-item">📅 ${timestamp.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })} ${timestamp.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
-            <span class="meta-item">💻 ${log.device || 'Unknown'} • ${log.browser || 'Unknown'}</span>
-          </div>
         </div>
       </div>
     `;

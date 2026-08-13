@@ -11,7 +11,7 @@
 
   const LEVELS = window.CORRECTOR_LEVELS;
   const SEV = window.CORRECTOR_SEVERITY;
-  const CRIT_ORDER = ['CC', 'TA', 'GR', 'VO'];
+  const CLASSIC_CRIT = ['CC', 'TA', 'GR', 'VO'];
   const FALLBACK_CRIT = { CC: 'Organization', TA: 'Content', GR: 'Language Accuracy', VO: 'Word Choice' };
   const FALLBACK_RUBRICS = { essay: 'Essay (Int / Upper-Int)', academic: 'Academic paragraph', short: 'Short paragraph' };
   const BAND_COLORS = { A1: '#34d399', A2: '#38bdf8', B1: '#a78bfa', B2: '#fbbf24', C1: '#f472b6', C2: '#fb7185', 'Off-list': '#ef4444' };
@@ -27,20 +27,68 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
+  // ── Rubric resolution ───────────────────────────────────
+  // The engine is CRITERIA-COUNT AGNOSTIC. Every "by criterion" loop below
+  // walks critKeys() instead of a fixed four, so a holistic exam (GRE /
+  // TOEFL) renders ONE card and the PTE essay renders seven, with no
+  // special-casing. Exam rubrics come from the shared registry; the three
+  // classroom rubrics keep CC/TA/GR/VO from the comment bank.
+  function reg() { return window.WRITING_RUBRICS || null; }
+  function critKeys(rubric) {
+    const R = reg();
+    if (R && R.isExam(rubric)) return R.keys(rubric);
+    return CLASSIC_CRIT.slice();
+  }
+  // Criteria actually present in a correction, in rubric order, with any
+  // extra keys the AI returned appended so nothing is silently dropped.
+  function critKeysOf(c, rubric) {
+    const order = critKeys(rubric);
+    if (!c || !c.criteria) return order;
+    const extra = Object.keys(c.criteria).filter(k => order.indexOf(k) === -1);
+    return order.concat(extra);
+  }
   function critColor(c) {
+    const R = reg();
+    if (R && R.COLORS && R.COLORS[c]) return R.COLORS[c];
     const wa = window.WritingAnnotations;
     if (wa && wa.CRIT_COLORS && wa.CRIT_COLORS[c]) return wa.CRIT_COLORS[c];
     return (window.CORRECTOR_CRIT_COLORS || {})[c] || '#a78bfa';
   }
   function critLabel(rubric, c) {
+    const R = reg();
+    if (R) { const l = R.label(rubric, c); if (l) return l; }
     const b = window.WRITING_COMMENT_BANK;
     if (b && b.label) { try { return b.label(rubric, c); } catch (_) {} }
     return FALLBACK_CRIT[c] || c;
   }
   function rubricLabel(r) {
+    const R = reg();
+    if (R && R.isExam(r)) return R.get(r).label;
     const b = window.WRITING_COMMENT_BANK;
     if (b && b.rubricMeta && b.rubricMeta[r]) return b.rubricMeta[r].label;
     return FALLBACK_RUBRICS[r] || r;
+  }
+  // "IELTS band (predictive)" instead of a generic "Rubric" row, so the
+  // estimate is labelled with the scale the teacher actually chose.
+  function scaleLabel(r) {
+    const R = reg();
+    if (R && R.isExam(r)) return R.get(r).scale.name;
+    return 'Rubric';
+  }
+  // One line under the picker: what the chosen exam task expects (scale,
+  // length, time, how many criteria), so the teacher can see exactly what
+  // the AI is marking against before spending a call.
+  function syncRubricHint() {
+    if (!el.rubricHint) return;
+    const id = (el.rubric && el.rubric.value) || 'essay';
+    const R = reg();
+    if (!R || !R.isExam(id)) { el.rubricHint.textContent = ''; el.rubricHint.hidden = true; return; }
+    const r = R.get(id), n = r.criteria.length;
+    el.rubricHint.hidden = false;
+    // Criterion labels are joined with " / " because several contain commas
+    // ("Development, Structure and Coherence") and would read as extra items.
+    el.rubricHint.textContent = r.task + ' · ' + R.summary(id) + ' · '
+      + (n === 1 ? 'one holistic judgement' : n + ' criteria: ' + r.criteria.map(c => c.label).join(' / '));
   }
   function sevColor(sev, crit) { const m = SEV[sev] || SEV.fix; return m.color || critColor(crit); }
   // simplify(): turn any feedback sentence into plain A2 English. Uses a
@@ -192,6 +240,22 @@
     const c = {}; (resolved || []).forEach(r => { if (r.text) c[r.criterion] = (c[r.criterion] || 0) + 1; }); return c;
   }
 
+  // ── Card heading icons ──────────────────────────────────
+  // Inline SVG, not emoji. Colour emoji render differently on every OS (on
+  // Windows several of these came out as flat coloured blocks), they cannot
+  // inherit the heading colour, and they print badly. These use currentColor,
+  // so they follow the heading in both the dark UI and the print stylesheet.
+  const ICONS = {
+    level:   '<path d="M3 20h18"/><rect x="4" y="11" width="4" height="6" rx="1"/><rect x="10" y="7" width="4" height="10" rx="1"/><rect x="16" y="3" width="4" height="14" rx="1"/>',
+    vocab:   '<path d="M4 19.5V5.5A1.5 1.5 0 0 1 5.5 4H19v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M8 8h7"/><path d="M8 12h5"/>',
+    grammar: '<path d="M4 7h16"/><path d="M4 12h10"/><path d="M4 17h13"/><circle cx="18.5" cy="12" r="1.6"/>',
+    clause:  '<path d="M12 4v6"/><path d="M6 20v-4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4"/><rect x="9" y="2" width="6" height="4" rx="1"/>'
+  };
+  function icon(name) {
+    return '<svg class="cor-hicon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" '
+      + 'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || '') + '</svg>';
+  }
+
   // ── Profile cards: CEFR + suggestions + distributions ───
   function est(label, val) { return '<div class="cor-estimate"><span>' + esc(label) + '</span><b>' + esc(val) + '</b></div>'; }
   const CEFR_ORDER = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5, C2: 6 };
@@ -199,13 +263,13 @@
   let profTables = {}, profSeq = 0;
 
   function estimateCardHtml(c) {
-    let h = '<div class="cor-pcard"><h4>📊 Level estimate</h4>';
+    let h = '<div class="cor-pcard"><h4>' + icon('level') + 'Level estimate</h4>';
     if (c.cefr) h += '<div class="cor-cefr-big">' + esc(c.cefr) + '</div><div class="cor-cefr-sub">Estimated CEFR level</div>';
     if (c.estimates) {
       h += '<div style="margin-top:10px">';
       if (c.estimates.ielts) h += est('IELTS (suggested)', c.estimates.ielts);
       if (c.estimates.toefl) h += est('TOEFL iBT (suggested)', c.estimates.toefl);
-      if (c.estimates.rubric) h += est('Rubric (predictive)', c.estimates.rubric);
+      if (c.estimates.rubric) h += est(scaleLabel(currentRubric) + ' (predictive)', c.estimates.rubric);
       h += '</div>';
     }
     h += '<div class="cor-suggest-flag">Suggestions only, not an official score</div></div>';
@@ -219,7 +283,7 @@
         + '<div class="cor-vbar-track"><div class="cor-vbar-fill" style="height:' + hp + '%;background:' + col + '"></div></div>'
         + '<span class="cor-vbar-band" style="color:' + col + '">' + esc(d.band) + '</span></div>';
     }).join('');
-    return '<div class="cor-pcard"><h4>🔤 Vocabulary range' + (v.cefr ? ' · ~' + esc(v.cefr) : '') + '</h4><div class="cor-vbars">' + bars + '</div>'
+    return '<div class="cor-pcard"><h4>' + icon('vocab') + 'Vocabulary range' + (v.cefr ? ' · ~' + esc(v.cefr) : '') + '</h4><div class="cor-vbars">' + bars + '</div>'
       + (v.note ? '<div class="cor-pnote">' + esc(v.note) + '</div>' : '') + '</div>';
   }
   function grammarTabsCard(g) {
@@ -237,7 +301,7 @@
         + (f.cefr ? '<span class="cor-feat-cefr" style="background:' + col + '22;color:' + col + '">' + esc(f.cefr) + '</span>' : '')
         + '</div>' + ex + '</div>';
     }).join('');
-    return '<div class="cor-pcard"><h4>🔧 Grammar range' + (g.cefr ? ' · ~' + esc(g.cefr) : '') + '</h4>'
+    return '<div class="cor-pcard"><h4>' + icon('grammar') + 'Grammar range' + (g.cefr ? ' · ~' + esc(g.cefr) : '') + '</h4>'
       + '<div class="cor-tabs">' + tabHtml + '</div>' + featHtml
       + (g.note ? '<div class="cor-pnote">' + esc(g.note) + '</div>' : '') + '</div>';
   }
@@ -324,22 +388,24 @@
     const hasTables = (lemmas && lemmas.length) || (verbForms && verbForms.length) || (clauses && clauses.length);
 
     let html = '';
+    // The summary row (level estimate + vocabulary/grammar range) ALWAYS
+    // renders. The profiler tables are ADDITIONAL detail underneath it, not a
+    // replacement: deep analysis should never take a card away.
+    let top = '';
+    if (c.cefr || c.estimates) top += estimateCardHtml(c);
+    if (c.vocabProfile && Array.isArray(c.vocabProfile.distribution)) top += vocabBarsCard(c.vocabProfile);
+    if (c.grammarProfile && Array.isArray(c.grammarProfile.features)) top += grammarTabsCard(c.grammarProfile);
+    if (top) html += '<div class="cor-profile">' + top + '</div>';
+
     if (hasTables) {
-      if (c.cefr || c.estimates) html += '<div class="cor-estwrap">' + estimateCardHtml(c) + '</div>';
       const wcols = [{ key: 'lemma', label: 'Lemma', type: 'lemma' }, { key: 'pos', label: 'PoS', type: 'pos' }, { key: 'cefr', label: 'CEFR', type: 'cefr' }, { key: 'count', label: 'Count', type: 'num' }];
       const vcols = [{ key: 'form', label: 'Form', type: 'lemma' }, { key: 'with', label: 'With', type: 'pos' }, { key: 'cefr', label: 'CEFR', type: 'cefr' }, { key: 'count', label: 'Count', type: 'num' }];
       const ccols = [{ key: 'clause', label: 'Clause', type: 'lemma' }, { key: 'with', label: 'With', type: 'pos' }, { key: 'cefr', label: 'CEFR', type: 'cefr' }, { key: 'count', label: 'Count', type: 'num' }];
-      if (lemmas && lemmas.length) html += buildTableCard('🔤 Words', lemmas, wcols);
+      if (lemmas && lemmas.length) html += buildTableCard(icon('vocab') + 'Words', lemmas, wcols);
       let pair = '';
-      if (verbForms && verbForms.length) pair += buildTableCard('🔧 Verb forms', verbForms, vcols);
-      if (clauses && clauses.length) pair += buildTableCard('🧩 Clauses', clauses, ccols);
+      if (verbForms && verbForms.length) pair += buildTableCard(icon('grammar') + 'Verb forms', verbForms, vcols);
+      if (clauses && clauses.length) pair += buildTableCard(icon('clause') + 'Clauses', clauses, ccols);
       if (pair) html += '<div class="cor-prof-pair">' + pair + '</div>';
-    } else {
-      let fb = '';
-      if (c.cefr || c.estimates) fb += estimateCardHtml(c);
-      if (c.vocabProfile && Array.isArray(c.vocabProfile.distribution)) fb += vocabBarsCard(c.vocabProfile);
-      if (c.grammarProfile && Array.isArray(c.grammarProfile.features)) fb += grammarTabsCard(c.grammarProfile);
-      if (fb) html += '<div class="cor-profile">' + fb + '</div>';
     }
 
     el.profile.innerHTML = html;
@@ -401,7 +467,7 @@
     if (c.criteria) {
       const Ec = isEd('criteria'), counts = countByCriterion(resolved);
       h += '<div class="cor-card"><h3>By criterion' + secBtn('criteria') + '</h3><div class="cor-crit-grid">';
-      CRIT_ORDER.forEach(cc => {
+      critKeysOf(c, rubric).forEach(cc => {
         const cr = c.criteria[cc]; if (!cr) return;
         const color = critColor(cc), n = counts[cc] || 0;
         h += '<div class="cor-crit" data-crit="' + cc + '"><span class="cor-crit-dot" style="background:' + color + '"></span><div class="cor-crit-main">'
@@ -423,7 +489,13 @@
       h += '<div class="cor-card"><h3>Comments (' + withMarks.length + ')'
         + (Em ? ' <button type="button" class="cor-add" data-add="ann">+ Add</button>' : ' · click to jump')
         + secBtn('comments') + '</h3><div class="cor-comments">';
-      CRIT_ORDER.forEach(cc => {
+      // Group by the rubric's criteria, then sweep up anything the AI tagged
+      // with a key this rubric does not declare, so no comment goes missing.
+      const groupKeys = critKeysOf(c, rubric);
+      const seenKeys = groupKeys.concat(
+        withMarks.map(r => r.criterion).filter(k => groupKeys.indexOf(k) === -1)
+      );
+      seenKeys.forEach(cc => {
         const items = withMarks.filter(r => r.criterion === cc); if (!items.length) return;
         const color = critColor(cc);
         h += '<div class="cor-grouphdr" data-crit="' + cc + '" style="color:' + color + '"><span class="cor-crit-dot" style="background:' + color + '"></span>' + esc(critLabel(rubric, cc)) + '</div>';
@@ -545,8 +617,10 @@
     const lvl = LEVELS[activeLevel] || LEVELS.medium;
     const t = { fix: 0, tip: 0, strength: 0 };
     (resolved || []).forEach(r => { if (r.text && t[r.severity] != null) t[r.severity]++; });
+    // Holistic rubrics often yield a single mark, so pluralise properly.
+    const nOf = (n, one, many) => n + ' ' + (n === 1 ? one : many);
     el.resultMeta.innerHTML = lvl.icon + ' <b>' + esc(lvl.label) + '</b> · ' + esc(rubricLabel(currentRubric))
-      + ' · ' + t.fix + ' fixes · ' + t.tip + ' tips · ' + t.strength + ' strengths';
+      + ' · ' + nOf(t.fix, 'fix', 'fixes') + ' · ' + nOf(t.tip, 'tip', 'tips') + ' · ' + nOf(t.strength, 'strength', 'strengths');
     el.legend.innerHTML = '<span style="color:#38bdf8"><i></i> Fix</span>'
       + '<span style="color:#fbbf24"><i style="border-bottom-style:dashed"></i> Tip</span>'
       + '<span style="color:#10b981"><i></i> Strength</span>';
@@ -569,10 +643,12 @@
   // ── Request the API would receive (Claude, in practice) ─
   function buildPrompt(level, rubric, task, essay) {
     const lvl = LEVELS[level] || LEVELS.medium;
-    const crits = CRIT_ORDER.map(c => c + '=' + critLabel(rubric, c)).join(', ');
+    const keys = critKeys(rubric);
+    const crits = keys.map(c => c + '=' + critLabel(rubric, c)).join(', ');
+    const critJson = keys.map((c, i) => '"' + c + '":' + (i === 0 ? '{"verdict":"...","note":"name the grammar point"}' : '{}')).join(',');
     const depth = {
       light: 'LIGHT: surface ONLY the few issues that hurt communication most or a reader notices first. 3 to 6 marks. Be brief and encouraging. No plan.',
-      medium: 'MEDIUM: a full pass across all four criteria. Mark every notable issue (name the grammar point) with a corrected example in "suggestion", a short per-criterion note, and a 4 step plan.',
+      medium: 'MEDIUM: a full pass across every criterion. Mark every notable issue (name the grammar point) with a corrected example in "suggestion", a short per-criterion note, and a 4 step plan.',
       deep: 'DEEP: minute, top to bottom. Mark every issue (name the grammar point) with a corrected "suggestion", a detailed note per criterion, 2 to 4 model rewrites of the weakest sentences, and a focused 5 step plan.'
     }[level];
     const lines = [
@@ -582,7 +658,12 @@
       'In every comment NAME the grammar point AND model it: put a corrected example in "suggestion"; in DEEP also add model rewrites of weak sentences. Then guide with the plan.',
       'Be encouraging and specific. Quote the exact text you comment on.',
       simpleLang ? 'LANGUAGE: write ALL explanations AND suggestions in simple A2-level English; also fill "simple" and "simpleSuggestion".' : '',
-      'RUBRIC: ' + rubricLabel(rubric) + '. Criteria: ' + crits + '.',
+      'RUBRIC: ' + rubricLabel(rubric) + '. Criteria: ' + crits + '.'
+        + (reg() && reg().isExam(rubric)
+            ? ' EXAM TASK: ' + reg().get(rubric).guidance
+              + ' Expected length ' + reg().get(rubric).wordTarget + '.'
+              + ' Give each criterion verdict as an estimated ' + reg().get(rubric).scale.name + '.'
+            : ''),
       'DEPTH ' + depth,
       'Put guidance in "plan": a 4 to 5 step list of ideas (what to do next) that refer to the grammar points.',
       'Return ONLY valid JSON (see SCHEMA.md):',
@@ -591,8 +672,8 @@
       '  "lemmas":[{"lemma":"...","pos":"noun","cefr":"A2","count":1}],',
       '  "verbForms":[{"form":"present simple","with":"is","cefr":"A1.0","count":2}],',
       '  "clauses":[{"clause":"noun clause","with":"that","cefr":"B1","count":1}],',
-      '  "criteria":{"CC":{"verdict":"...","note":"name the grammar point"},"TA":{},"GR":{},"VO":{}},',
-      '  "annotations":[{"criterion":"GR","severity":"fix|tip|strength","quote":"exact text","text":"name the grammar point + why","suggestion":"a corrected example"' + (simpleLang ? ',"simple":"...","simpleSuggestion":"..."' : '') + '}]'
+      '  "criteria":{' + critJson + '},',
+      '  "annotations":[{"criterion":"' + keys[keys.length - 1] + '","severity":"fix|tip|strength","quote":"exact text","text":"name the grammar point + why","suggestion":"a corrected example"' + (simpleLang ? ',"simple":"...","simpleSuggestion":"..."' : '') + '}]'
         + (lvl.shows.rewrites ? ',\n  "rewrites":[{"before":"...","after":"...","why":"..."}]' : '')
         + (lvl.shows.plan ? ',\n  "plan":["idea 1","idea 2","idea 3","idea 4"]' : ''),
       '}',
@@ -715,7 +796,7 @@
     currentSampleIdx = Math.max(0, Math.min(idx, list.length - 1));
     const s = list[currentSampleIdx];
     el.essay.value = s.essay; el.task.value = s.task || '';
-    if (s.rubric) el.rubric.value = s.rubric;
+    if (s.rubric) { el.rubric.value = s.rubric; syncRubricHint(); }
     if (el.samplePick) el.samplePick.value = String(currentSampleIdx);
     note('');
     renderCorrection(s.corrections[activeLevel], s.essay);
@@ -735,7 +816,8 @@
 
   function init() {
     el = {
-      samplePick: $('corSamplePick'), rubric: $('corRubric'), levels: $('corLevels'), simple: $('corSimple'),
+      samplePick: $('corSamplePick'), rubric: $('corRubric'), rubricHint: $('corRubricHint'),
+      levels: $('corLevels'), simple: $('corSimple'),
       task: $('corTask'), essay: $('corEssay'), run: $('corRun'), reset: $('corReset'),
       edit: $('corEdit'), print: $('corPrint'), release: $('corRelease'),
       relModal: $('corReleaseModal'), relCancel: $('corRelCancel'), relConfirm: $('corRelConfirm'),
@@ -748,9 +830,22 @@
     // time the teacher clicks Analyze.
     initAuthWatch();
 
+    // Rubric picker: the classroom rubrics first, then every exam rubric
+    // grouped by exam family (IELTS / GRE / TOEFL / CELPIP / PTE).
     const meta = (window.WRITING_COMMENT_BANK && window.WRITING_COMMENT_BANK.rubricMeta) || null;
-    const rubrics = meta ? Object.keys(meta) : Object.keys(FALLBACK_RUBRICS);
-    el.rubric.innerHTML = rubrics.map(r => '<option value="' + r + '">' + esc(rubricLabel(r)) + '</option>').join('');
+    const classroom = meta ? Object.keys(meta) : Object.keys(FALLBACK_RUBRICS);
+    let opts = '<optgroup label="Classroom">'
+      + classroom.map(r => '<option value="' + r + '">' + esc(rubricLabel(r)) + '</option>').join('')
+      + '</optgroup>';
+    const R = reg();
+    if (R) {
+      opts += R.grouped().map(g => '<optgroup label="' + esc(g.exam) + '">'
+        + g.items.map(it => '<option value="' + esc(it.id) + '">' + esc(it.label) + '</option>').join('')
+        + '</optgroup>').join('');
+    }
+    el.rubric.innerHTML = opts;
+    el.rubric.addEventListener('change', syncRubricHint);
+    syncRubricHint();
 
     const list = samples();
     if (el.samplePick) {
@@ -808,6 +903,7 @@
     if (el.samplePick) el.samplePick.value = '';
     el.essay.value = String(pre.essay);
     if (el.task && pre.task) el.task.value = String(pre.task);
+    if (el.rubric && pre.rubric) { el.rubric.value = String(pre.rubric); syncRubricHint(); }
     note((pre.student ? pre.student + '’s' : 'The student’s') + ' placement essay is loaded - pick a depth and press Analyze.');
   }
 

@@ -298,7 +298,7 @@ body {
   max-width: 460px;
   width: 100%;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-  color: #f1f5f9;
+  color: var(--text-primary, #f1f5f9);
   font-family: 'Poppins', sans-serif;
   text-align: center;
   transform: scale(0.94);
@@ -327,7 +327,7 @@ body {
 }
 .modal-message {
   margin: 0 0 18px;
-  color: #94a3b8;
+  color: var(--text-secondary, #94a3b8);
   line-height: 1.55;
   font-size: 0.95em;
 }
@@ -342,7 +342,7 @@ body {
   border-radius: 10px;
   border: 1.5px solid rgba(148, 163, 184, 0.25);
   background: rgba(15, 23, 42, 0.55);
-  color: #f1f5f9;
+  color: var(--text-primary, #f1f5f9);
   font-family: inherit;
   font-weight: 600;
   font-size: 0.95em;
@@ -354,7 +354,7 @@ body {
 .modal-btn:active { transform: translateY(1px); }
 .modal-btn-cancel {
   background: transparent;
-  color: #cbd5e1;
+  color: var(--text-secondary, #cbd5e1);
 }
 .modal-btn-cancel:hover { border-color: rgba(148, 163, 184, 0.5); }
 .modal-btn-confirm {
@@ -927,7 +927,7 @@ body {
 
 .option-btn.selected {
   border-color: var(--accent-primary);
-  background: rgba(59, 130, 246, 0.2);
+  background: var(--border-color, rgba(59, 130, 246, 0.2));
 }
 
 .option-btn.correct {
@@ -1314,7 +1314,7 @@ body {
   top: 18px;
   right: 18px;
   background: rgba(15, 23, 42, 0.96);
-  color: #f1f5f9;
+  color: var(--text-primary, #f1f5f9);
   border: 1px solid rgba(148, 163, 184, 0.18);
   border-left: 4px solid #ef4444;
   padding: 12px 18px;

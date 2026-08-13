@@ -6,9 +6,9 @@
 <title>Courses | Lingualab</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/brand.css">
-<link rel="stylesheet" href="css/fsmvu-loader.css">
-<link rel="stylesheet" href="student/css/policy-course.css?v=7">
+<link rel="stylesheet" href="css/brand.css?v=17">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
+<link rel="stylesheet" href="student/css/policy-course.css?v=9">
 <script src="js/app-dialog.js"></script>
 <style>
   /* Catalog-only additions on top of policy-course.css */
@@ -26,6 +26,10 @@
     .crs-state { text-align: center; }
   }
 </style>
+  <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=38">
+  <script src="js/app-settings.js?v=22"></script>
 </head>
 <body>
 
@@ -37,7 +41,7 @@
 
 <div id="crsApp" style="display:none;">
   <header class="pc-header">
-    <a class="pc-back" href="student-dashboard.html">&#8592; Dashboard</a>
+    <button type="button" id="crsDashExit" class="pc-back ll-navbtn">&#8592; Dashboard</button>
     <div class="pc-header-title">
       <span class="pc-header-icon">🎓</span>
       <span>Courses</span>
@@ -122,7 +126,9 @@
         state = '🔒 Not activated yet'; stateCls = 'off';
       } else if (prog && prog.certificate && prog.certificate.certId) {
         state = '🎓 Certified'; stateCls = 'done';
-        action = `<a class="pc-btn pc-btn-gold" href="${c.href}">View certificate</a>`;
+        // Deep-link straight to the certificate. Without the hash this landed on
+        // the course overview and the student had to click "certificate" AGAIN.
+        action = `<a class="pc-btn pc-btn-gold" href="${c.href}#certificate">View certificate</a>`;
       } else if (prog) {
         const done = Object.keys(prog.modules || {}).filter(k => (prog.modules[k] || {}).passed).length;
         state = done + ' / ' + c.moduleCount + ' modules'; stateCls = 'on';
@@ -147,6 +153,26 @@
     document.getElementById('crsLoading').style.display = 'none';
     document.getElementById('crsApp').style.display = '';
   }
+
+  // Leaving the courses area. This was a plain <a href>, so it navigated out
+  // instantly and no handler could run - the same trap placement and the
+  // policy course had. Warns from the catalog too, before anything is opened,
+  // because a course in progress (or a released certificate) is reached from
+  // here and leaving is not obviously destructive from the button alone.
+  function wireCoursesExit() {
+    var b = document.getElementById('crsDashExit');
+    if (!b) return;
+    b.addEventListener('click', function () {
+      var go = function () { window.location.href = 'student-dashboard.html'; };
+      var msg = 'Leave courses and go back to the dashboard?';
+      if (window.AppDialog && AppDialog.confirm) {
+        AppDialog.confirm(msg, { title: 'Leave courses?', okLabel: 'Leave',
+                                 cancelLabel: 'Stay', danger: true })
+          .then(function (ok) { if (ok) go(); });
+      } else if (confirm(msg)) { go(); }
+    });
+  }
+  wireCoursesExit();
 
   document.addEventListener('DOMContentLoaded', () => {
     auth.onAuthStateChanged(u => {

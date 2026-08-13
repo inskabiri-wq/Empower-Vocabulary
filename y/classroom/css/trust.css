@@ -95,7 +95,7 @@ body.trust::before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 1.125rem;
   box-shadow: 0 6px 18px rgba(99, 102, 241, 0.35);
 }
 
@@ -368,7 +368,7 @@ body.trust::before {
   width: 28px; height: 28px; border-radius: 50%;
   background: linear-gradient(135deg, var(--t-cyan), var(--t-violet));
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .trust-roster-item .name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .trust-roster-item .meta { font-size: 0.78em; color: var(--t-text-mut); white-space: nowrap; }
@@ -393,7 +393,7 @@ body.trust::before {
   border-bottom: 1px solid var(--t-border);
 }
 .trust-board th {
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--t-text-mut);
@@ -526,7 +526,7 @@ body.trust::before {
   width: 44px; height: 44px; border-radius: 50%;
   background: linear-gradient(135deg, var(--t-cyan), var(--t-violet));
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
+  font-size: 1.375rem;
 }
 .meeting-tile .name {
   font-weight: 700;
@@ -552,7 +552,7 @@ body.trust::before {
   border: 1px solid rgba(245, 158, 11, 0.45);
   padding: 1px 7px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   min-width: 18px;

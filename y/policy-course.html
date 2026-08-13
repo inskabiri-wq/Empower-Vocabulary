@@ -7,10 +7,14 @@
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Great+Vibes&display=swap" rel="stylesheet">
 <!-- Brand-wide reset first so page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css">
-<link rel="stylesheet" href="css/fsmvu-loader.css">
-<link rel="stylesheet" href="student/css/policy-course.css?v=7">
+<link rel="stylesheet" href="css/brand.css?v=17">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
+<link rel="stylesheet" href="student/css/policy-course.css?v=9">
 <script src="js/app-dialog.js"></script>
+  <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=38">
+  <script src="js/app-settings.js?v=22"></script>
 </head>
 <body>
 
@@ -35,7 +39,7 @@
 <div id="pcApp" style="display:none;">
 
   <header class="pc-header">
-    <a class="pc-back" href="student-dashboard.html">&#8592; <span data-i18n="dash">Dashboard</span></a>
+    <button type="button" id="pcDashExit" class="pc-back ll-navbtn">&#8592; <span data-i18n="dash">Dashboard</span></button>
     <div class="pc-header-title">
       <span class="pc-header-icon">🎓</span>
       <span id="pcCourseTitle">Policy Course</span>
@@ -95,7 +99,6 @@
   <!-- CERTIFICATE -->
   <main id="pcCertificate" class="pc-wrap" style="display:none;">
     <div class="pc-cert-actions">
-      <button type="button" class="pc-btn pc-btn-ghost" id="pcCertBack">&#8592; <span data-i18n="backToCourse">Back to course</span></button>
       <button type="button" class="pc-btn pc-btn-primary" onclick="window.print()" data-i18n="printCert">Print / Save as PDF</button>
     </div>
     <!-- Landscape certificate matching the department's printed
@@ -143,6 +146,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="student/js/policy-course-content.js?v=7"></script>
 <script src="student/js/course-target.js?v=2"></script>
-<script src="student/js/policy-course.js?v=8"></script>
+<script src="student/js/policy-course.js?v=13"></script>
 </body>
 </html>

@@ -714,7 +714,7 @@ function showGoogleCompleteForm(user) {
       
       <div class="form-group">
         <label class="form-label">Level</label>
-        <select id="googleLevel" class="form-select" required>
+        <select id="googleLevel" class="form-select ll-select" required>
           <option value="">Select your level</option>
           <option value="A2">A2 - Elementary</option>
           <option value="B1">B1 - Intermediate</option>
@@ -727,7 +727,7 @@ function showGoogleCompleteForm(user) {
       <div class="form-group">
         <label class="form-label">Class</label>
         <div class="form-row">
-          <select id="googleClassLetter" class="form-select form-select-small" required>
+          <select id="googleClassLetter" class="form-select form-select-small ll-select" required>
             <option value="">--</option>
             <option value="B">B</option>
             <option value="C">C</option>
@@ -739,7 +739,7 @@ function showGoogleCompleteForm(user) {
       
       <div class="form-group">
         <label class="form-label">Module</label>
-        <select id="googleModule" class="form-select" required>
+        <select id="googleModule" class="form-select ll-select" required>
           <option value="">Select current module</option>
           <option value="Module 1">Module 1</option>
           <option value="Module 2">Module 2</option>
@@ -750,7 +750,7 @@ function showGoogleCompleteForm(user) {
       
       <div class="form-group">
         <label class="form-label">Academic Year</label>
-        <select id="googleYear" class="form-select" required>
+        <select id="googleYear" class="form-select ll-select" required>
           <option value="">Select academic year</option>
           <option value="2025-2026">2025-2026</option>
           <option value="2026-2027">2026-2027</option>

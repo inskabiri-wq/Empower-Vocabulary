@@ -293,7 +293,7 @@ body {
 }
 
 .form-select option {
-  background: #0f1729;
+  background: var(--bg-secondary, #0f1729);
   color: var(--text-primary);
 }
 
@@ -362,7 +362,7 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.5s;
 }
 
@@ -401,7 +401,7 @@ body {
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
 }
 
 /* ============================================
@@ -528,7 +528,7 @@ body {
 }
 
 .modal-card {
-  background: linear-gradient(145deg, #0f1729 0%, #0c1220 100%);
+  background: linear-gradient(145deg, var(--bg-secondary, #0f1729) 0%, #0c1220 100%);
   border-radius: 20px;
   padding: 28px;
   max-width: 700px;

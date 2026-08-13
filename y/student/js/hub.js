@@ -24,19 +24,19 @@
       active: true
     },
     {
-      id: 'listening',
-      name: 'Listening',
-      icon: '🎧',
-      screen: 'listeningScreen', // new skill home — built in step 3.3
-      accent: '#38bdf8',         // sky blue
-      active: true
-    },
-    {
       id: 'grammar',
       name: 'Grammar',
       icon: '✏️',
       screen: 'grammarScreen',   // empty shell — step 3.4
       accent: '#f59e0b',         // orange
+      active: true
+    },
+    {
+      id: 'listening',
+      name: 'Listening',
+      icon: '🎧',
+      screen: 'listeningScreen', // new skill home — built in step 3.3
+      accent: '#38bdf8',         // sky blue
       active: true
     },
     {
@@ -99,15 +99,19 @@
   ];
 
   // ---- Progress hook ---------------------------------------------------
-  // Reads the `journeyStats` global populated by progress.js (averageScore
-  // is an integer 0-100). Falls back to 0 if stats haven't loaded yet — the
-  // observer below will re-render once they do.
+  // Reads the `journeyStats` global populated by progress.js. Each skill uses
+  // its OWN accuracy from journeyStats.bySkill (grammar, reading, listening
+  // and writing used to be hardcoded to 0 here, so their rings never moved no
+  // matter how much the student practised). Falls back to 0 if stats haven't
+  // loaded yet - the observer below re-renders once they do.
   function getSkillProgress(skillId) {
     try {
-      if (skillId === 'vocabulary'
-          && typeof journeyStats !== 'undefined'
-          && journeyStats
-          && typeof journeyStats.averageScore === 'number') {
+      if (typeof journeyStats === 'undefined' || !journeyStats) return 0;
+      const b = journeyStats.bySkill && journeyStats.bySkill[skillId];
+      if (b && typeof b.pct === 'number') return Math.max(0, Math.min(100, b.pct));
+      // Stats cached by an older build have no bySkill map. Keep the previous
+      // behaviour for vocabulary until the fresh Firestore read lands.
+      if (skillId === 'vocabulary' && typeof journeyStats.averageScore === 'number') {
         return Math.max(0, Math.min(100, journeyStats.averageScore));
       }
     } catch (_) { /* journeyStats not defined yet */ }
@@ -314,10 +318,10 @@
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'skill-back-btn js-injected';
-    btn.setAttribute('aria-label', 'Back to hub');
+    btn.setAttribute('aria-label', 'Back to dashboard');
     btn.style.alignSelf = 'flex-start';
     btn.style.marginBottom = '8px';
-    btn.innerHTML = '<span class="chev" aria-hidden="true">←</span><span>Hub</span>';
+    btn.innerHTML = '<span class="chev" aria-hidden="true">←</span><span>Dashboard</span>';
     btn.addEventListener('click', backToHub);
     headerLeft.insertBefore(btn, headerLeft.firstChild);
   }

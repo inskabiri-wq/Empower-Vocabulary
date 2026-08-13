@@ -24,7 +24,7 @@
 }
 
 .modal-card {
-  background: var(--bg-card, #111827);
+  background: var(--bg-card, var(--bg-secondary, #111827));
   border-radius: 18px;
   padding: 24px 28px;
   max-width: 560px;

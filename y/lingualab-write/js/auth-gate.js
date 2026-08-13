@@ -21,7 +21,11 @@
   'use strict';
 
   var LOGIN = '../index.html';
-  var ADMIN_EMAIL = 'akabiriaslifar@fsm.edu.tr';
+  // Asked for, not typed in. The fallback is the value this line used to
+  // hold, so if js/tenant.js ever fails to load the gate behaves exactly as
+  // it did before rather than locking everyone out.
+  var ADMIN_EMAIL = (window.Tenant && window.Tenant.get('adminEmail', 'akabiriaslifar@fsm.edu.tr'))
+    || 'akabiriaslifar@fsm.edu.tr';
   var html = document.documentElement;
 
   function reveal() { html.classList.remove('cor-checking'); }

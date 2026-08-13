@@ -73,7 +73,7 @@
   border: 1px solid rgba(245, 158, 11, 0.4);
   color: var(--rd-warning);
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -193,7 +193,7 @@
   color: var(--rd-text-muted);
   padding: 7px 14px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
@@ -211,7 +211,7 @@
   gap: 2px;
 }
 .rd-title strong {
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: var(--rd-text);
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -219,13 +219,13 @@
   text-overflow: ellipsis;
 }
 .rd-subtitle {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--rd-text-muted);
 }
 .rd-timer {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 1rem;
   padding: 7px 14px;
   border-radius: 8px;
   background: rgba(45, 212, 191, 0.12);
@@ -237,7 +237,7 @@
   background: rgba(139, 150, 179, 0.1);
   color: var(--rd-text-muted);
   border-color: var(--rd-border);
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.12em;
 }
 .rd-timer-warning {
@@ -265,7 +265,7 @@
   background: transparent;
   border: 1px solid var(--rd-border);
   color: var(--rd-text-muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   padding: 7px 12px;
   border-radius: 8px;
@@ -282,7 +282,7 @@
   background: var(--rd-accent);
   border: none;
   color: #06231f;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   padding: 8px 18px;
   border-radius: 8px;
@@ -311,7 +311,7 @@
   border-bottom: 2px solid transparent;
   color: var(--rd-text-muted);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   padding: 12px 18px;
   cursor: pointer;
@@ -334,8 +334,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.05);
-  font-size: 11px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.6875rem;
   font-weight: 700;
 }
 .rd-tab.is-active .rd-tab-num {
@@ -354,9 +354,9 @@
 .rd-tabs.is-single { display: none; }
 .rd-tab-progress {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 10.5px;
+  font-size: 0.6563rem;
   color: var(--rd-text-dim);
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
   padding: 2px 6px;
   border-radius: 4px;
   font-weight: 600;
@@ -396,11 +396,11 @@
   border-radius: 10px;
   padding: 12px 14px;
   margin-bottom: 16px;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.5;
 }
 .rd-intro h4 {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -464,7 +464,7 @@
   border-radius: 50%;
   background: rgba(45, 212, 191, 0.14);
   color: var(--rd-accent);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
@@ -488,10 +488,10 @@
   gap: 4px;
   padding: 1px 10px;
   margin: 0 2px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   border: 1.5px dashed rgba(139, 150, 179, 0.4);
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   color: var(--rd-text-muted);
   vertical-align: baseline;
@@ -513,7 +513,7 @@
   background: var(--rd-accent);
   color: #06231f;
   border-radius: 50%;
-  font-size: 11px;
+  font-size: 0.6875rem;
   text-align: center;
   line-height: 18px;
   text-transform: uppercase;
@@ -567,7 +567,7 @@
 }
 .rd-section-label {
   display: inline-block;
-  font-size: 10.5px;
+  font-size: 0.6563rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -600,7 +600,7 @@
   background: rgba(45, 212, 191, 0.14);
   border: 1.5px solid rgba(45, 212, 191, 0.45);
   color: var(--rd-accent);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 800;
   line-height: 1;
   transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1),
@@ -708,7 +708,7 @@
 }
 .rd-paragraph-hint {
   display: inline-block;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--rd-text-dim);
   margin-left: 6px;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
@@ -810,7 +810,7 @@
 }
 
 .rd-flag, .rd-note {
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--rd-border);
   color: var(--rd-text-muted);
   width: 26px;
@@ -898,7 +898,7 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
-  font-size: 13.5px;
+  font-size: 0.8438rem;
   line-height: 1.45;
 }
 .rd-mcq-opt:hover {
@@ -930,13 +930,13 @@
 /* Writing section */
 .rd-section-writing { padding-top: 18px; padding-bottom: 18px; }
 .rd-writing-prompt {
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.55;
   color: var(--rd-text);
   margin: 0 0 10px;
 }
 .rd-writing-note {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--rd-text-dim);
   margin: 6px 0 0;
   font-style: italic;
@@ -970,7 +970,7 @@
   justify-content: space-between;
   padding: 12px 18px;
   border-bottom: 1px solid var(--rd-border);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -978,7 +978,7 @@
   background: transparent;
   border: none;
   color: var(--rd-text-muted);
-  font-size: 22px;
+  font-size: 1.375rem;
   cursor: pointer;
   padding: 0 4px;
   font-family: inherit;
@@ -1001,7 +1001,7 @@
   margin-bottom: 0;
 }
 .rd-track-passage-title {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 800;
   color: var(--rd-accent);
   margin-bottom: 6px;
@@ -1019,7 +1019,7 @@
   margin-bottom: 4px;
 }
 .rd-track-section-label {
-  font-size: 10.5px;
+  font-size: 0.6563rem;
   font-weight: 800;
   color: var(--rd-text-muted);
   text-align: center;
@@ -1039,7 +1039,7 @@
   color: var(--rd-text-muted);
   border-radius: 6px;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   cursor: pointer;
   padding: 0;
@@ -1106,7 +1106,7 @@
   padding-top: 12px;
 }
 .rd-settings-label {
-  font-size: 10.5px;
+  font-size: 0.6563rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1144,7 +1144,7 @@
   background: rgba(45, 212, 191, 0.08);
 }
 .rd-pref-name {
-  font-size: 10.5px;
+  font-size: 0.6563rem;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -1156,10 +1156,10 @@
   line-height: 1;
   color: inherit;
 }
-.rd-pref-aa-s  { font-size: 11px; }
-.rd-pref-aa-m  { font-size: 14px; }
-.rd-pref-aa-l  { font-size: 17px; }
-.rd-pref-aa-xl { font-size: 20px; }
+.rd-pref-aa-s  { font-size: 0.6875rem; }
+.rd-pref-aa-m  { font-size: 0.875rem; }
+.rd-pref-aa-l  { font-size: 1.0625rem; }
+.rd-pref-aa-xl { font-size: 1.25rem; }
 
 /* Theme swatch — a small pill that previews the bg + text combo for
    each theme so users can see the choice without applying it. */
@@ -1167,7 +1167,7 @@
   width: 28px;
   height: 18px;
   border-radius: 5px;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   position: relative;
 }
 .rd-pref-theme .rd-pref-swatch::after {
@@ -1176,14 +1176,14 @@
   inset: 0;
   display: grid;
   place-items: center;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 800;
   letter-spacing: 0.02em;
 }
 .rd-pref-theme-dark  .rd-pref-swatch { background: #0d1226; }
 .rd-pref-theme-dark  .rd-pref-swatch::after { color: #e8edf7; }
 .rd-pref-theme-light .rd-pref-swatch { background: #fdfbf6; }
-.rd-pref-theme-light .rd-pref-swatch::after { color: #1f2937; }
+.rd-pref-theme-light .rd-pref-swatch::after { color: var(--bg-item, #1f2937); }
 .rd-pref-theme-sepia .rd-pref-swatch { background: #f4ecd8; }
 .rd-pref-theme-sepia .rd-pref-swatch::after { color: #3d2e1a; }
 .rd-pref-theme-hc    .rd-pref-swatch { background: #000000; }
@@ -1202,7 +1202,7 @@
   color: var(--rd-text-muted);
   padding: 6px 14px;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
@@ -1248,7 +1248,7 @@
   background: var(--rd-bg);
   color: var(--rd-text-muted);
   border-color: var(--rd-border);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
 }
 
@@ -1269,7 +1269,7 @@
 .rd-confirm {
   width: min(420px, calc(100vw - 32px));
   background: var(--rd-surface, #131a30);
-  border: 1px solid var(--rd-border, rgba(255,255,255,0.08));
+  border: 1px solid var(--rd-border, rgba(255, 255, 255, 0.08));
   border-radius: 14px;
   padding: 24px 22px 18px;
   text-align: center;
@@ -1289,7 +1289,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 12px;
 }
@@ -1298,13 +1298,13 @@
   color: var(--rd-warning, #f59e0b);
 }
 .rd-confirm-title {
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 700;
   color: var(--rd-text, #e8edf7);
   margin: 0 0 6px;
 }
 .rd-confirm-message {
-  font-size: 13.5px;
+  font-size: 0.8438rem;
   line-height: 1.5;
   color: var(--rd-text-muted, #8b96b3);
   margin: 0 0 18px;
@@ -1318,7 +1318,7 @@
 .rd-confirm-ok {
   padding: 10px 18px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
@@ -1327,7 +1327,7 @@
 }
 .rd-confirm-cancel {
   background: transparent;
-  border: 1px solid var(--rd-border, rgba(255,255,255,0.08));
+  border: 1px solid var(--rd-border, rgba(255, 255, 255, 0.08));
   color: var(--rd-text-muted, #8b96b3);
 }
 .rd-confirm-cancel:hover {
@@ -1362,12 +1362,12 @@
      ends up outside #readingExamScreen the variables are undefined and
      the text would render black on dark. */
   background: var(--rd-bg, #0d1226);
-  border: 1px solid var(--rd-border, rgba(255,255,255,0.08));
+  border: 1px solid var(--rd-border, rgba(255, 255, 255, 0.08));
   color: var(--rd-text, #e8edf7);
   border-radius: 6px;
   padding: 8px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 0.8125rem;
   resize: vertical;
 }
 .rd-note-actions {
@@ -1382,7 +1382,7 @@
   color: var(--rd-text-muted);
   border-radius: 6px;
   padding: 5px 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
@@ -1414,7 +1414,7 @@
   margin-bottom: 28px;
 }
 .rd-result-total-num {
-  font-size: 48px;
+  font-size: 3rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   margin-bottom: 4px;
@@ -1424,13 +1424,13 @@
 .rd-pct-mid  { color: var(--rd-warning); }
 .rd-pct-low  { color: var(--rd-score-low); }
 .rd-result-total-pct {
-  font-size: 18px;
+  font-size: 1.125rem;
   color: var(--rd-text-muted);
   margin-bottom: 8px;
 }
 .rd-result-meta {
   margin-top: 8px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--rd-text-muted);
   letter-spacing: 0.02em;
 }
@@ -1439,7 +1439,7 @@
   font-weight: 800;
 }
 .rd-result-total-label {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--rd-text-dim);
 }
 .rd-result-passages { display: flex; flex-direction: column; gap: 14px; }
@@ -1461,27 +1461,27 @@
   font-weight: 800;
   padding: 3px 9px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .rd-result-title {
   flex: 1;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: var(--rd-text);
 }
 .rd-result-pct {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 0.8125rem;
   padding: 4px 10px;
   border-radius: 6px;
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
 }
 .rd-result-sections {
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--rd-text-muted);
   margin-bottom: 6px;
 }
@@ -1493,7 +1493,7 @@
 }
 .rd-result-details summary {
   cursor: pointer;
-  font-size: 12.5px;
+  font-size: 0.7813rem;
   color: var(--rd-accent-2);
   font-weight: 600;
   padding: 4px 0;
@@ -1502,7 +1502,7 @@
   margin-top: 12px;
 }
 .rd-result-section-title {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--rd-text);
   margin-bottom: 6px;
@@ -1519,10 +1519,10 @@
   display: flex;
   gap: 10px;
   align-items: baseline;
-  font-size: 12.5px;
+  font-size: 0.7813rem;
   padding: 5px 8px;
   border-radius: 6px;
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   flex-wrap: wrap;
 }
 .rd-result-item.is-right .rd-result-mark { color: var(--rd-success); }
@@ -1537,7 +1537,7 @@
 .rd-result-your em { font-style: normal; color: var(--rd-text); }
 .rd-result-correct { color: var(--rd-success); margin-left: 8px; }
 
-.rd-warn { color: var(--rd-warning); font-size: 13px; }
+.rd-warn { color: var(--rd-warning); font-size: 0.8125rem; }
 
 /* ── Mobile pane switcher (Reading | Questions) ───────────────
    The switcher is rendered always but only displayed on narrow
@@ -1557,7 +1557,7 @@
   color: var(--rd-text-muted);
   border-radius: 8px;
   padding: 9px 10px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
@@ -1587,16 +1587,16 @@
     gap: 8px;
     flex-wrap: wrap;
   }
-  .rd-back     { padding: 8px 12px; font-size: 13.5px; }
+  .rd-back     { padding: 8px 12px; font-size: 0.8438rem; }
   .rd-title    { order: 3; flex-basis: 100%; }
-  .rd-title strong { font-size: 15px; }
+  .rd-title strong { font-size: 0.9375rem; }
   .rd-subtitle { display: none; }
-  .rd-timer    { font-size: 15px; padding: 6px 12px; letter-spacing: 0.04em; }
-  .rd-timer-untimed { font-size: 12px; }
+  .rd-timer    { font-size: 0.9375rem; padding: 6px 12px; letter-spacing: 0.04em; }
+  .rd-timer-untimed { font-size: 0.75rem; }
   .rd-header-actions { gap: 6px; }
-  .rd-tool-btn { width: 38px; height: 38px; font-size: 16px; }
-  .rd-submit   { padding: 9px 16px; font-size: 14px; }
-  .rd-view-btn { font-size: 14px; padding: 10px 12px; }
+  .rd-tool-btn { width: 38px; height: 38px; font-size: 1rem; }
+  .rd-submit   { padding: 9px 16px; font-size: 0.875rem; }
+  .rd-view-btn { font-size: 0.875rem; padding: 10px 12px; }
 
   /* Tabs — horizontal scroll with snap so one passage fills the
      viewport at a time. */
@@ -1615,8 +1615,8 @@
     min-width: 0;
     padding: 8px 12px;
   }
-  .rd-tab-title { max-width: 36vw; font-size: 13.5px; }
-  .rd-tab-num   { font-size: 12px; }
+  .rd-tab-title { max-width: 36vw; font-size: 0.8438rem; }
+  .rd-tab-num   { font-size: 0.75rem; }
 
   /* Pane swap. The data-view attribute on .rd-shell controls which
      pane is shown; the inactive one is fully removed from the layout
@@ -1649,7 +1649,7 @@
   .rd-passage-title { font-size: calc(22px * var(--rd-text-scale, 1)); line-height: 1.25; word-break: break-word; }
   .rd-passage       { font-size: calc(17px * var(--rd-text-scale, 1)); line-height: 1.7; text-align: left; hyphens: auto; overflow-wrap: anywhere; }
   .rd-passage .rd-para { padding-left: 28px; }
-  .rd-passage .rd-para::before { width: 20px; height: 20px; font-size: 11px; top: 4px; }
+  .rd-passage .rd-para::before { width: 20px; height: 20px; font-size: 0.6875rem; top: 4px; }
   .rd-intro         { font-size: calc(14.5px * var(--rd-text-scale, 1)); line-height: 1.55; padding: 12px 14px; }
   .rd-passage-subtitle { font-size: calc(15px * var(--rd-text-scale, 1)); }
 
@@ -1719,12 +1719,12 @@
      so push the panel below it. */
   .rd-settings { top: 110px; right: 8px; }
 
-  .rd-section-label { font-size: 11.5px; }
+  .rd-section-label { font-size: 0.7188rem; }
   .rd-section-instructions { font-size: calc(14px * var(--rd-text-scale, 1)); line-height: 1.5; }
   .rd-q-label { font-size: calc(14.5px * var(--rd-text-scale, 1)); }
   .rd-q-stem  { font-size: calc(15px * var(--rd-text-scale, 1)); line-height: 1.55; }
   .rd-mcq-text { font-size: calc(14.5px * var(--rd-text-scale, 1)); }
-  .rd-mcq-letter { font-size: 13.5px; }
+  .rd-mcq-letter { font-size: 0.8438rem; }
   .rd-input { font-size: calc(14.5px * var(--rd-text-scale, 1)); padding: 10px 12px; }
 
   /* Tracker — full-bleed bottom sheet that takes most of the
@@ -1733,8 +1733,8 @@
     max-height: 70vh;
     border-radius: 18px 18px 0 0;
   }
-  .rd-tracker-header { padding: 14px 16px; font-size: 15px; }
-  .rd-tracker-close  { font-size: 26px; padding: 0 8px; }
+  .rd-tracker-header { padding: 14px 16px; font-size: 0.9375rem; }
+  .rd-tracker-close  { font-size: 1.625rem; padding: 0 8px; }
   .rd-tracker-body {
     /* On phones a single column is fine — passages stack. */
     grid-template-columns: 1fr;
@@ -1747,18 +1747,18 @@
        so we still fit a fair number of cells per row. */
     width: 36px;
     height: 36px;
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .rd-track-grid { grid-template-columns: repeat(auto-fill, 36px); gap: 6px; }
   .rd-track-section { grid-template-columns: 28px 1fr; gap: 8px; }
 
   /* Confirm modal — takes nearly the full width on narrow screens. */
   .rd-confirm { width: calc(100vw - 24px); padding: 22px 20px 18px; }
-  .rd-confirm-title   { font-size: 18px; }
-  .rd-confirm-message { font-size: 14.5px; line-height: 1.5; }
+  .rd-confirm-title   { font-size: 1.125rem; }
+  .rd-confirm-message { font-size: 0.9063rem; line-height: 1.5; }
   .rd-confirm-actions { flex-direction: column-reverse; }
   .rd-confirm-cancel,
-  .rd-confirm-ok      { width: 100%; min-width: 0; padding: 13px 16px; font-size: 14.5px; }
+  .rd-confirm-ok      { width: 100%; min-width: 0; padding: 13px 16px; font-size: 0.9063rem; }
 
   /* Note popover */
   #rd-note-popover {
@@ -1773,8 +1773,8 @@
   /* Results screen */
   .rd-results-main { padding: 18px 14px 28px; }
   .rd-result-total { padding: 22px 12px; }
-  .rd-result-total-num { font-size: 28px; }
-  .rd-result-total-pct { font-size: 36px; }
+  .rd-result-total-num { font-size: 1.75rem; }
+  .rd-result-total-pct { font-size: 2.25rem; }
   .rd-result-row       { padding: 12px 14px; }
   .rd-result-row-head  { flex-wrap: wrap; gap: 6px; }
   .rd-result-sections  { flex-wrap: wrap; }
@@ -1783,57 +1783,71 @@
 /* Reading skill home — exam cards already had a 600px breakpoint in
    their dedicated section; tighten the level pill row a bit on phones. */
 @media (max-width: 720px) {
-  #readingScreen .rd-home          { padding: 14px 14px 32px; }
-  #readingScreen .rd-home-levels   { gap: 6px; margin-bottom: 16px; }
-  #readingScreen .rd-level-tab     { padding: 7px 14px; font-size: 12px; }
-  #readingScreen .rd-exam-icon     { width: 44px; height: 44px; font-size: 22px; }
-  #readingScreen .rd-exam-title    { font-size: 14px; }
-  #readingScreen .rd-exam-sub      { font-size: 12px; }
-  #readingScreen .rd-exam-mode-btn { padding: 9px 12px; font-size: 12px; }
+  #readingScreen .rd-home,
+#listeningScreen .rd-home          { padding: 14px 14px 32px; }
+  #readingScreen .rd-home-levels,
+#listeningScreen .rd-home-levels   { gap: 6px; margin-bottom: 16px; }
+  #readingScreen .rd-level-tab,
+#listeningScreen .rd-level-tab     { padding: 7px 14px; font-size: 0.75rem; }
+  #readingScreen .rd-exam-icon,
+#listeningScreen .rd-exam-icon     { width: 44px; height: 44px; font-size: 1.375rem; }
+  #readingScreen .rd-exam-title,
+#listeningScreen .rd-exam-title    { font-size: 0.875rem; }
+  #readingScreen .rd-exam-sub,
+#listeningScreen .rd-exam-sub      { font-size: 0.75rem; }
+  #readingScreen .rd-exam-mode-btn,
+#listeningScreen .rd-exam-mode-btn { padding: 9px 12px; font-size: 0.75rem; }
 }
 
 /* ============================================================
    READING SKILL HOME (level cards + exam list + mode picker)
    ============================================================ */
-#readingScreen .rd-home {
+#readingScreen .rd-home,
+#listeningScreen .rd-home {
   max-width: 900px;
   margin: 0 auto;
   padding: 16px 20px 40px;
 }
-#readingScreen .rd-home-levels {
+#readingScreen .rd-home-levels,
+#listeningScreen .rd-home-levels {
   display: flex;
   gap: 8px;
   margin-bottom: 22px;
   flex-wrap: wrap;
 }
-#readingScreen .rd-level-tab {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+#readingScreen .rd-level-tab,
+#listeningScreen .rd-level-tab {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: rgba(232, 237, 247, 0.65);
   padding: 8px 16px;
   border-radius: 999px;
-  font-size: 12.5px;
+  font-size: 0.7813rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
   letter-spacing: 0.03em;
   transition: all 0.15s;
 }
-#readingScreen .rd-level-tab:hover {
+#readingScreen .rd-level-tab:hover,
+#listeningScreen .rd-level-tab:hover {
   color: #e8edf7;
   border-color: #2dd4bf;
 }
-#readingScreen .rd-level-tab.is-active {
+#readingScreen .rd-level-tab.is-active,
+#listeningScreen .rd-level-tab.is-active {
   background: rgba(45, 212, 191, 0.16);
   border-color: #2dd4bf;
   color: #2dd4bf;
 }
-#readingScreen .rd-exam-list {
+#readingScreen .rd-exam-list,
+#listeningScreen .rd-exam-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-#readingScreen .rd-exam-card {
+#readingScreen .rd-exam-card,
+#listeningScreen .rd-exam-card {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -1844,9 +1858,17 @@
   text-decoration: none;
   color: inherit;
   cursor: default;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
-#readingScreen .rd-exam-icon {
-  font-size: 28px;
+#readingScreen .rd-exam-card:hover,
+#listeningScreen .rd-exam-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(45,212,191,0.55);
+  box-shadow: 0 10px 26px rgba(2,6,23,0.38);
+}
+#readingScreen .rd-exam-icon,
+#listeningScreen .rd-exam-icon {
+  font-size: 1.75rem;
   width: 52px;
   height: 52px;
   display: flex;
@@ -1855,58 +1877,114 @@
   background: rgba(45,212,191,0.15);
   border-radius: 12px;
   flex-shrink: 0;
+  transition: box-shadow 0.2s ease, background 0.2s ease;
+  /* IDLE animation, always running. The first attempt animated only on hover
+     and that reads as "no animation": these rows are mostly looked at, not
+     hovered, and on a phone there is no hover at all. The books bob on their
+     own now, staggered so a list of them does not move in lockstep. */
+  animation: rd-book-bob 3.2s ease-in-out infinite;
+  will-change: transform;
 }
-#readingScreen .rd-exam-meta { flex: 1; min-width: 0; }
-#readingScreen .rd-exam-title {
-  font-size: 15px;
+#readingScreen .rd-exam-card:nth-child(2) .rd-exam-icon,
+#listeningScreen .rd-exam-card:nth-child(2) .rd-exam-icon { animation-delay: -0.5s; }
+#readingScreen .rd-exam-card:nth-child(3) .rd-exam-icon,
+#listeningScreen .rd-exam-card:nth-child(3) .rd-exam-icon { animation-delay: -1s; }
+#readingScreen .rd-exam-card:nth-child(4) .rd-exam-icon,
+#listeningScreen .rd-exam-card:nth-child(4) .rd-exam-icon { animation-delay: -1.5s; }
+#readingScreen .rd-exam-card:nth-child(5) .rd-exam-icon,
+#listeningScreen .rd-exam-card:nth-child(5) .rd-exam-icon { animation-delay: -2s; }
+#readingScreen .rd-exam-card:nth-child(6) .rd-exam-icon,
+#listeningScreen .rd-exam-card:nth-child(6) .rd-exam-icon { animation-delay: -2.5s; }
+/* Hover swaps to a livelier beat rather than setting `transform`: a running
+   animation outranks a plain transform declaration, so a hover transform here
+   would simply never be seen. */
+#readingScreen .rd-exam-card:hover .rd-exam-icon,
+#listeningScreen .rd-exam-card:hover .rd-exam-icon {
+  animation: rd-book-pop 0.55s ease-in-out infinite alternate;
+  background: rgba(45,212,191,0.28);
+  box-shadow: 0 4px 16px rgba(45,212,191,0.35);
+}
+#readingScreen .rd-exam-meta,
+#listeningScreen .rd-exam-meta { flex: 1; min-width: 0; }
+#readingScreen .rd-exam-title,
+#listeningScreen .rd-exam-title {
+  font-size: 0.9375rem;
   font-weight: 700;
   color: #e8edf7;
   margin: 0 0 4px;
 }
-#readingScreen .rd-exam-sub {
-  font-size: 12.5px;
+#readingScreen .rd-exam-sub,
+#listeningScreen .rd-exam-sub {
+  font-size: 0.7813rem;
   color: rgba(232, 237, 247, 0.55);
 }
-#readingScreen .rd-exam-modes {
+#readingScreen .rd-exam-modes,
+#listeningScreen .rd-exam-modes {
   display: flex;
   gap: 8px;
   flex-shrink: 0;
 }
-#readingScreen .rd-exam-mode-btn {
+#readingScreen .rd-exam-mode-btn,
+#listeningScreen .rd-exam-mode-btn {
   background: transparent;
   border: 1px solid rgba(45,212,191,0.45);
   color: #2dd4bf;
   padding: 8px 14px;
   border-radius: 8px;
-  font-size: 12.5px;
+  font-size: 0.7813rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
 }
-#readingScreen .rd-exam-mode-btn:hover {
+#readingScreen .rd-exam-mode-btn:hover,
+#listeningScreen .rd-exam-mode-btn:hover {
   background: rgba(45,212,191,0.18);
 }
-#readingScreen .rd-exam-mode-btn.timed {
+#readingScreen .rd-exam-mode-btn.timed,
+#listeningScreen .rd-exam-mode-btn.timed {
   background: #2dd4bf;
   color: #06231f;
   border-color: transparent;
 }
-#readingScreen .rd-exam-mode-btn.timed:hover { filter: brightness(1.08); }
-#readingScreen .rd-exam-empty {
+#readingScreen .rd-exam-mode-btn.timed:hover,
+#listeningScreen .rd-exam-mode-btn.timed:hover { filter: brightness(1.08); }
+#readingScreen .rd-exam-empty,
+#listeningScreen .rd-exam-empty {
   padding: 28px 20px;
-  border: 1px dashed rgba(255,255,255,0.12);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
   border-radius: 14px;
   text-align: center;
   color: rgba(232, 237, 247, 0.55);
-  font-size: 13.5px;
+  font-size: 0.8438rem;
 }
 @media (max-width: 600px) {
-  #readingScreen .rd-exam-card {
+  #readingScreen .rd-exam-card,
+#listeningScreen .rd-exam-card {
     flex-direction: column;
     align-items: stretch;
   }
-  #readingScreen .rd-exam-modes { width: 100%; }
-  #readingScreen .rd-exam-mode-btn { flex: 1; }
+  #readingScreen .rd-exam-modes,
+#listeningScreen .rd-exam-modes { width: 100%; }
+  #readingScreen .rd-exam-mode-btn,
+#listeningScreen .rd-exam-mode-btn { flex: 1; }
+}
+
+/* ── Exam-home motion, shared by Reading and Listening ────────── */
+@keyframes rd-book-bob {
+  0%, 100% { transform: translateY(0)    rotate(0deg); }
+  50%      { transform: translateY(-3px) rotate(-5deg); }
+}
+@keyframes rd-book-pop {
+  from { transform: scale(1.05) rotate(-2deg); }
+  to   { transform: scale(1.15) rotate(-8deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #readingScreen .rd-exam-card:hover,
+  #listeningScreen .rd-exam-card:hover { transform: none; }
+  #readingScreen .rd-exam-icon,
+  #listeningScreen .rd-exam-icon,
+  #readingScreen .rd-exam-card:hover .rd-exam-icon,
+  #listeningScreen .rd-exam-card:hover .rd-exam-icon { animation: none; transform: none; }
 }

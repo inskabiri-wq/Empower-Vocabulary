@@ -133,12 +133,16 @@ let matchBatchStart = 0;
 let matchedInBatch = 0;
 
 // Journey Stats
+// `bySkill` holds the SAME numbers split per skill (vocabulary / grammar /
+// reading / listening / writing) so each hub card can show its own progress
+// ring. `averageScore` stays the overall figure shown on the journey card.
 let journeyStats = {
   totalSessions: 0,
   totalWordsLearned: 0,
   totalCorrect: 0,
   averageScore: 0,
   activitiesCompleted: {},
+  bySkill: {},
   recentActivity: null
 };
 

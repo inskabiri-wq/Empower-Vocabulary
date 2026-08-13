@@ -484,13 +484,27 @@
   // Universal exit button: themed confirm while a run is in progress
   // (abandoning saves nothing, so the attempt is not consumed).
   (function wireExit() {
-    var b = $('plExitBtn'); if (!b) return;
+    // Both ways out of this page: the fixed control and the one on the gate
+    // screen. The second used to be a plain <a>, which navigates immediately
+    // and can never show a confirm, so "I hadn't started and got no popup"
+    // was that link, not the handler.
+    var btns = [$('plExitBtn'), $('plExitBtn2')].filter(Boolean);
+    if (!btns.length) return;
+    btns.forEach(function (b) {
     b.addEventListener('click', function () {
       var go = function () { state.inProgress = false; window.location.href = 'student-dashboard.html'; };
-      if (!state.inProgress) { go(); return; }
+      // Always ask. inProgress only turns true once the FIRST rung starts, so
+      // a student who had opened the test but not answered yet was dropped
+      // straight out with no warning at all - the exams warn here, and this
+      // is the one test you cannot resume.
+      var msg = state.inProgress
+        ? 'Exit the placement test? Your progress will NOT be saved, and you can start again later.'
+        : 'Exit the placement test? You can start it again later.';
       if (window.AppDialog && AppDialog.confirm) {
-        AppDialog.confirm('Exit the placement test? Your progress will NOT be saved, and you can start again later.').then(function (ok) { if (ok) go(); });
-      } else if (confirm('Exit the placement test? Progress will not be saved.')) go();
+        AppDialog.confirm(msg, { title: 'Leave the placement test?', okLabel: 'Exit', cancelLabel: 'Stay', danger: true })
+          .then(function (ok) { if (ok) go(); });
+      } else if (confirm(msg)) go();
+    });
     });
   })();
 

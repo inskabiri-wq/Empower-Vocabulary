@@ -5,9 +5,16 @@
   },
   "emulators": {
     "_comment": "LOCAL ONLY - lets `firebase emulators:start --only auth,firestore` boot both for the demo-login E2E (y/tools/README-emulator-e2e.md). Ignored by deploys.",
-    "auth": { "port": 9099 },
-    "firestore": { "port": 8080 },
-    "ui": { "enabled": true, "port": 4000 }
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    }
   },
   "functions": [
     {
@@ -39,16 +46,31 @@
     ],
     "headers": [
       {
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
         "comment": "PWA: the service worker + manifest must NEVER be cached by the browser/CDN, otherwise app updates can't reach already-installed users. Everything the SW caches is versioned inside service-worker.js itself.",
         "source": "/service-worker.js",
         "headers": [
-          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
         ]
       },
       {
         "source": "/manifest.json",
         "headers": [
-          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
         ]
       },
       {

@@ -7,7 +7,7 @@ window.isDemoUser = false;
 // Returns the three denormalized "scope" fields every session document
 // needs to carry so teacher Firestore rules can do per-doc access
 // checks at read time (Phase B security). Falls back to empty strings
-// if the student profile isn't cached yet — those sessions will only
+// if the student profile isn't cached yet - those sessions will only
 // be visible to admin until they're backfilled by the migration script.
 function studentScopeFields() {
   const d = window.currentStudentData || {};
@@ -26,7 +26,7 @@ auth.onAuthStateChanged(async (user) => {
     return;
   }
 
-  // Email-verification gate (defense-in-depth — the login page already
+  // Email-verification gate (defense-in-depth - the login page already
   // enforces this, but a bookmarked URL would bypass it). Demo accounts
   // are pre-created with emailVerified:true by the admin script, so this
   // applies uniformly to every account.
@@ -53,7 +53,7 @@ auth.onAuthStateChanged(async (user) => {
   let activityLoggedHere = false;
 
   // Load avatar + profile from user doc, and reconcile bestStreak between
-  // Firestore (canonical — survives device changes) and localStorage
+  // Firestore (canonical - survives device changes) and localStorage
   // (live on this device). Use the max of both; if localStorage is ahead
   // (e.g. streak earned while offline), push that value up to Firestore.
   try {
@@ -69,7 +69,7 @@ auth.onAuthStateChanged(async (user) => {
       // layer (no more "any teacher reads any session" via the console).
       window.currentStudentData = data;
       // Student info chips (class / level / module / year) inside the "Your
-      // Assignments" box — all from THIS already-loaded doc, so 0 extra
+      // Assignments" box - all from THIS already-loaded doc, so 0 extra
       // Firestore reads. Only non-empty values are shown.
       try {
         var anyChip = false;
@@ -96,7 +96,7 @@ auth.onAuthStateChanged(async (user) => {
       if (window.isDemoUser) {
         showDemoBanner();
       } else if (typeof ActivityLogger !== 'undefined') {
-        // Log login only for real users — keeps activityLogs meaningful.
+        // Log login only for real users - keeps activityLogs meaningful.
         await ActivityLogger.logLogin();
         activityLoggedHere = true;
       }
@@ -105,7 +105,7 @@ auth.onAuthStateChanged(async (user) => {
       }
     }
 
-    // (re-resolve userDoc fields below — userDoc was fetched above)
+    // (re-resolve userDoc fields below - userDoc was fetched above)
     const fsBest = (userDoc.exists && userDoc.data().stats && userDoc.data().stats.bestStreak) || 0;
     const lsBest = parseInt(localStorage.getItem('bestStreak') || '0', 10) || 0;
     const trueBest = Math.max(fsBest, lsBest);
@@ -121,7 +121,7 @@ auth.onAuthStateChanged(async (user) => {
     }
   } catch (e) {
     console.log('Could not load user doc from Firebase:', e);
-    // Fallback — still show whatever localStorage has
+    // Fallback - still show whatever localStorage has
     const savedBestStreak = localStorage.getItem('bestStreak');
     if (savedBestStreak) {
       const bestStreakEl = document.getElementById('bestStreak');
@@ -138,7 +138,7 @@ async function logSessionToFirestore() {
   const user = auth.currentUser;
   if (!user) return;
 
-  // Demo users don't write sessions — keeps teacher analytics clean and
+  // Demo users don't write sessions - keeps teacher analytics clean and
   // matches what the firestore.rules already enforce on the server.
   if (window.isDemoUser) {
     console.log('Demo mode - session not saved');
@@ -179,6 +179,7 @@ async function logSessionToFirestore() {
           correctAnswers: Number(score || 0),
           totalQuestions: Number(total || 0),
           wordsLearned: words,
+          vocabDetails: (typeof getVocabDetails === 'function') ? getVocabDetails() : [],
           ...scope,                                           // studentClass / studentLevel / studentModule
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
@@ -197,6 +198,7 @@ async function logSessionToFirestore() {
         correctAnswers: Number(score || 0),
         totalQuestions: Number(total || 0),
         wordsLearned: currentWords.map(w => w.word),
+        vocabDetails: (typeof getVocabDetails === 'function') ? getVocabDetails() : [],
         ...scope,                                            // studentClass / studentLevel / studentModule
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
@@ -204,7 +206,7 @@ async function logSessionToFirestore() {
 
     // Refresh journey stats after logging
     await loadJourneyStats();
-    
+
     // Log activity for admin tracking
     if (typeof ActivityLogger !== 'undefined') {
       await ActivityLogger.logPracticeCompleted({
@@ -216,7 +218,7 @@ async function logSessionToFirestore() {
         wordsCount: total
       });
     }
-    
+
     console.log('Session logged successfully');
   } catch (e) {
     console.error('Failed to log session:', e);
@@ -264,7 +266,7 @@ document.getElementById('logoutModal').addEventListener('click', (e) => {
 
 /* ---------- Demo banner ---------- */
 // Minimal, single-DOM-node banner so the user always knows they're in demo
-// mode. No new CSS file — all inline style. Idempotent (safe to call twice).
+// mode. No new CSS file - all inline style. Idempotent (safe to call twice).
 function showDemoBanner() {
   if (document.getElementById('demoBanner')) return;
   const bar = document.createElement('div');

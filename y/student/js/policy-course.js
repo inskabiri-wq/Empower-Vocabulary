@@ -503,6 +503,16 @@
     const start = (date.getMonth() + 1) >= 9 ? y : y - 1;
     return start + '-' + (start + 1);
   }
+  // Arriving from the catalog's "View certificate" button. Without this the
+  // deep link landed on the overview and the certificate needed a second click.
+  function openFromHash() {
+    try {
+      if ((window.location.hash || '').toLowerCase() !== '#certificate') return false;
+      renderCertificate();
+      return true;
+    } catch (_) { return false; }
+  }
+
   function renderCertificate() {
     const cert = progress && progress.certificate;
     if (!cert || !cert.certId) { renderOverview(); return; }
@@ -566,7 +576,11 @@
 
       $('pcStudentChip').textContent = (userDoc && (userDoc.name || userDoc.displayName)) || u.displayName || '';
       show('pcApp');
-      renderOverview();
+      // Arriving from the catalog's "View certificate" button (#certificate).
+      // This is the BOOT path - the previous attempt hooked the language-toggle
+      // handler by mistake, so the deep link never fired and the student still
+      // landed on the overview and had to click certificate a second time.
+      if (!openFromHash()) renderOverview();
     } catch (e) {
       console.error('policy course boot', e);
       show('pcInactive');
@@ -597,7 +611,33 @@
           .then(ok => { if (ok) renderOverview(); });
       } else { renderOverview(); }
     });
-    $('pcCertBack').addEventListener('click', renderOverview);
+    // Leaving the COURSE entirely. This was a plain <a href>, so it navigated
+    // straight out with no warning - the same trap placement had. It asks
+    // from the very first screen, before any module is opened, because the
+    // student may not realise Dashboard leaves the course rather than the
+    // lesson they are looking at.
+    var dashBtn = $('pcDashExit');
+    if (dashBtn) {
+      dashBtn.addEventListener('click', function () {
+        var go = function () { window.location.href = 'student-dashboard.html'; };
+        var msg = (lang === 'tr')
+          ? 'Kurstan cikilsin mi? Kaydedilmemis ilerleme kaybolur.'
+          : 'Leave the course? Any progress in the current module will not be saved.';
+        if (typeof AppDialog !== 'undefined' && AppDialog.confirm) {
+          AppDialog.confirm(msg, {
+            title: (lang === 'tr') ? 'Kurstan cikilsin mi?' : 'Leave the course?',
+            okLabel: (lang === 'tr') ? 'Cik' : 'Leave',
+            cancelLabel: (lang === 'tr') ? 'Kal' : 'Stay',
+            danger: true
+          }).then(function (ok) { if (ok) go(); });
+        } else if (confirm(msg)) { go(); }
+      });
+    }
+    // The certificate has NO back button. It used to carry "Back to course",
+    // which sent a student who had just finished the course straight back into
+    // it. The button is deleted from the markup and the wiring is deleted here
+    // too, so it cannot come back by accident. Print is the only action on that
+    // screen; the header Dashboard button is the way out.
 
     auth.onAuthStateChanged(u => {
       if (!u) { window.location.href = 'index.html'; return; }

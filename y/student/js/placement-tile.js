@@ -52,46 +52,108 @@
     if (!state) return;
     var grid = document.getElementById('hubGrid');
     if (!grid || document.getElementById('placementHubCard')) return;
+    var ph = document.getElementById('placementHubSkeleton');
+    if (ph) ph.remove();                       // real card replaces the placeholder
     grid.appendChild(buildCard());
+  }
+
+  // Hold the slot from the first paint. Without this the tile popped in after
+  // its reads, a beat behind the skill cards that need no network at all.
+  // Removed either when the real card arrives or when the student turns out
+  // not to be in scope for the placement test.
+  function ensureSkeleton() {
+    var grid = document.getElementById('hubGrid');
+    if (!grid || document.getElementById('placementHubSkeleton')
+        || document.getElementById('placementHubCard')) return;
+    var s = document.createElement('div');
+    s.id = 'placementHubSkeleton';
+    s.className = 'hub-card as-skeleton';
+    s.setAttribute('aria-hidden', 'true');
+    s.innerHTML = '<div class="hub-ring"></div>'
+      + '<div class="hub-meta"><div class="sk-line sk-line-lg"></div>'
+      + '<div class="sk-line sk-line-sm"></div></div>';
+    grid.appendChild(s);
+  }
+  function dropSkeleton() {
+    var ph = document.getElementById('placementHubSkeleton');
+    if (ph) ph.remove();
   }
 
   function boot(user) {
     var d = db_();
     if (!d || !user) return;
+    // auth.js already cached this student's document. Reuse it instead of
+    // re-reading: one less document in this batch, and the remaining reads
+    // are no longer paced by the slowest of four.
+    var cached = window.currentStudentData;
+    // Prefer the batch hub-preload.js already has in flight; only issue our
+    // own reads if it never ran. Same documents either way - this just stops
+    // us queueing a second round behind the hub's.
+    var P = window.LLPreload;
     Promise.all([
-      d.collection('settings').doc('placementConfig').get(),
-      d.collection('users').doc(user.uid).get(),
-      d.collection('placementResults').doc(user.uid).get(),
-      d.collection('settings').doc('featureToggles').get()
+      (P && P.get('placementConfig')) || d.collection('settings').doc('placementConfig').get(),
+      cached ? Promise.resolve(null) : ((P && P.get('userDoc')) || d.collection('users').doc(user.uid).get()),
+      (P && P.get('placementResult')) || d.collection('placementResults').doc(user.uid).get(),
+      (P && P.get('featureToggles')) || d.collection('settings').doc('featureToggles').get()
     ]).then(function (res) {
       var cfg = res[0].exists ? (res[0].data() || {}) : {};
-      var userDoc = res[1].exists ? (res[1].data() || {}) : {};
+      var userDoc = cached ? cached : (res[1] && res[1].exists ? (res[1].data() || {}) : {});
       var toggles = res[3].exists ? (res[3].data() || {}) : {};
-      if (userDoc.role && userDoc.role !== 'student') return;           // students only
+      // Staff (teacher / admin) see the card too. It used to be students-only,
+      // so on an admin account the skeleton painted and was pulled a moment
+      // later - the tile "appeared for a second then disappeared". Staff also
+      // bypass targeting below, since scope is written in terms of students.
+      var isStaff = userDoc.role === 'teacher' || userDoc.role === 'admin';
       // TARGETING (placementConfig.scope) decides WHO gets the card at all;
       // the Admin > Features toggle decides its state: ON = live, OFF (or not
       // yet enabled) = grayed "Not activated" - the card is never removed.
+      // ACTIVATION is authoritative. This used to pass a hardcoded
+      // `active: true` into courseActiveFor, so placementConfig.active was
+      // read by nobody and turning the switch OFF in the admin panel changed
+      // nothing at all - the card stayed up regardless.
+      if (cfg.active !== true) { dropSkeleton(); return; }
+      // TARGETING then decides WHO among students gets it. Staff bypass it so
+      // they can preview; they do not bypass the activation switch above.
       var inScope = (typeof window.courseActiveFor === 'function')
         ? window.courseActiveFor({ active: true, scope: cfg.scope || {} }, userDoc)
         : true;
-      if (!inScope) return;
+      if (!inScope && !isStaff) { dropSkeleton(); return; }
       var r = res[2].exists ? (res[2].data() || {}) : null;
       state = { off: toggles.placement !== true, done: !!r, level: (r && r.recommendedLevel) || '' };
       ensureCard();
       // hub.js wipes the grid on every render - put the card back each time.
       var grid = document.getElementById('hubGrid');
       if (grid) new MutationObserver(function () { ensureCard(); }).observe(grid, { childList: true });
-    }).catch(function () {});
+    }).catch(function () { dropSkeleton(); });
   }
 
-  function waitAuth(tries) {
-    tries = (tries == null) ? 40 : tries;
-    var u = (typeof auth !== 'undefined' && auth.currentUser) ? auth.currentUser
-      : (window.firebase && firebase.auth && firebase.auth().currentUser) || null;
-    if (u) { boot(u); return; }
-    if (tries <= 0) return;
-    setTimeout(function () { waitAuth(tries - 1); }, 400);
+  // Wait for sign-in by LISTENING, not by polling. This used to wake up every
+  // 400ms and ask "is the user here yet?", so the card sat idle for up to
+  // 400ms after auth resolved before its reads even started - which is why it
+  // appeared noticeably later than the other hub cards. onAuthStateChanged
+  // fires the moment the session is restored. Exactly the same four reads.
+  var booted = false;
+  function start(user) {
+    if (booted || !user) return;
+    booted = true;
+    // boot() appends to #hubGrid, so make sure the grid exists first.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () { ensureSkeleton(); boot(user); });
+    } else {
+      ensureSkeleton();
+      boot(user);
+    }
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { waitAuth(); });
-  else waitAuth();
+  function watchAuth(tries) {
+    tries = (tries == null) ? 25 : tries;
+    var a = (typeof auth !== 'undefined') ? auth
+      : (window.firebase && firebase.auth ? firebase.auth() : null);
+    if (!a) {                                    // SDK not parsed yet (rare)
+      if (tries > 0) setTimeout(function () { watchAuth(tries - 1); }, 100);
+      return;
+    }
+    if (a.currentUser) { start(a.currentUser); return; }
+    a.onAuthStateChanged(function (u) { start(u); });
+  }
+  watchAuth();
 })();

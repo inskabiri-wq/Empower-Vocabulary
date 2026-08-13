@@ -32,6 +32,14 @@
   --border-color: rgba(59,130,246,0.2);
 }
 *{margin:0;padding:0;box-sizing:border-box}
+/* NO `scrollbar-gutter: stable` here. It was added to stop the .container card
+   being 15px wider on screens too short to scroll, but it reserves a 15px
+   channel that `body::before` cannot reach: that glow layer is position:fixed,
+   so it sizes to the scrollport (measured 1265px inside a 1280px viewport) and
+   stops short of the gutter. The result is a permanent unlit vertical band down
+   the right edge - the "black line". A 15px width difference nobody notices is
+   not worth a stripe everybody does. The real box mismatch was the card
+   component, fixed in reading-exam.css / listening.js. */
 body{font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
 background:linear-gradient(135deg,var(--bg-primary) 0%,var(--bg-secondary) 50%,var(--bg-tertiary) 100%);
 min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;position:relative;overflow-x:hidden;transition:background 0.3s}
@@ -229,7 +237,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
   width:48px;
   height:48px;
   border-radius:14px;
-  background:rgba(255,255,255,0.05);
+  background:rgba(255, 255, 255, 0.05);
   margin:0 auto 10px;
   filter:drop-shadow(0 4px 10px rgba(59,130,246,0.35));
 }
@@ -260,33 +268,6 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
   letter-spacing:0.5px;
 }
 
-.keyboard-hints {
-  display:flex;
-  gap:10px;
-  justify-content:center;
-  flex-wrap:wrap;
-  margin-top:24px;
-  padding-top:20px;
-  border-top:1px solid var(--border-color);
-}
-
-.keyboard-hints span {
-  background:var(--bg-item);
-  padding:6px 14px;
-  border-radius:8px;
-  font-size:0.85em;
-  color:var(--text-muted);
-}
-
-.keyboard-hints kbd {
-  background:rgba(59,130,246,0.3);
-  padding:3px 8px;
-  border-radius:5px;
-  font-family:'SF Mono', 'Consolas', monospace;
-  font-size:0.9em;
-  color:var(--accent-secondary);
-}
-
 /* ====== SIDEBAR (RIGHT) ====== */
 .sidebar {
   display:flex;
@@ -302,7 +283,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 }
 
 .light-mode .sidebar-card {
-  background:linear-gradient(145deg, rgba(255,255,255,0.9), rgba(248,250,252,0.9));
+  background:linear-gradient(145deg, rgba(255,255,255,0.9), rgba(248, 250, 252, 0.9));
 }
 
 .sidebar-card-title {
@@ -364,7 +345,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 
 .custom-select:hover {
   border-color:var(--accent-primary);
-  box-shadow:0 4px 16px rgba(59,130,246,0.2);
+  box-shadow:0 4px 16px var(--border-color, rgba(59,130,246,0.2));
 }
 
 .custom-select:focus {
@@ -403,7 +384,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 }
 
 .light-mode .custom-select {
-  background:linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.95));
+  background:linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248, 250, 252, 0.95));
   border-color:rgba(100,100,140,0.25);
 }
 
@@ -458,7 +439,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 }
 
 .setting-toggle.active {
-  background:linear-gradient(135deg, rgba(59,130,246,0.2), rgba(251,146,60,0.15));
+  background:linear-gradient(135deg, var(--border-color, rgba(59,130,246,0.2)), rgba(251,146,60,0.15));
   border-color:rgba(251,146,60,0.4);
 }
 
@@ -612,7 +593,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 }
 
 .light-mode .modal-content {
-  background:linear-gradient(145deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98));
+  background:linear-gradient(145deg, rgba(255,255,255,0.98), rgba(248, 250, 252, 0.98));
   box-shadow:0 25px 80px rgba(0,0,0,0.15);
 }
 
@@ -824,7 +805,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
   padding: 12px 6px;
   background: rgba(0,0,0,0.2);
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.3s ease;
 }
 

@@ -157,9 +157,31 @@
     } else if (window.confirm(msg)) { go(); }
   }
 
+  // Fill the Class dropdown from the REAL classes on the dashboard, so a demo
+  // student can only land in a class the filters actually know. allStudents is
+  // a top-level `let` on the dashboard (not window.*), so read it by bare
+  // identifier behind a typeof guard, and retry while the dashboard loads.
+  function fillClasses(tries) {
+    var sel = $('daClass');
+    if (!sel) return;
+    var list = (typeof allStudents !== 'undefined' && Array.isArray(allStudents)) ? allStudents : [];
+    var set = {};
+    list.forEach(function (s) { if (s && s.studentClass) set[String(s.studentClass).trim()] = 1; });
+    var classes = Object.keys(set).sort();
+    if (!classes.length) {
+      // Dashboard data not in yet - retry briefly, then fall back.
+      if ((tries == null ? 20 : tries) > 0) { setTimeout(function () { fillClasses((tries == null ? 20 : tries) - 1); }, 400); return; }
+      classes = ['B101'];
+    }
+    var keep = sel.value;
+    sel.innerHTML = classes.map(function (c) { return '<option value="' + c.replace(/"/g, '&quot;') + '">' + c + '</option>'; }).join('');
+    if (keep && classes.indexOf(keep) !== -1) sel.value = keep;
+  }
+
   function init() {
     if (!$('daCreateBtn')) return;
     if ($('daActivation') && !$('daActivation').value) $('daActivation').value = todayISO();
+    fillClasses();
     toggleStudentFields();
     updateExpiryHint();
     $('daRole').addEventListener('change', toggleStudentFields);
@@ -169,7 +191,10 @@
     // Lazy-load the list the first time the admin opens this sub-tab.
     var subTab = document.querySelector('#adminSubNav .admin-subtab[data-target="demoAccountPanel"]');
     var loadedOnce = false;
-    if (subTab) subTab.addEventListener('click', function () { if (!loadedOnce) { loadedOnce = true; setTimeout(loadList, 120); } });
+    if (subTab) subTab.addEventListener('click', function () {
+      fillClasses();                 // classes may have arrived since page load
+      if (!loadedOnce) { loadedOnce = true; setTimeout(loadList, 120); }
+    });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

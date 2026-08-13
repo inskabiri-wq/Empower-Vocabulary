@@ -144,8 +144,21 @@
     if (!Array.isArray(audit)) { loadAudit(); return '<span style="color:var(--t2-text-muted,#7d8590);">Loading...</span>'; }
     if (!audit.length) return '<span style="color:var(--t2-text-muted,#7d8590);">No changes recorded yet.</span>';
     return audit.map(function (a) {
-      var when = (a.at && a.at.seconds) ? new Date(a.at.seconds * 1000).toLocaleString() : '';
-      return '<div style="padding:4px 0;border-bottom:1px solid var(--t2-border,#30363d);">' + esc(when) + ' - <b>' + esc(a.by || '?') + '</b> ' + esc(a.action) + ' for <b>' + esc(a.targetName || a.targetUid) + '</b></div>';
+      // A just-written row has no server timestamp yet - show "just now"
+      // instead of a bare dash.
+      var when = (a.at && a.at.seconds)
+        ? new Date(a.at.seconds * 1000).toLocaleString()
+        : 'just now';
+      var act = String(a.action || '');
+      var revoked = /revok/i.test(act);
+      var tint = revoked ? '#f87171' : 'var(--t2-green,#22c55e)';
+      var bg = revoked ? 'rgba(248,113,113,0.10)' : 'rgba(34,197,94,0.10)';
+      var bd = revoked ? 'rgba(248,113,113,0.35)' : 'rgba(34,197,94,0.35)';
+      return '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--t2-border,#30363d);border-radius:10px;margin-bottom:6px;">' +
+        '<span style="font-size:12.5px;font-weight:700;padding:4px 11px;border-radius:999px;border:1px solid ' + bd + ';background:' + bg + ';color:' + tint + ';white-space:nowrap;">' + esc(act) + '</span>' +
+        '<span style="flex:1;min-width:0;font-size:13.5px;color:var(--t2-text,#e6edf3);">for <b>' + esc(a.targetName || a.targetUid) + '</b></span>' +
+        '<span style="font-size:12.5px;color:var(--t2-text-muted,#7d8590);white-space:nowrap;">' + esc(a.by || '?') + ' &middot; ' + esc(when) + '</span>' +
+      '</div>';
     }).join('');
   }
 

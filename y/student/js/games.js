@@ -492,7 +492,7 @@ async function startActivity(activity) {
 
   currentWords = pool.sort(() => Math.random() - 0.5).slice(0, 10);
   currentIndex = 0;
-  score = 0;
+  score = 0; vocabTrackReset();
   sessionStreak = 0;
   missedWords = [];
   updateStreakDisplays();
@@ -514,7 +514,7 @@ function initMatch() {
   selectedItems = [];
   matchBatchStart = 0;
   matchedInBatch = 0;
-  score = 0;
+  score = 0; vocabTrackReset();
   loadMatchBatch();
   showScreen('matchScreen');
 }
@@ -578,6 +578,7 @@ function selectMatchItem(el) {
   
   if (selectedItems.length === 2) {
     const [a, b] = selectedItems;
+    trackVocab(a.id, (b.id === a.id ? a.id : b.id), a.id, a.id === b.id);
     if (a.id === b.id) {
       a.el.classList.add('correct');
       b.el.classList.add('correct');
@@ -709,8 +710,29 @@ function loadChoice() {
   setProgress('choiceProgress', currentIndex, currentWords.length);
 }
 
+// ============================================
+// PER-QUESTION DETAIL (teacher drill-down)
+// Mirrors what grammar.js stores as grammarDetails, so the Activity tab
+// can expand a vocabulary row the same way. Kept to 20 items to stay well
+// inside the Firestore document limit.
+// ============================================
+let vocabDetails = [];
+function vocabTrackReset() { vocabDetails = []; }
+function trackVocab(q, picked, correct, ok) {
+  if (vocabDetails.length >= 20) return;
+  vocabDetails.push({
+    q: String(q == null ? '' : q),
+    picked: String(picked == null ? '' : picked),
+    correct: String(correct == null ? '' : correct),
+    ok: !!ok
+  });
+}
+// auth.js reads this when writing the session document.
+window.getVocabDetails = function () { return vocabDetails.slice(0, 20); };
+
 function checkChoice(btn, selected, correct) {
   const isCorrect = selected === correct;
+  trackVocab((currentWords[currentIndex] && (currentWords[currentIndex].ex || currentWords[currentIndex].word)) || '', selected, correct, isCorrect);
   document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
   
   if (isCorrect) {
@@ -826,6 +848,7 @@ function loadReverse() {
 
 function checkReverse(btn, selected, correct) {
   const isCorrect = selected === correct;
+  trackVocab((currentWords[currentIndex] && (currentWords[currentIndex].ex || currentWords[currentIndex].word)) || '', selected, correct, isCorrect);
   document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
 
   // Fill the blank in the sentence with the correct word
@@ -940,6 +963,7 @@ function checkSpelling() {
   const input = document.getElementById('spellingInput');
   const answer = input.value.trim().toLowerCase();
   const correct = cur.word.toLowerCase();
+  trackVocab(cur.def || cur.ex || cur.word, answer, correct, answer === correct);
   
   input.disabled = true;
   document.getElementById('spellingCheck').style.display = 'none';
@@ -1278,6 +1302,7 @@ function loadFillBlank() {
 
 function checkFill(btn, selected, correct) {
   const isCorrect = selected === correct;
+  trackVocab((currentWords[currentIndex] && (currentWords[currentIndex].ex || currentWords[currentIndex].word)) || '', selected, correct, isCorrect);
   const cur = currentWords[currentIndex];
   document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
   
@@ -1455,6 +1480,7 @@ function checkOrder() {
   const correct = splitOrderTokens(sentence);
   
   const isCorrect = orderAnswer.join(' ') === correct.join(' ');
+  trackVocab(cur.ex || cur.word, orderAnswer.join(' '), correct.join(' '), isCorrect);
   
   orderAttempts++;
   
@@ -1529,7 +1555,7 @@ function startUnscrambleWithDifficulty(difficulty) {
     currentWords = singleWords;
   }
   currentIndex = 0;
-  score = 0;
+  score = 0; vocabTrackReset();
   sessionStreak = 0;
   missedWords = [];
   updateStreakDisplays();
@@ -1683,6 +1709,7 @@ function checkUnscramble() {
   const answer = assembledWords.join(' ');
   const correct = cur.word.toLowerCase();
   const isCorrect = answer === correct;
+  trackVocab(cur.def || cur.ex || cur.word, answer, correct, isCorrect);
 
   unscrambleAttempts++;
 
@@ -1942,7 +1969,7 @@ function practiceAgain() {
       return found || { word: w.word, def: w.def || w.definition || '', ex: w.ex || w.example || w.def || '', level: selectedLevel, pos: w.pos || '', tr: w.tr || '' };
     });
     currentIndex = 0;
-    score = 0;
+    score = 0; vocabTrackReset();
     sessionStreak = 0;
     missedWords = [];
     if (currentActivity === 'match') initMatch();

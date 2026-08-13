@@ -112,6 +112,10 @@
     .grad-text{-webkit-text-fill-color:#5b3bd6;}
   }
 </style>
+  <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=38">
+  <script src="js/app-settings.js?v=22"></script>
 </head>
 <body>
 <div class="prog" id="prog"></div>
@@ -220,7 +224,7 @@
     <div class="step"><div class="n">1</div><div class="t"><b>Pick the skill</b><small>Grammar, Reading, Listening, Writing or Vocabulary - each has its own simple form.</small></div></div>
     <div class="step"><div class="n">2</div><div class="t"><b>Choose the content</b><small>Select the exam or grammar topics, and for grammar set how many questions.</small></div></div>
     <div class="step"><div class="n">3</div><div class="t"><b>Target who gets it</b><small>A whole class, a level, a module, or named individuals.</small></div></div>
-    <div class="step"><div class="n">4</div><div class="t"><b>Set a deadline</b><small>It appears on the student hub and on your deadline calendar.</small></div></div>
+    <div class="step"><div class="n">4</div><div class="t"><b>Set a deadline</b><small>It appears on the student dashboard and on your deadline calendar.</small></div></div>
     <p class="note">Reading and Listening assignments open the <b>exact assigned exam</b> for the student in one tap, even if that exam is hidden from free practice.</p>
   </section>
 

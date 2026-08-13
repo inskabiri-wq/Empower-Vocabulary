@@ -12,7 +12,7 @@ function _cssVar(name, fallback) {
 }
 
 // ============================================================
-// ACTIVITY DROPDOWN — rebuilt every time the skill pill changes
+// ACTIVITY DROPDOWN - rebuilt every time the skill pill changes
 // so the visible activity options always match the selected skill.
 // Previously the dropdown had a hard-coded list of vocab-only
 // activities, which made the Activity tab look like it was showing
@@ -47,7 +47,7 @@ const SKILL_ACTIVITY_OPTIONS = {
   reading: [
     { value: 'reading-exam',    label: '📖 Reading Exam' }
   ],
-  // Future skills — no logged activities yet, so dropdown shows only "All"
+  // Future skills - no logged activities yet, so dropdown shows only "All"
   grammar: [
     { value: 'grammar-choice',     label: '🎯 Multiple Choice' },
     { value: 'grammar-fill',       label: '📝 Fill in the Blank' },
@@ -96,7 +96,7 @@ function loadRecentActivity() {
 
   // Rebuild the activity-type dropdown so its options match the currently
   // selected skill pill. Without this, picking "📖 Reading" left the
-  // dropdown showing only vocab activities — making the page look like
+  // dropdown showing only vocab activities - making the page look like
   // it was reporting vocabulary data when the user wanted reading.
   rebuildActivityDropdown(skillFilter);
 
@@ -105,7 +105,7 @@ function loadRecentActivity() {
 
   let filtered = allSessions;
 
-  // Skill filter — applied first so activity dropdown always sees a
+  // Skill filter - applied first so activity dropdown always sees a
   // skill-narrowed pool (e.g. picking "Listening" then a vocab activity
   // produces an empty list, which matches the pill selection).
   if (skillFilter && skillFilter !== 'all' && typeof filterSessionsBySkill === 'function') {
@@ -134,23 +134,23 @@ function loadRecentActivity() {
     return;
   }
   
-  // Canonical activity icon set — keep in sync with overview-v2.js
+  // Canonical activity icon set - keep in sync with overview-v2.js
   // ACTIVITY_META. Each activity has ONE icon used everywhere in the
   // teacher dashboard.
   const activityIcons = {
     'grammar-choice': '🎯', 'grammar-fill': '📝', 'grammar-unscramble': '🧩',
-    choice:            '🎯',  // Multiple Choice — target
-    match:             '🔗',  // Match — link
-    spelling:          '⌨️',  // Spelling — typing
-    fillblank:         '📝',  // Fill in Blank — writing
-    order:             '🔀',  // Word Order — shuffle
-    reverse:           '🔄',  // Reverse Mode — reverse arrows
-    pronunciation:     '🗣️',  // Pronunciation — speaking
-    unscramble:        '🧩',  // Unscramble — puzzle
+    choice:            '🎯',  // Multiple Choice - target
+    match:             '🔗',  // Match - link
+    spelling:          '⌨️',  // Spelling - typing
+    fillblank:         '📝',  // Fill in Blank - writing
+    order:             '🔀',  // Word Order - shuffle
+    reverse:           '🔄',  // Reverse Mode - reverse arrows
+    pronunciation:     '🗣️',  // Pronunciation - speaking
+    unscramble:        '🧩',  // Unscramble - puzzle
     'unscramble-diff': '🧩',
-    'listening-exam':  '🎧',  // Listening exam — headphones
+    'listening-exam':  '🎧',  // Listening exam - headphones
     listening:         '🎧',
-    'reading-exam':    '📖',  // Reading exam — book
+    'reading-exam':    '📖',  // Reading exam - book
     reading:           '📖'
   };
 
@@ -171,21 +171,15 @@ function loadRecentActivity() {
     reading: 'Reading'
   };
   
-  const bookIcons = {
-    empower: '📘',
-    gateway: '📗'
-  };
-  
   container.innerHTML = filtered.slice(0, 30).map(session => {
     const date = session.createdAt?.toDate ? session.createdAt.toDate() : new Date();
     const timeAgo = getTimeAgo(date);
-    const bookIcon = bookIcons[session.book] || '📚';
     
     let scoreClass = '';
     if (session.percentage < 50) scoreClass = 'low';
     else if (session.percentage < 70) scoreClass = 'medium';
 
-    // Lockdown breach flag — shown when a TIMED reading attempt
+    // Lockdown breach flag - shown when a TIMED reading attempt
     // recorded any tab switches. Helps the teacher spot suspicious
     // sessions at a glance.
     const breachFlag = (session.activity === 'reading-exam'
@@ -195,14 +189,14 @@ function loadRecentActivity() {
                 style="color:${_cssVar('--t2-amber', '#f59e0b')};font-weight:700;">⚠ ${session.tabSwitches}</span>`
       : '';
     const autoSubmitFlag = (session.activity === 'reading-exam' && session.autoSubmitted)
-      ? ` <span title="Time ran out — auto-submitted" style="color:${_cssVar('--t2-text-muted', '#7d8590')};font-size:11px;">⏱ auto</span>`
+      ? ` <span title="Time ran out - auto-submitted" style="color:${_cssVar('--t2-text-muted', '#7d8590')};font-size:11px;">⏱ auto</span>`
       : '';
 
-    // Score column — skill-aware:
+    // Score column - skill-aware:
     //   • Writing rows: show the grading status (✓ Submitted /
     //     🎓 Graded / 🔄 Returned) by looking up the matching
     //     writingSubmissions doc. The word count was meaningless
-    //     here — what the teacher actually wants to see is
+    //     here - what the teacher actually wants to see is
     //     "did I grade this yet?"
     //   • Vocab / reading / listening: show percentage as before.
     //   • Anything else: em dash.
@@ -227,7 +221,7 @@ function loadRecentActivity() {
       scoreLabel = '-';
     }
 
-    // Student name — prefer the canonical name from the users doc
+    // Student name - prefer the canonical name from the users doc
     // (the authoritative source) over the denormalized userName on
     // the session itself. The session might just have an email if
     // displayName was never set. Tooltip carries email + class so
@@ -248,7 +242,10 @@ function loadRecentActivity() {
 
     // Grammar sessions carry per-question detail (grammarDetails); let the
     // teacher tap a row to expand exactly which items the student missed.
-    const gd = Array.isArray(session.grammarDetails) ? session.grammarDetails : null;
+    // Grammar stores grammarDetails; vocabulary stores vocabDetails. Same shape
+    // ({q, picked, correct, ok}), so ONE renderer expands either.
+    const gd = Array.isArray(session.grammarDetails) ? session.grammarDetails
+             : (Array.isArray(session.vocabDetails) ? session.vocabDetails : null);
     const detailHtml = gd ? `
       <div class="gr-attempt-detail" style="display:none; padding:6px 16px 12px 58px; border-bottom:1px solid rgba(255,255,255,0.05);">
         ${gd.map(d => `
@@ -265,7 +262,7 @@ function loadRecentActivity() {
           <div class="activity-details">
             <h4 ${tooltip ? `title="${escapeHtml(tooltip)}"` : ''}
                 style="cursor: ${tooltip ? 'help' : 'default'};">
-              ${escapeHtml(displayName)} <span style="opacity: 0.7;">${bookIcon}</span>${breachFlag}
+              ${escapeHtml(displayName)}${breachFlag}
             </h4>
             <p>${activityNames[session.activity] || session.activity} • ${session.level || '-'} • ${timeAgo}${autoSubmitFlag}${gd ? ' • <span style="opacity:0.7;">tap for items</span>' : ''}</p>
           </div>

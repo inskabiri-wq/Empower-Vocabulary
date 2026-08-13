@@ -24,16 +24,20 @@
 
 <!-- Modular CSS -->
 <!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css?v=14">
+<link rel="stylesheet" href="css/brand.css?v=17">
 <!-- Shared themed dialog (alert/confirm/prompt) — replaces native browser popups app-wide. -->
 <script src="js/app-dialog.js"></script>
-<link rel="stylesheet" href="student/css/styles.css">
-<link rel="stylesheet" href="student/css/extra.css">
-<link rel="stylesheet" href="student/css/hub.css?v=14">
-<link rel="stylesheet" href="student/css/skills.css">
-<link rel="stylesheet" href="student/css/grammar.css?v=17">
-<link rel="stylesheet" href="student/css/reading-exam.css">
-<link rel="stylesheet" href="assignments/css/assignments.css">
+<link rel="stylesheet" href="student/css/styles.css?v=7">
+<link rel="stylesheet" href="student/css/extra.css?v=8">
+<link rel="stylesheet" href="student/css/hub.css?v=20">
+<link rel="stylesheet" href="student/css/skills.css?v=6">
+<link rel="stylesheet" href="student/css/grammar.css?v=27">
+<link rel="stylesheet" href="student/css/reading-exam.css?v=6">
+<link rel="stylesheet" href="assignments/css/assignments.css?v=4">
+  <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=38">
+  <script src="js/app-settings.js?v=22"></script>
 </head>
 <body>
 <!-- Custom Logout Modal -->
@@ -70,7 +74,7 @@
       <div class="vg-field">
         <label class="vg-label" for="verifyLevel">Level</label>
         <div class="vg-select-wrap">
-          <select id="verifyLevel" class="vg-select" required>
+          <select id="verifyLevel" class="vg-select ll-select" required>
             <option value="A2">A2 — Elementary</option>
             <option value="B1">B1 — Intermediate</option>
             <option value="B1+">B1+ — Upper Intermediate</option>
@@ -86,7 +90,7 @@
         <label class="vg-label" for="verifyClassLetter">Class</label>
         <div class="vg-row">
           <div class="vg-select-wrap vg-class-letter">
-            <select id="verifyClassLetter" class="vg-select" required>
+            <select id="verifyClassLetter" class="vg-select ll-select" required>
               <option value="B">B</option>
               <option value="C">C</option>
               <option value="D">D</option>
@@ -104,7 +108,7 @@
           <span class="vg-must-change">must change ↑</span>
         </label>
         <div class="vg-select-wrap">
-          <select id="verifyModule" class="vg-select" required>
+          <select id="verifyModule" class="vg-select ll-select" required>
             <!-- populated by verify-gate.js with current module excluded -->
           </select>
           <span class="vg-chev" aria-hidden="true">▾</span>
@@ -116,7 +120,7 @@
       <div class="vg-field">
         <label class="vg-label" for="verifyYear">Academic Year</label>
         <div class="vg-select-wrap">
-          <select id="verifyYear" class="vg-select" required>
+          <select id="verifyYear" class="vg-select ll-select" required>
             <option value="2025-2026">2025-2026</option>
             <option value="2026-2027">2026-2027</option>
             <option value="2027-2028">2027-2028</option>
@@ -145,52 +149,11 @@
   </div>
 </div>
 
-<!-- Settings Modal (NEW) -->
-<div id="settingsModal" class="modal-overlay">
-  <div class="modal-content settings-modal">
-    <button class="modal-close-btn" onclick="closeSettingsModal()">×</button>
-    <h2 class="modal-title">⚙️ Settings</h2>
-    
-    <div class="settings-modal-content">
-      <div class="setting-row" id="soundToggle" onclick="toggleSound()">
-        <div class="setting-left">
-          <span class="setting-icon" id="soundIcon">🔊</span>
-          <div class="setting-text">
-            <span class="setting-name">Sound Effects</span>
-            <span class="setting-desc">Play sounds for correct/incorrect answers</span>
-          </div>
-        </div>
-        <div class="toggle-switch-new"></div>
-      </div>
-      
-      <div class="setting-row" id="trToggle" onclick="toggleTurkish()">
-        <div class="setting-left">
-          <span class="setting-icon">🇹🇷</span>
-          <div class="setting-text">
-            <span class="setting-name">Turkish Hints</span>
-            <span class="setting-desc">Show Turkish translations (A2 level)</span>
-          </div>
-        </div>
-        <div class="toggle-switch-new"></div>
-      </div>
-      
-      <div class="setting-row" id="themeToggle" onclick="toggleTheme()">
-        <div class="setting-left">
-          <span class="setting-icon" id="themeIcon">🌙</span>
-          <div class="setting-text">
-            <span class="setting-name" id="themeLabel">Dark Mode</span>
-            <span class="setting-desc">Switch between dark and light theme</span>
-          </div>
-        </div>
-        <div class="toggle-switch-new"></div>
-      </div>
-    </div>
-    
-    <div id="turkishInfo" class="turkish-info-modal">
-      🇹🇷 Turkish hints available for A2 level (263 words)
-    </div>
-  </div>
-</div>
+<!-- Settings: there is no dashboard-specific settings modal any more.
+     The gear buttons below carry data-app-settings-open, so they open the SAME
+     panel (js/app-settings.js) that classroom, placement and courses open.
+     Sound effects and Turkish hints are sections in that panel now; they still
+     call this page's toggleSound() / toggleTurkish() in student/js/ui.js. -->
 
 <!-- Profile Avatar Modal -->
 <div id="profileModal" class="modal-overlay">
@@ -320,7 +283,7 @@
   <div class="modal-content learning-map-modal">
     <button class="modal-close-btn" onclick="closeLearningMap()">×</button>
     <h2 class="modal-title">🗺️ Quest Board</h2>
-    <p style="text-align: center; color: rgba(255,255,255,0.6); margin: -8px 0 16px; font-size: 0.9rem;">Complete challenges to master each unit</p>
+    <p class="qc-board-sub">Complete challenges to master each unit</p>
 
     <div class="level-tabs">
       <button class="level-tab active" data-level="A2" onclick="showMapLevel('A2')">A2</button>
@@ -364,7 +327,7 @@
         <p class="subtitle">Pick a skill to practice today</p>
       </div>
       <div class="header-right">
-        <button class="header-icon-btn" onclick="openSettingsModal()" title="Settings">
+        <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
           <span>⚙️</span>
         </button>
         <button class="profile-badge" onclick="openProfileModal()">
@@ -373,7 +336,7 @@
           </div>
           <div class="profile-info">
             <span class="profile-name" id="profileNameHub">Student</span>
-            <span class="profile-level">Level <span id="profileXPLevelHub">1</span> • <span id="profileXPHub">0</span> XP</span>
+            <span class="profile-level">Level <span class="profile-lvl-n" id="profileXPLevelHub">1</span> • <span class="profile-xp-n" id="profileXPHub">0</span> XP</span>
           </div>
         </button>
         <button class="logout-btn" onclick="openLogoutModal()">
@@ -431,7 +394,15 @@
                 <span class="assignment-badge" id="assignmentBadge" style="display: none;">0</span>
               </div>
             </div>
+            <!-- Skeleton rows hold the panel's height from the first paint.
+                 Assignments arrive from Firestore a moment after the tiles, and
+                 with nothing reserved the whole page below them jumped down as
+                 they landed. renderAssignments() replaces this wholesale. -->
             <div id="assignmentsContainer">
+              <div class="as-asg-skeleton" aria-hidden="true">
+                <div class="as-asg-row"><span class="sk-line sk-line-lg"></span><span class="sk-line sk-line-sm"></span></div>
+                <div class="as-asg-row"><span class="sk-line sk-line-lg"></span><span class="sk-line sk-line-sm"></span></div>
+              </div>
               <div class="no-assignments">
                 <span class="no-assignments-icon">⏳</span>
                 <span class="no-assignments-text">Loading assignments...</span>
@@ -465,10 +436,10 @@
           </svg>
           Lingualab
         </h1>
-        <p class="subtitle">Master <strong>2,679 words</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">from your Empower coursebook</span></span></p>
+        <p class="subtitle">&#9999;&#65039; <strong>Vocabulary</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">Practice by level</span></span></p>
       </div>
       <div class="header-right">
-        <button class="header-icon-btn" onclick="openSettingsModal()" title="Settings">
+        <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
           <span>⚙️</span>
         </button>
         <button class="profile-badge" onclick="openProfileModal()">
@@ -477,7 +448,7 @@
           </div>
           <div class="profile-info">
             <span class="profile-name" id="profileName">Student</span>
-            <span class="profile-level">Level <span id="profileXPLevel">1</span> • <span id="profileXP">0</span> XP</span>
+            <span class="profile-level">Level <span class="profile-lvl-n" id="profileXPLevel">1</span> • <span class="profile-xp-n" id="profileXP">0</span> XP</span>
           </div>
         </button>
         <button class="logout-btn" onclick="openLogoutModal()">
@@ -634,11 +605,10 @@
 
         </div>
         
-        <div class="keyboard-hints">
-          <span><kbd>1-4</kbd> select option</span>
-          <span><kbd>Enter</kbd> next</span>
-          <span><kbd>Esc</kbd> back to menu</span>
-        </div>
+        <!-- The keyboard-hints strip ("1-4 select option / Enter next /
+             Esc back to menu") was removed: it is desktop-only advice sitting
+             on a screen students mostly reach on a phone, and no other skill
+             screen carries one. The shortcuts themselves still work. -->
       </div>
 
       <!-- Sidebar (Right) - design v2 -->
@@ -657,7 +627,7 @@
               <div class="sel-opt" data-value="empower">Empower</div>
               <div class="sel-opt" data-value="gateway">Gateway</div>
             </div>
-            <select id="bookSelect" class="dash-v2-native" aria-hidden="true" onchange="changeBook(this.value)">
+            <select id="bookSelect" class="dash-v2-native ll-select" aria-hidden="true" onchange="changeBook(this.value)">
               <option value="empower">📘 Empower</option>
               <option value="gateway">📗 Gateway</option>
             </select>
@@ -672,7 +642,7 @@
               <div class="sel-opt" data-value="B2">B2</div>
               <div class="sel-opt" data-value="C1">C1</div>
             </div>
-            <select id="levelSelect" class="dash-v2-native" aria-hidden="true" onchange="changeLevel(this.value)">
+            <select id="levelSelect" class="dash-v2-native ll-select" aria-hidden="true" onchange="changeLevel(this.value)">
               <option value="A2">A2 - Elementary</option>
               <option value="B1">B1 - Intermediate</option>
               <option value="B1+">B1+ - Upper Intermediate</option>
@@ -686,7 +656,7 @@
             <div class="sel-opts" id="unitPills">
               <div class="sel-opt active" data-value="all">All</div>
             </div>
-            <select id="unitSelect" class="dash-v2-native" aria-hidden="true" onchange="changeUnit(this.value)">
+            <select id="unitSelect" class="dash-v2-native ll-select" aria-hidden="true" onchange="changeUnit(this.value)">
               <option value="all">All Units</option>
             </select>
           </div>
@@ -719,27 +689,54 @@
        ============================================================ -->
   <div id="listeningScreen" class="screen">
     <div class="skill-screen">
-      <div class="skill-header">
-        <div class="skill-header-left">
-          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to hub">
-            <span class="chev" aria-hidden="true">←</span>
-            <span>Hub</span>
+      <div class="dashboard-header">
+        <div class="header-left">
+          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to dashboard">
+            <span class="chev" aria-hidden="true">&#8592;</span><span>Dashboard</span>
           </button>
-          <div class="skill-title">
-            <div class="icon" aria-hidden="true">🎧</div>
-            <div>
-              <h2>Listening</h2>
-              <div class="skill-sub">Exams & practice</div>
-            </div>
-          </div>
+          <h1>
+            <svg class="dash-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="capGradLs" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%"   stop-color="#3b82f6"/>
+                  <stop offset="100%" stop-color="#fb923c"/>
+                </linearGradient>
+              </defs>
+              <polygon points="14,3 27,10 14,17 1,10" fill="url(#capGradLs)"/>
+              <path d="M7 12.5v6a7 7 0 0 0 14 0v-6" fill="url(#capGradLs)" opacity="0.75"/>
+              <line x1="27" y1="10" x2="27" y2="19" stroke="url(#capGradLs)" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="27" cy="21.5" r="2.5" fill="#f59e0b"/>
+            </svg>
+            Lingualab
+          </h1>
+          <p class="subtitle">&#127911; <strong>Listening</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">Exams &amp; practice</span></span></p>
         </div>
-        <div class="skill-header-right">
-          <span class="skill-progress-pill" id="listeningProgressPill">0%</span>
+        <div class="header-right">
+          <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
+            <span>&#9881;&#65039;</span>
+          </button>
+          <button class="profile-badge" onclick="openProfileModal()">
+            <div class="avatar-display" style="background:#fff3e0">
+              <span class="avatar-emoji">&#129418;</span>
+            </div>
+            <div class="profile-info">
+              <span class="profile-name">Student</span>
+              <span class="profile-level">Level <span class="profile-lvl-n">1</span> &#8226; <span class="profile-xp-n">0</span> XP</span>
+            </div>
+          </button>
+          <button class="logout-btn" onclick="openLogoutModal()">
+            <span>&#128682;</span>
+            <span>Logout</span>
+          </button>
         </div>
       </div>
 
-      <div class="skill-section-lbl">Activities</div>
-      <div class="skill-activity-grid" id="listeningActivityGrid">
+      <!-- Same list container and same card component as Reading. This used to
+           be a .skill-activity-grid of small square .activity-card tiles, so the
+           one listening exam sat in the corner as a lonely box while Reading
+           showed full-width rows: two exam screens, two different boxes. -->
+      <div class="skill-section-lbl">Exams</div>
+      <div class="rd-exam-list" id="listeningActivityGrid">
         <!-- populated by listening.js -->
       </div>
     </div>
@@ -752,26 +749,45 @@
        ============================================================ -->
   <div id="grammarScreen" class="screen">
     <div class="skill-screen">
-      <div class="skill-header">
-        <div class="skill-header-left">
-          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to hub">
-            <span class="chev" aria-hidden="true">←</span><span>Hub</span>
+      <div class="dashboard-header">
+        <div class="header-left">
+          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to dashboard">
+            <span class="chev" aria-hidden="true">&#8592;</span><span>Dashboard</span>
           </button>
-          <div class="skill-title">
-            <div class="icon" aria-hidden="true">✏️</div>
-            <div><h2>Grammar</h2><div class="skill-sub">Practice by level</div></div>
-          </div>
+          <h1>
+            <svg class="dash-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="capGradGr" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%"   stop-color="#3b82f6"/>
+                  <stop offset="100%" stop-color="#fb923c"/>
+                </linearGradient>
+              </defs>
+              <polygon points="14,3 27,10 14,17 1,10" fill="url(#capGradGr)"/>
+              <path d="M7 12.5v6a7 7 0 0 0 14 0v-6" fill="url(#capGradGr)" opacity="0.75"/>
+              <line x1="27" y1="10" x2="27" y2="19" stroke="url(#capGradGr)" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="27" cy="21.5" r="2.5" fill="#f59e0b"/>
+            </svg>
+            Lingualab
+          </h1>
+          <p class="subtitle">&#9999;&#65039; <strong>Grammar</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">Practice by level</span></span></p>
         </div>
-        <div class="skill-header-right">
-          <button class="header-icon-btn" onclick="openSettingsModal()" title="Settings"><span>⚙️</span></button>
+        <div class="header-right">
+          <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
+            <span>&#9881;&#65039;</span>
+          </button>
           <button class="profile-badge" onclick="openProfileModal()">
-            <div class="avatar-display" id="grAvatarDisplay" style="background:#fff3e0"><span class="avatar-emoji" id="grAvatarEmoji">🦊</span></div>
+            <div class="avatar-display" style="background:#fff3e0">
+              <span class="avatar-emoji">&#129418;</span>
+            </div>
             <div class="profile-info">
-              <span class="profile-name" id="grProfileName">Student</span>
-              <span class="profile-level">Level <span id="grProfileLevel">1</span> • <span id="grProfileXP">0</span> XP</span>
+              <span class="profile-name">Student</span>
+              <span class="profile-level">Level <span class="profile-lvl-n">1</span> &#8226; <span class="profile-xp-n">0</span> XP</span>
             </div>
           </button>
-          <button class="logout-btn" onclick="openLogoutModal()"><span>🚪</span><span>Logout</span></button>
+          <button class="logout-btn" onclick="openLogoutModal()">
+            <span>&#128682;</span>
+            <span>Logout</span>
+          </button>
         </div>
       </div>
       <div class="grammar-body" id="grammarBody"></div>
@@ -780,21 +796,45 @@
 
   <div id="readingScreen" class="screen">
     <div class="skill-screen">
-      <div class="skill-header">
-        <div class="skill-header-left">
-          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to hub">
-            <span class="chev" aria-hidden="true">←</span><span>Hub</span>
+      <div class="dashboard-header">
+        <div class="header-left">
+          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to dashboard">
+            <span class="chev" aria-hidden="true">&#8592;</span><span>Dashboard</span>
           </button>
-          <div class="skill-title">
-            <div class="icon" aria-hidden="true">📖</div>
-            <div>
-              <h2>Reading</h2>
-              <div class="skill-sub">Exams &amp; practice</div>
-            </div>
-          </div>
+          <h1>
+            <svg class="dash-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="capGradRd" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%"   stop-color="#3b82f6"/>
+                  <stop offset="100%" stop-color="#fb923c"/>
+                </linearGradient>
+              </defs>
+              <polygon points="14,3 27,10 14,17 1,10" fill="url(#capGradRd)"/>
+              <path d="M7 12.5v6a7 7 0 0 0 14 0v-6" fill="url(#capGradRd)" opacity="0.75"/>
+              <line x1="27" y1="10" x2="27" y2="19" stroke="url(#capGradRd)" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="27" cy="21.5" r="2.5" fill="#f59e0b"/>
+            </svg>
+            Lingualab
+          </h1>
+          <p class="subtitle">&#128214; <strong>Reading</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">Exams &amp; practice</span></span></p>
         </div>
-        <div class="skill-header-right">
-          <span class="skill-progress-pill" id="readingProgressPill">0%</span>
+        <div class="header-right">
+          <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
+            <span>&#9881;&#65039;</span>
+          </button>
+          <button class="profile-badge" onclick="openProfileModal()">
+            <div class="avatar-display" style="background:#fff3e0">
+              <span class="avatar-emoji">&#129418;</span>
+            </div>
+            <div class="profile-info">
+              <span class="profile-name">Student</span>
+              <span class="profile-level">Level <span class="profile-lvl-n">1</span> &#8226; <span class="profile-xp-n">0</span> XP</span>
+            </div>
+          </button>
+          <button class="logout-btn" onclick="openLogoutModal()">
+            <span>&#128682;</span>
+            <span>Logout</span>
+          </button>
         </div>
       </div>
 
@@ -812,18 +852,45 @@
 
   <div id="writingScreen" class="screen">
     <div class="skill-screen">
-      <div class="skill-header">
-        <div class="skill-header-left">
-          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to hub">
-            <span class="chev" aria-hidden="true">←</span><span>Hub</span>
+      <div class="dashboard-header">
+        <div class="header-left">
+          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to dashboard">
+            <span class="chev" aria-hidden="true">&#8592;</span><span>Dashboard</span>
           </button>
-          <div class="skill-title">
-            <div class="icon" aria-hidden="true">✍️</div>
-            <div><h2>Writing</h2><div class="skill-sub">—</div></div>
-          </div>
+          <h1>
+            <svg class="dash-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="capGradWr" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%"   stop-color="#3b82f6"/>
+                  <stop offset="100%" stop-color="#fb923c"/>
+                </linearGradient>
+              </defs>
+              <polygon points="14,3 27,10 14,17 1,10" fill="url(#capGradWr)"/>
+              <path d="M7 12.5v6a7 7 0 0 0 14 0v-6" fill="url(#capGradWr)" opacity="0.75"/>
+              <line x1="27" y1="10" x2="27" y2="19" stroke="url(#capGradWr)" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="27" cy="21.5" r="2.5" fill="#f59e0b"/>
+            </svg>
+            Lingualab
+          </h1>
+          <p class="subtitle">&#9997;&#65039; <strong>Writing</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">Feedback &amp; practice</span></span></p>
         </div>
-        <div class="skill-header-right">
-          <span class="skill-progress-pill">0%</span>
+        <div class="header-right">
+          <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
+            <span>&#9881;&#65039;</span>
+          </button>
+          <button class="profile-badge" onclick="openProfileModal()">
+            <div class="avatar-display" style="background:#fff3e0">
+              <span class="avatar-emoji">&#129418;</span>
+            </div>
+            <div class="profile-info">
+              <span class="profile-name">Student</span>
+              <span class="profile-level">Level <span class="profile-lvl-n">1</span> &#8226; <span class="profile-xp-n">0</span> XP</span>
+            </div>
+          </button>
+          <button class="logout-btn" onclick="openLogoutModal()">
+            <span>&#128682;</span>
+            <span>Logout</span>
+          </button>
         </div>
       </div>
     </div>
@@ -831,18 +898,45 @@
 
   <div id="speakingScreen" class="screen">
     <div class="skill-screen">
-      <div class="skill-header">
-        <div class="skill-header-left">
-          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to hub">
-            <span class="chev" aria-hidden="true">←</span><span>Hub</span>
+      <div class="dashboard-header">
+        <div class="header-left">
+          <button class="skill-back-btn" onclick="backToHub()" aria-label="Back to dashboard">
+            <span class="chev" aria-hidden="true">&#8592;</span><span>Dashboard</span>
           </button>
-          <div class="skill-title">
-            <div class="icon" aria-hidden="true">🎤</div>
-            <div><h2>Speaking</h2><div class="skill-sub">—</div></div>
-          </div>
+          <h1>
+            <svg class="dash-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="capGradSp" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%"   stop-color="#3b82f6"/>
+                  <stop offset="100%" stop-color="#fb923c"/>
+                </linearGradient>
+              </defs>
+              <polygon points="14,3 27,10 14,17 1,10" fill="url(#capGradSp)"/>
+              <path d="M7 12.5v6a7 7 0 0 0 14 0v-6" fill="url(#capGradSp)" opacity="0.75"/>
+              <line x1="27" y1="10" x2="27" y2="19" stroke="url(#capGradSp)" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="27" cy="21.5" r="2.5" fill="#f59e0b"/>
+            </svg>
+            Lingualab
+          </h1>
+          <p class="subtitle">&#127908; <strong>Speaking</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">Practice aloud</span></span></p>
         </div>
-        <div class="skill-header-right">
-          <span class="skill-progress-pill">0%</span>
+        <div class="header-right">
+          <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
+            <span>&#9881;&#65039;</span>
+          </button>
+          <button class="profile-badge" onclick="openProfileModal()">
+            <div class="avatar-display" style="background:#fff3e0">
+              <span class="avatar-emoji">&#129418;</span>
+            </div>
+            <div class="profile-info">
+              <span class="profile-name">Student</span>
+              <span class="profile-level">Level <span class="profile-lvl-n">1</span> &#8226; <span class="profile-xp-n">0</span> XP</span>
+            </div>
+          </button>
+          <button class="logout-btn" onclick="openLogoutModal()">
+            <span>&#128682;</span>
+            <span>Logout</span>
+          </button>
         </div>
       </div>
     </div>
@@ -1048,9 +1142,9 @@
   <!-- ═══════ LISTENING EXAM SCREEN ═══════ -->
   <div id="listeningExamScreen" class="screen">
     <div class="exam-header">
-      <button class="exam-back-btn" onclick="backFromExam()">
+      <button class="exam-back-btn" onclick="backFromExam()" aria-label="Exit this exam">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5m0 0l7 7m-7-7l7-7"/></svg>
-        <span>Back</span>
+        <span>Exit</span>
       </button>
       <h2 id="examTitle">Listening Exam</h2>
     </div>
@@ -1164,11 +1258,11 @@
 <script src="activity-tracker/js/activity-logger.js"></script>
 
 <!-- Modular JavaScript - Load order matters! -->
-<script src="student/js/config.js"></script>
+<script src="student/js/config.js?v=2"></script>
 <!-- Account gate (window.AccountGate): must load BEFORE auth.js so the
      dashboard can re-check active/expiry on load, not just at login. -->
 <script src="index/js/account-gate.js"></script>
-<script src="student/js/auth.js"></script>
+<script src="student/js/auth.js?v=2"></script>
 <!-- Phase J — bi-monthly verification gate. Watches for
      window.currentStudentData (populated by auth.js after the user
      doc loads) and pops the #verifyGateModal if their lastVerifiedAt
@@ -1179,7 +1273,7 @@
 <script src="student/js/pronunciation.js"></script>
 <script src="student/js/inflection.js"></script>
 <script src="student/js/games.js?v=2"></script>
-<script src="student/js/progress.js"></script>
+<script src="student/js/progress.js?v=2"></script>
 <script src="student/js/student.js"></script>
 <!-- Skill registry MUST load before student-assignments.js so the
      skill pills + per-skill row meta + smart router can read from it. -->
@@ -1195,19 +1289,20 @@
      load before student-assignments.js uses them. -->
 <script src="assignments/js/writing-comment-bank.js"></script>
 <script src="assignments/js/writing-annotations.js"></script>
-<script src="assignments/js/student-assignments.js?v=4"></script>
-<script src="student/js/listening-exam.js?v=2"></script>
-<script src="student/js/reading-exam.js?v=3"></script>
-<script src="student/js/avatar.js"></script>
-<script src="student/js/hub.js?v=4"></script>
+<script src="assignments/js/student-assignments.js?v=7"></script>
+<script src="student/js/listening-exam.js?v=5"></script>
+<script src="student/js/reading-exam.js?v=4"></script>
+<script src="student/js/avatar.js?v=4"></script>
+<script src="student/js/hub.js?v=8"></script>
 <script src="student/js/course-target.js"></script>
-<script src="student/js/placement-tile.js?v=2"></script>
+<script src="student/js/hub-preload.js?v=1"></script>
+<script src="student/js/placement-tile.js?v=6"></script>
 <script src="student/js/skills/listening.js"></script>
 <!-- Phone/system back-button → in-app navigation. Loaded LAST so it can
      wrap showScreen() after every other module has loaded. -->
-<script src="student/js/back-nav.js"></script>
+<script src="student/js/back-nav.js?v=2"></script>
 <script src="student/js/skills/grammar-content.js?v=34"></script>
-<script src="student/js/skills/grammar.js?v=30"></script>
+<script src="student/js/skills/grammar.js?v=32"></script>
 <!-- Feature toggles for the hub tiles (settings/featureToggles). -->
 <script src="student/js/feature-toggles.js?v=2"></script>
 <!-- Content controls: hide assignment-only exams from practice + grammar count. -->
@@ -1218,34 +1313,92 @@
 <script src="student/js/skills/speaking.js"></script>
 
 <script>
-// ── Dashboard subtitle text cycle ────────────────────────────────────────────
+// ── Skill-screen subtitle text cycle ─────────────────────────────────────────
+// Every skill screen gets the rotating subtitle vocabulary had. It used to be
+// `document.querySelector('.dash-cycle-wrapper')` - singular - so it drove the
+// FIRST wrapper in the document and nothing else; grammar, listening, reading,
+// writing and speaking each carried a wrapper that never moved.
+//
+// One timer for the whole page. Only the wrapper on the ACTIVE screen advances:
+// the other five sit in hidden .screen divs, and animating those would be pure
+// churn (and would desynchronise their phrase from what a student sees when
+// they arrive).
 (function () {
-  const phrases = [
-    'from your Empower coursebook',
-    'across A2 · B1 · B1+ · B2',
-    'with 10 interactive activities',
-    'one session at a time',
-    'and track your progress'
-  ];
-  let idx = 0;
+  const PHRASES = {
+    vocabulary: [
+      'from your Empower coursebook',
+      'across A2 · B1 · B1+ · B2',
+      'with 10 interactive activities',
+      'one session at a time',
+      'and track your progress'
+    ],
+    grammar: [
+      'across A2 · B1 · B1+ · B2',
+      'unit by unit',
+      'with 5 challenge games',
+      'master a unit to earn the trophy',
+      'and watch your accuracy climb'
+    ],
+    listening: [
+      'full FSMEPT practice exams',
+      'real exam timing',
+      'replay any section',
+      'check your answers instantly',
+      'and build exam confidence'
+    ],
+    reading: [
+      'across A2 · B1 · B1+ · B2 · C1',
+      'timed or untimed, your choice',
+      'real FSMEPT passages',
+      'with instant scoring',
+      'and a full answer review'
+    ],
+    writing: [
+      'get feedback on every draft',
+      'graded against the exam rubric',
+      'revise and resubmit',
+      'see exactly what to fix',
+      'and track every submission'
+    ],
+    speaking: [
+      'practise out loud',
+      'at your own pace',
+      'hear yourself back',
+      'build fluency daily',
+      'and lose the nerves'
+    ]
+  };
 
   document.addEventListener('DOMContentLoaded', function () {
-    const wrapper = document.querySelector('.dash-cycle-wrapper');
-    if (!wrapper) return;
+    const wrappers = Array.prototype.map.call(
+      document.querySelectorAll('.dash-cycle-wrapper'),
+      function (el) {
+        const screen = el.closest('.screen');
+        const key = screen ? (screen.dataset.cycle || screen.id.replace(/Screen$/, '')) : '';
+        // #menuScreen is the vocabulary screen; every other id matches its key.
+        const list = PHRASES[key === 'menu' ? 'vocabulary' : key];
+        return list ? { el: el, list: list, idx: 0 } : null;
+      }
+    ).filter(Boolean);
+    if (!wrappers.length) return;
 
     setInterval(function () {
-      idx = (idx + 1) % phrases.length;
+      wrappers.forEach(function (w) {
+        // offsetParent is null for anything inside a display:none screen.
+        if (!w.el.offsetParent) return;
+        w.idx = (w.idx + 1) % w.list.length;
 
-      const current = wrapper.querySelector('.dash-cycle-word:not(.exit)');
-      if (current) {
-        current.classList.add('exit');
-        setTimeout(() => current.remove(), 370);
-      }
+        const current = w.el.querySelector('.dash-cycle-word:not(.exit)');
+        if (current) {
+          current.classList.add('exit');
+          setTimeout(function () { current.remove(); }, 370);
+        }
 
-      const next = document.createElement('span');
-      next.className   = 'dash-cycle-word';
-      next.textContent = phrases[idx];
-      wrapper.appendChild(next);
+        const next = document.createElement('span');
+        next.className   = 'dash-cycle-word';
+        next.textContent = w.list[w.idx];
+        w.el.appendChild(next);
+      });
     }, 3000);
   });
 })();

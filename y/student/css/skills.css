@@ -17,24 +17,53 @@
   --dash-primary-dk:  #0f766e;
   --dash-border:      rgba(255,255,255,0.07);
   --dash-border-md:   rgba(255,255,255,0.13);
+  /* The rest of #menuScreen's token set, same values. Without these, any
+     component lifted from the vocabulary dashboard renders here with its
+     fallbacks instead of its real colours - the XP bar was the visible case:
+     --dash-xp / --dash-xp-lt drive the amber fill and the "33 / 100 XP"
+     figure, and neither existed on a skill screen. */
+  --dash-secondary:   #3b82f6;
+  --dash-xp:          #f59e0b;
+  --dash-xp-lt:       #fcd34d;
+  --dash-streak:      #f97316;
+  --dash-success:     #22c55e;
+  --dash-fg1:         #f1f5f9;
+  --dash-fg2:         #94a3b8;
+  --dash-fg3:         #64748b;
   --text-primary:     #f1f5f9;
   --text-secondary:   #94a3b8;
   --text-tertiary:    #64748b;
   /* Default skill accent — pages can override via --skill-accent */
   --skill-accent:     var(--dash-primary-lt);
 
-  max-width: 1100px;
+  /* No second width cap. .container already bounds and pads the card; capping
+     again at 1100px inset the skill screens inside it, so listening/grammar
+     sat in a narrower column than vocabulary (#menuScreen), which is not a
+     .skill-screen and therefore used the full card. */
+  max-width: 100%;
   margin: 0 auto;
-  padding: 20px 16px 48px;
+  padding: 20px 0 48px;
+
+  /* Same typeface as vocabulary. #menuScreen declares Nunito in extra.css but
+     nothing declared it here, so every skill screen fell back to the body font
+     (Segoe UI) - the clearest reason listening did not look like vocabulary
+     even where the boxes matched. */
+  font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 /* Per-skill accents on skill-home screens. The id-based selectors
-   let each page pick up the matching hub-card color without JS. */
-#listeningScreen.skill-screen { --skill-accent: #38bdf8; }
-#grammarScreen.skill-screen   { --skill-accent: #f59e0b; }
-#readingScreen.skill-screen   { --skill-accent: #fb7185; }
-#writingScreen.skill-screen   { --skill-accent: #a78bfa; }
-#speakingScreen.skill-screen  { --skill-accent: #fbbf24; }
+   let each page pick up the matching hub-card color without JS.
+
+   DESCENDANT, not compound. These were written "#listeningScreen.skill-screen"
+   (no space), which requires one element carrying BOTH. The markup is
+   <div id="listeningScreen" class="screen"><div class="skill-screen">, so the
+   class is on a CHILD and all five rules matched nothing - every skill screen
+   silently used the default accent. */
+#listeningScreen .skill-screen { --skill-accent: #38bdf8; }
+#grammarScreen   .skill-screen { --skill-accent: #f59e0b; }
+#readingScreen   .skill-screen { --skill-accent: #fb7185; }
+#writingScreen   .skill-screen { --skill-accent: #a78bfa; }
+#speakingScreen  .skill-screen { --skill-accent: #fbbf24; }
 
 /* ---------- Header ---------- */
 .skill-header {
@@ -62,7 +91,7 @@
   border: 1px solid var(--dash-border-md, rgba(255, 255, 255, 0.08));
   color: var(--text-primary, #f1f5f9);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   padding: 8px 14px;
   border-radius: 999px;
@@ -84,7 +113,7 @@
   transform: translateY(1px);
 }
 .skill-back-btn .chev {
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1;
 }
 
@@ -98,19 +127,19 @@
   width: 36px; height: 36px;
   border-radius: 10px;
   display: grid; place-items: center;
-  font-size: 20px;
+  font-size: 1.25rem;
   background: color-mix(in srgb, var(--skill-accent) 14%, transparent);
   border: 1px solid color-mix(in srgb, var(--skill-accent) 35%, transparent);
 }
 .skill-title h2 {
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 800;
   color: var(--text-primary, #f1f5f9);
   margin: 0;
   letter-spacing: -0.01em;
 }
 .skill-title .skill-sub {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--text-secondary, #94a3b8);
   margin-top: 1px;
 }
@@ -141,7 +170,7 @@
   background: color-mix(in srgb, var(--skill-accent) 14%, transparent);
   border: 1px solid color-mix(in srgb, var(--skill-accent) 40%, transparent);
   color: var(--skill-accent, var(--dash-primary-lt));
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 800;
   padding: 6px 12px;
   border-radius: 999px;
@@ -150,10 +179,10 @@
 
 /* ---------- Section labels ---------- */
 .skill-section-lbl {
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-tertiary, #64748b);
+  color: var(--text-tertiary, var(--text-muted, #64748b));
   font-weight: 700;
   margin: 24px 4px 12px;
 }
@@ -165,8 +194,8 @@
   place-items: center;
   border: 1px dashed var(--dash-border-md, rgba(255, 255, 255, 0.08));
   border-radius: 16px;
-  color: var(--text-tertiary, #64748b);
-  font-size: 13px;
+  color: var(--text-tertiary, var(--text-muted, #64748b));
+  font-size: 0.8125rem;
 }
 
 /* ---------- Activity grid (matches existing .activity-card look) ---------- */

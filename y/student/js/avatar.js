@@ -49,11 +49,17 @@ function selectAvatar(el) {
 function updateAvatarDisplays() {
   const av = AVATAR_MAP[userProfile.avatar] || AVATAR_MAP[DEFAULT_AVATAR];
 
-  // Header badge
-  const display = document.getElementById('avatarDisplay');
-  const emoji   = document.getElementById('avatarDisplayEmoji');
-  if (display) display.style.background = av.color;
-  if (emoji)   emoji.textContent = av.emoji;
+  // EVERY header badge, not just the vocabulary one. This used to look up a
+  // single id (#avatarDisplay), so the hub badge and the per-skill badges kept
+  // a hardcoded fox forever no matter which avatar the student picked. Sweeping
+  // by class means any badge added later syncs with no code change. Safe: the
+  // avatar PICKER grid uses .avatar-option, not .avatar-display, so this cannot
+  // overwrite the choices shown in the chooser.
+  document.querySelectorAll('.avatar-display').forEach(node => {
+    node.style.background = av.color;
+    const e = node.querySelector('.avatar-emoji');
+    if (e) e.textContent = av.emoji;
+  });
 
   // Modal preview
   const preview     = document.getElementById('avatarPreview');
@@ -94,14 +100,20 @@ function updateProfileDisplay() {
 
   const el = id => document.getElementById(id);
 
-  if (el('profileXPLevel')) el('profileXPLevel').textContent = userProfile.level;
-  if (el('profileXP'))      el('profileXP').textContent      = userProfile.xp;
+  // Level / XP on EVERY badge. The ids stay on the spans because progress.js
+  // and hub.js still address them directly (progress.js does so without a null
+  // guard, so removing them would throw) - the classes are additive.
+  document.querySelectorAll('.profile-lvl-n').forEach(n => { n.textContent = userProfile.level; });
+  document.querySelectorAll('.profile-xp-n').forEach(n => { n.textContent = userProfile.xp; });
 
   if (typeof auth !== 'undefined' && auth.currentUser) {
     const name = auth.currentUser.displayName
               || auth.currentUser.email?.split('@')[0]
               || 'Student';
-    if (el('profileName')) el('profileName').textContent = name;
+    // Every profile badge, not just the vocabulary one - same reason as the
+    // avatar sweep above. Grammar's badge (#grProfileName) was never updated,
+    // so it read a literal "Student" no matter who was signed in.
+    document.querySelectorAll('.profile-name').forEach(n => { n.textContent = name; });
     if (el('previewName')) el('previewName').textContent = name;
     // Dashboard welcome banner (design v2)
     if (el('welcomeName')) el('welcomeName').textContent = name;

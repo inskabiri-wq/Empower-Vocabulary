@@ -86,6 +86,36 @@ function _isFeedbackUnseen(assignmentId, status) {
 // ============================================
 // LOAD MY ASSIGNMENTS
 // ============================================
+// Writing submissions for the student's writing assignments, fetched by exact
+// doc id ({uid}_{aid}) - see the long note at the call site for why a where()
+// query is rejected by the security rules. Extracted so it can be STARTED in
+// parallel with the completions query instead of queued behind it. Never
+// rejects: a per-doc failure just means that card shows no feedback.
+async function fetchMyWritingSubmissions(user) {
+  const out = {};
+  try {
+    const writingAids = myAssignments
+      .filter(x => {
+        const sk = (typeof SKILL_REGISTRY !== 'undefined') ? SKILL_REGISTRY.skillOf(x) : (x.skill || 'vocabulary');
+        return sk === 'writing';
+      })
+      .map(x => x.id);
+
+    // Parallel - N is small (only writing assignments currently visible to
+    // this student). Per-doc failures are silent so a single missing or
+    // forbidden doc doesn't take down the rest.
+    await Promise.all(writingAids.map(async (aid) => {
+      try {
+        const doc = await db.collection('writingSubmissions').doc(`${user.uid}_${aid}`).get();
+        if (doc.exists) out[aid] = { id: doc.id, ...doc.data() };
+      } catch (_) { /* swallow - that assignment just won't show feedback */ }
+    }));
+  } catch (e) {
+    console.log('Error loading writing submissions:', e);
+  }
+  return out;
+}
+
 async function loadMyAssignments() {
   // NOTE: We no longer early-return on a missing #assignmentsContainer.
   // That element used to live in the vocabulary sidebar but the hub now
@@ -96,9 +126,18 @@ async function loadMyAssignments() {
   if (!user) return;
   
   try {
-    // Get current user data to know their class / level / module
-    const userDoc = await db.collection('users').doc(user.uid).get();
-    const userData = userDoc.data();
+    // Get current user data to know their class / level / module.
+    // auth.js has ALREADY fetched this document and cached it on
+    // window.currentStudentData. Reusing it deletes an entire network stage
+    // from the front of this chain - the scope queries below cannot start
+    // until class/level/module are known - and drops a duplicate read.
+    // Falls back to a real fetch if auth has not landed yet, so behaviour is
+    // unchanged in the worst case.
+    let userData = window.currentStudentData;
+    if (!userData) {
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      userData = userDoc.data();
+    }
     // Normalize once — every comparison below uses the normalized form.
     const myClass  = normClass(userData?.studentClass);
     // Coerce to string before .trim() — legacy user docs may store
@@ -170,12 +209,21 @@ async function loadMyAssignments() {
     
     // Load my completion records
     myCompletions = {};
+    myWritingSubmissions = {};
     if (myAssignments.length > 0) {
+      // START the two INDEPENDENT reads together. Completions and writing
+      // submissions never needed each other, but they ran one after the other,
+      // so the page waited on two network round trips instead of one - part of
+      // why the assignments list showed up noticeably after the skill cards.
+      // Identical documents read, just not queued. (The sessions fallback
+      // further down genuinely depends on completions, so it stays in order.)
+      const _completionsP = db.collection('assignmentCompletions')
+        .where('odUserId', '==', user.uid)
+        .get();
+      const _writingP = fetchMyWritingSubmissions(user);   // never rejects
       try {
-        const completionSnap = await db.collection('assignmentCompletions')
-          .where('odUserId', '==', user.uid)
-          .get();
-        
+        const completionSnap = await _completionsP;
+
         completionSnap.forEach(doc => {
           const data = doc.data();
           myCompletions[data.assignmentId] = {
@@ -239,31 +287,12 @@ async function loadMyAssignments() {
       // gets sidestep that entirely (and only fetch what we actually
       // need: submissions for the writing assignments the student
       // currently sees).
-      myWritingSubmissions = {};
-      try {
-        const writingAids = myAssignments
-          .filter(x => {
-            const sk = (typeof SKILL_REGISTRY !== 'undefined') ? SKILL_REGISTRY.skillOf(x) : (x.skill || 'vocabulary');
-            return sk === 'writing';
-          })
-          .map(x => x.id);
-
-        // Parallel — N is small (only writing assignments currently
-        // visible to this student). Per-doc failures are silent so a
-        // single missing/forbidden doc doesn't take down the rest.
-        await Promise.all(writingAids.map(async (aid) => {
-          try {
-            const docRef = db.collection('writingSubmissions').doc(`${user.uid}_${aid}`);
-            const doc = await docRef.get();
-            if (doc.exists) {
-              myWritingSubmissions[aid] = { id: doc.id, ...doc.data() };
-            }
-          } catch (_) { /* swallow — that assignment just won't show feedback */ }
-        }));
-        console.log('Loaded writing submissions:', Object.keys(myWritingSubmissions).length);
-      } catch (e) {
-        console.log('Error loading writing submissions:', e);
-      }
+      //
+      // Started ABOVE, next to the completions query, so both were already
+      // in flight while the completions and sessions reads resolved. By the
+      // time we get here it is usually finished, so this await is free.
+      myWritingSubmissions = await _writingP;
+      console.log('Loaded writing submissions:', Object.keys(myWritingSubmissions).length);
 
       // BUG-FIX DERIVATION — historically writing-exam.js wrote
       // `userId` instead of `odUserId` to /assignmentCompletions, so
@@ -325,6 +354,12 @@ function renderMyAssignments() {
   // Compute counts up front so the stats bar reflects the FULL set,
   // independent of the active filter tab.
   const now = new Date();
+  // Local midnight for a date, so deadlines compare as calendar days.
+  const startOfLocalDay = d => {
+    const x = new Date(d.getTime());
+    x.setHours(0, 0, 0, 0);
+    return x;
+  };
   let pendingCount = 0;
   let completedCount = 0;
   // Phase E: any writing feedback the student hasn't yet acknowledged
@@ -342,7 +377,17 @@ function renderMyAssignments() {
   // so we can sort/filter/render without re-running the same maths.
   const decorated = myAssignments.map(a => {
     const deadline = a.deadline?.toDate ? a.deadline.toDate() : new Date(a.deadline);
-    const daysLeft = Math.ceil((deadline - now) / 86400000);
+    // Compare CALENDAR DAYS, not instants. A deadline is a date the teacher
+    // picked in an <input type="date">, and the card prints that same date, so
+    // "Overdue" has to flip when the local date moves past it - not 24 hours
+    // after some instant nobody sees.
+    //
+    // The old line was `Math.ceil((deadline - now) / 86400000)`. Math.ceil
+    // returns -0 for any difference between -1 and 0 days, and `-0 < 0` is
+    // FALSE in JavaScript, so isOverdue stayed false and daysLeft === 0 matched
+    // "Due Today!" for a full day AFTER the deadline. An assignment due Aug 11
+    // still read "Due Today!" on Aug 12.
+    const daysLeft = Math.round((startOfLocalDay(deadline) - startOfLocalDay(now)) / 86400000);
     const isOverdue = daysLeft < 0;
     const status = checkMyAssignmentStatus(a);
 
@@ -967,8 +1012,32 @@ function renderMyAssignments() {
 function toggleAsgCard(headerEl) {
   const card = headerEl && headerEl.closest('.my-assignment-card');
   if (!card) return;
+  const detail = card.querySelector('.asg-acc-detail');
   const collapsed = card.classList.toggle('asg-collapsed');
   headerEl.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  if (!detail) return;
+
+  // The CSS animated max-height between 0 and a FIXED 1200px. A real card is
+  // only ~200px tall, so four fifths of every animation was spent travelling
+  // through empty space: opening looked like it snapped then stalled, closing
+  // did nothing for a beat then dropped. That is the "slow" feeling. Driving
+  // max-height from the element's ACTUAL height makes the motion match the
+  // content. Inline styles win over the stylesheet's fixed values.
+  if (collapsed) {
+    detail.style.maxHeight = detail.scrollHeight + 'px';  // start from real height
+    void detail.offsetHeight;                             // commit it, so the next line animates
+    detail.style.maxHeight = '0px';
+  } else {
+    detail.style.maxHeight = detail.scrollHeight + 'px';
+    // Once open, hand height back to the stylesheet so later content changes
+    // (a grade arriving, a longer note) are never clipped at the old measure.
+    const done = (e) => {
+      if (e.propertyName !== 'max-height') return;
+      detail.removeEventListener('transitionend', done);
+      if (!card.classList.contains('asg-collapsed')) detail.style.maxHeight = '';
+    };
+    detail.addEventListener('transitionend', done);
+  }
 }
 window.toggleAsgCard = toggleAsgCard;
 

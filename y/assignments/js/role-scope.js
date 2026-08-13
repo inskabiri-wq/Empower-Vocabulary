@@ -79,7 +79,7 @@
     return assigned.map(s => String(s).trim()).filter(Boolean).sort();
   }
 
-  // Repopulates a class <select> with the role-scoped list. Replaces
+  // Repopulates a class <select class="ll-select"> with the role-scoped list. Replaces
   // every option with the allowed set, preserving the previously
   // selected value if it's still legal.
   async function populateClassDropdownScoped(selectId) {

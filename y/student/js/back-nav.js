@@ -121,6 +121,18 @@
   window.addEventListener('popstate', () => {
     if (!origShowScreen) return; // setup didn't complete; bail safely
 
+    // A screen can refuse to be left. The listening and reading exams do:
+    // walking out mid-attempt loses the answers, and on a phone the system
+    // back gesture is very easy to trigger by accident. The screen owns the
+    // warning; we just re-push a history entry so the gesture is undone and
+    // the student stays where they were.
+    const leaving = navStack[navStack.length - 1];
+    const guard = window.screenExitGuards && window.screenExitGuards[leaving];
+    if (typeof guard === 'function' && guard() === false) {
+      ensureRootSentinel();
+      return;
+    }
+
     if (navStack.length > 1) {
       // Walk back one step in our app
       isPopping = true;

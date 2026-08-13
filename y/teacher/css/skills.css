@@ -23,9 +23,9 @@
   gap: 6px;
   background: transparent;
   border: 1px solid transparent;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted, var(--text-secondary, #94a3b8));
   font-family: inherit;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   padding: 8px 14px;
   border-radius: 999px;
@@ -63,5 +63,5 @@
 /* Responsive */
 @media (max-width: 720px) {
   .skill-filter-strip { padding: 4px; }
-  .skill-pill { padding: 7px 12px; font-size: 11.5px; }
+  .skill-pill { padding: 7px 12px; font-size: 0.7188rem; }
 }

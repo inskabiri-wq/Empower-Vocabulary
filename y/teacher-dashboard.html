@@ -13,15 +13,15 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css">
+<link rel="stylesheet" href="css/brand.css?v=17">
 <!-- Shared themed dialog (alert/confirm/prompt) - replaces native browser popups app-wide. -->
 <script src="js/app-dialog.js"></script>
-<link rel="stylesheet" href="teacher/css/styles.css">
-<link rel="stylesheet" href="teacher/css/skills.css">
-<link rel="stylesheet" href="assignments/css/assignments.css">
+<link rel="stylesheet" href="teacher/css/styles.css?v=7">
+<link rel="stylesheet" href="teacher/css/skills.css?v=6">
+<link rel="stylesheet" href="assignments/css/assignments.css?v=4">
 <!-- v2 design system: sidebar layout + Crystal-style overview tab.
      Loaded last so its scoped `.t2-active` rules can override defaults. -->
-<link rel="stylesheet" href="teacher/css/dashboard-v2.css">
+<link rel="stylesheet" href="teacher/css/dashboard-v2.css?v=3">
 <style>
 /* Tab Navigation */
 .tab-nav {
@@ -1087,9 +1087,19 @@
   }
 }
 </style>
-<link rel="stylesheet" href="css/fsmvu-loader.css">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
+  <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=38">
+  <script src="js/app-settings.js?v=22"></script>
 </head>
-<body>
+<!-- data-app-settings="off": the "Display" sidebar row was removed, and this
+     page must not grow a replacement. Without the opt-out, app-settings.js
+     finds no [data-app-settings-open] here, builds its floating wheel and
+     injects it plus the Lingualab lockup into <header class="t2-page-header">
+     - none of which was asked for. Text scaling still applies (that is set on
+     <html> before mount); only the panel UI is suppressed. -->
+<body data-app-settings="off">
 
 <div class="container">
   <div id="loadingScreen" class="loading">
@@ -1176,6 +1186,12 @@
       <a class="t2-nav-item" href="classroom-teacher.html" style="text-decoration:none">
         <span class="ico" data-icon="gamepad"></span><span class="label">Classroom</span>
       </a>
+      <!-- The "Display" sidebar row was removed on request. The shared panel is
+           still available on this page: with no [data-app-settings-open] here,
+           js/app-settings.js falls back to its own wheel and places it in the
+           page header, the same way it does on courses and the classroom
+           pages. -->
+
       <!-- Export Report moved into Admin > Reports (teacher/js/reports-admin.js). -->
       <button type="button" class="t2-nav-item" onclick="openLogoutModal()">
         <span class="ico" data-icon="log-out"></span><span class="label">Logout</span>
@@ -1206,7 +1222,7 @@
           <p class="sub" id="t2HeaderSub"></p>
         </div>
         <div class="t2-header-actions" id="t2OverviewActions">
-          <select class="t2-period-select" id="t2periodSelect" aria-label="Time period" onchange="t2SetPeriod(this.value)">
+          <select class="t2-period-select ll-select" id="t2periodSelect" aria-label="Time period" onchange="t2SetPeriod(this.value)">
             <option value="7" selected>Last 7 days</option>
             <option value="30">Last 30 days</option>
           </select>
@@ -1856,7 +1872,7 @@
           <div class="da-grid">
             <div>
               <label class="da-label" for="daRole">Account type</label>
-              <select id="daRole" class="da-in">
+              <select id="daRole" class="da-in ll-select">
                 <option value="student">🎓 Student</option>
                 <option value="teacher">👩‍🏫 Teacher</option>
               </select>
@@ -1887,7 +1903,7 @@
             <div class="da-grid">
               <div>
                 <label class="da-label" for="daLevel">Level</label>
-                <select id="daLevel" class="da-in">
+                <select id="daLevel" class="da-in ll-select">
                   <option value="A2">A2</option>
                   <option value="B1" selected>B1</option>
                   <option value="B1+">B1+</option>
@@ -1896,18 +1912,32 @@
                 </select>
               </div>
               <div>
+                <!-- Class options are filled from the real class list by
+                     demo-account-admin.js (free text let people type values
+                     that no filter matches). -->
                 <label class="da-label" for="daClass">Class</label>
-                <input id="daClass" type="text" class="da-in" placeholder="B101" value="B101" autocomplete="off">
+                <select id="daClass" class="da-in ll-select"></select>
               </div>
             </div>
             <div class="da-grid">
               <div>
                 <label class="da-label" for="daModule">Module</label>
-                <input id="daModule" type="text" class="da-in" placeholder="Module 2" value="Module 2" autocomplete="off">
+                <select id="daModule" class="da-in ll-select">
+                  <option value="Module 1">Module 1</option>
+                  <option value="Module 2" selected>Module 2</option>
+                  <option value="Module 3">Module 3</option>
+                  <option value="Module 4">Module 4</option>
+                </select>
               </div>
               <div>
+                <!-- Canonical year strings - must match the app's filters
+                     exactly ("2025-2026", not "2025-26"). -->
                 <label class="da-label" for="daYear">Academic year</label>
-                <input id="daYear" type="text" class="da-in" placeholder="2025-26" value="2025-26" autocomplete="off">
+                <select id="daYear" class="da-in ll-select">
+                  <option value="2025-2026" selected>2025-2026</option>
+                  <option value="2026-2027">2026-2027</option>
+                  <option value="2027-2028">2027-2028</option>
+                </select>
               </div>
             </div>
           </div>
@@ -2063,21 +2093,21 @@
           <div class="activity-filters">
             <div class="activity-filter-group">
               <label>Role</label>
-              <select class="activity-filter-select" id="activityFilterRole">
+              <select class="activity-filter-select ll-select" id="activityFilterRole">
                 <option value="">All Roles</option>
               </select>
             </div>
 
             <div class="activity-filter-group">
               <label>Category</label>
-              <select class="activity-filter-select" id="activityFilterCategory">
+              <select class="activity-filter-select ll-select" id="activityFilterCategory">
                 <option value="">All Categories</option>
               </select>
             </div>
 
             <div class="activity-filter-group">
               <label>Activity Type</label>
-              <select class="activity-filter-select" id="activityFilterType">
+              <select class="activity-filter-select ll-select" id="activityFilterType">
                 <option value="">All Activities</option>
               </select>
             </div>
@@ -2152,7 +2182,7 @@
     <input type="hidden" id="editStudentId">
     
     <label>Level</label>
-    <select id="editLevel">
+    <select class="ll-select" id="editLevel">
       <option value="A2">A2 - Elementary</option>
       <option value="B1">B1 - Intermediate</option>
       <option value="B1+">B1+ - Upper Intermediate</option>
@@ -2162,7 +2192,7 @@
     
     <label>Class</label>
     <div style="display: flex; gap: 10px;">
-      <select id="editClassLetter" style="width: 80px;">
+      <select class="ll-select" id="editClassLetter" style="width: 80px;">
         <option value="B">B</option>
         <option value="C">C</option>
         <option value="D">D</option>
@@ -2171,7 +2201,7 @@
     </div>
     
     <label>Module</label>
-    <select id="editModule">
+    <select class="ll-select" id="editModule">
       <option value="Module 1">Module 1</option>
       <option value="Module 2">Module 2</option>
       <option value="Module 3">Module 3</option>
@@ -2179,7 +2209,7 @@
     </select>
     
     <label>Academic Year</label>
-    <select id="editYear">
+    <select class="ll-select" id="editYear">
       <option value="2025-2026">2025-2026</option>
       <option value="2026-2027">2026-2027</option>
       <option value="2027-2028">2027-2028</option>
@@ -2291,7 +2321,7 @@
 
     <div class="assignment-form-group">
       <label>Pick an Exam</label>
-      <select id="examPickerSelect" style="width: 100%;">
+      <select class="ll-select" id="examPickerSelect" style="width: 100%;">
         <option value="">- Loading available exams -</option>
       </select>
       <div id="examPickerHint" style="margin-top: 6px; font-size: 0.85em; color: var(--text-muted);"></div>
@@ -2300,7 +2330,7 @@
     <div class="assignment-form-row">
       <div class="assignment-form-group">
         <label>Target</label>
-        <select id="examTargetType" onchange="onExamTargetTypeChange()">
+        <select class="ll-select" id="examTargetType" onchange="onExamTargetTypeChange()">
           <option value="class">Entire Class</option>
           <option value="level">Entire Level</option>
           <option value="module">Entire Module</option>
@@ -2309,13 +2339,13 @@
       </div>
       <div class="assignment-form-group" id="examClassTargetGroup">
         <label>Target Class</label>
-        <select id="examTargetClass">
+        <select class="ll-select" id="examTargetClass">
           <option value="">- Loading classes -</option>
         </select>
       </div>
       <div class="assignment-form-group" id="examLevelTargetGroup" style="display: none;">
         <label>Target Level</label>
-        <select id="examTargetLevel">
+        <select class="ll-select" id="examTargetLevel">
           <option value="">- Select a level -</option>
           <option value="A2">A2 - Elementary</option>
           <option value="B1">B1 - Intermediate</option>
@@ -2326,7 +2356,7 @@
       </div>
       <div class="assignment-form-group" id="examModuleTargetGroup" style="display: none;">
         <label>Target Module</label>
-        <select id="examTargetModule">
+        <select class="ll-select" id="examTargetModule">
           <option value="">- Select a module -</option>
           <option value="Module 1">Module 1</option>
           <option value="Module 2">Module 2</option>
@@ -2451,7 +2481,7 @@
 
     <div class="assignment-form-group">
       <label>Level</label>
-      <select id="grammarLevelSelect" style="width: 100%;" onchange="onGrammarLevelChange()">
+      <select class="ll-select" id="grammarLevelSelect" style="width: 100%;" onchange="onGrammarLevelChange()">
         <option value="">- Select a level -</option>
       </select>
     </div>
@@ -2469,7 +2499,7 @@
       <label>Questions per drill
         <span style="font-weight: normal; color: var(--text-muted); font-size: 0.85em;">(leave on Default to use the organization setting)</span>
       </label>
-      <select id="grammarQuestionCount" style="width: 100%;">
+      <select class="ll-select" id="grammarQuestionCount" style="width: 100%;">
         <option value="">Default (organization setting)</option>
         <option value="5">5 questions</option>
         <option value="8">8 questions</option>
@@ -2486,7 +2516,7 @@
     <div class="assignment-form-row">
       <div class="assignment-form-group">
         <label>Target</label>
-        <select id="grammarTargetType" onchange="onGrammarTargetTypeChange()">
+        <select class="ll-select" id="grammarTargetType" onchange="onGrammarTargetTypeChange()">
           <option value="class">Entire Class</option>
           <option value="level">Entire Level</option>
           <option value="module">Entire Module</option>
@@ -2495,11 +2525,11 @@
       </div>
       <div class="assignment-form-group" id="grammarClassTargetGroup">
         <label>Target Class</label>
-        <select id="grammarTargetClass"><option value="">- Loading classes -</option></select>
+        <select class="ll-select" id="grammarTargetClass"><option value="">- Loading classes -</option></select>
       </div>
       <div class="assignment-form-group" id="grammarLevelTargetGroup" style="display: none;">
         <label>Target Level</label>
-        <select id="grammarTargetLevel">
+        <select class="ll-select" id="grammarTargetLevel">
           <option value="">- Select a level -</option>
           <option value="A2">A2 - Elementary</option>
           <option value="B1">B1 - Intermediate</option>
@@ -2510,7 +2540,7 @@
       </div>
       <div class="assignment-form-group" id="grammarModuleTargetGroup" style="display: none;">
         <label>Target Module</label>
-        <select id="grammarTargetModule">
+        <select class="ll-select" id="grammarTargetModule">
           <option value="">- Select a module -</option>
           <option value="Module 1">Module 1</option>
           <option value="Module 2">Module 2</option>
@@ -2592,7 +2622,7 @@
     <div class="assignment-form-row">
       <div class="assignment-form-group">
         <label>Question Type</label>
-        <select id="writingQuestionType">
+        <select class="ll-select" id="writingQuestionType">
           <option value="opinion-essay">Opinion Essay</option>
           <option value="discussion-essay">Discussion Essay</option>
           <option value="advantage-disadvantage">Advantage / Disadvantage</option>
@@ -2606,7 +2636,7 @@
       </div>
       <div class="assignment-form-group">
         <label>Level <span style="font-weight: normal; color: var(--text-muted); font-size: 0.85em;">(optional)</span></label>
-        <select id="writingLevel">
+        <select class="ll-select" id="writingLevel">
           <option value="">- Not set -</option>
           <option value="A2">A2 - Elementary</option>
           <option value="B1">B1 - Intermediate</option>
@@ -2625,7 +2655,7 @@
         <label>Grading rubric
           <span style="font-weight: normal; color: var(--text-muted); font-size: 0.85em;">(drives the comment bank)</span>
         </label>
-        <select id="writingRubricType">
+        <select class="ll-select" id="writingRubricType">
           <option value="essay">Essay (Int / Upper-Int / Pre-Adv)</option>
           <option value="academic">Academic paragraph (Pre-Int / Int)</option>
           <option value="short">Short paragraph (Elementary / Pre-Int)</option>
@@ -2687,7 +2717,7 @@
     <div class="assignment-form-row">
       <div class="assignment-form-group">
         <label>Target</label>
-        <select id="writingTargetType" onchange="onWritingTargetTypeChange()">
+        <select class="ll-select" id="writingTargetType" onchange="onWritingTargetTypeChange()">
           <option value="class">Entire Class</option>
           <option value="level">Entire Level</option>
           <option value="module">Entire Module</option>
@@ -2696,13 +2726,13 @@
       </div>
       <div class="assignment-form-group" id="writingClassTargetGroup">
         <label>Target Class</label>
-        <select id="writingTargetClass">
+        <select class="ll-select" id="writingTargetClass">
           <!-- populated dynamically -->
         </select>
       </div>
       <div class="assignment-form-group" id="writingLevelTargetGroup" style="display: none;">
         <label>Target Level</label>
-        <select id="writingTargetLevel">
+        <select class="ll-select" id="writingTargetLevel">
           <option value="">- Select a level -</option>
           <option value="A2">A2 - Elementary</option>
           <option value="B1">B1 - Intermediate</option>
@@ -2713,7 +2743,7 @@
       </div>
       <div class="assignment-form-group" id="writingModuleTargetGroup" style="display: none;">
         <label>Target Module</label>
-        <select id="writingTargetModule">
+        <select class="ll-select" id="writingTargetModule">
           <option value="">- Select a module -</option>
           <option value="Module 1">Module 1</option>
           <option value="Module 2">Module 2</option>
@@ -2790,14 +2820,14 @@
     <div class="assignment-form-row">
       <div class="assignment-form-group">
         <label>Book</label>
-        <select id="assignmentBook">
+        <select class="ll-select" id="assignmentBook">
           <option value="empower">📘 Empower</option>
           <option value="gateway">📗 Gateway</option>
         </select>
       </div>
       <div class="assignment-form-group">
         <label>Level</label>
-        <select id="assignmentLevel">
+        <select class="ll-select" id="assignmentLevel">
           <option value="A2">A2 - Elementary</option>
           <option value="B1">B1 - Intermediate</option>
           <option value="B1+">B1+ - Upper Intermediate</option>
@@ -2810,7 +2840,7 @@
     <div class="assignment-form-row">
       <div class="assignment-form-group">
         <label>Unit</label>
-        <select id="assignmentUnit">
+        <select class="ll-select" id="assignmentUnit">
           <option value="all">All Units</option>
           <option value="Unit 1">Unit 1</option>
           <option value="Unit 2">Unit 2</option>
@@ -2828,7 +2858,7 @@
       </div>
       <div class="assignment-form-group">
         <label>Activity Type</label>
-        <select id="assignmentActivity">
+        <select class="ll-select" id="assignmentActivity">
           <option value="all">Any Activity</option>
           <option value="choice">Multiple Choice</option>
           <option value="fillblank">Fill in Blank</option>
@@ -2843,7 +2873,7 @@
     
     <div class="assignment-form-group">
       <label>Assign To</label>
-      <select id="assignmentTargetType" onchange="onTargetTypeChange()">
+      <select class="ll-select" id="assignmentTargetType" onchange="onTargetTypeChange()">
         <option value="class">Entire Class</option>
         <option value="level">Entire Level</option>
         <option value="module">Entire Module</option>
@@ -2853,14 +2883,14 @@
 
     <div class="assignment-form-group" id="classTargetGroup">
       <label>Select Class</label>
-      <select id="assignmentTargetClass">
+      <select class="ll-select" id="assignmentTargetClass">
         <option value="">-- Select Class --</option>
       </select>
     </div>
 
     <div class="assignment-form-group" id="levelTargetGroup" style="display: none;">
       <label>Select Level</label>
-      <select id="assignmentTargetLevel">
+      <select class="ll-select" id="assignmentTargetLevel">
         <option value="">- Select a level -</option>
         <option value="A2">A2 - Elementary</option>
         <option value="B1">B1 - Intermediate</option>
@@ -2872,7 +2902,7 @@
 
     <div class="assignment-form-group" id="moduleTargetGroup" style="display: none;">
       <label>Select Module</label>
-      <select id="assignmentTargetModule">
+      <select class="ll-select" id="assignmentTargetModule">
         <option value="">- Select a module -</option>
         <option value="Module 1">Module 1</option>
         <option value="Module 2">Module 2</option>
@@ -2932,8 +2962,8 @@
 <!-- Activity Tracker -->
 <script src="activity-tracker/js/activity-config.js"></script>
 <script src="activity-tracker/js/activity-logger.js"></script>
-<script src="activity-tracker/js/activity-admin.js"></script>
-<link rel="stylesheet" href="activity-tracker/css/activity-tracker.css">
+<script src="activity-tracker/js/activity-admin.js?v=2"></script>
+<link rel="stylesheet" href="activity-tracker/css/activity-tracker.css?v=6">
 
 <!-- Tab Switching Script -->
 <script>
@@ -2974,7 +3004,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="teacher/js/config.js"></script>
 <script src="teacher/js/skills/index.js"></script>
 <script src="teacher/js/students.js"></script>
-<script src="teacher/js/activity.js"></script>
+<script src="teacher/js/activity.js?v=3"></script>
 <script src="teacher/js/modals.js"></script>
 <!-- Shared module - used by admin.js and overview-v2.js. Loaded BEFORE
      admin.js so the IIFE has `ConfusingPairs.mount(...)` available. -->
@@ -3020,10 +3050,10 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- Reports (admin): KPIs, charts, Excel workbook, game history. -->
 <script src="teacher/js/reports-admin.js?v=11"></script>
 <!-- Writing AI access manager (admin): grant teachers + open the corrector. -->
-<script src="teacher/js/ai-writing-admin.js?v=8"></script>
+<script src="teacher/js/ai-writing-admin.js?v=9"></script>
 <script src="teacher/js/placement-admin.js?v=6"></script>
 <!-- Demo/test account creator (admin) - calls the createDemoAccount function. -->
-<script src="teacher/js/demo-account-admin.js?v=2"></script>
+<script src="teacher/js/demo-account-admin.js?v=3"></script>
 <script src="teacher/js/roster-import.js?v=6"></script>
 <script src="teacher/js/org-admin.js?v=1"></script>
 <script src="assignments/js/grammar-form.js"></script>

@@ -5,12 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vocab Bingo - Host | Lingualab</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
 <!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css">
+<link rel="stylesheet" href="css/brand.css?v=17">
 <!-- UNIVERSAL classroom look; the game only adds its own widgets. -->
-<link rel="stylesheet" href="classroom/css/styles.css">
-<link rel="stylesheet" href="classroom/css/minigames.css?v=3">
+<link rel="stylesheet" href="classroom/css/styles.css?v=7">
+<link rel="stylesheet" href="classroom/css/minigames.css?v=4">
+  <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=38">
+  <script src="js/app-settings.js?v=22"></script>
 </head>
 <body class="bingo">
 
@@ -39,8 +45,8 @@
   </div>
   <div class="header-actions">
     <span style="color: var(--text-secondary); margin-right: 12px;">Hello, <span id="teacherName"></span></span>
-    <a id="backToClassroom" href="classroom-teacher.html" class="btn btn-secondary">← Classroom</a>
-    <a id="backToDashboard" href="teacher-dashboard.html" class="btn btn-secondary">🏠 Dashboard</a>
+    <a id="backToClassroom" href="classroom-teacher.html" class="btn btn-secondary ll-navbtn">← Classroom</a>
+    <a id="backToDashboard" href="teacher-dashboard.html" class="btn btn-secondary ll-navbtn">🏠 Dashboard</a>
   </div>
 </header>
 

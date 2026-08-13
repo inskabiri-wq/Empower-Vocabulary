@@ -397,3 +397,9 @@ body {
   font-size: 0.95em;
   color: var(--wr-text);
 }
+
+/* The writing exam's own settings drawer is retired: its gear now opens the
+   SHARED app panel (data-app-settings-open in writing-exam.html), which carries
+   the same four themes, text size, line spacing AND the editor font. Leaving
+   this drawer reachable would give the page two panels behind one button. */
+#wrSettingsPanel, #wrSettingsOverlay { display: none !important; }

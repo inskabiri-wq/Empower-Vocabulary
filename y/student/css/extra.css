@@ -1,5 +1,7 @@
 /* Student Dashboard - Extra Styles (Optimized UI) */
 
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
 @keyframes pulse {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.1); opacity: 0.8; }
@@ -258,7 +260,7 @@
   padding: 14px 8px;
   background: rgba(0,0,0,0.3);
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   text-align: center;
 }
@@ -643,7 +645,24 @@
   max-width: 900px;
   max-height: 90vh;
   overflow-y: auto;
-  background: linear-gradient(135deg, #0c1222 0%, #152035 50%, #0c1222 100%);
+  /* Translucent, like the grammar board already was (it read --bg-item, which
+     is rgba(28,42,66,0.8) on this page). This sheet was fully opaque, so the
+     two Quest Boards sat at different depths. The blur keeps the cards legible
+     over whatever is behind. */
+  background: linear-gradient(135deg,
+    rgba(12, 18, 34, 0.86) 0%,
+    rgba(15, 23, 42, 0.80) 50%,
+    rgba(12, 18, 34, 0.86) 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+/* The line under the board title. Vocabulary had it as an inline style on its
+   own <p>; it is a class now so the grammar board can use the same one. */
+.qc-board-sub {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  margin: -8px 0 16px;
+  font-size: 0.9rem;
 }
 
 .level-tabs {
@@ -655,8 +674,8 @@
 .level-tab {
   flex: 1;
   padding: 12px;
-  background: rgba(255,255,255,0.07);
-  border: 2px solid rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.07);
+  border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   color: rgba(255,255,255,0.7);
   font-family: inherit;
@@ -691,9 +710,9 @@
   gap: 12px;
   margin-bottom: 20px;
   padding: 16px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .qc-summary-stat {
@@ -724,8 +743,8 @@
 
 /* Individual Quest Card */
 .qc-card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -810,7 +829,7 @@
 
 /* Challenge Rows */
 .qc-challenges {
-  border-top: 1px solid rgba(255,255,255,0.07);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
   padding: 8px 12px;
 }
 
@@ -1342,7 +1361,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.5s ease;
 }
 
@@ -1823,7 +1842,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.5s ease;
 }
 
@@ -2232,15 +2251,6 @@
   color: #1e293b;
 }
 
-/* Light Mode - Keyboard Hints */
-.light-mode .keyboard-hints {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-.light-mode .keyboard-hints span {
-  color: #64748b;
-}
-
 .light-mode kbd {
   background: #f1f5f9;
   border-color: #e2e8f0;
@@ -2457,7 +2467,7 @@
 }
 
 .light-mode .unscramble-tile-group {
-  background: rgba(241,245,249,0.8);
+  background: rgba(241, 245, 249, 0.8);
 }
 
 /* ============================================
@@ -2507,7 +2517,7 @@
   border-radius: 20px;
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .exam-player-top {
@@ -2639,7 +2649,7 @@
 .exam-progress-bar {
   flex: 1;
   height: 6px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 3px;
   cursor: pointer;
   position: relative;
@@ -2673,12 +2683,12 @@
 
 /* Sections */
 .exam-section {
-  background: rgba(15,23,42,0.7);
+  background: rgba(15, 23, 42, 0.7);
   border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 16px;
-  color: #f1f5f9;
+  color: var(--text-primary, #f1f5f9);
 }
 
 .exam-section-header {
@@ -2712,7 +2722,7 @@
   background: rgba(96, 165, 250, 0.14);
   border: 1.5px solid rgba(96, 165, 250, 0.45);
   color: #60a5fa;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 800;
   line-height: 1;
   transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1),
@@ -2763,7 +2773,7 @@
 
 .exam-section-pts {
   font-size: 0.8rem;
-  color: #cbd5e1;
+  color: var(--text-secondary, #cbd5e1);
   background: rgba(59,130,246,0.25);
   padding: 4px 10px;
   border-radius: 20px;
@@ -2772,7 +2782,7 @@
 
 .exam-section-instruction {
   font-size: 0.95rem;
-  color: #e2e8f0;
+  color: var(--text-secondary, #e2e8f0);
   margin-bottom: 12px;
   line-height: 1.55;
 }
@@ -2794,9 +2804,9 @@
 /* Questions */
 .exam-q {
   padding: 12px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   transition: background 0.3s;
-  color: #f1f5f9;
+  color: var(--text-primary, #f1f5f9);
 }
 
 .exam-q:last-child { border-bottom: none; }
@@ -2812,7 +2822,7 @@
 .exam-q-text {
   font-size: 0.98rem;
   line-height: 1.6;
-  color: #f8fafc;
+  color: var(--text-primary, #f8fafc);
 }
 
 /* Per-question accordion header (T/F + MCQ only — fillblank has
@@ -2896,11 +2906,11 @@
   gap: 6px;
   cursor: pointer;
   padding: 6px 16px;
-  border: 2px solid rgba(148,163,184,0.4);
+  border: 2px solid rgba(148, 163, 184, 0.4);
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.95rem;
-  color: #f1f5f9;
+  color: var(--text-primary, #f1f5f9);
   transition: all 0.2s;
 }
 
@@ -2932,12 +2942,12 @@
   gap: 8px;
   cursor: pointer;
   padding: 10px 14px;
-  border: 2px solid rgba(148,163,184,0.4);
+  border: 2px solid rgba(148, 163, 184, 0.4);
   border-radius: 10px;
   transition: all 0.2s;
   font-size: 0.95rem;
   line-height: 1.45;
-  color: #f1f5f9;
+  color: var(--text-primary, #f1f5f9);
 }
 
 .exam-mcq-label:hover {
@@ -2961,9 +2971,9 @@
 
 /* Fill input */
 .exam-fill-input {
-  background: rgba(15,23,42,0.4);
+  background: rgba(15, 23, 42, 0.4);
   border: none;
-  border-bottom: 2px solid rgba(148,163,184,0.5);
+  border-bottom: 2px solid rgba(148, 163, 184, 0.5);
   border-radius: 6px 6px 0 0;
   padding: 6px 10px;
   color: #ffffff;
@@ -3036,7 +3046,7 @@
 .exam-results-pct {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #e2e8f0;
+  color: var(--text-secondary, #e2e8f0);
   margin: 4px 0;
 }
 
@@ -3204,8 +3214,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   color: #fff;
   cursor: pointer;
@@ -3246,7 +3256,7 @@
   background: transparent;
   border: none;
   border-radius: 9px;
-  color: #cbd5e1;
+  color: var(--text-secondary, #cbd5e1);
   font-family: inherit;
   font-weight: 600;
   font-size: 0.88rem;
@@ -3414,7 +3424,7 @@
 }
 
 .transcript-seg.active .transcript-text {
-  color: #f1f5f9;
+  color: var(--text-primary, #f1f5f9);
   font-weight: 500;
 }
 
@@ -3437,7 +3447,7 @@
 .transcript-text {
   font-size: 0.92rem;
   line-height: 1.65;
-  color: #cbd5e1;
+  color: var(--text-secondary, #cbd5e1);
   transition: color 0.2s ease;
 }
 
@@ -3464,7 +3474,7 @@
   background: rgba(129, 140, 248, 0.18);
 }
 .tw.past-word {
-  color: #94a3b8;
+  color: var(--text-secondary, #94a3b8);
   opacity: 0.85;
 }
 .transcript-seg.active .tw.past-word {
@@ -3501,7 +3511,7 @@ body:not(.light-mode) .transcript-seg.active .tw.past-word {
 
 /* Light mode overrides */
 .light-mode #examTranscript {
-  background: linear-gradient(145deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));
+  background: linear-gradient(145deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.95));
   border-color: rgba(99,102,241,0.15);
 }
 
@@ -3561,7 +3571,7 @@ body:not(.light-mode) .transcript-seg.active .tw.past-word {
 
 /* Light mode overrides */
 .light-mode .exam-player {
-  background: linear-gradient(145deg, rgba(241,245,249,0.95), rgba(248,250,252,0.95));
+  background: linear-gradient(145deg, rgba(241, 245, 249, 0.95), rgba(248, 250, 252, 0.95));
   border-color: rgba(99,102,241,0.2);
   box-shadow: 0 4px 16px rgba(0,0,0,0.06);
 }
@@ -3690,11 +3700,11 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
   right: 20px;
   width: 400px;
   max-width: calc(100vw - 40px);
-  background: linear-gradient(145deg, #1e293b, #0f172a);
+  background: linear-gradient(145deg, var(--bg-item, #1e293b), var(--bg-primary, #0f172a));
   border: 2px solid #fbbf24;
   border-radius: 14px;
   padding: 18px;
-  color: #f1f5f9;
+  color: var(--text-primary, #f1f5f9);
   z-index: 10000;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 4px rgba(251, 191, 36, 0.15);
   font-family: inherit;
@@ -3728,7 +3738,7 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
 }
 .cal-label {
   font-size: 0.7rem;
-  color: #94a3b8;
+  color: var(--text-secondary, #94a3b8);
   text-transform: uppercase;
   letter-spacing: 1.2px;
   font-weight: 600;
@@ -3745,7 +3755,7 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
   border-radius: 6px;
   max-height: 110px;
   overflow-y: auto;
-  color: #f1f5f9;
+  color: var(--text-primary, #f1f5f9);
 }
 .cal-time-row {
   display: flex;
@@ -3812,7 +3822,7 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
 .cal-btn-primary kbd { background: rgba(0, 0, 0, 0.18); border-color: rgba(0, 0, 0, 0.25); }
 .cal-hint {
   font-size: 0.72rem;
-  color: #94a3b8;
+  color: var(--text-secondary, #94a3b8);
   line-height: 1.5;
   padding: 8px 10px;
   background: rgba(15, 23, 42, 0.5);
@@ -3824,9 +3834,9 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
   height: 220px;
   margin-top: 10px;
   padding: 10px;
-  background: #0f172a;
+  background: var(--bg-primary, #0f172a);
   border: 1px solid #334155;
-  color: #cbd5e1;
+  color: var(--text-secondary, #cbd5e1);
   font-family: 'SF Mono', 'Fira Code', monospace;
   font-size: 0.72rem;
   line-height: 1.5;
@@ -3867,7 +3877,6 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
    IMPORTANT: Every selector below is namespaced with #menuScreen
    so listening-exam, classroom, games, modals are UNTOUCHED.
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
 #menuScreen {
   /* Dashboard-local design tokens (shadow the globals, no cascade leak) */
@@ -4069,35 +4078,6 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
 #menuScreen .activity-card[onclick*="startListeningExam"]::before { background: #818cf8; }
 #menuScreen a.activity-card[href*="classroom"]::before       { background: #10b981; }
 
-/* -------- KEYBOARD HINTS (JetBrains Mono kbd) -------- */
-#menuScreen .keyboard-hints {
-  justify-content: flex-start;
-  gap: 12px;
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid var(--dash-border);
-}
-#menuScreen .keyboard-hints span {
-  background: none;
-  padding: 0;
-  color: var(--dash-fg3);
-  font-size: 0.78em;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-#menuScreen .keyboard-hints kbd {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 0.7em;
-  background: var(--dash-elevated);
-  border: 1px solid var(--dash-border-md);
-  border-radius: 5px;
-  padding: 2px 7px;
-  color: var(--dash-fg2);
-  font-weight: 500;
-  box-shadow: none;
-}
-
 /* -------- SIDEBAR CARDS -------- */
 #menuScreen .sidebar-card {
   background: var(--dash-surface);
@@ -4177,43 +4157,53 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
   color: var(--dash-primary-lt);
 }
 
-/* XP bar + shine */
-#menuScreen .xp-bar-container {
+/* XP bar + shine.
+   Scoped to BOTH dashboards: grammar renders the identical .dash-xp-block
+   markup, so it has to read the identical rules. Keep the pairs together - a
+   selector added to one and not the other is how the two bars drifted apart. */
+#menuScreen .xp-bar-container,
+#grammarScreen .xp-bar-container {
   background: var(--dash-elevated);
   border-radius: 9999px;
   height: 9px;
   border: 0;
 }
-#menuScreen .xp-bar-fill {
+#menuScreen .xp-bar-fill,
+#grammarScreen .xp-bar-fill {
   background: linear-gradient(90deg, var(--dash-primary), var(--dash-xp), var(--dash-xp-lt));
   background-size: 200% auto;
   animation: dashXpShine 3s linear infinite;
   border-radius: 9999px;
 }
-#menuScreen .xp-bar-fill::after {
+#menuScreen .xp-bar-fill::after,
+#grammarScreen .xp-bar-fill::after {
   background: linear-gradient(to bottom, rgba(255,255,255,0.35), transparent);
 }
-#menuScreen .xp-text {
+#menuScreen .xp-text,
+#grammarScreen .xp-text {
   color: var(--dash-xp);
   font-weight: 700;
   font-size: 0.72rem;
 }
 
 /* XP milestone ticks (new markup) */
-#menuScreen .xp-milestones {
+#menuScreen .xp-milestones,
+#grammarScreen .xp-milestones {
   display: flex;
   justify-content: space-between;
   margin-top: 5px;
   padding: 0 1px;
 }
-#menuScreen .xp-milestone {
+#menuScreen .xp-milestone,
+#grammarScreen .xp-milestone {
   font-size: 0.58rem;
   color: var(--dash-fg3);
   font-weight: 700;
   min-width: 14px;
   text-align: center;
 }
-#menuScreen .xp-milestone.hit {
+#menuScreen .xp-milestone.hit,
+#grammarScreen .xp-milestone.hit {
   color: var(--dash-xp);
 }
 
@@ -4363,7 +4353,6 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
   }
 
   #menuScreen .xp-milestone { font-size: 0.55rem; }
-  #menuScreen .keyboard-hints { flex-wrap: wrap; gap: 10px; }
 }
 
 /* ============================================================
@@ -4372,7 +4361,9 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
    Sidebar now owns:      content-pills, assignments, map button
    ============================================================ */
 
-/* Slim header: shrink h1, hide rotating subtitle line */
+/* Slim header: shrink h1. The subtitle line stays VISIBLE - every other skill
+   screen (listening, grammar, reading, writing, speaking) shows one, and
+   hiding it here was the only reason Vocabulary looked different. */
 #menuScreen .dashboard-header {
   padding-bottom: 14px;
   margin-bottom: 20px;
@@ -4382,9 +4373,6 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
   font-size: 1.4em;
   font-weight: 900;
   letter-spacing: -0.02em;
-}
-#menuScreen .header-left .subtitle {
-  display: none;
 }
 #menuScreen .header-left h1 .dash-icon-svg {
   width: 1em;
@@ -4402,21 +4390,21 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
 #menuScreen .dash-xp-block,
 #menuScreen .dash-stats,
 #menuScreen .section-title,
-#menuScreen .activity-grid,
-#menuScreen .keyboard-hints {
+#menuScreen .activity-grid {
   margin-bottom: 16px;
 }
-#menuScreen .keyboard-hints { margin-bottom: 0; }
-
 /* -------- XP BLOCK (main content) -------- */
-#menuScreen .dash-xp-block {
+/* Both dashboards, one block. See the note on .xp-bar-container above. */
+#menuScreen .dash-xp-block,
+#grammarScreen .dash-xp-block {
   background: var(--dash-surface);
   border: 1px solid var(--dash-border);
   border-radius: 14px;
   padding: 14px 18px;
   animation: dashFadeUp 0.4s ease 0.1s both;
 }
-#menuScreen .dash-xp-top {
+#menuScreen .dash-xp-top,
+#grammarScreen .dash-xp-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -4424,7 +4412,8 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
   gap: 12px;
   flex-wrap: wrap;
 }
-#menuScreen .xp-badge-pill {
+#menuScreen .xp-badge-pill,
+#grammarScreen .xp-badge-pill {
   background: rgba(13,148,136,0.18);
   border: 1px solid rgba(13,148,136,0.38);
   border-radius: 9999px;
@@ -4434,18 +4423,24 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
   color: var(--dash-primary-lt);
   letter-spacing: 0.02em;
 }
-#menuScreen .dash-xp-block .xp-num {
+#menuScreen .dash-xp-block .xp-num,
+#grammarScreen .dash-xp-block .xp-num {
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--dash-xp);
 }
 /* xp-bar styling already defined in v2 phase-1 block; ensure margin-top here */
-#menuScreen .dash-xp-block .xp-bar-container {
+#menuScreen .dash-xp-block .xp-bar-container,
+#grammarScreen .dash-xp-block .xp-bar-container {
   margin-bottom: 0;
 }
-#menuScreen .dash-xp-block .xp-text {
+#menuScreen .dash-xp-block .xp-text,
+#grammarScreen .dash-xp-block .xp-text {
   display: none; /* now shown as .xp-num at top of block instead */
 }
+/* The grammar dashboard sets its own vertical rhythm with margins rather than
+   the flex gap #menuScreen uses, so the block needs the spacing .gr-xp had. */
+#grammarScreen .dash-xp-block { margin-bottom: 16px; }
 
 /* -------- STATS ROW (main content, 5 columns) -------- */
 #menuScreen .dash-stats {
@@ -4804,13 +4799,13 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
     padding: 8px 10px !important;
     gap: 6px !important;
     border-right: none !important;
-    border-bottom: 1px solid var(--t2-border, rgba(255,255,255,0.08)) !important;
+    border-bottom: 1px solid var(--t2-border, rgba(255, 255, 255, 0.08)) !important;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     position: sticky;
     top: 0;
     z-index: 50;
-    background: var(--t2-surface, #0f172a);
+    background: var(--t2-surface, var(--bg-primary, #0f172a));
   }
   .t2-sidebar::-webkit-scrollbar { display: none; }
   /* Hide the bits that don't make sense in a horizontal pill row:
@@ -4832,7 +4827,7 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
     border-left: none !important;
     border-radius: 8px !important;
     white-space: nowrap !important;
-    font-size: 13px !important;
+    font-size: 0.8125rem !important;
   }
   .t2-sidebar .t2-nav-item.active {
     border-left-color: transparent !important;
@@ -4876,7 +4871,7 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
     gap: 10px !important;
   }
   .t2-stat-card { padding: 12px 14px !important; }
-  .t2-stat-value { font-size: 24px !important; }
+  .t2-stat-value { font-size: 1.5rem !important; }
 
   /* Panels (Level Distribution + Needs Attention) — stack vertically. */
   .t2-panels-row {
@@ -4947,8 +4942,6 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
   #menuScreen .section-title           { order: 5; }
   #menuScreen .activity-grid           { order: 6; }
   #menuScreen .map-btn-gamified        { order: 7; }
-  #menuScreen .keyboard-hints          { order: 8; }
-
   /* Tighten the Select Content card so it doesn't dominate the
      viewport — it's now a mid-page card, not a sidebar block. */
   #menuScreen .sidebar-card {
@@ -5065,7 +5058,7 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(217, 119, 6, 0.18));
   border: 1px solid rgba(245, 158, 11, 0.45);
   color: #fcd34d;
-  font-size: 9px;
+  font-size: 0.5625rem;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -5115,8 +5108,8 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.22);
 }
 .vg-select option {
-  background: #1e293b;
-  color: #f1f5f9;
+  background: var(--bg-item, #1e293b);
+  color: var(--text-primary, #f1f5f9);
 }
 .vg-chev {
   position: absolute;
@@ -5124,8 +5117,8 @@ body:not(.light-mode) #listeningExamScreen .exam-fill-input::placeholder {
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
-  color: #94a3b8;
-  font-size: 14px;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.875rem;
 }
 
 /* Number input mirrors the select styling so they sit on the

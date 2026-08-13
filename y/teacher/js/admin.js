@@ -315,7 +315,7 @@
                  value="${escapeHtml(State.search)}"
                  autocomplete="off"/>
         </div>
-        <select class="av-sel" id="avLevelFilter">
+        <select class="av-sel ll-select" id="avLevelFilter">
           ${levelOpt('all', 'All Levels')}
           ${LEVELS.map(l => levelOpt(l, l)).join('')}
         </select>
@@ -335,11 +335,11 @@
         <div class="av-add-grid">
           <input type="email" id="newTeacherEmail" class="av-input"
                  placeholder="teacher@fsm.edu.tr" autocomplete="off"/>
-          <select class="av-sel" id="newTeacherLevel">
+          <select class="av-sel ll-select" id="newTeacherLevel">
             <option value="">Select Level</option>
             ${LEVELS.map(l => `<option value="${l}">${l}</option>`).join('')}
           </select>
-          <select class="av-sel" id="newTeacherModule">
+          <select class="av-sel ll-select" id="newTeacherModule">
             <option value="">Select Module</option>
             ${MODULES.map(m => `<option value="${m}">${m}</option>`).join('')}
           </select>
@@ -463,7 +463,7 @@
             <div class="av-detail-grid">
               <div>
                 <div class="av-detail-label">📊 Year / Level</div>
-                <select class="av-sel av-sel-full" data-action="set-year" data-id="${escapeHtml(t.id)}">
+                <select class="av-sel av-sel-full ll-select" data-action="set-year" data-id="${escapeHtml(t.id)}">
                   <option value="">-- Not Assigned --</option>
                   ${LEVELS.map(l =>
                     `<option value="${l}" ${t.assignedYear === l ? 'selected' : ''}>${l}</option>`
@@ -472,7 +472,7 @@
               </div>
               <div>
                 <div class="av-detail-label">📂 Module</div>
-                <select class="av-sel av-sel-full" data-action="set-module" data-id="${escapeHtml(t.id)}">
+                <select class="av-sel av-sel-full ll-select" data-action="set-module" data-id="${escapeHtml(t.id)}">
                   <option value="">-- Not Assigned --</option>
                   ${MODULES.map(m =>
                     `<option value="${m}" ${t.assignedModule === m ? 'selected' : ''}>${m}</option>`

@@ -38,6 +38,11 @@
 const functions = require('firebase-functions/v1');
 const admin     = require('firebase-admin');
 const sgMail    = require('@sendgrid/mail');
+// Exam writing rubrics (IELTS / GRE / TOEFL / CELPIP / PTE). Authored once at
+// y/assignments/js/writing-rubrics.js; this is the byte-identical copy that
+// ships with the functions bundle. Keep them in step:
+//   node y/tools/rubric-sync.js --fix
+const RUBRICS   = require('./writing-rubrics');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -652,7 +657,20 @@ async function assertWritingAI(context, depth) {
 function _crit() {
   return { type: 'OBJECT', properties: { verdict: { type: 'STRING' }, note: { type: 'STRING' }, noteSimple: { type: 'STRING' } }, required: ['verdict', 'note'] };
 }
-function writingSchema(depth) {
+// The CLASSROOM rubrics keep the original four criteria. Exam rubrics
+// (IELTS / GRE / TOEFL / CELPIP / PTE) declare their own - one for the
+// holistic exams, seven for the PTE essay - and everything below is
+// built from that list, so the engine never hard-codes a count.
+const CLASSIC_CRIT = { CC: 'Organization', TA: 'Task Achievement', GR: 'Grammatical Accuracy', VO: 'Word Choice' };
+function critsFor(rubricId) {
+  const r = RUBRICS.get(rubricId);
+  if (r) return r.criteria.map(function (c) { return { key: c.key, label: c.label, what: c.what }; });
+  return Object.keys(CLASSIC_CRIT).map(function (k) { return { key: k, label: CLASSIC_CRIT[k], what: '' }; });
+}
+function writingSchema(depth, crits) {
+  var keys = (crits && crits.length ? crits : critsFor('essay')).map(function (c) { return c.key; });
+  var critProps = {};
+  keys.forEach(function (k) { critProps[k] = _crit(); });
   var schema = {
     type: 'OBJECT',
     properties: {
@@ -660,11 +678,11 @@ function writingSchema(depth) {
       estimates: { type: 'OBJECT', properties: { ielts: { type: 'STRING' }, toefl: { type: 'STRING' }, rubric: { type: 'STRING' } }, required: ['ielts', 'toefl', 'rubric'] },
       overall: { type: 'STRING' },
       overallSimple: { type: 'STRING' },
-      criteria: { type: 'OBJECT', properties: { CC: _crit(), TA: _crit(), GR: _crit(), VO: _crit() }, required: ['CC', 'TA', 'GR', 'VO'] },
+      criteria: { type: 'OBJECT', properties: critProps, required: keys.slice() },
       annotations: {
         type: 'ARRAY', items: {
           type: 'OBJECT', properties: {
-            criterion: { type: 'STRING', enum: ['CC', 'TA', 'GR', 'VO'] },
+            criterion: { type: 'STRING', enum: keys.slice() },
             severity: { type: 'STRING', enum: ['fix', 'tip', 'strength'] },
             quote: { type: 'STRING' }, text: { type: 'STRING' },
             suggestion: { type: 'STRING' }, simple: { type: 'STRING' }, simpleSuggestion: { type: 'STRING' }
@@ -683,6 +701,34 @@ function writingSchema(depth) {
           features: { type: 'ARRAY', items: { type: 'OBJECT', properties: { feature: { type: 'STRING' }, count: { type: 'INTEGER' }, cefr: { type: 'STRING' }, examples: { type: 'ARRAY', items: { type: 'STRING' } } }, required: ['feature'] } }
         }, required: ['cefr', 'features']
       },
+      // DEEP-only profiler tables (the sortable Words / Verb forms / Clauses
+      // cards with the List<->Distribution toggle). The corrector has always
+      // been able to render these - only the pre-baked sample essays carried
+      // the data, so live analysis fell back to the 3-bar summary. Asking for
+      // them in the deep schema gives deep runs the full profiler.
+      lemmas: {
+        type: 'ARRAY', items: {
+          type: 'OBJECT', properties: {
+            lemma: { type: 'STRING' }, pos: { type: 'STRING' }, cefr: { type: 'STRING' }, count: { type: 'INTEGER' }
+          }, required: ['lemma', 'cefr', 'count']
+        }
+      },
+      verbForms: {
+        type: 'ARRAY', items: {
+          type: 'OBJECT', properties: {
+            form: { type: 'STRING' }, with: { type: 'STRING' }, cefr: { type: 'STRING' }, count: { type: 'INTEGER' },
+            sentences: { type: 'ARRAY', items: { type: 'STRING' } }
+          }, required: ['form', 'cefr', 'count']
+        }
+      },
+      clauses: {
+        type: 'ARRAY', items: {
+          type: 'OBJECT', properties: {
+            clause: { type: 'STRING' }, with: { type: 'STRING' }, cefr: { type: 'STRING' }, count: { type: 'INTEGER' },
+            sentences: { type: 'ARRAY', items: { type: 'STRING' } }
+          }, required: ['clause', 'cefr', 'count']
+        }
+      },
       plan: { type: 'ARRAY', items: { type: 'STRING' } },
       planSimple: { type: 'ARRAY', items: { type: 'STRING' } },
       rewrites: { type: 'ARRAY', items: { type: 'OBJECT', properties: { before: { type: 'STRING' }, after: { type: 'STRING' }, why: { type: 'STRING' } }, required: ['before', 'after'] } }
@@ -693,33 +739,74 @@ function writingSchema(depth) {
   // vocab/grammar profiles, plan, or rewrites. Light stays lean on purpose.
   var req = ['cefr', 'estimates', 'overall', 'criteria', 'annotations'];
   if (depth === 'medium' || depth === 'deep') req.push('vocabProfile', 'grammarProfile', 'plan');
-  if (depth === 'deep') req.push('rewrites');
+  if (depth === 'deep') req.push('rewrites', 'lemmas', 'verbForms', 'clauses');
   schema.required = req;
   return schema;
 }
 function writingPrompt(essay, rubric, depth, task) {
-  const rubricName = rubric === 'academic' ? 'academic paragraph' : (rubric === 'short' ? 'short paragraph' : 'opinion / argument essay (intermediate to upper-intermediate)');
+  const spec = RUBRICS.get(rubric);
+  const crits = critsFor(rubric);
+  const n = crits.length;
+  const rubricName = spec ? (spec.exam + ' - ' + spec.task)
+    : (rubric === 'academic' ? 'academic paragraph' : (rubric === 'short' ? 'short paragraph' : 'opinion / argument essay (intermediate to upper-intermediate)'));
   const depthSpec = {
     light: 'LIGHT (quick triage): mark ONLY the highest-impact errors a reader notices first (aim 4-7 annotations). One compact note per criterion. Do NOT include vocabProfile, grammarProfile, plan, planSimple or rewrites.',
-    medium: 'MEDIUM (full correction): a complete pass across all four criteria with a fix or tip on every notable point (aim 8-16 annotations). Include vocabProfile, grammarProfile and a short "plan"; and for every criterion note + the overall + each annotation, also give the plain-English "noteSimple" / "overallSimple" / "planSimple" / "simple" (+ "simpleSuggestion"). Do NOT include rewrites.',
-    deep: 'DEEP (minute analysis): everything MEDIUM has, PLUS "rewrites" - model rewrites of 3-6 of the weakest sentences (before / after / why). Name grammar points precisely.'
+    medium: 'MEDIUM (full correction): a complete pass across every criterion with a fix or tip on every notable point (aim 8-16 annotations). Include vocabProfile, grammarProfile and a short "plan"; and for every criterion note + the overall + each annotation, also give the plain-English "noteSimple" / "overallSimple" / "planSimple" / "simple" (+ "simpleSuggestion"). Do NOT include rewrites.',
+    deep: 'DEEP (minute analysis): everything MEDIUM has, PLUS "rewrites" - model rewrites of 3-6 of the weakest sentences (before / after / why) - and the three PROFILER tables below. Name grammar points precisely.'
   }[depth] || 'MEDIUM.';
-  return [
-    'You are an experienced ESL writing examiner giving structured, encouraging feedback. There are NO numeric scores anywhere - CEFR / IELTS / TOEFL / rubric are SUGGESTIONS only.',
-    'Criteria codes: CC = Coherence & Cohesion (organisation, linking), TA = Task Achievement (content, answering the task, development), GR = Grammatical Range & Accuracy, VO = Vocabulary / lexical resource.',
-    'Annotation severity: "fix" = a clear error, "tip" = an improvement/upgrade, "strength" = genuine praise. Every annotation MUST include "quote" - an EXACT, verbatim substring copied from the essay (same case and punctuation), 3 to 12 words ONLY, so it can be located. For "fix"/"tip" also give "suggestion" = the corrected version of JUST that quoted span, about 20 words max. Never invent a quote that is not in the essay. NEVER paste a whole sentence, paragraph, or the whole essay into "quote" or "suggestion"; full-sentence rewrites belong ONLY in the "rewrites" field (deep mode), one weak sentence each.',
-    'Rubric: ' + rubricName + '.',
-    'Depth: ' + depthSpec,
-    task ? ('The writing task/prompt was: "' + task + '".') : 'No task prompt was provided; infer the genre from the text.',
-    'Set cefr to a short estimate like "A2 to B1". Return ONLY JSON that fits the schema, and fill EVERY field the schema requires for this depth with real, specific content - never leave a required section (level estimate, criteria, vocab/grammar profile, plan, rewrites) empty or generic.',
-    '', 'ESSAY:', '"""', essay, '"""'
+  // Caps matter: these three lists are the bulk of a deep response's output
+  // tokens, and deep runs on the pricier model. The counts below keep a deep
+  // run roughly one and a half times a medium one instead of several times.
+  const profilerSpec = [
+    'PROFILER TABLES (deep only, all three required):',
+    '  "lemmas": the content words actually used, one entry per dictionary form (lemma), with "pos" (noun/verb/adjective/adverb...), a CEFR band for that word, and "count" = how many times it appears in this text. Up to 40 entries, most frequent and most notable first. Do NOT list function words (the, a, of, and, is).',
+    '  "verbForms": the verb structures used, e.g. "present perfect" with "has been", each with its CEFR band, a count, and 1 to 2 short "sentences" quoted from the text showing it. Up to 12 entries.',
+    '  "clauses": the clause types used, e.g. "relative clause" with "which", each with its CEFR band, a count, and 1 to 2 short "sentences" quoted from the text. Up to 10 entries.',
+    '  Every "sentences" item must be copied verbatim from the essay. Counts must be real counts, not guesses.'
   ].join('\n');
+  // The criteria block is generated from the rubric, so a holistic exam gets
+  // ONE criterion and the PTE essay gets seven, with no engine change.
+  const critLines = crits.map(function (c) {
+    return '  ' + c.key + ' = ' + c.label + (c.what ? ' (' + c.what + ')' : '');
+  }).join('\n');
+  const lines = [
+    'You are an experienced writing examiner giving structured, encouraging feedback. Every level figure you give is an ESTIMATE and a SUGGESTION, never an official score.',
+    'Rubric: ' + rubricName + '.'
+  ];
+  if (spec) {
+    lines.push('What this task asks of the writer: ' + spec.guidance);
+    if (spec.wordTarget) lines.push('Expected length: ' + spec.wordTarget + (spec.timeMin ? ' in about ' + spec.timeMin + ' minutes under exam conditions.' : '.') + ' Count the words yourself and say plainly if the piece is under or over length, because length affects this exam.');
+    lines.push('This exam is marked on ' + (n === 1 ? 'ONE holistic judgement' : n + ' separate criteria') + ', on a ' + spec.scale.name + ' scale from ' + spec.scale.min + ' to ' + spec.scale.max + '.');
+    lines.push('For EACH criterion, "verdict" must be a short estimated ' + spec.scale.name + ' for that criterion (for example "' + spec.scale.name + ' ' + (spec.scale.step === 0.5 ? (Math.round(spec.scale.max * 0.7 * 2) / 2) : Math.round(spec.scale.max * 0.7)) + '"), and "note" must justify it against what that criterion measures.');
+    lines.push('Put an overall estimated ' + spec.scale.name + ' in estimates.rubric (for example "' + spec.scale.name + ' ' + (spec.scale.step === 0.5 ? (Math.round(spec.scale.max * 0.7 * 2) / 2) : Math.round(spec.scale.max * 0.7)) + '"). Keep estimates.ielts and estimates.toefl as rough CEFR-equivalent references.');
+    lines.push('Calibration, in our own words - a strong response: ' + spec.anchors.high + ' A middling response: ' + spec.anchors.mid + ' A weak response: ' + spec.anchors.low);
+    lines.push('Judge ONLY against this exam task. Do not import criteria from other exams, and do not quote official published band descriptors - write every judgement in your own plain English.');
+  } else {
+    lines.push('For each criterion, "verdict" is a two or three word judgement (for example "Solid", "Needs work") and "note" explains it.');
+  }
+  lines.push('Criteria codes to use in "criteria" and in every annotation\'s "criterion" - use these EXACT keys and no others:\n' + critLines);
+  lines.push('Annotation severity: "fix" = a clear error, "tip" = an improvement/upgrade, "strength" = genuine praise. Every annotation MUST include "quote" - an EXACT, verbatim substring copied from the essay (same case and punctuation), 3 to 12 words ONLY, so it can be located. For "fix"/"tip" also give "suggestion" = the corrected version of JUST that quoted span, about 20 words max. Never invent a quote that is not in the essay. NEVER paste a whole sentence, paragraph, or the whole essay into "quote" or "suggestion"; full-sentence rewrites belong ONLY in the "rewrites" field (deep mode), one weak sentence each.');
+  if (n === 1) lines.push('This rubric is HOLISTIC: put every annotation under "' + crits[0].key + '", and make the single criterion note a full, evidence-based judgement of the whole response.');
+  lines.push('Depth: ' + depthSpec);
+  if (depth === 'deep') lines.push(profilerSpec);
+  lines.push(task ? ('The writing task/prompt was: "' + task + '".') : 'No task prompt was provided; infer the task from the text and say so if it matters.');
+  lines.push('Set cefr to a short estimate like "A2 to B1". Return ONLY JSON that fits the schema, and fill EVERY field the schema requires for this depth with real, specific content - never leave a required section (level estimate, criteria, vocab/grammar profile, plan, rewrites) empty or generic.');
+  lines.push('', 'ESSAY:', '"""', essay, '"""');
+  return lines.join('\n');
 }
 async function callGemini(key, model, essay, rubric, depth, task) {
   const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key);
   const body = {
     contents: [{ role: 'user', parts: [{ text: writingPrompt(essay, rubric, depth, task) }] }],
-    generationConfig: { temperature: 0.15, maxOutputTokens: 8192, responseMimeType: 'application/json', responseSchema: writingSchema(depth) }
+    // Deep now also returns the three profiler tables, so it needs headroom:
+    // a truncated response is not "shorter feedback", it is invalid JSON and
+    // the whole run fails. You are billed for tokens produced, not for the cap.
+    generationConfig: {
+      temperature: 0.15,
+      maxOutputTokens: (depth === 'deep') ? 16384 : 8192,
+      responseMimeType: 'application/json',
+      responseSchema: writingSchema(depth, critsFor(rubric))
+    }
   };
   const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   const json = await resp.json().catch(() => ({}));
@@ -776,7 +863,11 @@ exports.analyzeWriting = functions
     const depth = ['light', 'medium', 'deep'].indexOf(data && data.depth) !== -1 ? data.depth : 'medium';
     const who = await assertWritingAI(context, depth);
     const essay = String((data && data.essay) || '').replace(/\r\n/g, '\n').trim();
-    const rubric = ['essay', 'academic', 'short'].indexOf(data && data.rubric) !== -1 ? data.rubric : 'essay';
+    // A rubric id is either one of the three classroom rubrics or an exam
+    // rubric from the shared registry. Anything else falls back to 'essay',
+    // so a stale client can never push an unknown id into the AI schema.
+    const askedRubric = (data && typeof data.rubric === 'string') ? data.rubric : '';
+    const rubric = (['essay', 'academic', 'short'].indexOf(askedRubric) !== -1 || RUBRICS.isExam(askedRubric)) ? askedRubric : 'essay';
     const task = String((data && data.task) || '').trim().slice(0, 2000);
     if (essay.length < 40) throw new functions.https.HttpsError('invalid-argument', 'The essay is too short to analyze.');
     if (essay.length > 12000) throw new functions.https.HttpsError('invalid-argument', 'The essay is too long (about 12000 characters max).');
@@ -856,8 +947,11 @@ exports.analyzeWriting = functions
     // stops the model from dumping a whole rewritten passage into one comment
     // (and keeps the corrector's substring-locator from highlighting everything).
     if (Array.isArray(correction.annotations)) {
+      var okCrits = critsFor(rubric).map(function (c) { return c.key; });
       correction.annotations = correction.annotations.filter(function (a) {
         if (!a || !a.quote || essay.indexOf(a.quote) === -1) return false;
+        if (okCrits.indexOf(a.criterion) === -1) return false;          // criterion outside this rubric
+
         var quoteWords = String(a.quote).trim().split(/\s+/).filter(Boolean).length;
         if (quoteWords > 15) return false;                                   // a pasted passage, not a span
         if (a.suggestion && String(a.suggestion).length > 300) return false; // runaway whole-essay rewrite

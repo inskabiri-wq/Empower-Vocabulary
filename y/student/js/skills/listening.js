@@ -8,7 +8,7 @@
 (function () {
   'use strict';
 
-  // Activities shown on the Listening skill home.
+  // Exams shown on the Listening skill home.
   // Add more entries here as new exams / practice modes are built.
   const LISTENING_ACTIVITIES = [
     {
@@ -17,55 +17,61 @@
       title: 'Listening Exam 1',
       subtitle: 'FSMEPT practice',
       icon: '🎧',
-      handler: 'startListeningExam',   // existing global from listening-exam.js
-      accent: '129, 140, 248'          // indigo tint to match the old card
+      handler: 'startListeningExam'    // existing global from listening-exam.js
     }
   ];
 
-  function renderListeningScreen() {
-    const grid = document.getElementById('listeningActivityGrid');
-    if (!grid) return;
+  function escHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
 
-    grid.innerHTML = '';
+  // Renders the SAME exam row Reading uses (.rd-exam-card, shared in
+  // reading-exam.css). It used to build a small square .activity-card tile in a
+  // 240px auto-fill grid, so the one listening exam sat in the corner as a
+  // lonely box while Reading showed full-width rows - two exam screens with two
+  // different boxes. The old card also set its background and border as INLINE
+  // styles, which outrank any stylesheet, so no CSS could have aligned them.
+  function renderListeningScreen() {
+    const list = document.getElementById('listeningActivityGrid');
+    if (!list) return;
+
+    list.innerHTML = '';
     // Drop exams an admin marked "assignment-only" in Content controls
     // (still launchable from an assignment by id).
     const visible = LISTENING_ACTIVITIES.filter(a =>
       !(typeof window.isPracticeHidden === 'function' && window.isPracticeHidden('listening', a.examId || a.id)));
     if (!visible.length) {
-      grid.innerHTML = '<div class="rd-exam-empty" style="grid-column:1/-1;">No listening practice is open right now. Your teacher may have reserved it for an assignment.</div>';
+      list.innerHTML = '<div class="rd-exam-empty">No listening practice is open right now. Your teacher may have reserved it for an assignment.</div>';
       return;
     }
+
     visible.forEach(act => {
       const card = document.createElement('div');
-      card.className = 'activity-card';
-      card.style.background = `linear-gradient(135deg,rgba(${act.accent},0.12),rgba(${act.accent},0.05))`;
-      card.style.border = `2px solid rgba(${act.accent},0.35)`;
-      card.setAttribute('role', 'button');
-      card.setAttribute('tabindex', '0');
-
+      card.className = 'rd-exam-card';
       card.innerHTML = `
-        <div class="icon game-badge"
-             style="background:linear-gradient(135deg,rgba(${act.accent},0.25),rgba(${act.accent},0.18));
-                    border-color:rgba(${act.accent},0.5);
-                    box-shadow:0 4px 16px rgba(${act.accent},0.3)">
-          ${act.icon}
+        <div class="rd-exam-icon" aria-hidden="true">${act.icon}</div>
+        <div class="rd-exam-meta">
+          <div class="rd-exam-title">${escHtml(act.title)}</div>
+          <div class="rd-exam-sub">${escHtml(act.subtitle || '')}</div>
         </div>
-        <h3>${act.title}</h3>
-        <p>${act.subtitle}</p>
+        <div class="rd-exam-modes">
+          <button type="button" class="rd-exam-mode-btn timed">🎧 Start</button>
+        </div>
       `;
 
-      const launch = () => {
+      // The button is the control, exactly as on the Reading rows. The row
+      // itself is not clickable there, so it is not clickable here either.
+      card.querySelector('.rd-exam-mode-btn').addEventListener('click', () => {
         if (typeof window[act.handler] === 'function') {
-          window[act.handler]();
+          window[act.handler](act.examId);
         } else {
           console.warn(`[listening] handler ${act.handler}() not available`);
         }
-      };
-      card.addEventListener('click', launch);
-      card.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); launch(); }
       });
-      grid.appendChild(card);
+
+      list.appendChild(card);
     });
   }
 

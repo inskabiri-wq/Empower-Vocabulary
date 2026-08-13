@@ -760,17 +760,60 @@ async function logListeningExamSession(correct, total, pct, items) {
   } catch (e) { console.error('Failed to log listening exam:', e); }
 }
 
+// Leaving mid-exam loses the attempt, so ask first - the same guard the
+// reading exam has. Without it a stray tap (or the phone's back gesture,
+// which lands here too) silently threw the attempt away.
 function backFromExam() {
+  if (!examSubmitted && currentExam) {
+    if (window.AppDialog && typeof AppDialog.confirm === 'function') {
+      AppDialog.confirm('Your answers in this attempt will be lost.',
+        { title: 'Leave this exam?', okLabel: 'Leave', cancelLabel: 'Stay', danger: true })
+        .then(function (ok) { if (ok) doLeaveExam(); });
+      return;
+    }
+    if (!window.confirm('Leave this exam? Your answers in this attempt will be lost.')) return;
+  }
+  doLeaveExam();
+}
+
+// Register the exam as a screen the system back gesture cannot silently leave.
+// Returning false tells back-nav.js to cancel the navigation; we then show the
+// same confirm the Exit button uses, so both routes out behave identically.
+window.screenExitGuards = window.screenExitGuards || {};
+window.screenExitGuards.listeningExamScreen = function () {
+  if (examSubmitted || !currentExam) return true;
+  backFromExam();
+  return false;
+};
+
+
+// Timed exams call requestFullscreen() on entry (skills/reading.js). Nothing
+// released it, so the browser stayed full-page after the exam closed and the
+// rest of the app was left in an exam-shaped window. Every exit path calls this.
+function leaveExamFullscreen() {
+  try {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      var ex = document.exitFullscreen || document.webkitExitFullscreen ||
+               document.mozCancelFullScreen || document.msExitFullscreen;
+      if (ex) ex.call(document);
+    }
+  } catch (_) {}
+}
+
+function doLeaveExam() {
+  leaveExamFullscreen();
   if (examAudio) { examAudio.pause(); examAudio.currentTime = 0; }
   document.getElementById('examPlayBtn').innerHTML = PLAY_SVG;
   const vinyl = document.getElementById('examVinyl');
   if (vinyl) vinyl.classList.remove('spinning');
-  // Back to Hub, not the vocabulary menu. backToHub() (defined in hub.js)
-  // also refreshes the skill progress rings on the way out.
-  if (typeof backToHub === 'function') {
-    backToHub();
-  } else {
-    showScreen('hubScreen');
+  // Back to the listening SECTION, not all the way out to the dashboard. Leaving an
+  // exam should put you where you started it, so the next exam is one tap away.
+  // backToHub() used to call renderHub() on the way out, which is what kept the
+  // skill rings current. We are not going to the hub any more, so refresh it
+  // directly - the ring must be right when the student does reach the hub.
+  showScreen('listeningScreen');
+  if (typeof window.renderHub === 'function') {
+    try { window.renderHub(); } catch (_) {}
   }
 }
 

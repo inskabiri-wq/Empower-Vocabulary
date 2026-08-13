@@ -95,15 +95,23 @@
   letter-spacing: 0.5px;
 }
 
-.activity-filter-select,
+/* Selects here also carry .ll-select (the one app-wide dropdown look), so
+   this rule must NOT restate padding/background/radius/font - it would
+   override the shared style and reintroduce a second look. Only layout
+   concerns unique to this filter bar stay. */
+.activity-filter-select {
+  min-width: 160px;
+  transition: all 0.2s;
+}
+
 .activity-filter-input {
-  padding: 10px 14px;
-  background: var(--bg-primary);
+  padding: 10px 16px;
+  background: var(--bg-item);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 0.9em;
+  font-size: 0.875rem;
   min-width: 160px;
   cursor: pointer;
   transition: all 0.2s;
@@ -190,7 +198,7 @@
 .activity-logs-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
   max-height: 600px;
   overflow-y: auto;
   padding-right: 8px;
@@ -212,12 +220,14 @@
 }
 
 /* Log Item */
+/* Compact rows: the log is a scan-many-at-once list, so each entry stays
+   one tight card instead of a tall block (was 18/20 padding + 48px icon). */
 .activity-log-item {
   display: flex;
-  gap: 16px;
-  padding: 18px 20px;
+  gap: 12px;
+  padding: 7px 12px;
   background: var(--bg-item);
-  border-radius: 14px;
+  border-radius: 10px;
   transition: all 0.2s ease;
   border: 1px solid transparent;
 }
@@ -229,8 +239,9 @@
 }
 
 .activity-log-icon {
-  width: 48px;
-  height: 48px;
+  font-size: 0.95em;
+  width: 28px;
+  height: 28px;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -244,17 +255,50 @@
   min-width: 0;
 }
 
+/* ONE LINE per entry: action + category + who on the left, when on the right.
+   (Was three stacked rows - action/user/meta - which made every entry a tall
+   block and only ~4 fit on screen.) */
+.activity-log-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.activity-log-who {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activity-log-when {
+  margin-left: auto;
+  padding-left: 10px;
+  color: var(--text-muted);
+  font-size: 0.82em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .activity-log-line { flex-wrap: wrap; }
+  .activity-log-when { margin-left: 0; padding-left: 0; width: 100%; }
+}
+
 .activity-log-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 6px;
+  margin-bottom: 3px;
   flex-wrap: wrap;
 }
 
 .activity-log-action {
-  font-weight: 600;
-  font-size: 1em;
+  font-weight: 700;
+  font-size: 0.92em;
+  white-space: nowrap;
   color: var(--text-primary);
 }
 
@@ -269,7 +313,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .user-role-icon {
@@ -287,10 +331,10 @@
 }
 
 .activity-log-details {
-  padding: 10px 14px;
+  padding: 7px 10px;
   background: var(--bg-primary);
   border-radius: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   font-size: 0.85em;
 }
 
@@ -332,7 +376,7 @@
 
 .activity-empty-state h3 {
   color: var(--text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .activity-empty-state p {

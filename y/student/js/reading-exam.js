@@ -131,7 +131,22 @@
   }
   window.openReadingExam = openReadingExam;
 
+// Timed exams call requestFullscreen() on entry (skills/reading.js). Nothing
+// released it, so the browser stayed full-page after the exam closed and the
+// rest of the app was left in an exam-shaped window. Every exit path calls this.
+function leaveExamFullscreen() {
+  try {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      var ex = document.exitFullscreen || document.webkitExitFullscreen ||
+               document.mozCancelFullScreen || document.msExitFullscreen;
+      if (ex) ex.call(document);
+    }
+  } catch (_) {}
+}
+
+
   function closeReadingExam() {
+    leaveExamFullscreen();
     if (!state) return;
     if (state.timerHandle) { clearInterval(state.timerHandle); state.timerHandle = null; }
     if (typeof showScreen === 'function') showScreen('readingScreen');
@@ -589,7 +604,7 @@
       <div class="rd-q rd-q-row" data-q="${escHtml(it.id)}" data-section="${escHtml(sec.id)}">
         ${qSideTools(sec.id, it.id)}
         <div class="rd-q-label">${escHtml(it.label)}</div>
-        <select class="rd-input rd-select" data-q="${escHtml(it.id)}" data-section="${escHtml(sec.id)}">
+        <select class="rd-input rd-select ll-select" data-q="${escHtml(it.id)}" data-section="${escHtml(sec.id)}">
           <option value="">— choose —</option>
           ${opts}
         </select>
@@ -606,7 +621,7 @@
       <div class="rd-q rd-q-row" data-q="${escHtml(it.id)}" data-section="${escHtml(sec.id)}">
         ${qSideTools(sec.id, it.id)}
         <div class="rd-q-label">${escHtml(it.label)}</div>
-        <select class="rd-input rd-select rd-gap-select" data-q="${escHtml(it.id)}" data-section="${escHtml(sec.id)}" data-gap-id="${escHtml(it.id)}">
+        <select class="rd-input rd-select rd-gap-select ll-select" data-q="${escHtml(it.id)}" data-section="${escHtml(sec.id)}" data-gap-id="${escHtml(it.id)}">
           <option value="">— choose —</option>
           ${opts}
         </select>

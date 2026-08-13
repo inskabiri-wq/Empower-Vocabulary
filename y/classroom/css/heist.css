@@ -65,7 +65,7 @@ body.heist {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 /* Bitcoin-flavoured coin badge — gold gradient + faint glow + a
    spinning Bitcoin glyph that animates whenever the balance changes.
@@ -156,7 +156,7 @@ body.heist {
   .heist-code-pane > #qrCard         { order: 1; }
 }
 .heist-code-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -189,7 +189,7 @@ body.heist {
 }
 .heist-field { display: flex; flex-direction: column; gap: 4px; }
 .heist-field label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.14em;
   font-weight: 700;
   color: var(--heist-text-mut);
@@ -280,18 +280,18 @@ body.heist {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 0.875rem;
   flex-shrink: 0;
 }
 .heist-player .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .heist-player .pw-set {
   margin-left: auto;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--heist-green);
 }
 .heist-player .pw-pending {
   margin-left: auto;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--heist-text-mut);
 }
 /* Final-standings (done view): coins shown prominently, not as a tiny status. */
@@ -424,7 +424,7 @@ body.heist {
   width: 32px; height: 32px; border-radius: 50%;
   background: linear-gradient(135deg, var(--heist-cyan), var(--heist-violet));
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 .vault .meta { min-width: 0; }
 .vault .name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -509,7 +509,7 @@ body.heist {
   width: 40px; height: 40px; border-radius: 50%;
   background: linear-gradient(135deg, var(--heist-cyan), var(--heist-violet));
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 .heist-modal .hint {
   background: rgba(245, 158, 11, 0.10);
@@ -612,7 +612,7 @@ body.heist {
   border-bottom: 1px solid var(--heist-border);
 }
 .heist-live-board th {
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--heist-text-mut);
@@ -623,7 +623,7 @@ body.heist {
   display: inline-flex; align-items: center; justify-content: center;
   width: 24px; height: 24px; border-radius: 50%;
   background: linear-gradient(135deg, var(--heist-cyan), var(--heist-violet));
-  font-size: 12px; margin-right: 8px; vertical-align: middle;
+  font-size: 0.75rem; margin-right: 8px; vertical-align: middle;
 }
 
 .heist-event-log {
