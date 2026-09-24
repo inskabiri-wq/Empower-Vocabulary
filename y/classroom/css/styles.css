@@ -9,15 +9,15 @@
   --bg-card: #152035;
   --bg-item: #1c2a42;
   --accent-primary: #3b82f6;
-  --accent-secondary: #0ea5e9;
-  --accent-tertiary: #06b6d4;
-  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 50%, #06b6d4 100%);
+  --accent-secondary: #2563eb;
+  --accent-tertiary: #2563eb;
+  --accent-gradient: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
   --success: #10b981;
   --error: #ef4444;
   --warning: #f59e0b;
   --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
+  --text-muted: #9ca3af;   /* was #71717a: only 3.37:1 on the dark card */
   --border-color: rgba(59, 130, 246, 0.2);
 }
 
@@ -28,7 +28,7 @@
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--ll-font);
   background: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
@@ -58,8 +58,8 @@ body {
   height: 100%;
   background: 
     radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(14, 165, 233, 0.08) 0%, transparent 60%);
+    radial-gradient(ellipse at 80% 80%, rgba(37, 99, 235, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 60%);
   z-index: 0;
   pointer-events: none;
   animation: gradientPulse 8s ease-in-out infinite;
@@ -123,6 +123,20 @@ body {
   bottom: 20%;
   left: 5%;
   animation-delay: -15s;
+}
+
+/* The shapes are sized for a desktop canvas. On a phone .shape-1 is 300px wide
+   against a 390px screen, so a single decorative blob covers three quarters of
+   the width and drifts across the cards, which sit above it and are
+   translucent. The result reads as a circle escaping its box rather than as
+   background texture. Nothing is removed: they are scaled to the screen and
+   faded a little, so they stay decorative and stop competing with content. */
+@media (max-width: 620px) {
+  .shape { opacity: 0.06; }
+  .shape-1 { width: 150px; height: 150px; top: -60px;    left: -60px; }
+  .shape-2 { width: 110px; height: 110px; bottom: -40px; right: -40px; }
+  .shape-3 { width: 80px;  height: 80px; }
+  .shape-4 { width: 60px;  height: 60px; }
 }
 
 @keyframes floatShape {
@@ -261,7 +275,7 @@ body {
 }
 
 /* ============================================
-   GENERIC THEMED MODAL — used by Trust No One,
+   GENERIC THEMED MODAL - used by Trust No One,
    Reading Classroom, Listening Classroom, and any
    per-game modal that opts in by using these classes.
    Activated by adding `.active` to .modal-overlay.
@@ -281,7 +295,7 @@ body {
   transition: opacity 0.2s ease;
   padding: 16px;
   /* Allow tall modals to scroll vertically when the viewport is shorter
-     than the content — fixes mobile cut-off (Heist hack modal etc.). */
+     than the content - fixes mobile cut-off (Heist hack modal etc.). */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -299,7 +313,7 @@ body {
   width: 100%;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
   color: var(--text-primary, #f1f5f9);
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--ll-font);
   text-align: center;
   transform: scale(0.94);
   opacity: 0;
@@ -320,7 +334,7 @@ body {
   font-size: 1.25em;
   font-weight: 800;
   letter-spacing: -0.005em;
-  background: linear-gradient(135deg, #38bdf8, #a78bfa);
+  background: linear-gradient(135deg, #60a5fa, #60a5fa);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -358,10 +372,10 @@ body {
 }
 .modal-btn-cancel:hover { border-color: rgba(148, 163, 184, 0.5); }
 .modal-btn-confirm {
-  background: linear-gradient(135deg, #6366f1, #a78bfa);
+  background: linear-gradient(135deg, #2563eb, #60a5fa);
   border-color: transparent;
   color: #fff;
-  box-shadow: 0 8px 22px -10px rgba(99, 102, 241, 0.7);
+  box-shadow: 0 8px 22px -10px rgba(37, 99, 235, 0.7);
 }
 .modal-btn-confirm:hover { filter: brightness(1.08); }
 
@@ -534,7 +548,7 @@ body {
 .session-code-display {
   text-align: center;
   padding: 32px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
   border-radius: 16px;
   border: 2px dashed var(--accent-primary);
   margin-bottom: 24px;
@@ -549,7 +563,7 @@ body {
 }
 
 .session-code {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--ll-mono);
   font-size: 3rem;
   font-weight: 700;
   color: var(--accent-primary);
@@ -617,7 +631,7 @@ body {
 }
 
 .code-input {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--ll-mono);
   font-size: 2rem;
   text-align: center;
   letter-spacing: 8px;
@@ -1136,7 +1150,7 @@ body {
    ============================================ */
 
 .result-card {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
   border: 2px solid var(--accent-primary);
   border-radius: 20px;
   padding: 32px;
@@ -1218,7 +1232,7 @@ body {
 .error-message {
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  color: var(--text-error, #fca5a5);
   padding: 16px 20px;
   border-radius: 12px;
   margin-bottom: 20px;
@@ -1227,7 +1241,7 @@ body {
 .success-message {
   background: rgba(16, 185, 129, 0.1);
   border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #6ee7b7;
+  color: var(--text-success, #6ee7b7);
   padding: 16px 20px;
   border-radius: 12px;
   margin-bottom: 20px;
@@ -1309,22 +1323,31 @@ body {
 /* ============================================
    THEMED TOAST  (replaces alert() in teacher.js)
    ============================================ */
+/* BELOW THE HEADER, NOT ON TOP OF IT.
+   At top:18px the toast landed across the bar and covered the greeting and
+   the settings wheel, which is what "the error pop ups are not in the right
+   place" was pointing at: the message and the controls fought for the same
+   corner. The header runs 65-79px tall across these pages, so 88px clears it
+   on all of them and the toast reads as a message about the page rather than
+   part of the chrome. Kept identical on the mini-game toasts below. */
 .cls-toast {
   position: fixed;
-  top: 18px;
+  top: 88px;
   right: 18px;
   background: rgba(15, 23, 42, 0.96);
   color: var(--text-primary, #f1f5f9);
   border: 1px solid rgba(148, 163, 184, 0.18);
-  border-left: 4px solid #ef4444;
-  padding: 12px 18px;
-  border-radius: 12px;
+  border-left: 5px solid #ef4444;
+  /* Sized to match the mini-game toasts below; see the note there. */
+  padding: 16px 22px;
+  border-radius: 14px;
   font-family: inherit;
-  font-size: 0.95em;
+  font-size: 1.05em;
+  line-height: 1.45;
   font-weight: 500;
   z-index: 9999;
-  max-width: 340px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  max-width: 420px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
   opacity: 0;
   transform: translateX(20px);
   transition: opacity 0.22s, transform 0.22s;
@@ -1336,3 +1359,446 @@ body {
 .cls-toast-info    { border-left-color: #3b82f6; }
 .cls-toast-success { border-left-color: #10b981; }
 
+/* ============================================================
+   LIGHT MODE - shared classroom shell (lobby, join, teacher controls).
+   ============================================================ */
+.light-mode {
+  --bg-primary:   #f6f8fb;
+  --bg-secondary: #ffffff;
+  --bg-card:      #ffffff;
+  --bg-item:      #f2f6fc;
+  --accent-primary:   #2563eb;
+  --accent-secondary: #2563eb;
+  --accent-tertiary:  #1d4ed8;
+  --accent-gradient: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
+  --success: #15803d;
+  --error:   #b91c1c;
+  --warning: #b45309;
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #556274;
+  --border-color:   #e3e9f2;
+}
+
+/* ============================================================
+   LIGHT MODE - generated by tools/light-coverage.js findings
+   Each rule mirrors a real one above and flips only its SURFACE,
+   keeping the original alpha so translucent panels stay translucent
+   and nothing about the layering changes. Dark is untouched.
+   ============================================================ */
+.light-mode .confirm-modal {
+  background: rgba(246, 248, 251, 0.8);
+}
+.light-mode .modal-overlay {
+  background: rgba(246, 248, 251, 0.78);
+}
+.light-mode .modal-btn {
+  background: rgba(255, 255, 255, 0.55);
+}
+.light-mode .cls-toast {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+/* ── Phone header ──────────────────────────────────────────────
+   Everything in this bar stays on a phone: Dashboard, the Lingualab lockup,
+   the greeting, Logout and the settings wheel. At 390px they need about 499px
+   of content inside a 366px box, so the bar WRAPS on purpose: Dashboard and
+   the lockup on the first line, the actions cluster right aligned on the
+   second.
+
+   This used to be flex-wrap:nowrap, with the greeting hidden to buy the room.
+   That hide only ever matched #studentName, and classroom-teacher.html puts
+   that id on the INNER name span, so on the teacher page nothing was freed and
+   the row was still about 133px short. .header-actions was also flex:0 0 auto,
+   which left .ll-brand as the one shrinkable child - and it carries
+   min-width:0 (css/app-settings.css), so it collapsed to 0px wide and its
+   contents spilled out of the box: the flask mark painted on top of
+   "Hello, ...", the wordmark vanished (a 0px background box with
+   background-clip:text paints no glyphs at all) and the lockup's second line,
+   being overflow:hidden, was clipped to nothing. That is the half-drawn mark
+   in the report. */
+@media (max-width: 620px) {
+  .header {
+    padding: 10px 8px;
+    gap: 4px;
+    /* ONE line. Dropping the greeting was the trade agreed, and it was not
+       enough on its own: the four remaining items need 362px of content, so
+       with 6px gaps and 10px padding they still wanted 380px in a 370px box at
+       390px wide. The tighter padding and gap here buy back exactly that.
+       Measured budget at 390px: 119 (Dashboard) + 119 (lockup) + 80 (Logout)
+       + 44 (wheel) + 3 gaps. */
+    flex-wrap: nowrap;
+  }
+  .header .header-title h1 { font-size: 1.05rem; }
+  .header .header-title span { font-size: 1.15rem; }
+  /* The controls sit at the right of the single row. */
+  .header-actions {
+    gap: 6px;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    align-items: center;
+    margin-left: auto;
+  }
+  /* THE GREETING IS THE THING THAT GOES.
+     "Hello, <name>" is not a control, and the name is shown in the profile
+     everywhere else in the app. Dropping it is what buys the single row: with
+     it, the bar needed 428px of content in a 362px box and wrapped onto three
+     lines. It stays in the markup so nothing else that reads it breaks. */
+  .header-actions > span:first-child { display: none; }
+  /* The lockup absorbs the remaining squeeze, but WITHIN A FLOOR.
+     It carries min-width:0 from css/app-settings.css, so left unbounded it
+     collapses to 0px against rigid neighbours and paints its contents outside
+     the box, which is the bug from the first round. A floor lets it give up
+     the few pixels a 360px phone needs without ever disappearing. */
+  .header .ll-brand {
+    flex: 0 1 auto;
+    /* 86px, chosen from the 360px budget rather than picked by eye: a 360px
+       phone leaves a 344px content box, and Dashboard (119) + Logout (80) +
+       wheel (44) + three 4px gaps take 255 of it, so the lockup has 89px to
+       live in. 86 fits with three to spare and still shows the mark plus a
+       readable run of the name. */
+    min-width: 86px;
+    overflow: hidden;
+  }
+  /* "Classroom Mode" is the widest thing in the lockup, so it is what gives.
+     It only truncates on the narrowest phones; at 390px and up it is whole. */
+  .header .ll-brand-sub h1,
+  .header .ll-brand-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* Tightened to fit one line. Every value here is buying horizontal space. */
+  .header .ll-brand-cap { width: 22px; height: 22px; }
+  .header .ll-brand-name { font-size: 0.86rem; }
+  .header .ll-brand-sub { font-size: 0.64rem; }
+  /* Both "← Dashboard" and Logout carry .ll-navbtn, so anything here hits the
+     pair. Worth stating, because a rule written for the back button alone once
+     stripped Logout's label too. */
+  .header .ll-navbtn,
+  .header-actions .btn {
+    padding: 6px 8px;
+    font-size: 0.74rem;
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+
+  /* THE NAV LABELS GO, THE ICONS STAY.
+     The budget above was worked out for the hub, whose two buttons are
+     "Dashboard" and "Logout". The eight GAME hosts carry "Pick a different
+     game" instead, and measured at 390px that button alone is 193px wide:
+     193 + 126 + 86 lockup + 50 actions = 475px of content in a 390px box, an
+     85px overflow on every one of them. That is the header that does not fit
+     a phone.
+
+     Rather than shrink type until it is unreadable, the words are dropped and
+     the emoji kept, which is the same trade the greeting makes just above.
+     The label text is wrapped in .ll-navtext in the markup, so this only
+     hides the words: the link, its id and its target are untouched, and the
+     full label is back at 621px. Budget after: 44 + 44 + 86 + 50 + gaps,
+     about 240px, which clears a 360px phone as well. */
+  .ll-navtext { display: none; }
+
+}
+
+/* ============================================================
+   ONE HEADER, WHICHEVER GAME YOU OPENED
+   ------------------------------------------------------------
+   Five classroom hosts draw `<header class="header">`: a full-width bar with
+   a bottom rule and square corners. The other four (heist, trust, reading,
+   listening) have no <header> at all - their chrome is a `.<game>-top` div
+   inside the game shell, which renders as an inset card with 14px corners.
+   Same app, same job, two different objects, and the difference is obvious
+   the moment anyone sees two games side by side.
+
+   The four are given the FIVE'S appearance here rather than being rebuilt in
+   markup, because their ids (backToClassroom, backToDashboard) are bound by
+   each game's own script for the leave-confirmation, and js/app-settings.js
+   looks these bars up by class name to place the Lingualab lockup and the
+   settings wheel. Restyling touches none of that.
+
+   QUALIFIED WITH `body` ON PURPOSE. Each game's own sheet (heist.css,
+   trust.css, reading.css, listening.css) declares `.heist-top` and friends,
+   and every one of those sheets is linked AFTER this file. A bare `.heist-top`
+   here ties on specificity and loses on source order - measured: the bars kept
+   their 14px corners and their private surface colour and nothing appeared to
+   change. One element qualifier settles it without reaching for !important.
+
+   The colours come from --bg-secondary and --border-color, the same tokens
+   `.header` uses, rather than each game's private --heist-surface. That is
+   what makes them the same object in BOTH themes instead of only in one.
+
+   TARGETED BY .ll-gamebar, NOT BY .heist-top. Each of these four files uses
+   its `.{game}-top` class TWICE: once as the page header and once as a
+   toolbar row inside the results view. Styling the class itself put a header
+   bar in the middle of the results card. The header instance carries
+   .ll-gamebar; the toolbar row does not.
+   ============================================================ */
+body .ll-gamebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: var(--bg-secondary);
+  border: 0;
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 0;
+  margin: 0 0 18px;
+  padding: 16px 24px;
+  box-shadow: none;
+}
+
+/* The game name, now folded into the Lingualab lockup by app-settings.js the
+   same way "Tug of War" is. Matches .header-title h1 exactly so the two
+   families of page are not subtly different sizes. */
+body .ll-gamebar h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (max-width: 620px) {
+  body .ll-gamebar {
+    padding: 10px 8px;
+    gap: 4px;
+    flex-wrap: nowrap;
+  }
+  body .ll-gamebar h1 { font-size: 1.05rem; }
+  body .ll-gamebar .header-actions > span:first-child { display: none; }
+}
+
+/* ============================================================
+   ONE TOAST, WHEREVER IT COMES FROM
+   ------------------------------------------------------------
+   Seven different toasts had grown across the classroom games:
+
+     .cls-toast     Vocab Race        top right, slides in, coloured edge
+     .mg-toast      the mini-games    BOTTOM CENTRE, different animation
+     .heist-toast   The Heist         its own
+     plus listening, reading and trust each with a private copy
+
+   So the same app told you things in three different corners depending
+   on which game you happened to be in, which is what "some are side
+   ones" meant. Rather than rewrite seven JavaScript functions and risk
+   seven games, the classes are given ONE appearance here. Every page
+   already loads this file.
+
+   `.cls-toast` won because it was the most complete: a fixed position,
+   an entry transition, a colour per kind, and a light-mode rule. The
+   others inherit all of it.
+
+   The JS could still be collapsed into one function later. This makes
+   them LOOK identical today, which is the part a student or a teacher
+   in front of a class actually experiences.
+   ============================================================ */
+/* QUALIFIED WITH `body`, and it has to be.
+   classroom/css/minigames.css is linked AFTER this file on five of these
+   pages and sets `.mg-toast { left:50%; bottom:30px; transform:... }`. An
+   unqualified selector here ties on specificity and loses on source order, so
+   the toast kept minigames' `bottom:30px` while taking this rule's `top:88px`
+   - a box stretched from 88px to thirty from the floor, roughly 790px tall,
+   painted over the whole lobby. Seen in a screenshot before it was measured.
+   Same lesson as the game bars: one element qualifier, no !important. */
+body .mg-toast,
+body .heist-toast,
+body .trust-toast,
+body .reading-toast,
+body .listening-toast {
+  position: fixed;
+  top: 88px;          /* clears the header, same as .cls-toast above */
+  right: 18px;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  background: rgba(15, 23, 42, 0.96);
+  color: var(--text-primary, #f1f5f9);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-left: 5px solid #ef4444;
+  /* BIGGER, because these are read from across a classroom.
+     These fire during a live game on a projector, and at 0.95em in a 340px
+     box a teacher had to walk to the screen to read one. */
+  padding: 16px 22px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 1.05em;
+  line-height: 1.45;
+  font-weight: 500;
+  z-index: 9999;
+  max-width: 420px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+  animation: llToastIn 0.22s ease-out;
+}
+
+/* ON A PHONE THE TOAST SPANS THE SCREEN INSTEAD OF HUGGING A CORNER.
+   A 420px card pinned to `right: 18px` does not fit a 390px phone: it either
+   overflows the viewport or squeezes into a narrow column that wraps every
+   message onto five lines. Pinning BOTH edges lets it size itself to the
+   screen with an even margin, and the entry slide is swapped for a downward
+   one because a card the full width of the screen sliding in from the right
+   reads as the page moving. */
+@media (max-width: 620px) {
+  body .cls-toast,
+  body .mg-toast,
+  body .heist-toast,
+  body .trust-toast,
+  body .reading-toast,
+  body .listening-toast {
+    top: 76px;
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    width: auto;
+    font-size: 1em;
+    padding: 14px 16px;
+    animation: llToastInPhone 0.22s ease-out;
+  }
+  /* .cls-toast animates by class rather than by keyframes, so its two states
+     have to lose the horizontal travel as well or it slides in from off the
+     right edge of a screen it now spans. */
+  .cls-toast          { transform: translateY(-10px); }
+  .cls-toast.shown    { transform: translateY(0); }
+  .cls-toast.fade-out { transform: translateY(-10px); }
+}
+
+@keyframes llToastInPhone {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* These toasts are created and removed by their own timers rather than
+   toggled with a class, so they animate in and simply vanish. Matching
+   the entry is what makes them read as the same object. */
+@keyframes llToastIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* The kind names differ between the games. All of them mean the same
+   three things, so all of them get the same edge colour. */
+body .mg-toast.success, body .heist-toast.success, body .trust-toast.success,
+body .reading-toast.success, body .listening-toast.success { border-left-color: #10b981; }
+body .mg-toast.info, body .heist-toast.info, body .trust-toast.info,
+body .reading-toast.info, body .listening-toast.info { border-left-color: #3b82f6; }
+body .mg-toast.error, body .mg-toast.fail,
+body .heist-toast.error, body .heist-toast.fail,
+body .trust-toast.error, body .trust-toast.fail,
+body .reading-toast.error, body .reading-toast.fail,
+body .listening-toast.error, body .listening-toast.fail { border-left-color: #ef4444; }
+
+body.light-mode .mg-toast,
+body.light-mode .heist-toast,
+body.light-mode .trust-toast,
+body.light-mode .reading-toast,
+body.light-mode .listening-toast {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+@media (max-width: 640px) {
+  .cls-toast, .mg-toast, .heist-toast, .trust-toast,
+  .reading-toast, .listening-toast {
+    left: 12px; right: 12px; max-width: none;
+  }
+}
+
+/* ============================================================
+   THE SESSION LOBBY - ONE DEFINITION, EVERY GAME
+   ------------------------------------------------------------
+   These styles used to live in TWO places and reach only five of
+   the nine games:
+
+     classroom/css/minigames.css   aiquiz, bingo, scramble, tug
+     inline in classroom-teacher.html   Vocab Race only
+
+   The Heist, Trust No One, Reading and Listening load neither, so
+   they carried the same lobby markup with no styles behind it: the
+   QR came out raw and left aligned with no white tile, next to a
+   lobby that looked designed on every other game. The markup was
+   never the problem, which is why a checker that only looked for
+   the elements said they matched.
+
+   This file is loaded by every classroom page, so the definition
+   belongs here and nowhere else.
+   ============================================================ */
+.session-qr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 24px;
+  padding: 18px;
+  /* NO CARD AROUND THE CARD.
+     A tinted panel here put a grey box around the QR on the light theme,
+     which is not what Vocab Race looked like and made the same lobby read
+     as two different designs. The white QR tile is already the object the
+     eye lands on; wrapping it in a second surface just adds an edge. */
+  background: transparent;
+  border: 0;
+  border-radius: 14px;
+}
+
+/* The join link under the QR, for anyone who cannot scan. Four games had it
+   in the markup with an inline display:none, so their lobby showed a QR and
+   no readable address while the other five showed both. */
+.session-join-url {
+  display: block;
+  text-align: center;
+  margin: -12px 0 18px;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.8rem;
+  word-break: break-all;
+}
+/* The tile stays white in both themes on purpose: a QR code needs
+   dark-on-light contrast to scan reliably, whatever the page is doing. */
+.session-qr-tile {
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 12px;
+  line-height: 0;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+.session-qr-tile img { display: block; width: 220px; height: 220px; }
+.session-qr-label {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--text-secondary, #94a3b8);
+  text-align: center;
+}
+/* The small QR kept beside the live game, once the lobby is gone. */
+.session-qr-small {
+  background: #ffffff;
+  padding: 3px;
+  border-radius: 8px;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .session-qr-tile img { width: 180px; height: 180px; }
+  .session-qr-card { padding: 14px; }
+}
+
+/* ── Thumb-sized join controls ────────────────────────────────
+   MEASURED on the real pages at 375px: the controls a student taps in a
+   hall came out 38 to 42px tall against the 44px accessible minimum. Wide
+   enough, just a few pixels short.
+
+   DELIBERATELY NARROW SCOPE. Not `.btn`, and not `.btn-large`: both are also
+   host controls on the projector pages, and `.btn-large` is on
+   classroom-aiquiz-teacher.html, which must not be touched. These three
+   selectors are student-only:
+     #joinBtn    the join button on all eight classroom-*-student pages
+     #nameInput  the Heist name field
+     #joinScreen the join panel on classroom-student.html, whose button
+                 carries no id of its own
+   min-height only grows what is already too short, so anything already at
+   or above 44px is unaffected. */
+#joinBtn,
+#nameInput,
+#joinScreen .btn-primary {
+  min-height: 44px;
+}

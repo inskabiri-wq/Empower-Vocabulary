@@ -35,12 +35,76 @@ const ActivityAdmin = {
     await this.loadLogs();
     this._updateStats();
     
-    // Log that admin viewed activity log
-    if (typeof ActivityLogger !== 'undefined') {
-      ActivityLogger.log(ActivityConfig.types.ACTIVITY_LOG_VIEWED);
+    // ONCE PER BROWSER SESSION, not once per render.
+    //
+    // This fired on every init() - every time the tab was opened, and every
+    // time a filter re-ran it - so the audit log filled with rows saying
+    // somebody had looked at the audit log. Eight identical "Activity Log
+    // Viewed" entries in a row, burying the real events underneath, which is
+    // the opposite of what an audit trail is for.
+    //
+    // A log that is mostly self-reports is worse than no log, so this is now
+    // one entry per session. The write is guarded because sessionStorage
+    // throws in some privacy modes, and an audit note is never worth breaking
+    // the page for.
+    try {
+      if (typeof ActivityLogger !== 'undefined' && !sessionStorage.getItem('llLogViewLogged')) {
+        sessionStorage.setItem('llLogViewLogged', '1');
+        ActivityLogger.log(ActivityConfig.types.ACTIVITY_LOG_VIEWED);
+      }
+    } catch (e) { /* private mode: skip the note, keep the page */ }
+
+    // Nothing deletes logs on a schedule, on purpose: an unattended job that
+    // erases student records has one very bad failure mode and no upside. So
+    // the reminder is here instead of in somebody's calendar, where it fires
+    // exactly when it is actionable and cannot be missed.
+    this.retentionNudge();
+  },
+
+  // ============================================
+  // RETENTION REMINDER
+  // ============================================
+  // Costs ONE document read: we only need to know whether anything old
+  // exists, never how much. countOlderThan() reads up to 5000 docs, which is
+  // right for the button and far too expensive for a banner that renders on
+  // every tab open.
+  async retentionNudge() {
+    const el = document.getElementById('activityRetentionBanner');
+    if (!el) return;
+    const months = this._retentionMonths();
+    try {
+      const snap = await db.collection(ActivityConfig.settings.collectionName)
+        .where('timestamp', '<', this._cutoffFor(months))
+        .orderBy('timestamp', 'asc')
+        .limit(1)
+        .get();
+
+      if (snap.empty) {
+        el.style.display = 'none';
+        return;
+      }
+
+      // Say how far back it goes, so "overdue" is a fact rather than a nag.
+      const oldest = snap.docs[0].data().timestamp;
+      const d = (oldest && oldest.toDate) ? oldest.toDate() : null;
+      const age = d ? Math.floor((Date.now() - d.getTime()) / 2592000000) : null;
+
+      el.innerHTML =
+        '<strong>Time to clear old logs.</strong> There are activity logs older than ' +
+        months + ' months' +
+        (age !== null ? ', the oldest from about ' + age + ' months ago' : '') +
+        '. The retention period in the terms students agreed to is ' + months +
+        ' months, so these should be downloaded and then deleted.' +
+        '<br><span style="opacity:.85;">Use <em>Download these logs</em> above first. The delete refuses to run until you have.</span>';
+      el.style.display = 'block';
+    } catch (e) {
+      // A missing index or a permissions hiccup must never break the tab. The
+      // buttons still work by hand; only the reminder is skipped.
+      console.warn('[ActivityAdmin] retention nudge skipped:', e && e.message);
+      el.style.display = 'none';
     }
   },
-  
+
   _checkAdmin() {
     if (typeof auth === 'undefined' || !auth.currentUser) {
       console.warn('[ActivityAdmin] Not authenticated');
@@ -263,6 +327,9 @@ const ActivityAdmin = {
   async exportToExcel() {
     try {
       this._showLoading(true);
+      // Unlocks pruneOlderThan() for this browser session. Downloading
+      // before deleting is the point of the retention tool.
+      this._exportedThisSession = true;
       
       // Load ALL logs matching current filters for export
       let allLogs = [];
@@ -447,39 +514,217 @@ const ActivityAdmin = {
   // ============================================
   // STATS
   // ============================================
+  // COUNT THE ROWS, DO NOT DOWNLOAD THEM.
+  //
+  // These three numbers used to be produced by three `.get()` calls and then
+  // reading `.size` - which downloads every matching document in order to
+  // count it. For one teacher that is invisible. For a thousand students it is
+  // not: at roughly five logged events per student per day, the three queries
+  // fetch about 5,000 + 35,000 + 150,000 documents, so ~190,000 reads and
+  // ~190,000 documents into the browser EVERY TIME the tab is opened.
+  //
+  // `count()` is an aggregation: the server returns one number and bills
+  // roughly one read per thousand documents scanned. Same three figures, about
+  // 190 reads instead of 190,000, and nothing to hold in memory.
+  //
+  // Falls back to the old path only where count() is unavailable, and caps it
+  // so an old SDK degrades to a slightly stale number rather than to a frozen
+  // tab.
+  async _countSince(date, cap) {
+    const col = db.collection(ActivityConfig.settings.collectionName)
+      .where('timestamp', '>=', date);
+    try {
+      if (typeof col.count === 'function') {
+        const agg = await col.count().get();
+        return agg.data().count;
+      }
+    } catch (e) {
+      console.warn('[ActivityAdmin] count() unavailable, falling back:', e && e.code);
+    }
+    const snap = await col.limit(cap).get();
+    return snap.size === cap ? (cap + '+') : snap.size;
+  },
+
+  // ============================================================
+  // RETENTION - export, then delete
+  // ------------------------------------------------------------
+  // `retentionDays: 0` in activity-config.js means keep forever. At 1000
+  // students and roughly five logged events each per day that is about 1.8
+  // million documents a year, and nothing prunes it. The paginated list and
+  // the capped stat tiles both stay fast regardless, so this is about storage
+  // and about an audit trail nobody can read past page 40 - not an outage.
+  //
+  // Deleting an audit log is irreversible, so the order is enforced rather
+  // than suggested:
+  //
+  //   1. COUNT what would go, and show it.
+  //   2. Refuse to delete unless the logs have been EXPORTED in this browser
+  //      session. "Download it and then delete it" is the whole request, and
+  //      a tool that lets you skip step one at 3pm on a Friday is a trap.
+  //   3. Require the number of months to be typed back, so a mis-click
+  //      cannot start it.
+  //   4. Delete in batches with a per-run cap, and report exactly how many
+  //      went and how many remain, rather than pretending it finished.
+  //
+  // Nothing here runs on its own. There is no scheduled deletion.
+  // ============================================================
+
+  // Set by exportToExcel() so a delete cannot happen before a download.
+  _exportedThisSession: false,
+
+  _cutoffFor(months) {
+    const d = new Date();
+    d.setMonth(d.getMonth() - Math.max(1, Number(months) || 6));
+    return d;
+  },
+
+  // How many logs are older than the window. Counted with a capped read,
+  // because count() is a modular-SDK API and this app uses the compat build.
+  async countOlderThan(months, cap) {
+    cap = cap || 5000;
+    const snap = await db.collection(ActivityConfig.settings.collectionName)
+      .where('timestamp', '<', this._cutoffFor(months))
+      .limit(cap)
+      .get();
+    return { n: snap.size, capped: snap.size === cap, cutoff: this._cutoffFor(months) };
+  },
+
+  async pruneOlderThan(months, opts) {
+    opts = opts || {};
+    const say = (m) => { if (typeof opts.onProgress === 'function') opts.onProgress(m); };
+
+    if (!this._checkAdmin()) return { ok: false, reason: 'not admin' };
+
+    if (!this._exportedThisSession && !opts.iHaveExported) {
+      return { ok: false, reason:
+        'Export the logs first. Use "Export to Excel" above - this refuses to ' +
+        'delete anything that has not been downloaded in this session.' };
+    }
+
+    const found = await this.countOlderThan(months);
+    if (!found.n) return { ok: true, deleted: 0, remaining: 0, note: 'Nothing is older than that.' };
+
+    const cutoffText = found.cutoff.toISOString().slice(0, 10);
+    const typed = opts.confirmedMonths;
+    if (String(typed) !== String(months)) {
+      return { ok: false, reason:
+        'Type ' + months + ' to confirm. This would permanently delete ' +
+        (found.capped ? 'at least ' : '') + found.n +
+        ' log entries from before ' + cutoffText + '.' };
+    }
+
+    // Batched, 400 at a time (Firestore allows 500 per batch), with a cap per
+    // run so one click cannot spend an hour deleting.
+    const perRun = Math.max(1, Number(opts.maxPerRun) || 2000);
+    let deleted = 0;
+    while (deleted < perRun) {
+      const snap = await db.collection(ActivityConfig.settings.collectionName)
+        .where('timestamp', '<', this._cutoffFor(months))
+        .limit(Math.min(400, perRun - deleted))
+        .get();
+      if (snap.empty) break;
+      const batch = db.batch();
+      snap.docs.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+      deleted += snap.size;
+      say('Deleted ' + deleted + '...');
+      if (snap.size < 400) break;
+    }
+
+    const left = await this.countOlderThan(months);
+    return {
+      ok: true, deleted: deleted,
+      remaining: left.capped ? (left.n + '+') : left.n,
+      cutoff: cutoffText,
+      note: left.n ? 'Run it again to continue - this run was capped at ' + perRun + '.'
+                   : 'Nothing older than ' + cutoffText + ' is left.'
+    };
+  },
+
+  // ── The two buttons on the tab ────────────────────────────────
+  // From CONFIG, not from a box on the page.
+  //
+  // The window is a policy decision taken once with the KVKK office, not a
+  // per-visit choice, and a number spinner sitting next to a delete button
+  // invited someone to nudge it by accident. Changing it is now a one-line
+  // edit in activity-config.js, which is where the rest of the settings live.
+  _retentionMonths() {
+    const n = parseInt((ActivityConfig.settings || {}).retentionMonths, 10);
+    return (isFinite(n) && n >= 1) ? n : 6;
+  },
+  _retentionNote(msg, colour) {
+    const el = document.getElementById('activityRetentionNote');
+    if (el) { el.textContent = msg; el.style.color = colour || 'var(--t2-text-muted,#7d8590)'; }
+  },
+
+  async checkRetention() {
+    const months = this._retentionMonths();
+    this._retentionNote('Checking...');
+    try {
+      const r = await this.countOlderThan(months);
+      const when = r.cutoff.toISOString().slice(0, 10);
+      this._retentionNote(
+        r.n
+          ? (r.capped ? 'At least ' : '') + r.n + ' log entr' + (r.n === 1 ? 'y is' : 'ies are') +
+            ' older than ' + when + '. Export first, then Delete.'
+          : 'Nothing is older than ' + when + '. Nothing to delete.',
+        r.n ? '#f59e0b' : 'var(--t2-green,#22c55e)');
+    } catch (e) {
+      this._retentionNote('Could not check: ' + (e && e.message), '#f87171');
+    }
+  },
+
+  async runPrune() {
+    const months = this._retentionMonths();
+    // First pass: no typed confirmation, so this returns the refusal that
+    // states the count and the cutoff. Nothing is deleted by this call.
+    let r = await this.pruneOlderThan(months, {});
+    if (!r.ok) {
+      const proceed = (window.AppDialog && AppDialog.confirm)
+        ? await AppDialog.confirm(r.reason, { title: 'Delete old logs', okLabel: 'Delete', danger: true })
+        : confirm(r.reason);
+      if (!proceed) { this._retentionNote('Cancelled. Nothing was deleted.'); return; }
+      if (/Export the logs first/.test(r.reason)) { this._retentionNote(r.reason, '#f87171'); return; }
+      // Confirmed: repeat with the typed number so the guard is satisfied.
+      r = await this.pruneOlderThan(months, { confirmedMonths: months,
+        onProgress: (m) => this._retentionNote(m) });
+    }
+    if (!r.ok) { this._retentionNote(r.reason, '#f87171'); return; }
+    this._retentionNote(
+      'Deleted ' + r.deleted + '. Remaining older than ' + (r.cutoff || 'the cutoff') +
+      ': ' + r.remaining + '. ' + (r.note || ''),
+      'var(--t2-green,#22c55e)');
+    this.loadLogs(false);
+    this._updateStats();
+  },
+
   async _updateStats() {
     try {
-      // Get today's count
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
-      const todaySnap = await db.collection(ActivityConfig.settings.collectionName)
-        .where('timestamp', '>=', today)
-        .get();
-      
-      document.getElementById('activityStatToday').textContent = todaySnap.size;
-      
-      // Get this week's count
+
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
       weekAgo.setHours(0, 0, 0, 0);
-      
-      const weekSnap = await db.collection(ActivityConfig.settings.collectionName)
-        .where('timestamp', '>=', weekAgo)
-        .get();
-      
-      document.getElementById('activityStatWeek').textContent = weekSnap.size;
-      
-      // Get total count (approximation - last 30 days)
+
       const monthAgo = new Date();
       monthAgo.setDate(monthAgo.getDate() - 30);
-      
-      const monthSnap = await db.collection(ActivityConfig.settings.collectionName)
-        .where('timestamp', '>=', monthAgo)
-        .get();
-      
-      document.getElementById('activityStatMonth').textContent = monthSnap.size;
-      
+
+      // In parallel: three counts, not three downloads.
+      const [t, w, m] = await Promise.all([
+        this._countSince(today, 2000),
+        this._countSince(weekAgo, 2000),
+        this._countSince(monthAgo, 2000)
+      ]);
+
+      const set = (id, v) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = v;
+      };
+      set('activityStatToday', t);
+      set('activityStatWeek', w);
+      set('activityStatMonth', m);
+
     } catch (error) {
       console.error('[ActivityAdmin] Error loading stats:', error);
     }

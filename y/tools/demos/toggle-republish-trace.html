@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toggle republish trace</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1040px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;vertical-align:top;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:84ch;line-height:1.55;}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:3px;}
+  iframe{position:absolute;left:-99999px;width:600px;height:400px;border:0;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">"Everything refreshes twice" - the redundant republish</h3>
+<p class="lede">
+  <code>feature-toggles.js</code> primes <code>window.featureToggles</code> from
+  localStorage at parse time so the first paint is already correct. But
+  <code>lastPublished</code> stayed null, so the first SERVER snapshot always
+  compared unequal - even when it agreed with the cache byte for byte - and
+  fired <code>feature-toggles-ready</code>. Four modules re-render on that event
+  (hub.js, placement-tile.js, student-assignments.js, grammar.js), which is the
+  profile area, the classroom tile and the assignment card all visibly redrawing
+  a moment after the page had settled.
+  <br><br>
+  This loads the REAL module and drives it with a fake Firestore transport, so
+  the gating logic under test is the shipped code. Only the network is faked.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script>
+const rows = [];
+function check(name, expected, actual){
+  rows.push({name, expected, actual, ok:String(expected)===String(actual)});
+}
+
+// Build an isolated document with a fake `db` whose onSnapshot we drive by
+// hand, then load the real feature-toggles.js into it.
+function makeFrame(cachedToggles) {
+  return new Promise(resolve => {
+    const f = document.createElement('iframe');
+    document.body.appendChild(f);
+    const d = f.contentDocument;
+    d.open();
+    d.write('<!DOCTYPE html><html><head><meta charset="utf-8"><base href="/"></head><body></body></html>');
+    d.close();
+    const w = f.contentWindow;
+
+    try {
+      if (cachedToggles === null) w.localStorage.removeItem('ll-feature-toggles');
+      else w.localStorage.setItem('ll-feature-toggles', JSON.stringify(cachedToggles));
+    } catch (e) {}
+
+    // Fake Firestore: capture the callback so the test decides what arrives.
+    w.__snapCb = null;
+    w.db = {
+      collection: () => ({
+        doc: () => ({
+          onSnapshot: (cb) => { w.__snapCb = cb; return function unsub(){}; }
+        })
+      })
+    };
+    w.auth = { currentUser: { uid: 'u1' } };
+
+    // Count the re-render announcements - this is the thing that repaints.
+    w.__publishes = 0;
+    d.addEventListener('feature-toggles-ready', () => { w.__publishes++; });
+
+    const s = d.createElement('script');
+    s.src = '/student/js/feature-toggles.js?cb=' + Math.random();
+    s.onload = () => resolve({ f, w, d });
+    d.body.appendChild(s);
+  });
+}
+
+// The module attaches its listener on DOMContentLoaded, which has already
+// passed in a document.write frame, so call its init path by dispatching.
+function fire(d) { d.dispatchEvent(new Event('DOMContentLoaded', {bubbles:true})); }
+
+function snap(w, data, fromCache) {
+  if (!w.__snapCb) return false;
+  w.__snapCb({
+    exists: data !== null,
+    data: () => data,
+    metadata: { fromCache: !!fromCache }
+  });
+  return true;
+}
+
+const TOGGLES = { vocabulary: true, grammar: true, reading: false, listening: true };
+
+(async function(){
+  // ── CASE 1: returning student, server AGREES with the cache ───────────────
+  // This is the overwhelmingly common case and the one that was repainting.
+  {
+    const { w, d } = await makeFrame(TOGGLES);
+    check('1. primes window.featureToggles from cache at parse time', true,
+          JSON.stringify(w.featureToggles) === JSON.stringify(TOGGLES));
+    check('2. priming does NOT announce a render', 0, w.__publishes);
+
+    fire(d);
+    const attached = snap(w, TOGGLES, true);     // cache delivery first
+    check('3. listener attached', true, attached);
+    check('4. cached snapshot announces nothing', 0, w.__publishes);
+
+    snap(w, TOGGLES, false);                     // then the server, same values
+    check('5. SERVER snapshot that AGREES announces nothing', 0, w.__publishes);
+  }
+
+  // ── CASE 2: the teacher really did change something ───────────────────────
+  {
+    const { w, d } = await makeFrame(TOGGLES);
+    fire(d);
+    const changed = Object.assign({}, TOGGLES, { reading: true });
+    snap(w, changed, false);
+    check('6. a server snapshot that DIFFERS still announces once', 1, w.__publishes);
+    snap(w, changed, false);
+    check('7. repeating the same value announces nothing more', 1, w.__publishes);
+  }
+
+  // ── CASE 3: first-ever sign-in, nothing cached ────────────────────────────
+  {
+    const { w, d } = await makeFrame(null);
+    check('8. no cache means no primed toggles', true, w.featureToggles == null);
+    fire(d);
+    snap(w, {}, true);                           // empty cache delivery
+    check('9. empty CACHED snapshot is suppressed', 0, w.__publishes);
+    snap(w, TOGGLES, false);
+    check('10. first server snapshot announces once', 1, w.__publishes);
+  }
+
+  // ── CASE 4: key ORDER must not look like a change ─────────────────────────
+  {
+    const reordered = { listening: true, reading: false, grammar: true, vocabulary: true };
+    const { w, d } = await makeFrame(TOGGLES);
+    fire(d);
+    snap(w, reordered, false);
+    check('11. same toggles in a different key order announces nothing', 0, w.__publishes);
+  }
+
+  // ── CASE 5: a stale cache must still correct itself ───────────────────────
+  {
+    const stale = { vocabulary: true, grammar: true, reading: true, listening: true };
+    const { w, d } = await makeFrame(stale);
+    fire(d);
+    snap(w, TOGGLES, false);                     // server disagrees with cache
+    check('12. a stale cache is corrected by exactly one announcement', 1, w.__publishes);
+    check('13. and the corrected value is live', false, w.featureToggles.reading);
+  }
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__togTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok).map(r=>r.name+' -> '+r.actual) };
+})();
+</script>
+</body>
+</html>

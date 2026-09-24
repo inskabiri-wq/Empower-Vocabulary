@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perf HUD trace</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:980px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:80ch;line-height:1.55;}
+  iframe{position:absolute;left:-99999px;width:420px;height:420px;border:0;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">js/perf-hud.js</h3>
+<p class="lede">
+  The HUD must appear ONLY with ?perf=1 and be completely inert otherwise -
+  it ships on the student dashboard, so a student must never see it. Also
+  checks it actually produces a reading rather than just drawing a box.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script>
+const rows = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+function frame(search) {
+  return new Promise(resolve => {
+    const f = document.createElement('iframe');
+    document.body.appendChild(f);
+    const d = f.contentDocument;
+    d.open();
+    d.write('<!DOCTYPE html><html><head><meta charset="utf-8"><base href="/"></head><body></body></html>');
+    d.close();
+    // Give the frame a search string the module will read, then load it.
+    try { f.contentWindow.history.replaceState(null, '', '/x' + search); } catch (e) {}
+    const s = d.createElement('script');
+    s.src = '/js/perf-hud.js?cb=' + Math.random();
+    d.body.appendChild(s);
+    s.onload = () => resolve(f);
+  });
+}
+
+(async function(){
+  // OFF by default
+  const off = await frame('');
+  await wait(400);
+  check('1. no HUD without ?perf=1', null, off.contentDocument.getElementById('phFps'));
+  // Count NON-SCRIPT children: the harness appends the module's own <script>
+  // tag to body, so a raw child count is 1 even when the module added nothing.
+  const added = [...off.contentDocument.body.children]
+    .filter(e => e.tagName !== 'SCRIPT').length;
+  check('2. adds no element to the page', 0, added);
+  off.remove();
+
+  // ON with the flag
+  const on = await frame('?perf=1');
+  await wait(2400);                      // let at least two seconds tick
+  const d = on.contentWindow.document;
+  check('3. HUD appears with ?perf=1', true, !!d.getElementById('phFps'));
+  check('4. reports a device line', true, (d.getElementById('phDev') || {}).textContent.length > 5);
+
+  // The fps VALUE cannot be checked here. This preview pane is a hidden tab, so
+  // it never composites and requestAnimationFrame never fires - frames stay at
+  // 0 no matter how healthy the code is. What IS checkable is that the per-second
+  // loop ran and replaced the placeholder, which is the part that could break.
+  // The number itself only means anything on a screen someone is looking at,
+  // which is the whole point of shipping this to the tablet.
+  const fpsTxt = (d.getElementById('phFps') || {}).textContent || '';
+  check('5. fps line is live, not the placeholder', true,
+        /^fps\s+\d+$/.test(fpsTxt.trim()));
+  check('6. long-task line present', true, /long/.test((d.getElementById('phLong')||{}).textContent||''));
+  check('7. copy button is a real touch target', true,
+        (d.getElementById('phCopy') || {}).getBoundingClientRect().height >= 32);
+  on.remove();
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__perfTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok) };
+})();
+</script>
+</body>
+</html>

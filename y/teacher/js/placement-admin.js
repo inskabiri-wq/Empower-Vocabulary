@@ -33,9 +33,31 @@
   var MODULES = ['Module 1', 'Module 2', 'Module 3', 'Module 4'];
   var YEARS = ['2025-2026', '2026-2027', '2027-2028'];
 
-  var cfg = { scope: { classes: [], levels: [], modules: [], years: [] }, readingExamId: 'auto', listeningExamId: 'auto', writingMode: 'manual', writingPrompt: '' };
+  // The four ladder bands and their default question counts. These mirror
+  // RUNGS in student/js/placement.js, which falls back to exactly these when
+  // placementConfig carries no `rungs`.
+  var DEFAULT_RUNGS = [
+    { band: 'A2', g: 8, v: 5 },
+    { band: 'B1', g: 8, v: 5 },
+    { band: 'B1+', g: 6, v: 4 },
+    { band: 'B2', g: 6, v: 4 }
+  ];
+  function defaultRungs() { return DEFAULT_RUNGS.map(function (r) { return { band: r.band, g: r.g, v: r.v }; }); }
+
+  var cfg = {
+    scope: { classes: [], levels: [], modules: [], years: [] },
+    readingExamId: 'auto', listeningExamId: 'auto', writingMode: 'manual', writingPrompt: '',
+    // Which parts of the test run at all. A missing key means ON, so an
+    // existing placementConfig keeps behaving exactly as it does today.
+    parts: { grammar: true, vocab: true, reading: true, listening: true },
+    rungs: defaultRungs()
+  };
   var results = [];
   var loaded = false, loading = false;
+  // Tracked separately from `loaded` because the panel now renders BEFORE the
+  // results collection has arrived, and an empty list during that window means
+  // "not here yet", not "none exist".
+  var resultsLoaded = false;
   var mode = 'reports';       // 'admin' | 'manage' | 'reports'
   var myClasses = [];         // reports mode: the teacher's assignedClasses
 
@@ -56,9 +78,19 @@
       var a = res[0].exists ? (res[0].data() || {}) : {};
       var granted = (Array.isArray(a.teacherUids) ? a.teacherUids : []).indexOf(user.uid) !== -1;
       var u = res[1].exists ? (res[1].data() || {}) : {};
-      var classes = (Array.isArray(u.assignedClasses) ? u.assignedClasses : []).filter(Boolean);
+      myClasses = (Array.isArray(u.assignedClasses) ? u.assignedClasses : [])
+        .map(function (x) { return String(x).trim(); }).filter(Boolean);
+      // THE GRANT IS THE ONLY WAY IN.
+      //
+      // This used to end with `if (classes.length) show();` - so ANY teacher
+      // who had a class assigned saw the Placement tab, whether or not an
+      // admin had ticked them in Admin > Access. The read-only reports view
+      // was meant as a courtesy and turned into a hole: a grant that every
+      // teacher passes is not a grant.
+      //
+      // Placement results are recommendations about a student's level. They
+      // are not something to hand out by side effect of having a timetable.
       if (granted) { mode = 'manage'; show(); if (loaded) render(); return; }
-      if (classes.length) show();
     }).catch(function () {});
   }
 
@@ -66,9 +98,20 @@
     if (loading) return; loading = true;
     var d = db_(); if (!d) { renderError('Firestore not ready.'); loading = false; return; }
     var u = me();
+
+    // TWO reads, not three in one lump.
+    //
+    // placementConfig and the teacher's own user document are single documents
+    // and come back almost immediately. placementResults is the WHOLE
+    // collection, one document per student who has taken the test, and on a
+    // phone over mobile data that is slow. Waiting for all three together meant
+    // the panel sat on "Loading placement panel..." for as long as the slowest
+    // one took, showing nothing at all.
+    //
+    // Now the settings render as soon as the fast pair lands, and the results
+    // table fills in when it arrives.
     Promise.all([
       d.collection('settings').doc('placementConfig').get(),
-      d.collection('placementResults').get(),
       u ? d.collection('users').doc(u.uid).get() : Promise.resolve(null)
     ]).then(function (res) {
       var c = res[0].exists ? (res[0].data() || {}) : {};
@@ -78,13 +121,41 @@
       cfg.listeningExamId = c.listeningExamId || 'auto';
       cfg.writingMode = c.writingMode || 'manual';
       cfg.writingPrompt = c.writingPrompt || '';
-      results = res[1].docs.map(function (doc) { var r = doc.data() || {}; r._id = doc.id; return r; })
-        .sort(function (a, b) { return (b.at && b.at.seconds || 0) - (a.at && a.at.seconds || 0); });
-      var mine = res[2] && res[2].exists ? (res[2].data() || {}) : {};
+      // A missing part key means ON, so a config saved before this existed
+      // keeps running the full test.
+      var p = c.parts || {};
+      ['grammar', 'vocab', 'reading', 'listening'].forEach(function (k) {
+        cfg.parts[k] = (p[k] === false) ? false : true;
+      });
+      // Question counts, band by band. Anything missing or out of range falls
+      // back to that band's default rather than to zero, because a zero here
+      // would silently shorten the test.
+      var saved = Array.isArray(c.rungs) ? c.rungs : null;
+      cfg.rungs = defaultRungs().map(function (def) {
+        var got = saved && saved.filter(function (r) { return r && r.band === def.band; })[0];
+        if (!got) return def;
+        var g = parseInt(got.g, 10), v = parseInt(got.v, 10);
+        return { band: def.band,
+                 g: (isFinite(g) && g >= 0 && g <= 30) ? g : def.g,
+                 v: (isFinite(v) && v >= 0 && v <= 30) ? v : def.v };
+      });
+      var mine = res[1] && res[1].exists ? (res[1].data() || {}) : {};
       myClasses = (Array.isArray(mine.assignedClasses) ? mine.assignedClasses : []).map(function (x) { return String(x).trim(); }).filter(Boolean);
-      loaded = true; loading = false;
+      loaded = true;
       render();
+      renderPlacementContent();
     }).catch(function (e) { loading = false; renderError((e && e.message) || 'Could not load.'); });
+
+    d.collection('placementResults').get().then(function (snap) {
+      results = snap.docs.map(function (doc) { var r = doc.data() || {}; r._id = doc.id; return r; })
+        .sort(function (a, b) { return (b.at && b.at.seconds || 0) - (a.at && a.at.seconds || 0); });
+      resultsLoaded = true; loading = false;
+      if (loaded) render();
+    }).catch(function () {
+      // The settings half is still usable, so do not blank the panel.
+      resultsLoaded = true; loading = false;
+      if (loaded) render();
+    });
   }
 
   function saveCfg() {
@@ -93,6 +164,7 @@
     d.collection('settings').doc('placementConfig').set({
       scope: cfg.scope, readingExamId: cfg.readingExamId, listeningExamId: cfg.listeningExamId,
       writingMode: cfg.writingMode, writingPrompt: cfg.writingPrompt,
+      parts: cfg.parts, rungs: cfg.rungs,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: u ? u.uid : ''
     }, { merge: true }).then(function () {
       var n = $('plSaveNote'); if (n) { n.textContent = 'Saved.'; setTimeout(function () { n.textContent = ''; }, 2500); }
@@ -145,7 +217,109 @@
       '</select></div></div>' +
       '<div>' + lbl('Writing prompt (blank = default)') +
       '<input type="text" id="plWritingPromptInp" class="ll-select" style="width:100%;cursor:text;" value="' + esc(cfg.writingPrompt) + '" placeholder="Some people prefer studying alone, others in groups. Which do you prefer, and why?"></div>' +
-      '<div style="font-size:11.5px;color:var(--text-muted,#94a3b8);margin-top:8px;">Language questions come from the app&rsquo;s own grammar bank and vocabulary lists (nothing is auto-written) and climb the CEFR ladder (A2 &gt; B1 &gt; B1+ &gt; B2). Essays are saved with the result; open a result&rsquo;s Details to review the writing.</div>';
+      '<div style="font-size:11.5px;color:var(--text-muted,#94a3b8);margin-top:8px;">Language questions come from the app&rsquo;s own grammar bank and vocabulary lists (nothing is auto-written) and climb the CEFR ladder (A2 &gt; B1 &gt; B1+ &gt; B2). Essays are saved with the result; open a result&rsquo;s Details to review the writing. '
+      + 'Which parts run, and how many questions each band asks, live in <b>Admin &rsaquo; Placement</b>.</div>';
+  }
+
+  // Shared by both mounts. Re-renders the panel it was wired into, so the
+  // "N language questions in total" line reflects the switch just flipped.
+  function wirePartsControls(box) {
+    if (!box) return;
+    box.querySelectorAll('.pl-part').forEach(function (c) {
+      c.addEventListener('change', function () {
+        cfg.parts[c.getAttribute('data-part')] = !!c.checked;
+        saveCfg();
+        renderPlacementContent();
+      });
+    });
+    // Clamped rather than rejected: a typed 99 or a negative becomes a legal
+    // value in the box, so the admin sees what was actually stored instead of
+    // something else being saved silently.
+    box.querySelectorAll('.pl-rung').forEach(function (inp) {
+      inp.addEventListener('change', function () {
+        var band = inp.getAttribute('data-band'), kind = inp.getAttribute('data-kind');
+        var n = parseInt(inp.value, 10);
+        if (!isFinite(n) || n < 0) n = 0;
+        if (n > 30) n = 30;
+        inp.value = String(n);
+        cfg.rungs.forEach(function (r) { if (r.band === band) r[kind] = n; });
+        saveCfg();
+        renderPlacementContent();
+      });
+    });
+  }
+
+  // ── The parts / counts panel, its own tab in the Admin sub-nav ───────
+  //
+  // Configuring the test and RUNNING it are two jobs. This tab is the
+  // configuring half: which parts run and how many questions each band asks.
+  // The Placement MAIN tab keeps the exam choice, the writing mode and the
+  // results table. It started life inside the Content panel and was given its
+  // own tab because it was getting lost under the content tables.
+  //
+  // Renders from the same `cfg` and saves through the same saveCfg(), so
+  // there is one source of truth whichever tab is open.
+  function renderPlacementContent() {
+    var mount = $('placementContentMount');
+    if (!mount) return;
+    if (!canManage()) { mount.innerHTML = ''; return; }
+    if (!loaded) { load(); return; }
+    mount.innerHTML =
+      '<h2 style="font-size:20px;font-weight:800;letter-spacing:-0.5px;color:var(--t2-text,#e6edf3);margin:0;">\uD83C\uDFAF Placement test</h2>' +
+      '<p style="font-size:12px;color:var(--t2-text-muted,#7d8590);margin:3px 0 14px;">' +
+        'Which parts of the placement test run, and how many questions each CEFR band asks. ' +
+        'Turning the test itself on or off lives in <b>Admin &rsaquo; Features</b>; the exam choice ' +
+        'and writing mode live on the <b>Placement</b> tab.</p>' +
+      partsBlock();
+    wirePartsControls(mount);
+  }
+
+  // ── Which parts run, and how many questions each band asks ──────────
+  // Writing keeps its own three-way control above (off / manual / AI), so it
+  // is not repeated here; the other four are simple on/off.
+  var PART_LABELS = [
+    ['grammar', 'Grammar'], ['vocab', 'Vocabulary'],
+    ['reading', 'Reading exam'], ['listening', 'Listening exam']
+  ];
+  function partsBlock() {
+    var toggles = PART_LABELS.map(function (p) {
+      return '<label style="display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;' +
+        'padding:7px 12px;border:1px solid var(--border-color,#e3e9f2);border-radius:20px;cursor:pointer;">' +
+        '<input type="checkbox" class="pl-part" data-part="' + esc(p[0]) + '"' +
+        (cfg.parts[p[0]] === false ? '' : ' checked') + '> ' + esc(p[1]) + '</label>';
+    }).join(' ');
+
+    var counts = cfg.rungs.map(function (r) {
+      return '<tr>' +
+        '<td style="padding:5px 10px 5px 0;font-weight:700;font-size:13px;">' + esc(r.band) + '</td>' +
+        '<td style="padding:5px 8px;"><input type="number" min="0" max="30" class="ll-select pl-rung" ' +
+          'data-band="' + esc(r.band) + '" data-kind="g" value="' + r.g + '" style="width:74px;cursor:text;"></td>' +
+        '<td style="padding:5px 8px;"><input type="number" min="0" max="30" class="ll-select pl-rung" ' +
+          'data-band="' + esc(r.band) + '" data-kind="v" value="' + r.v + '" style="width:74px;cursor:text;"></td>' +
+        '</tr>';
+    }).join('');
+
+    var total = cfg.rungs.reduce(function (n, r) {
+      return n + (cfg.parts.grammar === false ? 0 : r.g) + (cfg.parts.vocab === false ? 0 : r.v);
+    }, 0);
+
+    return '<div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border-color,#e3e9f2);">' +
+      lbl('Parts of the test') +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">' + toggles + '</div>' +
+      '<div style="font-size:11.5px;color:var(--text-muted,#94a3b8);margin-bottom:16px;">' +
+        'Turning a part off removes it from the test and leaves its score empty on the report. ' +
+        'Switching off both Grammar and Vocabulary skips the ladder entirely, and the recommended ' +
+        'level then comes from whichever parts are left.</div>' +
+      lbl('Questions per band') +
+      '<table style="border-collapse:collapse;"><tr>' +
+        '<th style="text-align:left;padding:0 10px 4px 0;font-size:11.5px;color:var(--text-muted,#94a3b8);">Band</th>' +
+        '<th style="text-align:left;padding:0 8px 4px;font-size:11.5px;color:var(--text-muted,#94a3b8);">Grammar</th>' +
+        '<th style="text-align:left;padding:0 8px 4px;font-size:11.5px;color:var(--text-muted,#94a3b8);">Vocabulary</th>' +
+      '</tr>' + counts + '</table>' +
+      '<div style="font-size:11.5px;color:var(--text-muted,#94a3b8);margin-top:8px;">' +
+        '<b>' + total + '</b> language questions in total. 0 removes that kind from that band. ' +
+        'The bank has to hold enough words and rules at a band; asking for more than exists just ' +
+        'returns what there is.</div></div>';
   }
 
   function fmtDate(ts) {
@@ -188,7 +362,7 @@
     var m = $('plDetailModal');
     if (m) m.classList.remove('active');
   }
-  function scoreColor(p) { return p >= 70 ? '#22c55e' : p >= 50 ? '#f59e0b' : '#fbbf24'; }
+  function scoreColor(p) { return p >= 70 ? '#22c55e' : p >= 50 ? '#3b82f6' : '#60a5fa'; }
   function detailRow(tag, title, correct, total) {
     var p = total ? Math.round((correct / total) * 100) : 0;
     return '<div style="display:flex;align-items:center;gap:12px;border:1px solid var(--border-color,rgba(255,255,255,0.12));border-radius:12px;padding:10px 14px;">' +
@@ -266,9 +440,9 @@
         '<div style="margin-top:18px;border:1px solid var(--border-color,rgba(255,255,255,0.12));border-radius:14px;padding:16px;">' +
           '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;">' +
             '<span style="font-size:13px;font-weight:800;">Writing (' + (Number(r.writing.words) || 0) + ' words)</span>' +
-            '<span style="font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 10px;border:1px solid ' + (isAi ? 'rgba(167,139,250,0.5);color:#a78bfa;' : 'rgba(59,130,246,0.5);color:var(--accent-primary,#3b82f6);') + '">' + (isAi ? 'AI-assisted review' : 'Manual review') + '</span>' +
+            '<span style="font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 10px;border:1px solid ' + (isAi ? 'rgba(96,165,250,0.5);color:#60a5fa;' : 'rgba(59,130,246,0.5);color:var(--accent-primary,#3b82f6);') + '">' + (isAi ? 'AI-assisted review' : 'Manual review') + '</span>' +
             (isAi
-              ? '<button type="button" id="plRevAiBtn" style="cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:800;padding:7px 14px;border-radius:9px;border:none;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;">Open in Writing AI &rarr;</button>'
+              ? '<button type="button" id="plRevAiBtn" style="cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:800;padding:7px 14px;border-radius:9px;border:none;background:linear-gradient(135deg,#2563eb,#2563eb);color:#fff;">Open in Writing AI &rarr;</button>'
               : '<button type="button" id="plRevManualBtn" style="cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:800;padding:7px 14px;border-radius:9px;border:none;background:var(--accent-primary,#3b82f6);color:#fff;">Open manual grading &rarr;</button>') +
           '</div>' +
           (r.writing.prompt ? '<div style="font-size:12.5px;color:var(--text-muted,#94a3b8);font-style:italic;margin-bottom:8px;">Prompt: ' + esc(r.writing.prompt) + '</div>' : '') +
@@ -310,7 +484,9 @@
     var rows;
     if (!vis.length) {
       rows = '<div style="font-size:13px;color:var(--text-muted,#94a3b8);padding:10px 0;">' +
-        (mode === 'admin' ? 'No results yet.'
+        // An empty list before the collection has arrived is not "none exist".
+        (!resultsLoaded ? 'Loading results...'
+          : mode === 'admin' ? 'No results yet.'
           : myClasses.length ? 'No results for your classes yet.'
           : 'No classes are assigned to your account, so no results can be shown. Ask the admin to set your classes.') +
         '</div>';
@@ -366,6 +542,24 @@
       cfg.writingPrompt = $('plWritingPromptInp').value.trim();
       saveCfg();
     });
+
+    wirePartsControls(box);
+
+    // Per-band question counts. Clamped rather than rejected: a typed 99 or a
+    // negative becomes a legal value in the box, so the admin can see what was
+    // actually stored instead of silently saving something else.
+    box.querySelectorAll('.pl-rung').forEach(function (inp) {
+      inp.addEventListener('change', function () {
+        var band = inp.getAttribute('data-band'), kind = inp.getAttribute('data-kind');
+        var n = parseInt(inp.value, 10);
+        if (!isFinite(n) || n < 0) n = 0;
+        if (n > 30) n = 30;
+        inp.value = String(n);
+        cfg.rungs.forEach(function (r) { if (r.band === band) r[kind] = n; });
+        saveCfg();
+        render();
+      });
+    });
     box.querySelectorAll('.pl-scope-add').forEach(function (s) {
       s.addEventListener('change', function () {
         if (!s.value) return;
@@ -411,11 +605,21 @@
     setTimeout(function () { whenAuth(cb, tries - 1); }, 400);
   }
   function init() {
-    whenAuth(function (u) { revealTab(u); });
+    whenAuth(function (u) {
+      revealTab(u);
+      // The parts panel lives in Admin > Content, which an admin may open
+      // without ever visiting the Placement tab. Render it either way.
+      renderPlacementContent();
+    });
     var btn = document.querySelector('.t2-nav-item[data-tab="placement"]');
     var once = false;
     if (btn) btn.addEventListener('click', function () { if (!once) { once = true; setTimeout(render, 150); } });
     if (localStorage.getItem('teacherActiveTab') === 'placement') setTimeout(render, 600);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+
+  // Small surface so teacher/js/content-controls.js can ask this module to
+  // fill its mount when the Placement chip is selected. The two files stay
+  // independent: content-controls owns the chips, this owns the panel.
+  window.PlacementAdmin = { renderContent: renderPlacementContent };
 })();

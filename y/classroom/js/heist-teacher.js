@@ -35,15 +35,12 @@
   'use strict';
 
   // ── Firebase init (same project as the rest of the app) ────
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-    authDomain: "empower-vocabulary-practice.firebaseapp.com",
-    projectId: "empower-vocabulary-practice",
-    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-    messagingSenderId: "136270199832",
-    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // Firebase is started by js/firebase-init.js, which reads the project
+  // from js/tenant.js. This file used to name one university directly, which would
+  // have pointed every deployment at that same project.
+  if (!firebase.apps.length) {
+    throw new Error('heist-teacher: js/tenant.js + js/firebase-init.js must load first.');
+  }
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
@@ -312,6 +309,10 @@
     }
 
     // Live player roster
+    // Re-entering the lobby (a second create, or a retry after a failed one)
+    // would otherwise strand the previous roster listener. Null on the first
+    // run, so this is a no-op then.
+    if (unsubPlayers) unsubPlayers();
     unsubPlayers = db.collection('heist_sessions').doc(code).collection('players')
       .orderBy('joinedAt', 'asc')
       .onSnapshot(snap => {
@@ -319,7 +320,20 @@
         renderRoster(players);
       });
   }
+  var _lastRoster = 0;
   function renderRoster(players) {
+    // A student arrived. Throttled: a full cohort joining would otherwise
+    // fire a cue per arrival. Guarded on GROWTH so a snapshot caused by a
+    // score change stays silent.
+    // These host pages do not load minigame-core.js, so there is no MG here:
+    // MG.sfx threw "MG is not defined" on every join, BEFORE the count below
+    // was written, and the teacher saw no players at all (2026-09-24, a live
+    // class). The sound goes straight to js/sound.js and can never stop the
+    // roster from drawing.
+    if (players.length > _lastRoster && window.LLSound) {
+      try { LLSound.play('join', { throttle: 400 }); } catch (e) { /* a sound is never worth a roster */ }
+    }
+    _lastRoster = players.length;
     const el = document.getElementById('roster');
     const count = document.getElementById('rosterCount');
     if (count) count.textContent = players.length;
@@ -408,7 +422,11 @@
         if (startedAt && !timerInterval) startTimer(startedAt, d.durationSec);
       });
 
-    // Subscribe to players for the live board
+    // Subscribe to players for the live board.
+    // Release the lobby listener first. Without this both stayed live for the
+    // whole game, so every player write was delivered and billed twice. Same
+    // shape as trust-teacher.js:475.
+    if (unsubPlayers) unsubPlayers();
     unsubPlayers = db.collection('heist_sessions').doc(sessionCode).collection('players')
       .onSnapshot(snap => {
         const players = snap.docs.map(d => d.data());
@@ -733,7 +751,7 @@
         <div style="padding: 8px 10px; border-bottom: 1px dashed var(--heist-border);
                     display:flex; align-items:baseline; gap:8px; font-size: 0.92em;">
           <span style="color:${color}; font-size:1.1em;">${icon}</span>
-          <span style="color: var(--heist-text-mut); font-family: JetBrains Mono;
+          <span style="color: var(--heist-text-mut); font-family: var(--ll-mono);
                        font-size: 0.85em; min-width: 70px;">${t}</span>
           <span><strong>${escHtml(h.attackerName)}</strong> ${verdict}</span>
         </div>`;

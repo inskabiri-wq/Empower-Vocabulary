@@ -1,25 +1,57 @@
 /* ============================================================
-   SKILL — Listening
+   SKILL - Listening
    Lists listening activities (currently just the FSMEPT exam).
    Launching the exam reuses the existing listening-exam.js flow
-   untouched — we only wrap the entry point.
+   untouched - we only wrap the entry point.
    ============================================================ */
 
 (function () {
   'use strict';
 
-  // Exams shown on the Listening skill home.
-  // Add more entries here as new exams / practice modes are built.
-  const LISTENING_ACTIVITIES = [
+  // Exams shown on the Listening skill home, DERIVED from EXAM_REGISTRY.
+  //
+  // This used to be a hardcoded array with one entry, and that is exactly the
+  // trap: two listening exams were imported, registered in EXAM_REGISTRY,
+  // added to LISTENING_EXAMS and confirmed in the assignment picker, the
+  // classroom picker and content controls - and still did not appear on the
+  // student's Listening screen, because this list never mentioned them. A new
+  // exam should not need an edit in two places to become visible.
+  //
+  // The registry is the single source of truth now, so importing an exam is
+  // enough. The hardcoded entry survives only as a fallback for the case where
+  // exam-registry.js fails to load, so the screen degrades to what it always
+  // showed rather than to nothing.
+  const FALLBACK_ACTIVITIES = [
     {
       id: 'fsmept-exam-1',
-      examId: 'sample-fsmept',         // matches EXAM_REGISTRY listening id (for hide-from-practice)
+      examId: 'sample-fsmept',
       title: 'Listening Exam 1',
       subtitle: 'FSMEPT practice',
       icon: '🎧',
-      handler: 'startListeningExam'    // existing global from listening-exam.js
+      handler: 'startListeningExam'
     }
   ];
+
+  function listeningActivities() {
+    var reg = window.EXAM_REGISTRY;
+    if (!reg || typeof reg.listening !== 'function') return FALLBACK_ACTIVITIES;
+    var exams = reg.listening() || [];
+    if (!exams.length) return FALLBACK_ACTIVITIES;
+    return exams
+      // `available: false` is the admin switching an exam off for assignment;
+      // it should not be offered as practice either.
+      .filter(function (e) { return e.available !== false; })
+      .map(function (e) {
+        return {
+          id: e.id,
+          examId: e.id,
+          title: e.title,
+          subtitle: e.subtitle || (e.level ? e.level + ' practice' : 'FSMEPT practice'),
+          icon: '🎧',
+          handler: 'startListeningExam'
+        };
+      });
+  }
 
   function escHtml(s) {
     return String(s == null ? '' : s)
@@ -40,7 +72,7 @@
     list.innerHTML = '';
     // Drop exams an admin marked "assignment-only" in Content controls
     // (still launchable from an assignment by id).
-    const visible = LISTENING_ACTIVITIES.filter(a =>
+    const visible = listeningActivities().filter(a =>
       !(typeof window.isPracticeHidden === 'function' && window.isPracticeHidden('listening', a.examId || a.id)));
     if (!visible.length) {
       list.innerHTML = '<div class="rd-exam-empty">No listening practice is open right now. Your teacher may have reserved it for an assignment.</div>';

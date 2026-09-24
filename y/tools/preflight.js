@@ -78,9 +78,33 @@ function emdashChanged(changed) {
   section('em-dash (changed files)', hits.length === 0, hits.join('\n        '));
 }
 
+// 6. THE GATE SUITE. Two dozen checks lived in tools/ with nothing running
+//    them together, so each one only ran when somebody remembered it. That is
+//    how a gate rots: it guards something, the something changes, and nobody
+//    finds out. The AI Quiz safety net and the security-rule check are the two
+//    that must never rot.
+//
+//    gates.js classifies each check and skips what it cannot run (the emulator
+//    ones when the emulator is down, production ones unless asked), so this
+//    stays useful on a laptop with nothing else started. grammar-sanity runs
+//    in section 2 as well; the duplication is cheap and keeps that section's
+//    own reporting intact.
+function gateSuite() {
+  try {
+    var out = cp.execSync('node "' + path.join(Y, 'tools', 'gates.js') + '"',
+      { cwd: ROOT, stdio: 'pipe', encoding: 'utf8' });
+    var tail = out.trim().split('\n').filter(function (l) { return /passed,/.test(l); }).pop() || '';
+    section('gate suite', true, tail.trim());
+  } catch (e) {
+    var text = String((e.stdout || '') + (e.stderr || ''));
+    var fails = text.split('\n').filter(function (l) { return /^FAIL\s|passed,/.test(l.trim()); });
+    section('gate suite', false, fails.join(' | ').trim() || 'see: node y/tools/gates.js');
+  }
+}
+
 function main() {
   var changed = process.argv.slice(2).filter(function (a) { return a.indexOf('--') !== 0; });
-  jsCheck(); grammarSanity(); versionDrift(); dataJson(); emdashChanged(changed);
+  jsCheck(); grammarSanity(); versionDrift(); dataJson(); emdashChanged(changed); gateSuite();
   console.log('Lingualab preflight');
   console.log('===================');
   var allOk = true;

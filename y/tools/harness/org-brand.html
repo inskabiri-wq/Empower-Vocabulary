@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Harness - who gets a university logo</title>
+<link rel="stylesheet" href="../../css/brand.css">
+<link rel="stylesheet" href="../../student/css/styles.css">
+<style>body{padding:18px;font-family:system-ui,sans-serif} h1{font-size:16px}</style>
+</head>
+<body class="light-mode">
+<h1>Header university mark: who gets one?</h1>
+
+<div class="dashboard-header">
+  <div class="header-left"><h1 style="font-size:1.4em">Lingualab</h1></div>
+  <div class="header-org" data-org-mark hidden></div>
+  <div class="header-right"><span>profile chip</span></div>
+</div>
+
+<pre id="out"></pre>
+
+<script>
+// Stand in for the two things org-brand reads. No Firebase needed: it only
+// looks at currentUser (email + isAnonymous) and window.currentStudentData.
+var FAKE = { currentUser: null, fsmHasLogo: true };
+window.auth = {
+  get currentUser() { return FAKE.currentUser; },
+  onAuthStateChanged: function () {}
+};
+// The real registry shape, as settings/organizations stores it. `fsmHasLogo`
+// switches between a list where the admin typed the logo in, and the list
+// production ACTUALLY had on 2026-09-23: no logo field at all.
+window.OrgRegistry = {
+  subscribe: function () { return function () {}; },
+  checkEmail: function (email) {
+    var d = String(email || '').toLowerCase().split('@')[1];
+    var LIST = {
+      'fsm.edu.tr':     { name: 'FSM University (Staff)',    domain: 'fsm.edu.tr' },
+      'stu.fsm.edu.tr': { name: 'FSM University (Students)', domain: 'stu.fsm.edu.tr' },
+      'nologo.edu.tr':  { name: 'A University With No Logo Yet', domain: 'nologo.edu.tr' }
+    };
+    if (FAKE.fsmHasLogo) {
+      LIST['fsm.edu.tr'].logo = 'fsmvu-seal.png';
+      LIST['stu.fsm.edu.tr'].logo = 'fsmvu-seal.png';
+    }
+    var org = LIST[d] || null;
+    return { ok: !!org, domain: d, org: org, reason: '' };
+  }
+};
+</script>
+<script>
+// Loaded with a buster: a cached org-brand.js has reported an old rule as the
+// current one before.
+document.write('<script src="../../js/org-brand.js?h=' + Date.now() + '"><\/script>');
+</script>
+<script>
+window.runCases = function () {
+  var U = function (email) { return { email: email, isAnonymous: false }; };
+  var cases = [
+    { label: 'student @stu.fsm.edu.tr, logo typed into Organizations', fsm: true,  user: U('a@stu.fsm.edu.tr'), data: { role: 'student' }, expectLogo: true },
+    { label: 'teacher @fsm.edu.tr, logo typed into Organizations',     fsm: true,  user: U('b@fsm.edu.tr'),     data: { role: 'teacher' }, expectLogo: true },
+    // What production had on 2026-09-23. Used to draw NOTHING - the reason for
+    // "I still can't see the logo". FSMVU's seal is now the built-in default.
+    { label: 'FSM student, NO logo field (production 2026-09-23)',     fsm: false, user: U('a@stu.fsm.edu.tr'), data: { role: 'student' }, expectLogo: true },
+    { label: 'FSM teacher/admin, NO logo field (production)',          fsm: false, user: U('akabiriaslifar@fsm.edu.tr'), data: { role: 'teacher' }, expectLogo: true },
+    // Demo accounts AS PRODUCTION WRITES THEM: an ordinary role plus
+    // demoAccount:true. The old check looked only for role 'demo', which no
+    // account has, so these would have got the seal.
+    { label: 'DEMO student, as createDemoAccount writes it',           fsm: false, user: U('demo.student@fsm.edu.tr'), data: { role: 'student', demoAccount: true }, expectLogo: false },
+    { label: 'DEMO teacher, as createDemoAccount writes it',           fsm: true,  user: U('demo.teacher@fsm.edu.tr'), data: { role: 'teacher', demoAccount: true }, expectLogo: false },
+    { label: 'legacy role "demo"',                                     fsm: true,  user: U('demo.student@fsm.edu.tr'), data: { role: 'demo' }, expectLogo: false },
+    // Without the user document a demo cannot be told apart, so it waits.
+    { label: 'signed in, user document not loaded yet', clearFirst: true, fsm: false, user: U('e@stu.fsm.edu.tr'), data: null, expectLogo: false },
+    { label: 'anonymous classroom-game player',                        fsm: true,  user: { email: null, isAnonymous: true }, data: null, expectLogo: false },
+    { label: 'signed out',                                             fsm: true,  user: null, data: null, expectLogo: false },
+    { label: 'another university with NO logo configured',             fsm: false, user: U('c@nologo.edu.tr'), data: { role: 'student' }, expectLogo: false },
+    { label: 'unknown domain',                                         fsm: false, user: U('d@gmail.com'), data: { role: 'student' }, expectLogo: false }
+  ];
+  return cases.map(function (c) {
+    if (c.clearFirst) { FAKE.currentUser = null; window.currentStudentData = null; window.LLOrgBrand.refresh(); }
+    FAKE.fsmHasLogo = c.fsm;
+    FAKE.currentUser = c.user;
+    window.currentStudentData = c.data;
+    window.LLOrgBrand.refresh();
+    var mount = document.querySelector('[data-org-mark]');
+    var img = mount.querySelector('.org-mark-img');
+    var got = !!img && !mount.hidden;
+    return { case: c.label, expectedLogo: c.expectLogo, gotLogo: got,
+             src: img ? img.getAttribute('src') : null,
+             PASS: got === c.expectLogo };
+  });
+};
+</script>
+</body>
+</html>

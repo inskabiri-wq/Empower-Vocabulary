@@ -1,5 +1,14 @@
 /* Student Dashboard Styles - Extracted from student-dashboard.html */
 :root {
+  /* The app's two typefaces, in one place.
+     Seven different sans stacks were in use across the student dashboard alone
+     (Outfit, Nunito in two spellings, Space Grotesk, Poppins, Inter and this
+     one), which is why screens did not look like the same product. The Segoe
+     stack wins because it is what `body` already declared, so unifying onto it
+     REMOVES overrides rather than introducing a new typeface.
+     To change the whole app's face later, change this one line. */
+  --ll-font: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ll-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
   --bg-primary: #0a0f1a;
   --bg-secondary: #0f1729;
   --bg-tertiary: #0c1e3d;
@@ -9,27 +18,57 @@
   --text-primary: #fff;
   --text-secondary: #b4b4c8;
   --text-muted: #a0a0b8;
-  /* Blue primary + orange secondary = maximum contrast pop on dark navy */
-  --accent-primary:   #3b82f6;   /* blue-500   — interactive / primary actions  */
-  --accent-secondary: #fb923c;   /* orange-400 — highlights, blanks, progress   */
-  --accent-tertiary:  #818cf8;   /* indigo-400 — tertiary / depth               */
-  --accent-warm:      #fbbf24;   /* amber-400  — achievements / streaks / XP    */
+  /* One blue family, four steps. Teal / orange / amber were retired in the
+     white-and-blue repaint; only success, error and warning stay coloured
+     because they carry meaning (right, wrong, careful) rather than style. */
+  --accent-primary:   #3b82f6;   /* blue-500 - interactive / primary actions  */
+  --accent-secondary: #60a5fa;   /* blue-400 - highlights, blanks, progress   */
+  --accent-tertiary:  #93c5fd;   /* blue-300 - tertiary / depth               */
+  --accent-warm:      #60a5fa;   /* blue-400 - achievements / streaks / XP    */
   --success: #10b981;
   --error: #ef4444;
   --warning: #eab308;
   --border-color: rgba(59,130,246,0.25);
+  /* TEXT versions of the state colours. Separate from --success / --error
+     because a fill and a label need different lightness: pale mint reads on
+     navy and vanishes on white, so light mode swaps these for the deep values
+     while the fills stay as they are. */
+  --text-accent:  #93c5fd;
+  --text-success: #6ee7b7;
+  --text-error:   #fca5a5;
+  --text-warning: #fde68a;
+  /* USED by student/css/extra.css (Save Profile button and 3 others) but never
+     defined here. An undefined var makes the whole background declaration
+     invalid, so those elements painted no background at all - which is why the
+     Save Profile button was white text on white. */
+  --accent-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
 }
+/* Light is the default theme (see body class in the page shells). White paper,
+   one blue. Accents are deepened here: blue-400 has enough contrast on dark
+   navy but fails on white, so light mode steps down to blue-600/700. */
 .light-mode {
-  --bg-primary: #f0f4f8;
-  --bg-secondary: #e2e8f0;
-  --bg-tertiary: #cbd5e1;
-  --bg-card: rgba(255,255,255,0.98);
-  --bg-item: rgba(226,232,240,0.9);
-  --bg-item-hover: rgba(59,130,246,0.1);
-  --text-primary: #1e293b;
+  --bg-primary: #f6f8fb;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #eef3fa;
+  --bg-card: #ffffff;
+  --bg-item: #f2f6fc;
+  --bg-item-hover: rgba(37,99,235,0.08);
+  --text-primary: #0f172a;
   --text-secondary: #475569;
-  --text-muted: #64748b;
-  --border-color: rgba(59,130,246,0.2);
+  --text-muted: #556274;
+  --border-color: #e3e9f2;
+  --accent-primary:   #2563eb;
+  --accent-secondary: #2563eb;
+  --accent-tertiary:  #1d4ed8;
+  --accent-warm:      #2563eb;
+  --success: #15803d;
+  --error:   #b91c1c;
+  --warning: #b45309;
+  --text-accent:  #1d4ed8;
+  --text-success: #15803d;
+  --text-error:   #b91c1c;
+  --text-warning: #b45309;
+  --accent-gradient: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 /* NO `scrollbar-gutter: stable` here. It was added to stop the .container card
@@ -44,10 +83,27 @@ body{font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
 background:linear-gradient(135deg,var(--bg-primary) 0%,var(--bg-secondary) 50%,var(--bg-tertiary) 100%);
 min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;position:relative;overflow-x:hidden;transition:background 0.3s}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 20% 50%,rgba(59,130,246,0.08) 0%,transparent 50%),
-radial-gradient(circle at 80% 80%,rgba(20,184,166,0.08) 0%,transparent 50%),
-radial-gradient(circle at 50% 10%,rgba(129,140,248,0.05) 0%,transparent 50%);pointer-events:none;z-index:0}
-.container{background:var(--bg-card);backdrop-filter:blur(20px);border-radius:24px;box-shadow:0 25px 80px rgba(0,0,0,0.5);
-max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-index:1;border:1px solid var(--border-color);transition:all 0.3s}
+radial-gradient(circle at 80% 80%,rgba(96,165,250,0.08) 0%,transparent 50%),
+radial-gradient(circle at 50% 10%,rgba(96,165,250,0.05) 0%,transparent 50%);pointer-events:none;z-index:0}
+/* NO backdrop-filter here on purpose. This element wraps all 19 screens, so a
+   backdrop blur on it has to be re-evaluated by the compositor every time
+   ANYTHING inside repaints - every screen fade, every tile animation - which is
+   what made a tablet feel slow on every tap.
+
+   It was also buying nothing. The backdrop is the body's smooth gradient, and
+   blurring a smooth gradient returns almost the same gradient: measured over
+   45,570 samples, blur(20px) moved it by at most 3/255 and 0.35/255 on average.
+   Then --bg-card covers it - rgba(15,23,42,0.95) in dark mode, so at most
+   0.15/255 survived, and #ffffff in light mode, which is fully opaque and can
+   let nothing through at all. Under a sixth of one colour step, for a
+   full-viewport GPU blur per frame.
+
+   `transition` is spelled out rather than `all`: the only things that change
+   here are the theme colours, and `all` makes the browser watch every
+   animatable property on the biggest element on the page. */
+.container{background:var(--bg-card);border-radius:24px;box-shadow:0 25px 80px rgba(0,0,0,0.5);
+max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-index:1;border:1px solid var(--border-color);
+transition:background 0.3s,border-color 0.3s,box-shadow 0.3s}
 .light-mode .container{box-shadow:0 25px 80px rgba(0,0,0,0.1)}
 
 /* ====== NEW DASHBOARD LAYOUT ====== */
@@ -63,7 +119,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 }
 
 .header-left h1 {
-  background:linear-gradient(135deg, #14b8a6 0%, #3b82f6 55%, #818cf8 100%);
+  background:linear-gradient(135deg, #60a5fa 0%, #3b82f6 55%, #60a5fa 100%);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   background-clip:text;
@@ -80,7 +136,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
   width:1em; height:1em;
   flex-shrink:0;
   vertical-align:middle;
-  filter:drop-shadow(0 2px 6px rgba(20,184,166,0.35));
+  filter:drop-shadow(0 2px 6px rgba(96,165,250,0.35));
 }
 
 /* ── Animated text cycle (subtitle tail) ───────────────────── */
@@ -104,8 +160,17 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
   top:0; left:0;
 }
 
-@keyframes dashCycleIn  { from{opacity:0;transform:translateY(60%)} to{opacity:1;transform:translateY(0)} }
-@keyframes dashCycleOut { from{opacity:1;transform:translateY(0)}  to{opacity:0;transform:translateY(-60%)} }
+/* A FULL height of travel, not 60%.
+   The wrapper is one line tall with overflow:hidden, and the outgoing word is
+   absolutely positioned on top of the incoming one. At 60% the pair is still
+   only 30% clear of centre halfway through the crossfade, so BOTH phrases sat
+   legibly in the same band for about a third of a second - which is why a
+   phone screenshot of the grammar header caught "unit by unit" printed over
+   "with 5 challenge games". At 100% the outgoing word is leaving the band from
+   the top exactly as the incoming one enters from the bottom, so they never
+   share it. */
+@keyframes dashCycleIn  { from{opacity:0;transform:translateY(100%)} to{opacity:1;transform:translateY(0)} }
+@keyframes dashCycleOut { from{opacity:1;transform:translateY(0)}  to{opacity:0;transform:translateY(-100%)} }
 
 .header-left .subtitle {
   color:var(--text-secondary);
@@ -120,7 +185,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 .logout-btn {
   background:linear-gradient(135deg, rgba(239,68,68,0.15), rgba(185,28,28,0.15));
   border:2px solid rgba(239,68,68,0.35);
-  color:#fca5a5;
+  color:var(--text-error, #fca5a5);
   padding:12px 22px;
   border-radius:14px;
   cursor:pointer;
@@ -237,7 +302,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
   width:48px;
   height:48px;
   border-radius:14px;
-  background:rgba(255, 255, 255, 0.05);
+  background:var(--tint-surface, rgba(255, 255, 255, 0.05));
   margin:0 auto 10px;
   filter:drop-shadow(0 4px 10px rgba(59,130,246,0.35));
 }
@@ -351,7 +416,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 .custom-select:focus {
   border-color:var(--accent-secondary);
   outline:none;
-  box-shadow:0 0 0 3px rgba(251,146,60,0.15), 0 4px 16px rgba(251,146,60,0.2);
+  box-shadow:0 0 0 3px rgba(96,165,250,0.15), 0 4px 16px rgba(96,165,250,0.2);
 }
 
 .custom-select option {
@@ -390,8 +455,8 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 
 /* ====== WORD COUNT DISPLAY ====== */
 .word-count-display {
-  background:linear-gradient(135deg, rgba(251,146,60,0.1), rgba(59,130,246,0.1));
-  border:1px solid rgba(251,146,60,0.25);
+  background:linear-gradient(135deg, rgba(96,165,250,0.1), rgba(59,130,246,0.1));
+  border:1px solid rgba(96,165,250,0.25);
   border-radius:12px;
   padding:16px;
   text-align:center;
@@ -439,8 +504,8 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 }
 
 .setting-toggle.active {
-  background:linear-gradient(135deg, var(--border-color, rgba(59,130,246,0.2)), rgba(251,146,60,0.15));
-  border-color:rgba(251,146,60,0.4);
+  background:linear-gradient(135deg, var(--border-color, rgba(59,130,246,0.2)), rgba(96,165,250,0.15));
+  border-color:rgba(96,165,250,0.4);
 }
 
 .setting-info {
@@ -542,7 +607,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
   border:1px solid rgba(239,68,68,0.25);
   padding:12px;
   border-radius:10px;
-  color:#fca5a5;
+  color:var(--text-error, #fca5a5);
   font-size:0.85em;
   text-align:center;
   display:none;
@@ -553,43 +618,31 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
   display:block;
 }
 
-/* ====== CUSTOM LOGOUT MODAL ====== */
-.modal-overlay {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.7);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:1000;
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;        /* CRITICAL: backdrop-filter GPU layer swallows clicks in Chromium */
-  transition:opacity 0.3s ease, visibility 0.3s ease;
-}
+/* ====== CUSTOM LOGOUT MODAL ======
+   Shape and motion now come from the shared dialog layer in css/brand.css
+   (.ll-dialog / .ll-dialog-toggle / .modal-overlay), so every confirmation box
+   in the app is the same size and moves the same way. The overlay and the
+   card's transform used to be defined here; both were one of four competing
+   versions. Only colour is left below.
 
-.modal-overlay.active {
-  opacity:1;
-  visibility:visible;
-  pointer-events:auto;
-  backdrop-filter:blur(8px);  /* Only blur when actually shown */
-}
-
+   The CRITICAL note that used to sit on .modal-overlay - a backdrop-filter
+   layer swallows clicks in Chromium even when invisible, so pointer-events and
+   the blur must both be gated on .active - moved with the rule. It is written
+   out in brand.css. */
 .modal-content {
+  /* position:relative is LOAD-BEARING. .modal-close-btn is absolutely
+     positioned, and it used to anchor here only because this rule carried a
+     `transform`, which quietly creates a containing block. The shared dialog
+     layer moved that transform onto .ll-dialog-toggle, which only the logout
+     modal carries - so every other modal's X started anchoring to the fixed
+     overlay instead, and floated to the top-right corner of the SCREEN, well
+     outside its own card. Stating the position explicitly does not depend on a
+     transform being present. */
+  position:relative;
   background:linear-gradient(145deg, rgba(35,35,55,0.98), rgba(25,25,40,0.98));
   border:2px solid rgba(59,130,246,0.3);
-  border-radius:24px;
-  padding:36px 44px;
-  max-width:420px;
-  width:90%;
   text-align:center;
-  transform:scale(0.9) translateY(20px);
-  transition:all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow:0 25px 80px rgba(0,0,0,0.5), 0 0 60px rgba(59,130,246,0.15);
-}
-
-.modal-overlay.active .modal-content {
-  transform:scale(1) translateY(0);
 }
 
 .light-mode .modal-content {
@@ -688,11 +741,19 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
     padding:20px;
   }
   
+  /* STAYS A ROW on a phone. This used to be flex-direction:column, which put
+     the profile picture underneath the Lingualab title instead of at the top
+     right - the header stacked, so "top right" stopped existing. The badge
+     collapses to just the picture below 620px (see js/profile-hub.js), so the
+     row fits comfortably. */
   .dashboard-header {
-    flex-direction:column;
-    gap:16px;
-    text-align:center;
+    flex-direction:row;
+    align-items:flex-start;
+    gap:10px;
+    text-align:left;
   }
+  .dashboard-header .header-left { min-width:0; flex:1; }
+  .dashboard-header .header-right { flex:0 0 auto; margin-left:auto; }
   
   .logout-btn {
     align-self:center;
@@ -742,7 +803,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 
 /* ====== LEARNING JOURNEY CARD (ENHANCED) ====== */
 .journey-card {
-  background: linear-gradient(145deg, rgba(16,185,129,0.12), rgba(251,146,60,0.08));
+  background: linear-gradient(145deg, rgba(16,185,129,0.12), rgba(96,165,250,0.08));
   border: 2px solid rgba(16,185,129,0.25);
   border-radius: 20px;
   padding: 20px;
@@ -789,7 +850,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 0.72em;
-  color: #6ee7b7;
+  color: var(--text-success, #6ee7b7);
   font-weight: 500;
 }
 
@@ -805,7 +866,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
   padding: 12px 6px;
   background: rgba(0,0,0,0.2);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--tint-line, rgba(255, 255, 255, 0.05));
   transition: all 0.3s ease;
 }
 
@@ -817,7 +878,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 .journey-stat-value {
   font-size: 1.4em;
   font-weight: 800;
-  background: linear-gradient(135deg, #10b981, #06b6d4);
+  background: linear-gradient(135deg, #10b981, #2563eb);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -883,20 +944,20 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 .question-box{background:var(--bg-item);border:1px solid var(--border-color);padding:18px;border-radius:16px;margin-bottom:14px;text-align:center}
 .question-box h2{color:var(--text-primary);font-size:1.4em;margin-bottom:6px}
 .question-box p{color:var(--text-secondary)}
-.question-box .pos-tag{display:inline-block;background:rgba(59,130,246,0.3);color:#93c5fd;padding:4px 12px;border-radius:20px;font-size:0.85em;margin-top:8px}
+.question-box .pos-tag{display:inline-block;background:rgba(59,130,246,0.3);color:var(--text-accent, #93c5fd);padding:4px 12px;border-radius:20px;font-size:0.85em;margin-top:8px}
 
 .word-with-turkish{display:flex;flex-direction:column;align-items:center;gap:4px}
 .word-with-turkish .main-word{font-size:1.5em;color:var(--text-primary);font-weight:700}
 .word-with-turkish .turkish-translation{font-size:1.1em;color:#f87171;font-style:italic;opacity:0.9;display:none}
 .word-with-turkish .turkish-translation.visible{display:block}
-.turkish-hint{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;padding:8px 16px;border-radius:12px;font-size:1em;margin-top:8px;display:none}
+.turkish-hint{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:var(--text-error, #fca5a5);padding:8px 16px;border-radius:12px;font-size:1em;margin-top:8px;display:none}
 .turkish-hint.visible{display:inline-block}
 .turkish-label{font-size:0.75em;color:#f87171;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
 
-.context-sentence{font-size:1.15em;color:var(--text-primary);line-height:1.6;margin:10px 0;padding:12px 16px;background:rgba(251,146,60,0.08);border-radius:12px;border-left:3px solid var(--accent-secondary)}
-.context-sentence .target-word{color:var(--accent-secondary);font-weight:700;background:rgba(251,146,60,0.15);padding:2px 6px;border-radius:6px}
+.context-sentence{font-size:1.15em;color:var(--text-primary);line-height:1.6;margin:10px 0;padding:12px 16px;background:rgba(96,165,250,0.08);border-radius:12px;border-left:3px solid var(--accent-secondary)}
+.context-sentence .target-word{color:var(--accent-secondary);font-weight:700;background:rgba(96,165,250,0.15);padding:2px 6px;border-radius:6px}
 .context-sentence .blank-word{display:inline-block;min-width:80px;color:var(--text-primary);font-weight:700;border-bottom:2px solid var(--accent-secondary);padding:2px 10px;text-align:center;vertical-align:bottom}
-/* Article hint shown before a noun target (a / an). Subtle italic only —
+/* Article hint shown before a noun target (a / an). Subtle italic only -
    NOT boxed/padded like .target-word, otherwise students read it as a
    second answer pill. The target word is the only "highlighted" element
    in the sentence. */
@@ -907,9 +968,17 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 .match-column{display:flex;flex-direction:column;gap:10px}
 .match-item{background:var(--bg-item);border:2px solid rgba(100,100,140,0.4);padding:14px;border-radius:14px;cursor:pointer;color:var(--text-primary);transition:.2s}
 .match-item:hover{border-color:var(--accent-primary);background:var(--bg-item-hover)}
-.match-item.selected{background:linear-gradient(135deg,rgba(59,130,246,0.4),rgba(251,146,60,0.3));border-color:var(--accent-secondary);color:#fff}
+.match-item.selected{background:linear-gradient(135deg,rgba(59,130,246,0.4),rgba(96,165,250,0.3));border-color:var(--accent-secondary);color:#fff}
 .match-item.correct{background:linear-gradient(135deg,rgba(16,185,129,0.3),rgba(5,150,105,0.3));border-color:var(--success);pointer-events:none;animation:successPulse 0.5s}
 .match-item.incorrect{background:rgba(239,68,68,0.3);border-color:var(--error);animation:shake 0.4s}
+/* .reveal = "THIS was the right answer", shown on the correct partner when a
+   pair is wrong. Deliberately not .correct: that one means "you matched this"
+   and kills pointer-events, which would stop the student matching it for real
+   a moment later. Dashed border so the two read as different states even
+   without colour. */
+.match-item.reveal{background:linear-gradient(135deg,rgba(16,185,129,0.18),rgba(5,150,105,0.18));border-color:var(--success);border-style:dashed;animation:revealPulse 1.4s ease-out}
+@keyframes revealPulse{0%{opacity:.35;transform:scale(.99)}15%{opacity:1;transform:scale(1)}80%{opacity:1}100%{opacity:.85}}
+@media (prefers-reduced-motion:reduce){.match-item.reveal{animation:none}}
 .match-item .item-turkish{font-size:0.85em;color:#f87171;font-style:italic;margin-top:4px;display:none}
 .match-item .item-turkish.visible{display:block}
 
@@ -918,15 +987,15 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 .choice-btn:hover{border-color:var(--accent-primary);background:var(--bg-item-hover)}
 .choice-btn.correct{background:rgba(16,185,129,0.3);border-color:var(--success);animation:successPulse 0.5s}
 .choice-btn.incorrect{background:rgba(239,68,68,0.3);border-color:var(--error);animation:shake 0.4s}
-.choice-btn .key-hint{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:rgba(59,130,246,0.3);color:#93c5fd;padding:4px 10px;border-radius:8px;font-size:0.8em;font-weight:600}
+.choice-btn .key-hint{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:rgba(59,130,246,0.3);color:var(--text-accent, #93c5fd);padding:4px 10px;border-radius:8px;font-size:0.8em;font-weight:600}
 
 .sentence-tokens{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:14px;background:var(--bg-item);border-radius:14px;min-height:88px}
 .token{background:rgba(50,50,80,0.8);border:2px solid var(--border-color);color:var(--text-primary);padding:9px 14px;border-radius:10px;cursor:pointer;transition:.2s}
 .token:hover:not(.placed){border-color:var(--accent-primary);background:var(--bg-item-hover);transform:translateY(-2px)}
 .token.placed{opacity:.35;pointer-events:none}
 .answer-area{min-height:88px;padding:14px;background:var(--bg-item);border:2px dashed rgba(100,100,140,0.5);border-radius:14px;display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;transition:all .3s}
-.answer-token{background:linear-gradient(135deg,rgba(59,130,246,0.4),rgba(251,146,60,0.4));color:#fff;padding:9px 14px;border-radius:10px;cursor:pointer;transition:.2s}
-.answer-token:hover{background:linear-gradient(135deg,rgba(59,130,246,0.6),rgba(251,146,60,0.5));transform:scale(1.05)}
+.answer-token{background:linear-gradient(135deg,rgba(59,130,246,0.4),rgba(96,165,250,0.4));color:#fff;padding:9px 14px;border-radius:10px;cursor:pointer;transition:.2s}
+.answer-token:hover{background:linear-gradient(135deg,rgba(59,130,246,0.6),rgba(96,165,250,0.5));transform:scale(1.05)}
 
 .spelling-input{width:100%;max-width:400px;padding:16px 20px;font-size:1.3em;border:2px solid var(--border-color);border-radius:14px;background:var(--bg-item);color:var(--text-primary);text-align:center;margin:20px auto;display:block;transition:.2s}
 .spelling-input:focus{border-color:var(--accent-primary);outline:none;box-shadow:0 0 20px rgba(59,130,246,0.3)}
@@ -948,7 +1017,7 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 .completion-screen .score{font-size:2.05em;margin:10px 0;background:linear-gradient(135deg,var(--accent-secondary),var(--accent-primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .completion-screen .message{color:var(--text-secondary);font-size:1.1em;margin-bottom:20px}
 
-.tts-warning{background:rgba(234,179,8,0.2);border:2px solid rgba(234,179,8,0.4);padding:10px;border-radius:10px;margin-bottom:12px;color:#fef08a}
+.tts-warning{background:rgba(234,179,8,0.2);border:2px solid rgba(234,179,8,0.4);padding:10px;border-radius:10px;margin-bottom:12px;color:var(--text-warning, #fef08a)}
 
 @keyframes successPulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
@@ -961,10 +1030,10 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
 
 .button-container{display:flex;justify-content:center;gap:12px;margin-top:20px;flex-wrap:wrap}
 .button-container-right{justify-content:flex-end}
-.hint-btn,.clear-btn{background:rgba(234,179,8,0.3);border:2px solid rgba(234,179,8,0.5);color:#fef08a;padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.9em;transition:.2s}
-.hint-btn:hover,.clear-btn:hover{background:rgba(234,179,8,0.5);border-color:#eab308}
+.hint-btn,.clear-btn{background:rgba(59,130,246,0.3);border:2px solid rgba(59,130,246,0.5);color:var(--text-warning, #fef08a);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.9em;transition:.2s}
+.hint-btn:hover,.clear-btn:hover{background:rgba(59,130,246,0.5);border-color:#3b82f6}
 .hint-btn:disabled,.clear-btn:disabled{opacity:.3;cursor:not-allowed}
-.attempt-info{text-align:center;color:#fef08a;font-size:0.95em;margin:10px 0;padding:8px;background:rgba(234,179,8,0.15);border-radius:8px}
+.attempt-info{text-align:center;color:var(--text-warning, #fef08a);font-size:0.95em;margin:10px 0;padding:8px;background:rgba(59,130,246,0.15);border-radius:8px}
 .review-section{background:var(--bg-item);padding:20px;border-radius:16px;margin-top:20px;max-height:300px;overflow-y:auto}
 .review-section h3{color:var(--accent-secondary);margin-bottom:12px;font-size:1.2em}
 .review-item{background:rgba(50,50,70,0.6);padding:12px;border-radius:10px;margin-bottom:10px;border-left:4px solid var(--error)}
@@ -995,3 +1064,90 @@ max-width:1200px;width:100%;min-height:720px;padding:32px;position:relative;z-in
   box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
   animation: shake 0.3s ease;
 }
+
+/* ============================================================
+   LIGHT MODE - generated by tools/light-coverage.js findings
+   Each rule mirrors a real one above and flips only its SURFACE,
+   keeping the original alpha so translucent panels stay translucent
+   and nothing about the layering changes. Dark is untouched.
+   ============================================================ */
+.light-mode .modal-overlay {
+  background: rgba(246, 248, 251, 0.7);
+}
+
+/* ============================================================
+   PRONUNCIATION - the "say it" feedback line
+   ------------------------------------------------------------
+   Sits between the word card and the buttons. Deliberately quiet:
+   this is coaching, not a grade, and a learner mis-heard by the
+   recogniser should not be shouted at in red.
+   ============================================================ */
+.pron-check {
+  max-width: 520px;
+  margin: 14px auto 0;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-align: center;
+  border: 1px solid var(--border-color, #e3e9f2);
+  background: var(--bg-item, rgba(148, 163, 184, 0.08));
+  color: var(--text-secondary, #475569);
+}
+.pron-check.ok {
+  border-color: rgba(34, 197, 94, 0.45);
+  background: rgba(34, 197, 94, 0.10);
+  color: var(--text-primary, #0f172a);
+}
+.pron-check.retry {
+  border-color: rgba(59, 130, 246, 0.45);
+  background: rgba(59, 130, 246, 0.10);
+  color: var(--text-primary, #0f172a);
+}
+@media (max-width: 620px) {
+  .pron-check { margin: 12px 8px 0; font-size: 0.9rem; padding: 10px 12px; }
+}
+
+/* ============================================================
+   UNIVERSITY MARK IN THE HEADER
+   ------------------------------------------------------------
+   Filled by js/org-brand.js from the signed-in user's email domain. It is an
+   ADDITION: the Lingualab cap and wordmark on the left are untouched, and
+   this occupies the empty middle of .dashboard-header, which is
+   justify-content: space-between.
+
+   The mount ships `hidden`, so a page whose user has no configured logo -
+   or is anonymous, or is a demo account - renders exactly as it always did.
+   `[hidden]` is honoured explicitly because `display:flex` on the element
+   would otherwise beat the UA's `display:none`.
+
+   flex: 0 1 auto with min-width: 0 means the mark gives up space before the
+   name or the profile chip do, and at phone width it is the first thing to
+   go - both of those are load-bearing, this is decoration.
+   ============================================================ */
+/* Not a flex item any more: js/org-brand.js FLOATS it into the free space
+   beside the title at every width (see below), so it takes no room and the
+   header lays out exactly as it does without it. Invisible until placed. */
+.header-org { display: none; }
+.header-org.is-floating:not([hidden]):not(.no-room) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  padding: 0;
+  z-index: 1;
+}
+.header-org.is-floating .org-mark-img { height: 100%; width: 100%; }
+
+.org-mark-img {
+  height: 34px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  opacity: 0.92;
+}
+
+/* Phones need nothing extra: a flex slot here squeezed the title block from
+   241px to 193px and pushed the subtitle onto an extra line, which is why the
+   mark floats instead. Where the free space is too small it gets .no-room and
+   stays hidden rather than sit on anything. */

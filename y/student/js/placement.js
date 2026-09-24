@@ -242,6 +242,30 @@
     { band: 'B1+', g: 6, v: 4 },
     { band: 'B2', g: 6, v: 4 }
   ];
+
+  // The admin can switch parts off and change the per-band counts in
+  // Admin > Placement (settings/placementConfig: `parts` and `rungs`).
+  // Everything here treats a MISSING setting as "on, at the default", so a
+  // config written before those controls existed runs the full test.
+  function partOn(name) {
+    var p = (state.cfg && state.cfg.parts) || {};
+    return p[name] !== false;
+  }
+  // The bands to climb, with the counts the admin chose. A part that is off
+  // contributes 0 questions rather than being removed from the band, so the
+  // ladder still climbs on whichever kind is left.
+  function rungs() {
+    var saved = (state.cfg && Array.isArray(state.cfg.rungs)) ? state.cfg.rungs : null;
+    var g = partOn('grammar'), v = partOn('vocab');
+    return RUNGS.map(function (def) {
+      var got = saved && saved.filter(function (r) { return r && r.band === def.band; })[0];
+      var gn = got && isFinite(parseInt(got.g, 10)) ? parseInt(got.g, 10) : def.g;
+      var vn = got && isFinite(parseInt(got.v, 10)) ? parseInt(got.v, 10) : def.v;
+      return { band: def.band,
+               g: g ? Math.max(0, Math.min(30, gn)) : 0,
+               v: v ? Math.max(0, Math.min(30, vn)) : 0 };
+    }).filter(function (r) { return r.g + r.v > 0; });
+  }
   // Activity trail: placement shows up in the teacher Activity tab through the
   // same pipeline as practice events (who started / completed, with details).
   function logAct(kind, details) {
@@ -253,20 +277,34 @@
     } catch (_) {}
   }
   function runLadder(idx) {
-    if (idx === 0) { state.inProgress = true; state.startTs = Date.now(); state.rungs = []; logAct('start', {}); }
-    if (idx >= RUNGS.length) {
+    if (idx === 0) {
+      state.inProgress = true; state.startTs = Date.now(); state.rungs = []; logAct('start', {});
+      // Resolve the ladder ONCE per attempt, so a config change mid-test
+      // cannot renumber the bands under a student who is already climbing.
+      state.ladder = rungs();
+    }
+    var LAD = state.ladder || rungs();
+    // Both language parts switched off: there is no ladder to climb, so the
+    // provisional band falls back to the middle of the range and the test goes
+    // straight to whichever skill parts are still on.
+    if (!LAD.length) {
+      state.provisional = 'B1';
+      runReading();
+      return;
+    }
+    if (idx >= LAD.length) {
       var prov = 'A2';
       state.rungs.forEach(function (r) { if (r.total && (r.correct / r.total) * 100 >= 60) prov = r.band; });
       state.provisional = prov;
       showLadderScore();
       return;
     }
-    var rung = RUNGS[idx];
+    var rung = LAD[idx];
     var base = snap();
     var gLevels = rung.band === 'B1+' ? ['B1+'] : [rung.band];
     // A2 rung = fill-in-the-blank vocab; definition questions from B1 up.
-    var vq = rung.band === 'A2' ? vocabGapQs(rung.band, rung.v) : vocabQs(rung.band, rung.v);
-    startStage('L' + idx, 'Language ladder - level ' + rung.band + ' (' + (idx + 1) + ' of ' + RUNGS.length + ')',
+    var vq = rung.v ? (rung.band === 'A2' ? vocabGapQs(rung.band, rung.v) : vocabQs(rung.band, rung.v)) : [];
+    startStage('L' + idx, 'Language ladder - level ' + rung.band + ' (' + (idx + 1) + ' of ' + LAD.length + ')',
       shuffle(grammarQs(gLevels, rung.g).concat(vq)), function () {
         var g = state.scores.grammar, v = state.scores.vocab;
         state.rungs.push({ band: rung.band, correct: (g.correct - base.g.c) + (v.correct - base.v.c), total: (g.total - base.g.t) + (v.total - base.v.t) });
@@ -287,25 +325,36 @@
     return pickExam(skill, readingLevelFor(state.provisional));
   }
   function runReading() {
+    // Switched off in Admin > Placement: no exam, and the score stays empty on
+    // the report rather than counting as a zero.
+    if (!partOn('reading')) { state.scores.reading = null; runListeningIntro(); return; }
     var pick = pickConfigured('reading', state.cfg && state.cfg.readingExamId);
     if (!pick || typeof window.openReadingExam !== 'function') { state.scores.reading = null; runListeningIntro(); return; }
     window.onReadingExamSubmitted = function (r) {
       state.scores.reading = { correct: Number(r && r.correct) || 0, total: Number(r && r.total) || 0 };
       showContinue(runListeningIntro);
     };
-    window.openReadingExam(pick.level, pick.exam.id, 'untimed');
+    // Untimed (the placement test paces itself) but LOCKED DOWN: this pulls
+    // from the real exam bank, so copy, right-click and find-in-page have to
+    // be blocked exactly as in a timed exam. Before this flag, lockdown was
+    // inferred from the timer, so the placement reading ran wide open.
+    window.openReadingExam(pick.level, pick.exam.id, 'untimed', { lockdown: true });
   }
   function runListeningIntro() {
     between('Reading done', 'Next: a listening exam. You will hear the audio and answer the questions, then Submit.', runListening);
   }
   function runListening() {
+    if (!partOn('listening')) { state.scores.listening = null; runWritingIntro(); return; }
     var pick = pickConfigured('listening', state.cfg && state.cfg.listeningExamId);
     if (!pick || typeof window.startListeningExam !== 'function') { state.scores.listening = null; runWritingIntro(); return; }
     window.onListeningExamSubmitted = function (r) {
       state.scores.listening = { correct: Number(r && r.correct) || 0, total: Number(r && r.total) || 0 };
       showContinue(runWritingIntro);
     };
-    window.startListeningExam(pick.exam.id);
+    // Locked down for the same reason as the placement reading above: this is
+    // real exam content, so copy, right-click and find-in-page stay blocked
+    // until the student submits.
+    window.startListeningExam(pick.exam.id, { lockdown: true });
   }
   // ── Writing rung ─────────────────────────────────────────────
   // The essay TEXT is always saved with the result for teacher review.
@@ -481,6 +530,35 @@
     if (state.inProgress) { e.preventDefault(); e.returnValue = ''; }
   });
 
+  // F5 / Ctrl+R / Cmd+R while the test is running: show the app's own themed
+  // warning, the same one the Exit button uses, instead of the browser's grey
+  // native box being the only thing a student sees.
+  //
+  // THE LIMIT, stated plainly rather than implied: this is the KEYBOARD path
+  // only. No page can intercept the browser's own reload button, the address
+  // bar, or closing the tab; browsers deliberately forbid it, and those paths
+  // still fall through to the native beforeunload prompt above. This is the
+  // same boundary classroom/js/refresh-guard.js documents for the game pages,
+  // and the keyboard is the common accidental-reload route.
+  document.addEventListener('keydown', function (e) {
+    if (!state.inProgress) return;
+    var k = String(e.key || '').toLowerCase();
+    if (k !== 'f5' && !((e.ctrlKey || e.metaKey) && k === 'r')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var msg = 'Reload the placement test? Your progress will NOT be saved, and you can start again later.';
+    var go = function () {
+      // Clear the flag first so the native beforeunload prompt does not fire
+      // on top of the answer the student just gave.
+      state.inProgress = false;
+      window.location.reload();
+    };
+    if (window.AppDialog && AppDialog.confirm) {
+      AppDialog.confirm(msg, { title: 'Reload the placement test?', okLabel: 'Reload', cancelLabel: 'Stay', danger: true })
+        .then(function (ok) { if (ok) go(); });
+    } else if (confirm(msg)) { go(); }
+  }, true);
+
   // Universal exit button: themed confirm while a run is in progress
   // (abandoning saves nothing, so the attempt is not consumed).
   (function wireExit() {
@@ -501,7 +579,7 @@
         ? 'Exit the placement test? Your progress will NOT be saved, and you can start again later.'
         : 'Exit the placement test? You can start it again later.';
       if (window.AppDialog && AppDialog.confirm) {
-        AppDialog.confirm(msg, { title: 'Leave the placement test?', okLabel: 'Exit', cancelLabel: 'Stay', danger: true })
+        AppDialog.confirm(msg, { title: 'Leave the placement test?', okLabel: 'Leave', cancelLabel: 'Stay', danger: true })
           .then(function (ok) { if (ok) go(); });
       } else if (confirm(msg)) go();
     });

@@ -34,6 +34,7 @@
     "ignore": [
       "firebase.json",
       "**/.*",
+      "**/.*/**",
       "**/node_modules/**",
       "tools/**",
       "student/audio/*.srt",
@@ -42,7 +43,13 @@
       "**/*.doc",
       "**/*.pdf",
       "student/data/readings/_raw/**",
-      "Audiio Files/**"
+      "Audiio Files/**",
+      "**/*.log",
+      "**/*.py",
+      "**/_tmp*",
+      "issue-tracker.csv",
+      "vocabulary.txt",
+      "img/README.md"
     ],
     "headers": [
       {

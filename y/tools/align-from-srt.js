@@ -12,7 +12,7 @@
  *   1. Run WhisperDesktop (or any Whisper) on student/audio/listening-exam-1.mp3.
  *      Save the SRT output to: student/audio/listening-exam-1.srt
  *   2. From the y/ directory:   node tools/align-from-srt.js
- *   3. Review tools/exam-transcript.aligned.js — it contains the new
+ *   3. Review tools/exam-transcript.aligned.js - it contains the new
  *      EXAM_TRANSCRIPT array plus a diagnostic report showing per-segment
  *      start deltas and a confidence score.
  *   4. If the diffs look sane, paste the new array over the old one in
@@ -137,7 +137,7 @@ function jaccard(a, b) {
 }
 
 // How many contiguous N-grams of `target` appear inside `joined`? This rewards
-// the right phrase ordering — jaccard alone would happily match a bag of words.
+// the right phrase ordering - jaccard alone would happily match a bag of words.
 function phraseOverlap(joined, target, n = 4) {
   if (!target.length || !joined.length) return 0;
   if (target.length < n) {
@@ -153,7 +153,7 @@ function phraseOverlap(joined, target, n = 4) {
   return total ? hits / total : 0;
 }
 
-// Detect cues that are REPEATS of an earlier cue — i.e. the start of a second
+// Detect cues that are REPEATS of an earlier cue - i.e. the start of a second
 // playback of the same recording. A cue is a repeat if its first 6 tokens
 // exactly match the first 6 tokens of some earlier cue.
 function detectRepeatStarts(srtCues) {
@@ -175,13 +175,13 @@ function detectRepeatStarts(srtCues) {
 
 // ─── aligner ──────────────────────────────────────────────────────────────────
 // Section-aware word-level alignment. For each section in the target (intro,
-// 1, 2, 3 in a listening exam), find the SRT's first-playback window — the
+// 1, 2, 3 in a listening exam), find the SRT's first-playback window - the
 // range of time from the section's content start up to the cue where that
 // content starts being repeated. Then run Needleman-Wunsch DP on just that
 // window, anchored by a positional prior from teacher's original times.
 //
 // This handles:
-//   - Whisper hallucinations during silence (gap_srt is cheap — we skip them)
+//   - Whisper hallucinations during silence (gap_srt is cheap - we skip them)
 //   - Double-played recordings (second playback is outside the per-section
 //     SRT window, so DP simply can't reach it)
 //   - Minor misspellings (per-word mismatch is only mildly penalised)
@@ -236,7 +236,7 @@ function align(srtCues, targets) {
     const tMax = Math.max(...g.targets.map(t => t.end));
     const windowStart = Math.max(0, tMin - 30);
 
-    // Find the first repeat boundary past tMin — that's where the section's
+    // Find the first repeat boundary past tMin - that's where the section's
     // second playback begins. If none found (e.g. Whisper died before the
     // repeat), fall back to teacher_max + 60.
     let windowEnd = tMax + 60;
@@ -250,7 +250,7 @@ function align(srtCues, targets) {
 
     const subSrtWords = srtWords.filter(w => w.t >= windowStart && w.t <= windowEnd);
     if (subSrtWords.length === 0) {
-      // No SRT content in this section's window — mark every target failed.
+      // No SRT content in this section's window - mark every target failed.
       for (let k = 0; k < g.targets.length; k++) {
         out[g.origIdx[k]] = {
           ...g.targets[k],
@@ -273,7 +273,7 @@ function align(srtCues, targets) {
   return out;
 }
 
-// Inner word-level DP — runs on a pre-filtered SRT word stream and a list of
+// Inner word-level DP - runs on a pre-filtered SRT word stream and a list of
 // target segments. Returns one result object per target.
 function alignDP(srtWords, targets) {
   // Flatten targets → word stream with expected time from teacher's priors
@@ -293,7 +293,7 @@ function alignDP(srtWords, targets) {
 
   // 3. Needleman-Wunsch.
   //    NOTE: proximity prior intentionally disabled (PROX=0). It was useful
-  //    when aligning globally across double-playback SRT — pulled DP toward
+  //    when aligning globally across double-playback SRT - pulled DP toward
   //    the teacher's expected time to avoid jumping to the 2nd playback. But
   //    now that each section is sectioned + windowed, DP literally CAN'T
   //    escape to the wrong playback, and the prior only hurts when the
@@ -304,7 +304,7 @@ function alignDP(srtWords, targets) {
   const GAP_SRT   = -0.05;
   const GAP_TGT   = -0.6;
   const GRACE     = 60;     // seconds of free drift around expected position
-  const PROX      = 0;      // disabled — sectioning already anchors us
+  const PROX      = 0;      // disabled - sectioning already anchors us
   const W = N + 1;
 
   const dp    = new Float32Array((M + 1) * W);
@@ -333,7 +333,7 @@ function alignDP(srtWords, targets) {
     }
   }
 
-  // 4. Traceback — for each target word, which SRT word (if any) it aligned to
+  // 4. Traceback - for each target word, which SRT word (if any) it aligned to
   const tgtToSrt = new Int32Array(N).fill(-1);
   let i = M, j = N;
   while (i > 0 && j > 0) {
@@ -345,7 +345,7 @@ function alignDP(srtWords, targets) {
 
   // 5. Build per-segment results. For each target segment, collect the times
   //    of ALL matched words, then split into clusters separated by >30s gaps
-  //    and keep only the densest one — this discards words that leaked into
+  //    and keep only the densest one - this discards words that leaked into
   //    the second-playback of the recording.
   const out = targets.map(t => ({
     ...t,
@@ -364,14 +364,14 @@ function alignDP(srtWords, targets) {
     seg._total++;
     const srtIdx = tgtToSrt[k];
     if (srtIdx < 0) continue;
-    if (srtWords[srtIdx].w !== tgtWords[k].w) continue;  // mismatch — don't trust position
+    if (srtWords[srtIdx].w !== tgtWords[k].w) continue;  // mismatch - don't trust position
     seg._matched++;
     perSegTimes[segIdx].push(srtWords[srtIdx].t);
   }
 
   // Cluster-split each segment's matched times. A gap of GAP_SPLIT seconds
   // between consecutive matches marks a playback boundary. Listening exams
-  // play each recording twice, so we may see two clusters per segment —
+  // play each recording twice, so we may see two clusters per segment -
   // the first (earlier in time) is always the one we want.
   const GAP_SPLIT = 30;
   for (let idx = 0; idx < out.length; idx++) {
@@ -430,7 +430,7 @@ function formatDiagnostics(aligned) {
   const rows = aligned.map((s, i) => {
     const oldS = s._oldStart, oldE = s._oldEnd;
     if (!s._aligned) {
-      return `  ${String(i).padStart(2)} | FAILED — no target words aligned. Kept original ${oldS}-${oldE}.`;
+      return `  ${String(i).padStart(2)} | FAILED - no target words aligned. Kept original ${oldS}-${oldE}.`;
     }
     const dS = (s.start - oldS).toFixed(1);
     const score = s._score.toFixed(2);
@@ -457,7 +457,7 @@ function main() {
   const srcText = fs.readFileSync(SRC_PATH, 'utf8');
 
   let cues = parseSrt(srtText);
-  // Drop [no audio]/[no speech] hallucination cues — these are garbage.
+  // Drop [no audio]/[no speech] hallucination cues - these are garbage.
   cues = cues.filter(c => !/^\s*\[(no audio|no speech|silence|blank[_ ]audio)\]\s*$/i.test(c.text));
   console.log(`✓ Parsed ${cues.length} real SRT cues from ${SRT_PATH}`);
   if (cues.length === 0) {
@@ -475,7 +475,7 @@ function main() {
       .map(c => ({ start: c.start + SRT2_OFFSET, end: c.end + SRT2_OFFSET, text: c.text }));
     console.log(`✓ Parsed ${cues2.length} real SRT cues from ${SRT2_PATH} (offset +${SRT2_OFFSET}s)`);
 
-    // If srt2 covers time T and onward, drop srt1 cues from T onward — the
+    // If srt2 covers time T and onward, drop srt1 cues from T onward - the
     // fresh transcription is more trustworthy than the dying VAD's last gasps.
     const cutoff = cues2.length ? cues2[0].start : Infinity;
     const dropped = cues.filter(c => c.start >= cutoff).length;
@@ -483,7 +483,7 @@ function main() {
     cues.sort((a, b) => a.start - b.start);
     console.log(`  Merged: dropped ${dropped} cues from ${SRT_PATH} past ${cutoff.toFixed(1)}s, total now ${cues.length}`);
   } else {
-    console.log(`  (No ${SRT2_PATH} found — skipping supplementary SRT merge.)`);
+    console.log(`  (No ${SRT2_PATH} found - skipping supplementary SRT merge.)`);
   }
 
   const { arr: targets } = extractTranscript(srcText);
@@ -493,11 +493,11 @@ function main() {
   const okCount  = aligned.filter(s => s._aligned).length;
   const lowCount = aligned.filter(s => s._aligned && s._score < 0.4).length;
   const medCount = aligned.filter(s => s._aligned && s._score >= 0.4 && s._score < 0.6).length;
-  console.log(`✓ Aligned ${okCount}/${aligned.length} — ${lowCount} low (<0.4), ${medCount} medium (0.4–0.6), ${okCount - lowCount - medCount} good (≥0.6)`);
+  console.log(`✓ Aligned ${okCount}/${aligned.length} - ${lowCount} low (<0.4), ${medCount} medium (0.4-0.6), ${okCount - lowCount - medCount} good (≥0.6)`);
 
   const report = formatDiagnostics(aligned);
   const outText = [
-    '// Generated by tools/align-from-srt.js — do not edit directly.',
+    '// Generated by tools/align-from-srt.js - do not edit directly.',
     '// Copy the array below over the existing EXAM_TRANSCRIPT in student/js/listening-exam.js.',
     '//',
     '// ' + report.split('\n').join('\n// '),

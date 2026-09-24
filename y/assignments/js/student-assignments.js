@@ -12,7 +12,7 @@ let myCompletions = {}; // Store completion status by assignment ID
 let myWritingSubmissions = {};
 
 // Class-code normalizer. The same helper exists in the teacher-side
-// files (teacher-assignments.js, modals.js, students.js) — keep them
+// files (teacher-assignments.js, modals.js, students.js) - keep them
 // in sync. Used everywhere we compare or save a class code so casing
 // and whitespace differences ("b100" vs "B100 " vs "B100") never
 // hide an assignment from a student.
@@ -46,13 +46,13 @@ function _markFeedbackSeen(assignmentId, status) {
     const m = _seenFeedbackMap();
     m[assignmentId] = status;
     localStorage.setItem('writingFeedbackSeen', JSON.stringify(m));
-  } catch (_) { /* private mode / quota — silent */ }
+  } catch (_) { /* private mode / quota - silent */ }
 }
 function _isFeedbackUnseen(assignmentId, status) {
   return _seenFeedbackMap()[assignmentId] !== status;
 }
 
-// Inject the pulse keyframes + badge glow once. Idempotent — guarded
+// Inject the pulse keyframes + badge glow once. Idempotent - guarded
 // by a <style> element id so repeat renders don't pile up <style>s.
 (function _injectFeedbackPulseCss() {
   if (typeof document === 'undefined') return;
@@ -61,20 +61,20 @@ function _isFeedbackUnseen(assignmentId, status) {
   css.id = 'writing-feedback-pulse-css';
   css.textContent = `
     @keyframes writingFeedbackPulse {
-      0%, 100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.55); }
-      50%      { transform: scale(1.06); box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+      0%, 100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.55); }
+      50%      { transform: scale(1.06); box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
     }
     .writing-feedback-new-sticker {
       display: inline-flex; align-items: center;
-      background: linear-gradient(135deg, #f59e0b, #d97706);
+      background: linear-gradient(135deg, #3b82f6, #d97706);
       color: white; font-size: 0.62em; font-weight: 800;
       padding: 3px 7px; border-radius: 999px;
       letter-spacing: 0.06em;
       animation: writingFeedbackPulse 1.6s ease-in-out infinite;
     }
     @keyframes assignmentBadgeGlow {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.65); }
-      50%      { box-shadow: 0 0 0 7px rgba(168, 85, 247, 0); }
+      0%, 100% { box-shadow: 0 0 0 0 rgba(29, 78, 216, 0.65); }
+      50%      { box-shadow: 0 0 0 7px rgba(29, 78, 216, 0); }
     }
     #assignmentBadge.has-new-feedback {
       animation: assignmentBadgeGlow 2s ease-in-out infinite;
@@ -120,7 +120,7 @@ async function loadMyAssignments() {
   // NOTE: We no longer early-return on a missing #assignmentsContainer.
   // That element used to live in the vocabulary sidebar but the hub now
   // owns the assignments view. The fetch must always run so the hub can
-  // read `myAssignments` — rendering into the legacy container is just
+  // read `myAssignments` - rendering into the legacy container is just
   // an optional output (renderMyAssignments() handles its own absence).
   const user = auth.currentUser;
   if (!user) return;
@@ -138,14 +138,14 @@ async function loadMyAssignments() {
       const userDoc = await db.collection('users').doc(user.uid).get();
       userData = userDoc.data();
     }
-    // Normalize once — every comparison below uses the normalized form.
+    // Normalize once - every comparison below uses the normalized form.
     const myClass  = normClass(userData?.studentClass);
-    // Coerce to string before .trim() — legacy user docs may store
+    // Coerce to string before .trim() - legacy user docs may store
     // these as numbers / null / undefined, which would break .trim().
     const myLevel  = String(userData?.level  || '').trim();
     const myModule = String(userData?.module || '').trim();
 
-    // Query ONLY the assignments that target this student — one narrow
+    // Query ONLY the assignments that target this student - one narrow
     // query per scope (class / level / module / individual), run in
     // parallel and merged. This avoids downloading EVERY assignment in the
     // school just to filter in the browser: it was O(all active assignments)
@@ -153,7 +153,7 @@ async function loadMyAssignments() {
     // module are stored normalized at creation (_normCls = trim+UPPER, same
     // as normClass), so equality on the normalized value matches exactly.
     // Only equality + array-contains filters are used (no orderBy), so these
-    // run on Firestore's automatic single-field indexes — no composite index
+    // run on Firestore's automatic single-field indexes - no composite index
     // needed. The 30-day deadline window + sort are applied client-side,
     // cheap now that each query returns only a few docs.
     const assignCol = db.collection('assignments');
@@ -168,7 +168,7 @@ async function loadMyAssignments() {
                             : (a.deadline ? new Date(a.deadline).getTime() : null);
 
     // Run scope queries in parallel; one failing query (e.g. a transient
-    // error) must not take down the others — its scope just yields nothing.
+    // error) must not take down the others - its scope just yields nothing.
     const scopeSnaps = await Promise.all(
       scopeQueries.map(q => q.get().catch(err => {
         console.warn('[assignments] scope query failed:', (err && err.message) || err);
@@ -237,7 +237,7 @@ async function loadMyAssignments() {
         console.log('No completion records or error loading:', e);
       }
       
-      // Also load the student's sessions from Firebase — ONLY as a fallback
+      // Also load the student's sessions from Firebase - ONLY as a fallback
       // for assignments that have NO explicit completion record. The matcher
       // (checkMyAssignmentStatus) returns from myCompletions[id] FIRST and
       // never consults allSessions when a record exists, so when every
@@ -282,7 +282,7 @@ async function loadMyAssignments() {
       //
       // The id-prefix branch is the only one a regular student passes,
       // and Firestore's static query validator can't prove a where()
-      // filter narrows to ids matching that pattern — so the broader
+      // filter narrows to ids matching that pattern - so the broader
       // query is rejected with "insufficient permissions". Per-doc
       // gets sidestep that entirely (and only fetch what we actually
       // need: submissions for the writing assignments the student
@@ -294,7 +294,7 @@ async function loadMyAssignments() {
       myWritingSubmissions = await _writingP;
       console.log('Loaded writing submissions:', Object.keys(myWritingSubmissions).length);
 
-      // BUG-FIX DERIVATION — historically writing-exam.js wrote
+      // BUG-FIX DERIVATION - historically writing-exam.js wrote
       // `userId` instead of `odUserId` to /assignmentCompletions, so
       // its docs didn't match the `where('odUserId', ==, uid)` query
       // above. Result: a graded writing essay still showed "Start
@@ -391,7 +391,7 @@ function renderMyAssignments() {
     const isOverdue = daysLeft < 0;
     const status = checkMyAssignmentStatus(a);
 
-    // Phase F.4 — when a writing submission has been RETURNED, the
+    // Phase F.4 - when a writing submission has been RETURNED, the
     // student has more work to do. assignmentCompletions still says
     // completed:true (set at submit), but the UX must treat it as
     // pending: don't sink it to the bottom, don't show ✓ Done, do
@@ -467,7 +467,7 @@ function renderMyAssignments() {
   // so the same single source-of-truth drives both sides.
   const skillPills = (typeof SKILL_REGISTRY !== 'undefined') ? (function () {
     const pills = [{ id: 'all', icon: '', name: 'All Skills', accent: '#64748b' }]
-      .concat(SKILL_REGISTRY.all().map(s => ({ id: s.id, icon: s.icon, name: s.name, accent: s.accent, status: s.status })));
+      .concat(SKILL_REGISTRY.visible().map(s => ({ id: s.id, icon: s.icon, name: s.name, accent: s.accent, status: s.status })));
     return `
       <div class="assignments-skill-filters" role="tablist" aria-label="Filter assignments by skill"
            style="display:flex; flex-wrap:wrap; gap:5px; margin: 4px 0 12px 0;">
@@ -523,7 +523,7 @@ function renderMyAssignments() {
       emptyMsg  = `No ${skillName} assignments${assignmentsFilter === 'done' ? ' completed yet' : assignmentsFilter === 'pending' ? ' pending' : ''}.`;
     } else if (assignmentsFilter === 'done') {
       emptyIcon = '🎯';
-      emptyMsg  = 'Nothing finished yet — start with a Pending one!';
+      emptyMsg  = 'Nothing finished yet - start with a Pending one!';
     } else {
       emptyIcon = '✨';
       emptyMsg  = 'No assignments here yet ✨';
@@ -585,11 +585,11 @@ function renderMyAssignments() {
       btnLabel: pickLabel('completed')
     };
 
-    // Phase G fix #2 — writing returned-for-revision deserves its OWN
+    // Phase G fix #2 - writing returned-for-revision deserves its OWN
     // visual state. Without this branch the card would fall through to
     // the generic "pending" visual (⏳ icon, "Not started" tone), which
     // is wrong: the student HAS done work, the teacher just sent it
-    // back. Use amber so the card screams "your turn again" — matches
+    // back. Use amber so the card screams "your turn again" - matches
     // the gradeBlock banner colour set elsewhere on the card.
     // Ordered before isOverdue so a returned-and-past-due card still
     // surfaces the revision call-to-action; the deadline pill below
@@ -642,7 +642,7 @@ function renderMyAssignments() {
 
   function deadlineLabel({ status, daysLeft, isOverdue, a }) {
     if (status.completed) return 'Completed';
-    // Phase G fix #2 — call out the returned state explicitly so the
+    // Phase G fix #2 - call out the returned state explicitly so the
     // student doesn't read this card as "fresh / not started".
     const _sk = (typeof SKILL_REGISTRY !== 'undefined' && a)
       ? SKILL_REGISTRY.skillOf(a)
@@ -663,7 +663,7 @@ function renderMyAssignments() {
     const dateText = deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const dueText  = deadlineLabel({ status, daysLeft, isOverdue, a });
 
-    // Skill resolves once for this card — needed below to decide
+    // Skill resolves once for this card - needed below to decide
     // between the percentage progress bar (vocabulary) and the
     // writing-specific grade banner (writing skill).
     const _sk = (typeof SKILL_REGISTRY !== 'undefined')
@@ -671,13 +671,13 @@ function renderMyAssignments() {
       : (a.skill || 'vocabulary');
 
     // Phase E: for writing assignments, the "100%" progress bar is
-    // misleading — submissions aren't a percentage, they're a teacher
+    // misleading - submissions aren't a percentage, they're a teacher
     // grade. So for writing we suppress the progress bar entirely and
     // render `gradeBlock` (below) instead.
     const isWriting = (_sk === 'writing');
     const wsub      = isWriting ? (myWritingSubmissions[a.id] || null) : null;
 
-    // Progress bar — show whenever the student has attempted, OR on
+    // Progress bar - show whenever the student has attempted, OR on
     // completed cards (always 100%) to convey closure visually.
     // Skipped for writing (grade banner handles that case below).
     let progressBlock = '';
@@ -705,7 +705,7 @@ function renderMyAssignments() {
       `;
     }
 
-    // Grade banner — writing-only. Three visual states:
+    // Grade banner - writing-only. Three visual states:
     //   • Graded / returned  → score chip + "View feedback" button
     //   • Submitted (await)  → muted "Awaiting teacher feedback" pill
     //   • No submission yet  → nothing (regular CTA path applies)
@@ -713,7 +713,7 @@ function renderMyAssignments() {
     if (isWriting && wsub) {
       const wstatus = wsub.status || 'submitted';
       if (wstatus === 'returned') {
-        // Phase F.4 — distinct UI for "returned for revision". The
+        // Phase F.4 - distinct UI for "returned for revision". The
         // student needs to know this isn't a final grade, that the
         // teacher wants changes, and what those changes are. Two CTAs:
         // primary "Revise & resubmit" routes back into writing-exam
@@ -732,20 +732,20 @@ function renderMyAssignments() {
           <div class="my-assignment-grade-banner"
                style="display:flex; flex-direction:column; gap:8px;
                       padding:12px 14px; border-radius:10px;
-                      background:rgba(245, 158, 11, 0.10);
-                      border:1px solid rgba(245, 158, 11, 0.35);
-                      border-left:3px solid #f59e0b;
+                      background:rgba(59, 130, 246, 0.10);
+                      border:1px solid rgba(59, 130, 246, 0.35);
+                      border-left:3px solid #3b82f6;
                       margin-top:8px;">
             <div style="display:flex; align-items:center; gap:10px;">
               <span style="font-size:1.4em;">🔄</span>
               <div style="display:flex; flex-direction:column; gap:2px; flex:1;">
                 <span style="display:flex; align-items:center; gap:8px;
                              font-size:0.7em; font-weight:700; letter-spacing:0.08em;
-                             color:#fcd34d; text-transform:uppercase;">
+                             color:#93c5fd; text-transform:uppercase;">
                   <span>Returned for revision</span>
                   ${newSticker}
                 </span>
-                <span style="font-size:0.95em; color:#fde68a;">
+                <span style="font-size:0.95em; color:#93c5fd;">
                   Your teacher wants changes before grading.
                 </span>
               </div>
@@ -759,7 +759,7 @@ function renderMyAssignments() {
             ` : ''}
             <div style="display:flex; gap:8px; flex-wrap: wrap;">
               <button type="button"
-                      style="flex:1; background: linear-gradient(135deg, #f59e0b, #d97706);
+                      style="flex:1; background: linear-gradient(135deg, #3b82f6, #d97706);
                              color: white; border: none;
                              padding: 8px 14px; border-radius: 8px;
                              font-size: 0.9em; font-weight: 700; cursor: pointer;
@@ -769,7 +769,7 @@ function renderMyAssignments() {
               </button>
               <button type="button"
                       style="background: rgba(255,255,255,0.10);
-                             color: #fde68a; border: 1px solid rgba(255,255,255,0.18);
+                             color: #93c5fd; border: 1px solid rgba(255,255,255,0.18);
                              padding: 8px 12px; border-radius: 8px;
                              font-size: 0.9em; font-weight: 600; cursor: pointer;"
                       onclick="viewWritingFeedback('${escapeHtml(a.id)}')">
@@ -795,13 +795,13 @@ function renderMyAssignments() {
           : '';
         gradeBlock = `
           <div class="my-assignment-grade-banner"
-               style="display:flex; align-items:center; gap:10px;
+               style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;
                       padding:10px 12px; border-radius:10px;
-                      background:rgba(${_skillRgb('#a855f7')}, 0.12);
-                      border:1px solid rgba(${_skillRgb('#a855f7')}, 0.32);
+                      background:rgba(${_skillRgb('#1d4ed8')}, 0.12);
+                      border:1px solid rgba(${_skillRgb('#1d4ed8')}, 0.32);
                       margin-top:8px;">
             <span style="font-size:1.4em;">🏆</span>
-            <div style="display:flex; flex-direction:column; gap:2px; flex:1;">
+            <div style="display:flex; flex-direction:column; gap:2px; flex:1; min-width:0;">
               <span style="display:flex; align-items:center; gap:8px;
                            font-size:0.7em; font-weight:700; letter-spacing:0.08em;
                            color:var(--text-muted, #94a3b8); text-transform:uppercase;">
@@ -812,12 +812,18 @@ function renderMyAssignments() {
                 ${score} / ${max}
               </span>
             </div>
+            <!-- Solid button, white label, and it never wraps or clips.
+                 It used to be #e9d5ff (a pale lavender left over from an older
+                 palette) on a translucent fill, which on the repainted light
+                 card was barely readable - and the row did not wrap, so on a
+                 phone the button was squeezed until the label was cut to
+                 "View eedbac". -->
             <button type="button"
                     class="assignment-start-btn"
-                    style="background:rgba(${_skillRgb('#a855f7')}, 0.25);
-                           color:#e9d5ff; border:1px solid rgba(${_skillRgb('#a855f7')}, 0.45);
-                           padding:6px 12px; border-radius:8px; font-size:0.85em;
-                           font-weight:600; cursor:pointer;"
+                    style="background:#1d4ed8; color:#ffffff; border:1px solid #1d4ed8;
+                           padding:7px 14px; border-radius:8px; font-size:0.85em;
+                           font-weight:700; cursor:pointer; white-space:nowrap;
+                           flex:0 0 auto;"
                     onclick="viewWritingFeedback('${escapeHtml(a.id)}')">
               📝 View feedback
             </button>
@@ -834,10 +840,10 @@ function renderMyAssignments() {
                       color:var(--text-secondary, #94a3b8);
                       font-size:0.88em;">
             <span>⏳</span>
-            <span>Submitted — awaiting teacher feedback.</span>
+            <span>Submitted - awaiting teacher feedback.</span>
             <button type="button"
                     style="margin-left:auto; background:transparent;
-                           color:#a78bfa; border:none; padding:4px 8px;
+                           color:#60a5fa; border:none; padding:4px 8px;
                            font-size:0.85em; font-weight:600; cursor:pointer;"
                     onclick="viewWritingFeedback('${escapeHtml(a.id)}')">
               📖 View my response
@@ -857,7 +863,7 @@ function renderMyAssignments() {
       return 'Score 100% to complete';
     })();
 
-    // Goal row — for completed cards, show a ✓ Done marker on the right.
+    // Goal row - for completed cards, show a ✓ Done marker on the right.
     const goalRow = `
       <div class="my-assignment-requirement">
         <span class="goal-icon">🎯</span>
@@ -907,7 +913,7 @@ function renderMyAssignments() {
                     ${examLvl ? '<span class="meta-dot">•</span><span>' + examLvl + '</span>' : ''}
                   </div>`;
               }
-              // Vocabulary / legacy / future skills — keep the original line.
+              // Vocabulary / legacy / future skills - keep the original line.
               return `
                 <div class="my-assignment-meta">
                   ${skillChip}
@@ -939,7 +945,7 @@ function renderMyAssignments() {
           ${goalRow}
 
           ${(function () {
-            // Bottom CTA strip — three mutually-exclusive states:
+            // Bottom CTA strip - three mutually-exclusive states:
             //
             //   1. Completed → "View results" for vocab/reading/listening
             //      so the student can revisit their score without
@@ -1005,10 +1011,10 @@ function renderMyAssignments() {
   updateAssignmentBadge(pendingCount);
 }
 
-// Assignment-card accordion — clicking a card's header collapses/expands its
+// Assignment-card accordion - clicking a card's header collapses/expands its
 // detail (progress + grade + goal + CTA). The header + deadline row stay
 // visible so the student still sees title / status / due-date at a glance.
-// Pure display toggle — no Firestore reads.
+// Pure display toggle - no Firestore reads.
 function toggleAsgCard(headerEl) {
   const card = headerEl && headerEl.closest('.my-assignment-card');
   if (!card) return;
@@ -1023,6 +1029,21 @@ function toggleAsgCard(headerEl) {
   // did nothing for a beat then dropped. That is the "slow" feeling. Driving
   // max-height from the element's ACTUAL height makes the motion match the
   // content. Inline styles win over the stylesheet's fixed values.
+  // On touch devices css/brand.css already reduces this transition to 1ms,
+  // because animating max-height reflows the whole list every frame and that is
+  // what made phones feel slow. With no animation to drive, measuring is pure
+  // cost: reading scrollHeight and then offsetHeight forces TWO synchronous
+  // layouts of the entire page on every tap, for motion nobody sees. Skip
+  // straight to the end state there.
+  var dur = 0;
+  try {
+    dur = parseFloat(getComputedStyle(detail).transitionDuration) || 0;
+  } catch (_) {}
+  if (dur < 0.05) {
+    detail.style.maxHeight = collapsed ? '0px' : '';
+    return;
+  }
+
   if (collapsed) {
     detail.style.maxHeight = detail.scrollHeight + 'px';  // start from real height
     void detail.offsetHeight;                             // commit it, so the next line animates
@@ -1041,7 +1062,7 @@ function toggleAsgCard(headerEl) {
 }
 window.toggleAsgCard = toggleAsgCard;
 
-// Skill filter setter — exposed on window because the rendered pills
+// Skill filter setter - exposed on window because the rendered pills
 // use inline onclick (matches the existing setAssignmentsFilter pattern).
 function setAssignmentsSkillFilter(skillId) {
   assignmentsSkillFilter = skillId || 'all';
@@ -1049,7 +1070,7 @@ function setAssignmentsSkillFilter(skillId) {
 }
 window.setAssignmentsSkillFilter = setAssignmentsSkillFilter;
 
-// Filter-tab handler — exposed on window because the rendered tabs use
+// Filter-tab handler - exposed on window because the rendered tabs use
 // inline onclick (kept inline for simplicity vs. delegated listener).
 function setAssignmentsFilter(filter) {
   if (filter !== 'all' && filter !== 'pending' && filter !== 'done') return;
@@ -1069,7 +1090,7 @@ function dispatchAssignmentsUpdated() {
     window.dispatchEvent(new CustomEvent('assignments:updated', {
       detail: { count: Array.isArray(myAssignments) ? myAssignments.length : 0 }
     }));
-  } catch (_) { /* older browsers — harmless */ }
+  } catch (_) { /* older browsers - harmless */ }
 }
 
 // ============================================
@@ -1126,7 +1147,7 @@ function checkMyAssignmentStatus(assignment) {
     const aExamId = assignment.examId || assignment.unit || '';
     // Pool every session source the student side might have (same set
     // the vocab matcher reads below), so we find the exam attempt
-    // wherever it landed — Firestore allSessions, in-memory myProgress,
+    // wherever it landed - Firestore allSessions, in-memory myProgress,
     // or the localStorage fallbacks.
     const pool = [];
     if (typeof allSessions !== 'undefined' && Array.isArray(allSessions)) pool.push(...allSessions);
@@ -1136,13 +1157,15 @@ function checkMyAssignmentStatus(assignment) {
       if (Array.isArray(lh)) pool.push(...lh);
     } catch (_) {}
     try {
-      const js = JSON.parse(localStorage.getItem('journeyStats') || '{}');
+      // Per-uid cache. The unscoped key this used to read could belong to
+      // whoever last used the browser. See progress.js.
+      const js = window.LLJourneyCache ? window.LLJourneyCache.read() : {};
       if (js && Array.isArray(js.sessions)) pool.push(...js.sessions);
     } catch (_) {}
 
     let best = 0, hits = 0;
     pool.forEach(sess => {
-      // localStorage copies may omit userId — those are this student's
+      // localStorage copies may omit userId - those are this student's
       // own history by definition, so only enforce the userId check
       // when the field is present.
       if (sess.userId && sess.userId !== user.uid) return;
@@ -1237,7 +1260,8 @@ function checkMyAssignmentStatus(assignment) {
   
   // Source 4: Check journeyStats in localStorage
   try {
-    const journeyStats = JSON.parse(localStorage.getItem('journeyStats') || '{}');
+    // Per-uid cache, same reasoning as Source 3 above.
+    const journeyStats = window.LLJourneyCache ? window.LLJourneyCache.read() : {};
     if (journeyStats.sessions && Array.isArray(journeyStats.sessions)) {
       const journeyMatches = journeyStats.sessions.filter(sess => {
         const sessionDate = new Date(sess.createdAt || sess.timestamp || 0);
@@ -1325,7 +1349,7 @@ async function markAssignmentCompleted(assignmentId, score, detail) {
 }
 
 // ============================================
-// VIEW WRITING FEEDBACK   (Phase E — student side)
+// VIEW WRITING FEEDBACK   (Phase E - student side)
 // Opens a read-only modal showing the teacher's score + comment plus
 // the student's own response. Three visual states:
 //   • graded / returned → score chip, comment block, status badge
@@ -1346,17 +1370,17 @@ function viewWritingFeedback(assignmentId) {
   const score = (ws.score != null && !isNaN(Number(ws.score))) ? Number(ws.score) : null;
   const max   = 20;
   const pct   = (score != null) ? Math.max(0, Math.min(100, Math.round((score / max) * 100))) : 0;
-  const tier  = (score == null) ? 'oklch(60% 0.05 240)'
-              : pct >= 80       ? 'oklch(70% 0.20 150)'
-              : pct >= 60       ? 'oklch(65% 0.18 210)'
-              : 'oklch(72% 0.20 60)';
+  const tier  = (score == null) ? 'oklch(50% 0.04 240)'
+              : pct >= 80       ? 'oklch(55% 0.17 150)'
+              : pct >= 60       ? 'oklch(52% 0.15 210)'
+              : 'oklch(58% 0.16 60)';
 
   // --- Status badge palette.
   const status = ws.status || 'submitted';
   const statusBadge = (function () {
-    if (status === 'graded')   return { label: '✅ Graded',   bg: 'rgba(34,197,94,0.18)',  fg: '#86efac', bd: 'rgba(34,197,94,0.45)' };
-    if (status === 'returned') return { label: '↩ Returned',  bg: 'rgba(245,158,11,0.18)', fg: '#fcd34d', bd: 'rgba(245,158,11,0.45)' };
-    return                            { label: '⏳ Submitted', bg: 'rgba(148,163,184,0.18)', fg: '#cbd5e1', bd: 'rgba(148,163,184,0.45)' };
+    if (status === 'graded')   return { label: '✅ Graded',   bg: 'rgba(34,197,94,0.18)',  fg: '#15803d', bd: 'rgba(34,197,94,0.45)' };
+    if (status === 'returned') return { label: '↩ Returned',  bg: 'rgba(59,130,246,0.18)', fg: '#1d4ed8', bd: 'rgba(59,130,246,0.45)' };
+    return                            { label: '⏳ Submitted', bg: 'rgba(148,163,184,0.18)', fg: 'var(--text-secondary, #475569)', bd: 'rgba(148,163,184,0.45)' };
   })();
 
   // --- Pretty-print graded-at if present.
@@ -1389,17 +1413,17 @@ function viewWritingFeedback(assignmentId) {
   const scoreChipHtml = (score != null) ? `
     <div style="display:flex; flex-direction:column; align-items:center;
                 gap:2px; padding:10px 16px; border-radius:12px;
-                background: rgba(168, 85, 247, 0.10);
-                border: 1px solid rgba(168, 85, 247, 0.30);">
-      <span style="font-size:0.7em; font-weight:700; letter-spacing:0.08em;
-                   color:#cbd5e1; text-transform:uppercase;">Score</span>
-      <span style="font-size:1.8em; font-weight:800; color:${tier}; line-height:1;">
-        ${score} <span style="font-size:0.55em; color:#94a3b8;">/ ${max}</span>
+                background: rgba(29, 78, 216, 0.10);
+                border: 1px solid rgba(29, 78, 216, 0.30);">
+      <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.08em;
+                   color:var(--text-secondary, #475569); text-transform:uppercase;">Score</span>
+      <span style="font-size:1.75rem; font-weight:800; color:${tier}; line-height:1;">
+        ${score} <span style="font-size:0.75rem; color:var(--text-muted, #5b6b7f);">/ ${max}</span>
       </span>
     </div>
   ` : '';
 
-  // Phase G.6 — criterion breakdown chips. Only rendered when the
+  // Phase G.6 - criterion breakdown chips. Only rendered when the
   // teacher actually used per-criterion grading; falls back silently
   // if criteria is null/missing.
   const criteria = ws.criteria || null;
@@ -1412,25 +1436,25 @@ function viewWritingFeedback(assignmentId) {
     ];
     return `
       <div style="margin-top:14px;">
-        <div style="font-size:0.75em; font-weight:700; letter-spacing:0.08em;
-                    color:#94a3b8; text-transform:uppercase; margin-bottom:6px;">
+        <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.08em;
+                    color:var(--text-muted, #5b6b7f); text-transform:uppercase; margin-bottom:6px;">
           🎯 Per-criterion breakdown
         </div>
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
                     gap:8px;">
           ${items.map(it => {
             const v = (it.value != null && !isNaN(Number(it.value))) ? Number(it.value) : 0;
-            const tone = v >= 4 ? '#86efac' : v >= 3 ? '#7dd3fc' : v >= 2 ? '#fcd34d' : '#fca5a5';
+            const tone = v >= 4 ? '#15803d' : v >= 3 ? '#0369a1' : v >= 2 ? '#1d4ed8' : '#b91c1c';
             return `
               <div style="padding:10px 12px; border-radius:8px;
-                          background: rgba(255,255,255,0.04);
-                          border: 1px solid rgba(255,255,255,0.08);">
-                <div style="font-size:0.68em; font-weight:700; letter-spacing:0.06em;
-                            color:#94a3b8; text-transform:uppercase;">${it.code}</div>
-                <div style="font-size:1.2em; font-weight:800; color:${tone}; line-height:1.2;">
-                  ${v} <span style="font-size:0.62em; color:#64748b;">/ 5</span>
+                          background: var(--bg-item, rgba(15,23,42,0.03));
+                          border: 1px solid var(--border-color, rgba(15,23,42,0.10));">
+                <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.06em;
+                            color:var(--text-muted, #5b6b7f); text-transform:uppercase;">${it.code}</div>
+                <div style="font-size:1.25rem; font-weight:800; color:${tone}; line-height:1.2;">
+                  ${v} <span style="font-size:0.75rem; color:var(--text-muted, #5b6b7f);">/ 5</span>
                 </div>
-                <div style="font-size:0.72em; color:#94a3b8; margin-top:2px;">${escapeHtml(it.name)}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted, #5b6b7f); margin-top:2px;">${escapeHtml(it.name)}</div>
               </div>
             `;
           }).join('')}
@@ -1439,23 +1463,23 @@ function viewWritingFeedback(assignmentId) {
     `;
   })() : '';
 
-  // Rubric panel (Phase G.4) — shown when the assignment carries one.
+  // Rubric panel (Phase G.4) - shown when the assignment carries one.
   // Two possible sources: free-form text and/or a link to a hosted file.
   const rubricText = String(a.rubric || '').trim();
   const rubricUrl  = String(a.rubricUrl || '').trim();
   const rubricHtml = (rubricText || rubricUrl) ? `
     <div style="margin-top:14px;">
-      <details style="background: rgba(45, 212, 191, 0.06);
-                      border: 1px solid rgba(45, 212, 191, 0.25);
+      <details style="background: rgba(147, 197, 253, 0.06);
+                      border: 1px solid rgba(147, 197, 253, 0.25);
                       border-radius: 10px; padding: 10px 14px;">
-        <summary style="cursor: pointer; font-weight: 700; color: #5eead4;
-                        font-size: 0.78em; letter-spacing: 0.06em;
+        <summary style="cursor: pointer; font-weight: 700; color: #1d4ed8;
+                        font-size: 0.8125rem; letter-spacing: 0.06em;
                         text-transform: uppercase;">
           📋 Rubric (what you'll be graded on)
         </summary>
         ${rubricText ? `
-          <div style="margin-top: 8px; color: #e2e8f0; line-height: 1.6;
-                      white-space: pre-wrap; font-size: 0.92em;">
+          <div style="margin-top: 8px; color: var(--text-primary, #0f172a); line-height: 1.6;
+                      white-space: pre-wrap; font-size: 0.9375rem;">
             ${escapeHtml(rubricText)}
           </div>
         ` : ''}
@@ -1463,10 +1487,10 @@ function viewWritingFeedback(assignmentId) {
           <div style="margin-top: 10px;">
             <a href="${escapeHtml(rubricUrl)}" target="_blank" rel="noopener"
                style="display: inline-flex; align-items: center; gap: 6px;
-                      background: rgba(45, 212, 191, 0.18); color: #99f6e4;
-                      border: 1px solid rgba(45, 212, 191, 0.40);
+                      background: rgba(147, 197, 253, 0.18); color: #0f766e;
+                      border: 1px solid rgba(147, 197, 253, 0.40);
                       padding: 6px 12px; border-radius: 8px;
-                      text-decoration: none; font-weight: 600; font-size: 0.88em;">
+                      text-decoration: none; font-weight: 600; font-size: 0.875rem;">
               📎 Open rubric file →
             </a>
           </div>
@@ -1478,51 +1502,51 @@ function viewWritingFeedback(assignmentId) {
   // Comment block: only when teacher actually wrote one.
   const commentHtml = comment ? `
     <div style="margin-top:14px;">
-      <div style="font-size:0.75em; font-weight:700; letter-spacing:0.08em;
-                  color:#94a3b8; text-transform:uppercase; margin-bottom:6px;">
+      <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.08em;
+                  color:var(--text-muted, #5b6b7f); text-transform:uppercase; margin-bottom:6px;">
         💬 Teacher's comment
       </div>
       <div style="padding:12px 14px; border-radius:10px;
-                  background: rgba(168, 85, 247, 0.06);
-                  border-left: 3px solid #a855f7;
-                  color:#e2e8f0; line-height:1.55; white-space:pre-wrap;">
+                  background: rgba(29, 78, 216, 0.06);
+                  border-left: 3px solid #1d4ed8;
+                  color:var(--text-primary, #0f172a); line-height:1.55; white-space:pre-wrap;">
         ${escapeHtml(comment)}
       </div>
     </div>
   ` : (status === 'graded' || status === 'returned') ? `
     <div style="margin-top:14px; padding:10px 14px; border-radius:10px;
-                background: rgba(255,255,255,0.03);
-                border: 1px dashed rgba(255,255,255,0.15);
-                color:#94a3b8; font-size:0.9em; font-style:italic;">
+                background: var(--bg-item, rgba(15,23,42,0.03));
+                border: 1px dashed var(--border-color, rgba(15,23,42,0.16));
+                color:var(--text-muted, #5b6b7f); font-size:0.875rem; font-style:italic;">
       Your teacher hasn't left a written comment for this one.
     </div>
   ` : '';
 
   modal.innerHTML = `
-    <div style="background: var(--surface-elevated, #0f172a);
-                border: 1px solid rgba(255,255,255,0.08);
+    <div style="background: var(--bg-card, #ffffff);
+                border: 1px solid var(--border-color, rgba(15,23,42,0.10));
                 border-radius: 16px; max-width: 720px; width: 100%;
                 max-height: 90vh; display: flex; flex-direction: column;
-                box-shadow: 0 24px 60px rgba(0,0,0,0.5);">
+                box-shadow: 0 24px 60px rgba(15,23,42,0.22);">
       <!-- header -->
       <div style="display:flex; align-items:center; gap:12px;
-                  padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.06);">
-        <span style="font-size:1.5em;">📝</span>
+                  padding: 16px 20px; border-bottom: 1px solid var(--border-color, rgba(15,23,42,0.10));">
+        <span style="font-size:1.5rem;">📝</span>
         <div style="flex:1; min-width:0;">
-          <div style="font-size:1.05em; font-weight:700; color:#f1f5f9; line-height:1.2;
+          <div style="font-size:1.0625rem; font-weight:700; color:var(--text-primary, #0f172a); line-height:1.2;
                       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
             ${escapeHtml(title)}
           </div>
-          <div style="font-size:0.8em; color:#94a3b8; margin-top:2px;">
+          <div style="font-size:0.8125rem; color:var(--text-muted, #5b6b7f); margin-top:2px;">
             Your writing feedback
           </div>
         </div>
         <button type="button" id="writingFeedbackCloseBtn"
                 aria-label="Close"
-                style="background: rgba(255,255,255,0.06);
-                       border: 1px solid rgba(255,255,255,0.10);
-                       color:#cbd5e1; width:32px; height:32px;
-                       border-radius:8px; cursor:pointer; font-size:1.1em;">✕</button>
+                style="background: var(--border-color, rgba(15,23,42,0.10));
+                       border: 1px solid var(--border-color, rgba(15,23,42,0.12));
+                       color:var(--text-secondary, #475569); width:32px; height:32px;
+                       border-radius:8px; cursor:pointer; font-size:1.0625rem;">✕</button>
       </div>
 
       <!-- body (scrollable) -->
@@ -1534,12 +1558,12 @@ function viewWritingFeedback(assignmentId) {
             <span style="display:inline-flex; align-items:center; gap:6px;
                          align-self:flex-start; padding:4px 10px; border-radius:999px;
                          background:${statusBadge.bg}; color:${statusBadge.fg};
-                         border:1px solid ${statusBadge.bd}; font-size:0.8em; font-weight:600;">
+                         border:1px solid ${statusBadge.bd}; font-size:0.8125rem; font-weight:600;">
               ${statusBadge.label}
             </span>
             ${ws.gradedBy ? `
-              <span style="font-size:0.8em; color:#94a3b8;">
-                Graded by <strong style="color:#cbd5e1;">${escapeHtml(ws.gradedBy)}</strong>
+              <span style="font-size:0.8125rem; color:var(--text-muted, #5b6b7f);">
+                Graded by <strong style="color:var(--text-secondary, #475569);">${escapeHtml(ws.gradedBy)}</strong>
                 ${gradedAtText ? ` · ${escapeHtml(gradedAtText)}` : ''}
               </span>
             ` : ''}
@@ -1556,21 +1580,21 @@ function viewWritingFeedback(assignmentId) {
         <div style="margin-top:18px;">
           <div style="display:flex; align-items:center; justify-content:space-between;
                       margin-bottom:6px;">
-            <span style="font-size:0.75em; font-weight:700; letter-spacing:0.08em;
-                         color:#94a3b8; text-transform:uppercase;">
+            <span style="font-size:0.75rem; font-weight:700; letter-spacing:0.08em;
+                         color:var(--text-muted, #5b6b7f); text-transform:uppercase;">
               ✍️ Your response
             </span>
-            <span style="font-size:0.78em; color:#94a3b8;">
+            <span style="font-size:0.8125rem; color:var(--text-muted, #5b6b7f);">
               ${wordCount} word${wordCount === 1 ? '' : 's'}
             </span>
           </div>
           <div id="writingFeedbackResponse" style="padding:14px; border-radius:10px;
-                      background: rgba(255,255,255,0.03);
-                      border: 1px solid rgba(255,255,255,0.08);
-                      color:#e2e8f0; line-height:1.6;
+                      background: var(--bg-item, rgba(15,23,42,0.03));
+                      border: 1px solid var(--border-color, rgba(15,23,42,0.10));
+                      color:var(--text-primary, #0f172a); line-height:1.6;
                       white-space:pre-wrap; word-wrap:break-word;
                       max-height: 40vh; overflow-y:auto;">
-            ${responseText ? escapeHtml(responseText) : '<em style="color:#64748b;">(empty response)</em>'}
+            ${responseText ? escapeHtml(responseText) : '<em style="color:var(--text-muted, #5b6b7f);">(empty response)</em>'}
           </div>
           <!-- Teacher's inline comments render here (graded/returned only). -->
           <div id="writingFeedbackDetached" style="margin-top:10px;"></div>
@@ -1579,9 +1603,9 @@ function viewWritingFeedback(assignmentId) {
 
       <!-- footer -->
       <div style="display:flex; justify-content:flex-end; gap:8px;
-                  padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.06);">
+                  padding: 12px 20px; border-top: 1px solid var(--border-color, rgba(15,23,42,0.10));">
         <button type="button" id="writingFeedbackDoneBtn"
-                style="background: linear-gradient(180deg, #6366f1, #4f46e5);
+                style="background: linear-gradient(180deg, #2563eb, #1d4ed8);
                        color:white; border:none; padding:8px 16px;
                        border-radius:8px; font-weight:600; cursor:pointer;">
           Got it
@@ -1593,7 +1617,7 @@ function viewWritingFeedback(assignmentId) {
   document.body.appendChild(modal);
 
   // ── Inline teacher annotations (read-only) ──
-  // Only shown once the teacher has graded or returned the essay — the
+  // Only shown once the teacher has graded or returned the essay - the
   // same visibility gate as the score + overall comment. Highlights the
   // commented spans in the response; any comment whose anchor no longer
   // matches (e.g. after a resubmit) is listed below as a general note.
@@ -1611,12 +1635,12 @@ function viewWritingFeedback(assignmentId) {
       // student still sees the feedback.
       if (detEl && res && res.detached && res.detached.length) {
         detEl.innerHTML =
-          '<div style="font-size:0.72em;font-weight:700;letter-spacing:0.06em;'
-          + 'text-transform:uppercase;color:#94a3b8;margin:4px 0 6px;">Other comments</div>'
+          '<div style="font-size:0.75rem;font-weight:700;letter-spacing:0.06em;'
+          + 'text-transform:uppercase;color:var(--text-muted, #5b6b7f);margin:4px 0 6px;">Other comments</div>'
           + res.detached.map(function (an) {
               return '<div style="padding:8px 10px;border-radius:8px;'
-                + 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);'
-                + 'margin-bottom:6px;font-size:0.88em;color:#e2e8f0;line-height:1.5;">'
+                + 'background:var(--bg-item, rgba(15,23,42,0.03));border:1px solid var(--border-color, rgba(15,23,42,0.10));'
+                + 'margin-bottom:6px;font-size:0.875rem;color:var(--text-primary, #0f172a);line-height:1.5;">'
                 + escapeHtml(an.text) + '</div>';
             }).join('');
       }
@@ -1626,7 +1650,7 @@ function viewWritingFeedback(assignmentId) {
   // Phase E: opening the modal counts as "I've seen this feedback."
   // Mark it seen and re-render the underlying list so the pulse on
   // the card and the glow on the hub badge fall away. We only mark
-  // when the student is actually viewing the GRADED state — opening
+  // when the student is actually viewing the GRADED state - opening
   // the "view my response" modal on a still-submitted essay shouldn't
   // pre-clear a future grade.
   if (status === 'graded' || status === 'returned') {
@@ -1636,7 +1660,7 @@ function viewWritingFeedback(assignmentId) {
     }
   }
 
-  // Close handlers — click backdrop, close button, footer button, or Esc.
+  // Close handlers - click backdrop, close button, footer button, or Esc.
   const close = () => {
     modal.remove();
     document.removeEventListener('keydown', onKey);
@@ -1713,9 +1737,11 @@ async function startAssignment(assignmentId) {
     }
     return;
   }
-  // Anything else (speaking placeholder) — bail to dashboard.
+  // Anything else (speaking placeholder) - bail to dashboard.
   if (sk !== 'vocabulary') {
-    AppDialog.alert(`The ${sk} skill runner isn't built yet. Your teacher will know.`);
+    // A student should be told what to do, not that a runner is unbuilt.
+    var skName = sk ? String(sk).charAt(0).toUpperCase() + String(sk).slice(1) : 'This';
+    AppDialog.alert(`${skName} practice is not available yet. Please ask your teacher.`);
     return;
   }
   // Vocabulary: fall through to the existing vocab-specific launcher.
@@ -1724,7 +1750,7 @@ async function startAssignment(assignmentId) {
   //   changeBook() is async AND it resets selectedLevel='A2' / selectedUnit='all'
   //   as a side effect (it can't know which level you'd want under a new book).
   //   If we don't await it, the level we set immediately after gets steamrolled
-  //   when changeBook eventually resolves — that's why the user saw "B1+" set
+  //   when changeBook eventually resolves - that's why the user saw "B1+" set
   //   in state but the pill stuck on "A2".
   //
   // Also: if the assignment's book matches the current book, skip the swap
@@ -1736,9 +1762,9 @@ async function startAssignment(assignmentId) {
   }
 
   // Now that the book swap (if any) is complete, set level + unit. Order:
-  //   1) Level — this triggers populateUnitSelector() so the unit list is
+  //   1) Level - this triggers populateUnitSelector() so the unit list is
   //      populated with the right units for that level.
-  //   2) Unit — must come after the unit selector has options to pick from.
+  //   2) Unit - must come after the unit selector has options to pick from.
   if (assignment.level) {
     if (typeof changeLevel === 'function') {
       changeLevel(assignment.level);
@@ -1751,7 +1777,7 @@ async function startAssignment(assignmentId) {
 
   // Tiny delay so the unit selector finishes its synchronous DOM rebuild
   // before we try to assign one of its values. populateUnitSelector is
-  // synchronous, so 0ms (microtask) is enough — but keep a small buffer
+  // synchronous, so 0ms (microtask) is enough - but keep a small buffer
   // for any async observers wired to level changes elsewhere.
   setTimeout(() => {
     if (assignment.unit && assignment.unit !== 'all') {
@@ -1782,7 +1808,7 @@ async function startAssignment(assignmentId) {
         }
       }, 200);
     } else {
-      // "Any Activity" assignment — there's no specific game to launch,
+      // "Any Activity" assignment - there's no specific game to launch,
       // so route the student to the vocabulary practice menu where the
       // activity cards live. Book/level/unit are already pre-set above,
       // so the menu page is implicitly scoped to the assignment.
@@ -1801,9 +1827,9 @@ async function startAssignment(assignmentId) {
 // ============================================
 // UPDATE BADGE
 // Two signals on the hub link:
-//   • `count`              — number of pending assignments (drives the
+//   • `count`              - number of pending assignments (drives the
 //     visible numeric chip).
-//   • `hasUnseenFeedback`  — Phase E. When a student has graded/returned
+//   • `hasUnseenFeedback`  - Phase E. When a student has graded/returned
 //     writing they haven't opened yet, we want the chip visible even if
 //     pending count is 0, and we add a soft purple glow via CSS class.
 //     The text becomes "★" in that pending=0 + unseen case so the chip
@@ -1860,7 +1886,7 @@ auth.onAuthStateChanged(user => {
   if (user) loadMyAssignments();
 });
 
-// Phase G fix — refresh writing submissions when the student tabs
+// Phase G fix - refresh writing submissions when the student tabs
 // back to the page. There's no live onSnapshot listener (would double
 // Firestore reads), but visibility-change is a cheap proxy: if the
 // teacher just returned the essay in another tab/device, the student
@@ -1870,4 +1896,21 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) return;
   if (!auth.currentUser) return;
   loadMyAssignments();
+});
+
+// The skill filter strip is built from SKILL_REGISTRY.visible(), which reads
+// window.featureToggles. Those toggles arrive asynchronously (feature-toggles.js
+// holds a live Firestore listener), so whenever the strip happened to render
+// first it listed every skill and then never corrected itself - the hub hid a
+// deactivated skill while the assignments filter still offered it, and only a
+// reload appeared to fix it.
+//
+// Re-render when the toggles land, and again whenever they CHANGE, so an admin
+// flipping a switch reaches an open student page without a refresh. Same event
+// the hub and the placement tile already listen for.
+document.addEventListener('feature-toggles-ready', () => {
+  // Not before the first load has finished: myAssignments is still [] then,
+  // and rendering it drew "No assignments right now!" a beat before the real
+  // list replaced it. loadMyAssignments() renders with the toggles it finds.
+  if (window.assignmentsLoaded && typeof renderMyAssignments === 'function') renderMyAssignments();
 });

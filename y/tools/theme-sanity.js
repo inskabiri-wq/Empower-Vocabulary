@@ -23,7 +23,15 @@ const REQUIRED = [
   '--bg-primary', '--bg-secondary', '--bg-card',
   '--text-primary', '--text-secondary', '--text-muted', '--border-color'
 ];
-const THEMES = ['body.light-mode', 'body.theme-sepia', 'body.theme-contrast'];
+// Bare class, NOT `body.`-qualified. The theme class is set on <html> as well
+// as <body> so light can win before first paint (a `body.`-only selector left
+// the page painting dark until the mount step ran, which is a visible flash now
+// that light is the default). These selectors must stay unqualified.
+const THEMES = ['.light-mode', '.theme-sepia', '.theme-contrast'];
+// The state colours a theme must also carry, added with the white-and-blue
+// repaint. A theme that omits them keeps the dark pale tints, which are the
+// ones that disappear on a white ground.
+const REQUIRED_TEXT = ['--text-accent', '--text-success', '--text-error', '--text-warning'];
 
 const css = fs.readFileSync(path.join(ROOT, 'css', 'app-settings.css'), 'utf8');
 const vars = fs.readFileSync(path.join(ROOT, 'index', 'css', 'variables.css'), 'utf8');
@@ -54,9 +62,10 @@ else console.log('  ok    :root defines all ' + REQUIRED.length + ' tokens');
 for (const sel of THEMES) {
   const b = blockFor(css, sel);
   if (!b) { fail++; console.log('  FAIL  ' + sel + ' block not found'); continue; }
-  const missing = REQUIRED.filter(t => !new RegExp('(^|\\s)' + t + '\\s*:').test(b));
+  const want = REQUIRED.concat(REQUIRED_TEXT);
+  const missing = want.filter(t => !new RegExp('(^|\\s)' + t + '\\s*:').test(b));
   if (missing.length) { fail++; console.log('  FAIL  ' + sel + ' missing ' + missing.join(', ')); }
-  else console.log('  ok    ' + sel + ' complete');
+  else console.log('  ok    ' + sel + ' complete (' + want.length + ' tokens)');
 }
 
 // 3. No surface/text colour may go back to being hardcoded.

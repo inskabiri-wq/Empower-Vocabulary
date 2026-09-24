@@ -4,19 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vocab Bingo - Host | Lingualab</title>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
 <!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css?v=17">
+<link rel="stylesheet" href="css/brand.css?v=30">
 <!-- UNIVERSAL classroom look; the game only adds its own widgets. -->
-<link rel="stylesheet" href="classroom/css/styles.css?v=7">
-<link rel="stylesheet" href="classroom/css/minigames.css?v=4">
+<link rel="stylesheet" href="classroom/css/styles.css?v=60">
+<link rel="stylesheet" href="classroom/css/minigames.css?v=14">
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-dialog.js?v=8"></script>
+  <script src="js/sound.js?v=4"></script>
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body class="bingo">
 
@@ -28,6 +32,7 @@
   <div class="shape shape-3"></div>
   <div class="shape shape-4"></div>
 </div>
+<canvas id="particles-bg"></canvas>
 
 <!-- Music Control -->
 <div class="music-control">
@@ -45,8 +50,8 @@
   </div>
   <div class="header-actions">
     <span style="color: var(--text-secondary); margin-right: 12px;">Hello, <span id="teacherName"></span></span>
-    <a id="backToClassroom" href="classroom-teacher.html" class="btn btn-secondary ll-navbtn">← Classroom</a>
-    <a id="backToDashboard" href="teacher-dashboard.html" class="btn btn-secondary ll-navbtn">🏠 Dashboard</a>
+    <a id="backToClassroom" href="classroom-teacher.html" class="btn btn-secondary ll-navbtn">🎮<span class="ll-navtext"> Pick a different game</span></a>
+    <a id="backToDashboard" href="teacher-dashboard.html" class="btn btn-secondary ll-navbtn">🏠<span class="ll-navtext"> Dashboard</span></a>
   </div>
 </header>
 
@@ -109,7 +114,7 @@
       <div>
         <h3 style="margin-bottom: 12px;">📜 Called so far <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 400;">(revealed after the next clue)</span></h3>
         <div class="bingo-history" id="callHistory"></div>
-        <h3 style="margin: 18px 0 12px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="vertical-align:-4px;margin-right:6px;"><rect x="3" y="13" width="4.5" height="8" rx="1.5" fill="#3b82f6"/><rect x="9.75" y="8" width="4.5" height="13" rx="1.5" fill="#06b6d4"/><rect x="16.5" y="4" width="4.5" height="17" rx="1.5" fill="#38bdf8"/></svg>Live Scores</h3>
+        <h3 style="margin: 18px 0 12px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="vertical-align:-4px;margin-right:6px;"><rect x="3" y="13" width="4.5" height="8" rx="1.5" fill="#3b82f6"/><rect x="9.75" y="8" width="4.5" height="13" rx="1.5" fill="#2563eb"/><rect x="16.5" y="4" width="4.5" height="17" rx="1.5" fill="#60a5fa"/></svg>Live Scores</h3>
         <div class="leaderboard-list" id="liveBoard"></div>
       </div>
       <div>
@@ -142,11 +147,15 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<!-- Which university, then start Firebase for it. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
 <!-- Content controls: the HOST samples the word pool. -->
-<script src="classroom/js/cc-classroom.js"></script>
+<script src="classroom/js/bg-particles.js?v=2"></script>
+<script src="classroom/js/cc-classroom.js?v=1"></script>
 <script src="classroom/js/game-report.js?v=1"></script>
-<script src="classroom/js/minigame-core.js?v=3"></script>
-<script src="classroom/js/bingo-teacher.js?v=3"></script>
+<script src="classroom/js/minigame-core.js?v=5"></script>
+<script src="classroom/js/bingo-teacher.js?v=6"></script>
 
 </body>
 </html>

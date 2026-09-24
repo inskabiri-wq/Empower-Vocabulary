@@ -1,5 +1,5 @@
 /* ============================================================
-   TEACHER — Skill filter strip
+   TEACHER - Skill filter strip
    Horizontal pill row that filters Students / Activity tabs by
    skill category.
    ============================================================ */
@@ -14,8 +14,16 @@
   border: 1px solid var(--border, rgba(255, 255, 255, 0.06));
   border-radius: 14px;
   overflow-x: auto;
-  scrollbar-width: thin;
+  /* NOT `scrollbar-width: thin`. Any non-auto value here switches Chromium to
+     the standard scrollbar model, which makes it ignore ::-webkit-scrollbar
+     entirely and paint a classic, non-overlay bar that also reserves layout
+     height. On the phone that showed up as a grey track filling the strip with
+     the last pill clipped behind it. `none` hides it on Chromium and Firefox;
+     the webkit rule below covers older engines. Wrapping above 768px means
+     there is nothing to scroll there anyway. */
+  scrollbar-width: none;
 }
+.skill-filter-strip::-webkit-scrollbar { height: 0; width: 0; }
 
 .skill-pill {
   display: inline-flex;
@@ -34,18 +42,18 @@
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .skill-pill:hover {
-  background: rgba(13, 148, 136, 0.08);
+  background: rgba(37, 99, 235, 0.08);
   color: var(--text-primary, #f1f5f9);
 }
 .skill-pill.active {
-  background: var(--accent, #0d9488);
+  background: var(--accent, #2563eb);
   color: #041f1c;
-  border-color: var(--accent, #0d9488);
-  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.22);
+  border-color: var(--accent, #2563eb);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.22);
 }
 .skill-pill:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.35);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
 }
 
 .skill-pill .count {
@@ -55,7 +63,7 @@
   margin-left: 2px;
 }
 
-/* Section-header variant — place strip inline under the section title */
+/* Section-header variant - place strip inline under the section title */
 .section-header .skill-filter-strip {
   margin: 0;
 }

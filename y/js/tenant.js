@@ -83,25 +83,44 @@
       certificate: {
         departmentTr: 'YABANCI DILLER BOLUMU',
         departmentEn: 'FOREIGN LANGUAGES DEPARTMENT'
+      },
+
+      /* NAMED CAPABILITIES - see the note above `feature()` at the bottom of
+         this file. Give the difference a NAME here instead of writing
+         `if (Tenant.id === 'ozyegin')` in the app. */
+      features: {
+        // Which coursebook the vocabulary content comes from.
+        defaultBook: 'empower',
+
+        // A skill that is switched off is not rendered at all, so the grid
+        // closes up and the remaining tiles stretch to fill the row.
+        // It used to stay visible, greyed and labelled "Not activated", which
+        // meant a student's hub advertised things they could not open.
+        hideInactiveTiles: true
       }
     }
 
-    /* ---- Tenant 2 goes here when the project exists. Copy the block
-            above, change the values, add the address to HOSTS. ----
-    ozyegin: {
-      id: 'ozyegin',
-      name: 'Ozyegin University',
-      shortName: 'OzU',
-      appName: 'Lingualab',
-      adminEmail: '',
-      supportEmail: '',
-      logo: '/tenant/ozyegin/logo.png',
-      seal: '/tenant/ozyegin/seal.png',
+    /* ---- Tenant 2 goes here. The Ozyegin project was created, proven and
+            then retired on 2026-08-14 when that deal was cancelled; its
+            Firebase project is being deleted. The MECHANISM below is fully
+            built and tested, so adding a university is now: copy the FSMVU
+            block, change the values, paste their Firebase config, add an
+            alias to .firebaserc. Nothing else.
+
+            Full instructions: y/.claude/MULTI-TENANT-PLAYBOOK.md
+
+    newuni: {
+      id: 'newuni',
+      name: '', shortName: '', appName: 'Lingualab',
+      adminEmail: '', supportEmail: '',
+      firebase: { ...their config block from the Firebase console... },
+      logo: '', seal: '',
       levels: ['A2', 'B1', 'B1+', 'B2', 'C1'],
       classCodeExample: '',
-      certificate: { departmentTr: '', departmentEn: '' }
+      certificate: { departmentTr: '', departmentEn: '' },
+      features: { defaultBook: '', hideInactiveTiles: true }
     }
-    */
+    ---- */
   };
 
   /* CUSTOM addresses only. Firebase's own two free addresses are worked
@@ -170,6 +189,29 @@
       if (!current) return fallback;
       var v = current[key];
       return (v === undefined || v === null || v === '') ? fallback : v;
+    },
+
+    /* Read a NAMED CAPABILITY.
+           Tenant.feature('showPlacementTile', true)
+
+       Use this instead of `if (Tenant.id === 'ozyegin')`. An id check works
+       with two universities and turns into unreadable spaghetti at ten, and
+       it drops a customer's name into shared code. A name says WHAT differs,
+       so university eleven is a line of settings rather than a code change.
+
+       This is NOT a second copy of settings/featureToggles. That document
+       lives in each university's database, is the admin's runtime on/off
+       switch for skills and games, and needs no deploy. It stays the place
+       for those. This map is for structural facts about a university that an
+       admin should not be able to flip.
+
+       Note the difference from get(): this treats only undefined and null as
+       missing. An empty string or `false` is a real answer, because most
+       capabilities are booleans and `false` must never fall back to `true`. */
+    feature: function (name, fallback) {
+      if (!current || !current.features) return fallback;
+      var v = current.features[name];
+      return (v === undefined || v === null) ? fallback : v;
     }
   };
 })();

@@ -57,12 +57,38 @@
     sans:  "'Inter', 'Segoe UI', system-ui, sans-serif",
     mono:  "'JetBrains Mono', Menlo, Consolas, monospace"
   };
-  var DEFAULTS = { scale: '1', line: 'default', theme: 'dark', font: '' };
+  // Light is the default since the white-and-blue repaint. Dark is still a
+  // first-class choice, it is just no longer what a new student lands on.
+  var DEFAULTS = { scale: '1', line: 'default', theme: 'light', font: '' };
+
+  // ONE-TIME RESET on the white-and-blue repaint.
+  //
+  // The old app wrote localStorage['theme'] = 'dark' from its own dark-mode
+  // toggle, so essentially every existing account had 'dark' stored. Honouring
+  // it meant the repaint appeared not to have happened - the teacher dashboard
+  // in particular opened dark until you visited the student dashboard and back,
+  // because that page happened to rewrite the key.
+  //
+  // That stored value was a preference about a DIFFERENT-looking app, so it is
+  // cleared once. Anyone who picks dark from here on keeps it: the epoch is
+  // stamped at the same time, so this can never run twice.
+  var THEME_EPOCH = 'white-blue-1';
+  function migrate() {
+    try {
+      if (localStorage.getItem('ll-theme-epoch') === THEME_EPOCH) return;
+      localStorage.setItem('ll-theme-epoch', THEME_EPOCH);
+      localStorage.setItem('theme', DEFAULTS.theme);
+    } catch (_) {}
+  }
 
   function read() {
+    migrate();
     var theme = DEFAULTS.theme;
     // 'theme' is the app's own pre-existing key (ui.js). Read it, don't shadow it.
-    try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'sepia' || t === 'contrast') theme = t; } catch (_) {}
+    // 'dark' is accepted explicitly now: it used to fall through to the default,
+    // which was harmless while the default WAS dark. With a light default, a
+    // student who deliberately picked dark would silently be flipped to light.
+    try { var t = localStorage.getItem('theme'); if (t === 'dark' || t === 'light' || t === 'sepia' || t === 'contrast') theme = t; } catch (_) {}
     try {
       var p = JSON.parse(localStorage.getItem(KEY) || '{}');
       return {
@@ -76,7 +102,7 @@
   function write(prefs) {
     try { localStorage.setItem(KEY, JSON.stringify({ scale: prefs.scale, line: prefs.line, font: prefs.font })); } catch (_) {}
     // Theme keeps living under the app's original key so ui.js stays in sync.
-    try { localStorage.setItem('theme', prefs.theme || 'dark'); } catch (_) {}
+    try { localStorage.setItem('theme', prefs.theme || DEFAULTS.theme); } catch (_) {}
   }
 
   // ── Apply (runs immediately, before the DOM exists) ────────
@@ -103,13 +129,38 @@
   // <body> may not exist yet when this file runs in <head>; the mount step
   // re-applies once it does.
   function applyTheme(t) {
-    if (!document.body) return;
-    var b = document.body;
-    // Light reuses the app's existing class (144 rules already written for it);
-    // sepia / contrast are token overrides in app-settings.css.
-    b.classList.toggle('light-mode', t === 'light');
-    b.classList.toggle('theme-sepia', t === 'sepia');
-    b.classList.toggle('theme-contrast', t === 'contrast');
+    // The class goes on <html> FIRST. This file runs in <head>, before <body>
+    // exists, and the stylesheet default is dark - so while the class could only
+    // land on <body> the page painted dark and then snapped to light on mount.
+    // That flash is unnoticeable when dark is the default and glaring when light
+    // is. Every theme rule is a bare `.light-mode ...` descendant selector, so
+    // matching on <html> covers the same elements. <body> is still tagged too,
+    // for anything that reads the class off body directly.
+    var els = [document.documentElement, document.body];
+    for (var i = 0; i < els.length; i++) {
+      if (!els[i]) continue;
+      els[i].classList.toggle('light-mode', t === 'light');
+      els[i].classList.toggle('theme-sepia', t === 'sepia');
+      els[i].classList.toggle('theme-contrast', t === 'contrast');
+    }
+    applyThemeColor(t);
+  }
+  // Phone browsers tint their address bar from <meta name="theme-color">. It was
+  // pinned to the dark navy on every page, so on a white app the strip above the
+  // page stayed black. The theme is ours (localStorage), not the OS's, so a
+  // prefers-color-scheme media attribute cannot track it - it has to be set when
+  // the theme is applied. Runs from <head>, before <meta> may exist, so the
+  // element is created if missing.
+  var THEME_COLOR = { light: '#f6f8fb', dark: '#0f172a', sepia: '#f4ecd8', contrast: '#000000' };
+  function applyThemeColor(t) {
+    if (!document.head) return;
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (!m) {
+      m = document.createElement('meta');
+      m.setAttribute('name', 'theme-color');
+      document.head.appendChild(m);
+    }
+    m.setAttribute('content', THEME_COLOR[t] || THEME_COLOR.light);
   }
 
   var current = read();
@@ -153,8 +204,12 @@
   // moved into app-settings.css so the row looks the same wherever it appears.
   var SWITCHES = [
     {
+      // The description used to say only "correct/incorrect answers". This one
+      // switch now also governs the classroom lobby, countdown and results
+      // cues, and the timer beep, so it has to say so - a student who mutes it
+      // and still hears the timer assumes the switch is broken.
       key: 'sound', fn: 'toggleSound', store: 'soundEnabled', def: true,
-      name: 'Sound Effects', desc: 'Play sounds for correct/incorrect answers',
+      name: 'Sound Effects', desc: 'Answer feedback, classroom game cues and the timer',
       icon: '🔊', iconOff: '🔇'
     },
     {
@@ -187,7 +242,28 @@
         + '<span class="as-switch-track" aria-hidden="true"></span>'
         + '</div>';
     }).join('');
-    return rows ? '<div class="as-section as-switches">' + rows + '</div>' : '';
+    if (!rows) return '';
+
+    /* EFFECTS VOLUME.
+       On/off is a blunt control in a hall: through speakers the gap between
+       "audible at the back" and "painful at the front" is wide. Rendered only
+       when the sound engine is present, and only under the Sound Effects
+       switch it belongs to. Default 100, so an installation that never moves
+       it sounds exactly as it did before this existed.
+       Deliberately separate from the Music slider further down - that one
+       controls the streamed background track, this one the cues. */
+    var vol = '';
+    if (window.LLSound && typeof LLSound.volume === 'function') {
+      var v = LLSound.volume();
+      vol = '<div class="as-row as-sfxvol-row" style="margin-top:10px">'
+          + '<label class="as-switch-desc" for="asSfxVol" style="flex:0 0 auto">Effects volume</label>'
+          + '<input type="range" id="asSfxVol" class="as-sfx-vol" min="0" max="100" step="5"'
+          + ' value="' + v + '" aria-label="Sound effects volume"'
+          + ' style="flex:1 1 auto;min-width:0;margin-left:10px">'
+          + '<span class="as-sfxvol-val" style="flex:0 0 auto;margin-left:8px;min-width:3ch;text-align:right">' + v + '</span>'
+          + '</div>';
+    }
+    return '<div class="as-section as-switches">' + rows + vol + '</div>';
   }
 
   function rowHtml(items, attr, activeVal) {
@@ -212,13 +288,19 @@
   // page, including other !important rules. Painting each gear directly is the
   // only way to guarantee they are the same object everywhere, and it cannot
   // be undone by a stale or unexpected stylesheet.
+  //
+  // The COLOURS, though, are var() references rather than literals. An inline
+  // value can hold a custom property just fine, so the gear still outranks every
+  // author rule while following whatever theme is active. Painting literals here
+  // is what kept it a dark navy box with a violet icon on the white page - the
+  // one element on the dashboard the repaint could not reach from CSS.
   var GEAR_STYLE = {
     'box-sizing': 'border-box',
     'width': '44px', 'height': '44px', 'min-width': '44px', 'padding': '0',
     'border-radius': '12px',
-    'background': '#1c2a42',
-    'border': '1px solid rgba(59,130,246,0.25)',
-    'color': '#c4b5fd',
+    'background': 'var(--bg-item, #1c2a42)',
+    'border': '1px solid var(--border-color, rgba(59,130,246,0.25))',
+    'color': 'var(--accent-primary, #93c5fd)',
     'display': 'inline-flex',
     'align-items': 'center',
     'justify-content': 'center',
@@ -238,9 +320,9 @@
     if (!g.__asHover) {
       g.__asHover = true;
       g.addEventListener('mouseenter', function () {
-        g.style.setProperty('background', '#243450', 'important');
-        g.style.setProperty('border-color', 'rgba(59,130,246,0.55)', 'important');
-        g.style.setProperty('color', '#ddd6fe', 'important');
+        g.style.setProperty('background', 'var(--bg-item-hover, #243450)', 'important');
+        g.style.setProperty('border-color', 'var(--accent-primary, rgba(59,130,246,0.55))', 'important');
+        g.style.setProperty('color', 'var(--accent-primary, #ddd6fe)', 'important');
         g.style.setProperty('transform', 'translateY(-1px)', 'important');
       });
       g.addEventListener('mouseleave', function () {
@@ -275,14 +357,37 @@
     var gears = [];
     Array.prototype.push.apply(gears, document.querySelectorAll('[data-app-settings-open]'));
     Array.prototype.forEach.call(document.querySelectorAll('button, a'), function (el) {
-      var oc = (el.getAttribute('onclick') || '') + ' ' + (el.getAttribute('title') || '')
-             + ' ' + (el.getAttribute('aria-label') || '');
-      var isGear = /openSettingsModal|display settings|settings/i.test(oc)
+      // The label, NOT the onclick, and it must BE "settings" rather than merely
+      // contain the word.
+      //
+      // This used to test the onclick handler for /settings/i, which is far too
+      // greedy: the teacher dashboard's writing form has
+      //   onclick="switchWritingTab('settings', this)"
+      // on its "② Settings & Rubric" tab, so the sweep decided that tab was a
+      // gear, replaced its label with a cog and squeezed it to 44x44. It only
+      // surfaced when the opt-out came off that page and this sweep began
+      // running there at all. A specific function name is still a fair signal;
+      // the bare word in a handler is not.
+      var label = ((el.getAttribute('title') || '') + ' ' + (el.getAttribute('aria-label') || '')).trim();
+      var isGear = /openSettingsModal/.test(el.getAttribute('onclick') || '')
+                || /^(display\s+)?settings$/i.test(label)
                 || /⚙/.test(el.textContent || '')
                 || el.classList.contains('header-icon-btn');
       if (isGear && gears.indexOf(el) === -1) gears.push(el);
     });
     gears.forEach(function (g) {
+      // A page can keep its own presentation by marking the opener
+      // data-app-settings-plain, in which case only the click wiring is shared.
+      //
+      // Everything below assumes the opener is an ICON BUTTON: paintGear forces
+      // a 44x44 bordered box with !important, and the artwork sweep overwrites
+      // whatever is in the .ico slot. Applied to something that is NOT an icon
+      // button - a sidebar row with a label, say - it squeezes the whole row
+      // into a 44px square and pushes the label outside it. That is exactly
+      // what happened to the teacher sidebar's Display row, which was caught
+      // twice over: once as an opener, and again by the title sweep below,
+      // because its title contains the word "settings".
+      if (g.hasAttribute && g.hasAttribute('data-app-settings-plain')) return;
       if (g !== el.launch) {
         var slot = g.querySelector('.ico') || g;
         slot.innerHTML = gearSvg();
@@ -443,6 +548,30 @@
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
       });
     });
+
+    // Effects volume. Guarded at every step: the row only exists when the
+    // engine is loaded, and this must never be the reason the panel fails to
+    // wire its switches.
+    try {
+      var vol = el.panel.querySelector('.as-sfx-vol');
+      var out = el.panel.querySelector('.as-sfxvol-val');
+      if (vol && window.LLSound) {
+        vol.addEventListener('input', function () {
+          LLSound.setVolume(vol.value);
+          if (out) out.textContent = vol.value;
+        });
+        // Preview on release, not on every input event: dragging the slider
+        // would otherwise fire a cue per pixel.
+        //
+        // NOT forced. If Sound Effects is off, or the slider is at zero, the
+        // preview stays silent - making noise from a control the user has
+        // just muted is the opposite of what they asked for.
+        vol.addEventListener('change', function () {
+          LLSound.warmUp();
+          LLSound.play('correct');
+        });
+      }
+    } catch (_) {}
   }
 
   // Music lives in the wheel on game pages: our button calls the page's own
@@ -496,7 +625,7 @@
       current = { scale: DEFAULTS.scale, line: DEFAULTS.line, theme: DEFAULTS.theme, font: DEFAULTS.font };
       apply(current);
       try { localStorage.removeItem(KEY); } catch (_) {}
-      try { localStorage.setItem('theme', 'dark'); } catch (_) {}
+      try { localStorage.setItem('theme', DEFAULTS.theme); } catch (_) {}
       syncRows();
     });
   }
@@ -559,14 +688,26 @@
   // The page's OWN title element is MOVED (not copied, not rebuilt) into the
   // lockup as its subtitle, so ids like #pcCourseTitle and anything the page
   // updates at runtime keep working.
+  // The Lingualab mark: a flask with a liquid fill, from the "LinguaLab
+  // Loaders v4" design hand-off. It replaces the graduation cap that used to
+  // sit in this lockup. Recoloured to the app's palette: blue-900 body (the
+  // design's navy, moved onto our blue) and the crimson we already carry
+  // for the liquid. Drawn inline rather than loaded as a file so the header
+  // lockup costs no extra request; y/lingualab-mark.svg is the same artwork for
+  // the loaders, which need a URL for background/mask.
+  // The clipPath id is unique per call: two lockups on one page (it is injected
+  // per header) would otherwise share an id and the second would clip against
+  // the first, dropping the liquid.
+  var _markId = 0;
   function capSvg() {
-    return '<svg class="ll-brand-cap" viewBox="0 0 28 28" fill="none" aria-hidden="true">'
-      + '<defs><linearGradient id="llBrandCap" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">'
-      + '<stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#fb923c"/></linearGradient></defs>'
-      + '<polygon points="14,3 27,10 14,17 1,10" fill="url(#llBrandCap)"/>'
-      + '<path d="M7 12.5v6a7 7 0 0 0 14 0v-6" fill="url(#llBrandCap)" opacity="0.75"/>'
-      + '<line x1="27" y1="10" x2="27" y2="19" stroke="url(#llBrandCap)" stroke-width="2.2" stroke-linecap="round"/>'
-      + '<circle cx="27" cy="21.5" r="2.5" fill="#f59e0b"/></svg>';
+    var id = 'llMark' + (++_markId);
+    var flask = 'M40,10 H60 V36 L86,80 c2.4,4.2 -0.6,9 -5.4,9 H36 l-11,11 V89 '
+              + 'H19.4 c-4.8,0 -7.8,-4.8 -5.4,-9 L40,36 Z';
+    return '<svg class="ll-brand-cap" viewBox="0 0 100 100" aria-hidden="true">'
+      + '<defs><clipPath id="' + id + '"><path d="' + flask + '"/></clipPath></defs>'
+      + '<path d="' + flask + '" fill="#1e3a8a"/>'
+      + '<g clip-path="url(#' + id + ')"><rect x="0" y="66" width="100" height="34" fill="#ee3342"/></g>'
+      + '<rect x="34" y="7" width="32" height="7" rx="3.5" fill="#1e3a8a"/></svg>';
   }
   var TITLE_SELECTORS = [
     '.header-title', '.pc-header-title', '.ll-header-title', '.cor-header-title',
@@ -608,12 +749,52 @@
     // left while classroom kept its in the right-hand cluster, so the same
     // control sat on opposite sides depending on the page. They now always
     // follow the wheel, in the order the page declared them.
+    // LOGOUT IS NOT A NAV CONTROL and stays where the page put it, on the
+    // right beside the person's name.
+    //
+    // Dashboard / Exit / Back move you around the app; Logout ends the session.
+    // Sweeping it left with the others left the classroom header reading
+    // [wheel] [Dashboard] [Logout] ......... [Hello, Alireza] - the sign-out
+    // button stranded mid-bar, far from the identity it belongs to, and in a
+    // different place from the student dashboard, where Logout sits top right
+    // next to the profile badge. Right beside the name is the convention
+    // everywhere else in this app and in most apps generally.
+    function isLogout(b) {
+      var oc = (b.getAttribute('onclick') || '').toLowerCase();
+      if (oc.indexOf('logout') !== -1 || oc.indexOf('signout') !== -1) return true;
+      return /^\s*(log\s?out|sign\s?out)\s*$/i.test(b.textContent || '');
+    }
+
     var after = el.launch;
     Array.prototype.forEach.call(h.querySelectorAll('.ll-navbtn'), function (b) {
+      if (isLogout(b)) return;
       after.parentNode.insertBefore(b, after.nextSibling);
       after = b;
     });
     addBrand(h, after);
+
+    // The wheel finishes on the RIGHT, joining the header's ACTIONS cluster.
+    //
+    // It is inserted first above so the nav controls can be threaded in behind
+    // it in the order the page declared them; it is relocated here afterwards,
+    // leaving that arrangement intact.
+    //
+    // Into the actions container, NOT simply onto the end of the header. The
+    // header's last child is what `.as-hosthdr > *:last-child` gives
+    // margin-left:auto to, so appending the wheel there stole that margin from
+    // the name-and-Logout cluster, which then slid left and sat against the
+    // title. The wheel belongs beside the other controls, not adrift past them.
+    var actions = h.querySelector('.header-actions, .ll-header-end, .cor-header-actions');
+    if (!actions) {
+      // No named container: fall back to whatever holds Logout, since that is
+      // the right-hand cluster on every header that has one.
+      var lo = null;
+      Array.prototype.forEach.call(h.querySelectorAll('button, a'), function (b) {
+        if (!lo && isLogout(b)) lo = b;
+      });
+      if (lo && lo.parentNode !== h) actions = lo.parentNode;
+    }
+    (actions || h).appendChild(el.launch);
     return true;
   }
 
@@ -632,6 +813,19 @@
     build(openers.length === 0);
     wire();
     if (!openers.length) placeInHeader();
+    else {
+      // The Lingualab lockup is NOT part of the wheel, and it used to ride along
+      // inside placeInHeader() - the only caller of addBrand(). So the moment a
+      // page gained an opener (courses and placement did, when the profile hub
+      // started supplying a hidden one), the lockup silently disappeared from
+      // their headers. Nobody asked for that; it was a side effect.
+      //
+      // Safe on the student dashboard: it has no <header> element at all, so
+      // pageHeader() finds nothing and this does nothing. addBrand() also bails
+      // if a .ll-brand is already there.
+      var h = pageHeader();
+      if (h) addBrand(h, null);
+    }
     styleAllGears();
 
     Array.prototype.forEach.call(openers, function (o) {

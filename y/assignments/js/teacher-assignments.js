@@ -46,7 +46,7 @@ function hexToRgb(hex) {
 function renderSkillFilterStrip() {
   const strip = document.getElementById('assignmentsSkillStrip');
   if (!strip || typeof SKILL_REGISTRY === 'undefined') return;
-  const skills = SKILL_REGISTRY.all();
+  const skills = SKILL_REGISTRY.visible();
   // Build pills: "All Skills" + one per registry entry.
   let html = `<button class="skill-pill ${currentAssignmentSkillFilter === 'all' ? 'active' : ''}" data-skill="all" role="tab" aria-selected="${currentAssignmentSkillFilter === 'all'}">All Skills</button>`;
   skills.forEach(s => {
@@ -78,7 +78,11 @@ function openSkillPickerModal() {
   const modal = document.getElementById('skillPickerModal');
   if (!grid || !modal) return;
 
-  grid.innerHTML = SKILL_REGISTRY.all().map(s => {
+  // Colours come from theme tokens, not literals. These tiles were written with
+  // rgba(255,255,255,.04) fills and rgba(255,255,255,.1) borders - dark-theme
+  // values baked inline - so on the repainted white dashboard the card had
+  // essentially no background and no edge, and the picker read as loose text.
+  grid.innerHTML = SKILL_REGISTRY.visible().map(s => {
     const comingSoon = s.status === 'coming-soon';
     return `
       <button type="button"
@@ -87,22 +91,23 @@ function openSkillPickerModal() {
               data-status="${s.status}"
               style="
                 position: relative;
-                background: rgba(255,255,255,0.04);
-                border: 1px solid rgba(255,255,255,0.1);
+                background: var(--bg-item, rgba(255,255,255,0.04));
+                border: 1px solid var(--border-color, rgba(59,130,246,0.28));
                 border-radius: 14px;
                 padding: 22px 16px;
                 color: var(--text-primary);
                 cursor: pointer;
                 text-align: center;
                 transition: 0.2s;
+                box-shadow: 0 1px 3px rgba(15,23,42,0.06);
                 ${comingSoon ? 'opacity: 0.55;' : ''}
               "
-              onmouseover="this.style.borderColor='${s.accent}'; this.style.background='rgba(255,255,255,0.06)';"
-              onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(255,255,255,0.04)';">
+              onmouseover="this.style.borderColor='${s.accent}'; this.style.boxShadow='0 4px 14px rgba(15,23,42,0.12)';"
+              onmouseout="this.style.borderColor='var(--border-color, rgba(59,130,246,0.28))'; this.style.boxShadow='0 1px 3px rgba(15,23,42,0.06)';">
         <div style="font-size: 2.2em; line-height: 1; margin-bottom: 8px;">${s.icon}</div>
         <div style="font-weight: 600; font-size: 1.05em; color: ${s.accent};">${s.name}</div>
         <div style="font-size: 0.85em; color: var(--text-muted); margin-top: 4px;">${s.subtitle || ''}</div>
-        ${comingSoon ? `<span style="position: absolute; top: 8px; right: 8px; background: rgba(245,158,11,0.18); color: #fbbf24; font-size: 0.7em; padding: 2px 8px; border-radius: 10px;">SOON</span>` : ''}
+        ${comingSoon ? `<span style="position: absolute; top: 8px; right: 8px; background: rgba(59,130,246,0.18); color: #60a5fa; font-size: 0.7em; padding: 2px 8px; border-radius: 10px;">SOON</span>` : ''}
       </button>
     `;
   }).join('');
@@ -136,10 +141,13 @@ function showComingSoon(skill) {
   const modal = document.getElementById('comingSoonModal');
   document.getElementById('comingSoonIcon').textContent  = skill.icon;
   document.getElementById('comingSoonTitle').textContent = `${skill.name} - Coming soon`;
+  // Says what the teacher can do, not what the codebase has not done yet.
+  // The old wording ("structurally supported but the creation form isn't built
+  // yet. We'll wire it up in the next phase") is a developer's roadmap, and it
+  // reads as an unfinished product to someone trying to set homework.
   document.getElementById('comingSoonBody').textContent  =
-    `${skill.name} assignments are structurally supported but the creation form isn't built yet. ` +
-    `We'll wire it up in the next phase. Other skills (currently available: ` +
-    SKILL_REGISTRY.active().map(a => a.name).join(', ') + `) can be assigned now.`;
+    `${skill.name} assignments cannot be created yet. You can assign ` +
+    SKILL_REGISTRY.active().map(a => a.name).join(', ') + ` now.`;
   if (modal) modal.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
@@ -278,9 +286,6 @@ function showAssignmentPreviewModal(a, skill) {
         <div style="color: var(--text-primary);">${(a.examTitle || a.examId || '(no exam selected)').replace(/</g,'&lt;')}</div>
         ${a.examLevel ? `<div style="font-size:0.85em; color: var(--text-muted); margin-top:4px;">Level: ${a.examLevel}</div>` : ''}
       </div>
-      <p style="margin-top:14px; color: var(--text-muted); font-size: 0.88em;">
-        The student clicks ▶ Start ${name} on their dashboard → lands on the ${name} skill home → picks the exam above.
-      </p>
     `;
   } else if (skill === 'vocabulary') {
     bodySpecific = `
@@ -293,17 +298,13 @@ function showAssignmentPreviewModal(a, skill) {
           <div><span style="color:var(--text-muted);">Activity:</span> ${a.activity === 'all' ? 'Any Activity' : (a.activity || 'Any Activity')}</div>
         </div>
       </div>
-      <p style="margin-top:14px; color: var(--text-muted); font-size: 0.88em;">
-        The student clicks ▶ Start Practice → the vocabulary trainer loads with the book/level/unit/activity above pre-selected.
-        They score points and must reach 100% to mark the assignment complete.
-      </p>
     `;
   } else {
-    bodySpecific = `
-      <p style="margin-top:14px; color: var(--text-muted);">
-        The ${name} skill runner isn't built yet - preview will follow when it is.
-      </p>
-    `;
+    // Nothing skill-specific to show. The preview used to carry a line saying
+    // the runner "isn't built yet", which read as an unfinished product to a
+    // teacher looking at a working assignment. The boxes above already say
+    // everything the preview is for.
+    bodySpecific = '';
   }
 
   modal.innerHTML = `
@@ -322,10 +323,6 @@ function showAssignmentPreviewModal(a, skill) {
       </div>
 
       ${bodySpecific}
-
-      <p style="margin-top:18px; color: var(--text-muted); font-size:0.78em; font-style: italic;">
-        This is what your students will see when they open the assignment from their dashboard.
-      </p>
     </div>
   `;
   modal.classList.add('active');
@@ -359,6 +356,35 @@ function _hexToRgbForPreview(hex) {
 // after that, re-rendering rows when any /assignmentCompletions
 // doc is created or updated. Detaches on tab close.
 // ============================================
+// Apply a snapshot's deltas to allCompletions instead of rebuilding it.
+// Falls back to a full rebuild if docChanges() is unavailable, so an SDK
+// swap can never silently produce a stale map.
+function _applyCompletionChanges(snap) {
+  if (typeof snap.docChanges !== 'function') {
+    allCompletions = {};
+    snap.forEach(doc => { allCompletions[doc.id] = doc.data(); });
+    return;
+  }
+  snap.docChanges().forEach(function (chg) {
+    if (chg.type === 'removed') delete allCompletions[chg.doc.id];
+    else allCompletions[chg.doc.id] = chg.doc.data();
+  });
+}
+
+// Coalesce completion-driven re-renders. Thirty students finishing the
+// same task inside a second produced thirty full list renders; now they
+// produce one. The delay is short enough that a teacher watching a live
+// class still sees the count move.
+let _completionsRenderTimer = null;
+function _scheduleCompletionsRender() {
+  if (_completionsRenderTimer) return;
+  _completionsRenderTimer = setTimeout(function () {
+    _completionsRenderTimer = null;
+    if (typeof renderAssignments === 'function') renderAssignments();
+    if (typeof updateAssignmentStats === 'function') updateAssignmentStats();
+  }, 400);
+}
+
 function loadAssignmentCompletions() {
   return new Promise((resolve) => {
     // Tear down any prior listener so re-calling this function (e.g.
@@ -367,16 +393,29 @@ function loadAssignmentCompletions() {
       try { _completionsUnsub(); } catch (_) {}
       _completionsUnsub = null;
     }
+    // Drop any pending coalesced render from the previous listener so it
+    // cannot fire against a map the new listener is still seeding.
+    if (_completionsRenderTimer) {
+      clearTimeout(_completionsRenderTimer);
+      _completionsRenderTimer = null;
+    }
     let isFirst = true;
     _completionsUnsub = db.collection('assignmentCompletions').onSnapshot(
       (snap) => {
-        allCompletions = {};
-        snap.forEach(doc => { allCompletions[doc.id] = doc.data(); });
-        // Re-render the assignment list on every change (skip the
-        // first one - loadAssignments will trigger its own render).
-        if (!isFirst && typeof renderAssignments === 'function') {
-          renderAssignments();
-          if (typeof updateAssignmentStats === 'function') updateAssignmentStats();
+        if (isFirst) {
+          // Seed the whole map once.
+          allCompletions = {};
+          snap.forEach(doc => { allCompletions[doc.id] = doc.data(); });
+        } else {
+          // Every later tick: apply ONLY what changed. Rebuilding the
+          // whole map here used to cost one pass over every completion
+          // doc in the project (students x assignments) for a single
+          // student's submission. docChanges() carries just the deltas.
+          _applyCompletionChanges(snap);
+          // Re-render, but coalesced: during class hours submissions
+          // arrive in bursts and one render per write is a render
+          // storm. See _scheduleCompletionsRender.
+          _scheduleCompletionsRender();
         }
         if (isFirst) {
           isFirst = false;
@@ -414,6 +453,12 @@ function _attachWritingSubsListener() {
       (snap) => {
         allWritingSubs = {};
         snap.forEach(d => { allWritingSubs[d.id] = d.data(); });
+        // The Overview's "essays waiting" band counts from this map. The
+        // Overview renders once, before this snapshot arrives, so without
+        // this it stays hidden however many essays are waiting.
+        if (typeof window.LLRefreshEssaysBand === 'function') {
+          try { window.LLRefreshEssaysBand(); } catch (e) { console.warn('essays band refresh failed:', e); }
+        }
         // Re-render after the first paint of completions has already
         // happened. Cheap - same render path as the completions
         // listener.
@@ -511,6 +556,13 @@ function loadAssignments() {
           });
           if (typeof renderAssignments      === 'function') renderAssignments();
           if (typeof updateAssignmentStats === 'function')  updateAssignmentStats();
+          // The Overview's essays band reads assignments too - for deadlines
+          // (overdue) and to drop submissions whose assignment was deleted.
+          // Without this, deleting an assignment left its essays sitting in
+          // the band until something else happened to a submission.
+          if (typeof window.LLRefreshEssaysBand === 'function') {
+            try { window.LLRefreshEssaysBand(); } catch (e) { console.warn('essays band refresh failed:', e); }
+          }
           if (isFirst) {
             isFirst = false;
             console.log('[live] assignments: initial', allAssignments.length, 'records');
@@ -780,20 +832,26 @@ function renderAssignments() {
             // Mirror the firestore.rules `_ownsAssignment()` logic so
             // the UI doesn't dangle buttons that the rule layer would
             // reject. Three cases:
-            //   1. Admin               → see Edit + Delete on every row
-            //   2. Owner (teacherId)   → see Edit + Delete on own rows
-            //   3. Legacy (no teacherId) → see Edit + Delete (rule
-            //      grandfathered until the backfill stamps an owner)
-            //   4. Other teacher       → no Edit/Delete, just View
+            //   1. Admin                 → see Edit + Delete on every row
+            //   2. Owner (teacherId)     → see Edit + Delete on own rows
+            //   3. Ownerless (no teacherId) → ADMIN ONLY. The rule's legacy
+            //      grandfather is closed too; y/tools/backfill-assignment-owner.js
+            //      stamps an owner if one ever needs rescuing.
+            //   4. Other teacher         → no Edit/Delete, just View
             // For level/module-targeted assignments specifically, only
             // admin can have created them in the first place (rule
             // gates create), so they implicitly fall into case 1.
             const myUid     = (typeof auth !== 'undefined' && auth.currentUser) ? auth.currentUser.uid : null;
             const amAdmin   = (typeof isAdmin === 'function') ? isAdmin() : false;
             const ownerId   = assignment.teacherId || null;
-            const isOwner   = ownerId && myUid && ownerId === myUid;
-            const isLegacy  = !ownerId;
-            const canMutate = amAdmin || isOwner || isLegacy;
+            const isOwner   = !!(ownerId && myUid && ownerId === myUid);
+            // An ownerless assignment is ADMIN-ONLY now. It used to fall to
+            // "any teacher may edit or delete it", which matched the rule's
+            // grandfather clause - and both have been closed. Showing the
+            // buttons to everyone was harmless when delete removed one
+            // document; it is not now that an admin delete also removes the
+            // submissions and progress records attached to it.
+            const canMutate = amAdmin || isOwner;
             if (!canMutate) return '';
             return `
               <button class="assignment-btn edit" onclick="openEditAssignmentModal('${assignment.id}')">
@@ -1375,35 +1433,142 @@ async function openEditAssignmentModal(assignmentId) {
 // ============================================
 // DELETE ASSIGNMENT
 // ============================================
+// Delete every doc in `refs`, 400 at a time. Firestore caps a batch at 500;
+// 400 leaves headroom and keeps each commit small enough to retry cheaply.
+async function _deleteInBatches(refs) {
+  let done = 0;
+  for (let i = 0; i < refs.length; i += 400) {
+    const batch = db.batch();
+    refs.slice(i, i + 400).forEach((r) => batch.delete(r));
+    await batch.commit();
+    done += Math.min(400, refs.length - i);
+  }
+  return done;
+}
+
+/* DELETE ASSIGNMENT - and everything attached to it.
+ *
+ * It used to delete the assignment document ALONE, which left its submissions
+ * and completions pointing at an id nothing resolved. That is how the live
+ * project ended up with every one of its writing submissions orphaned, and an
+ * essay stuck in the Overview's marking queue that could never be cleared.
+ *
+ * So the delete now cascades - and because that destroys real student work and
+ * real teacher marking, it asks TWICE, with the actual counts both times.
+ */
 function deleteAssignment(assignmentId) {
   const assignment = allAssignments.find(a => a.id === assignmentId);
   if (!assignment) return;
-  
-  showConfirm(
-    '🗑️',
-    'Delete Assignment?',
-    `Are you sure you want to delete "${assignment.title}"? This action cannot be undone.`,
-    'Yes, Delete',
-    async () => {
-      try {
-        await db.collection('assignments').doc(assignmentId).delete();
-        
-        // Log activity
-        if (typeof ActivityLogger !== 'undefined') {
-          await ActivityLogger.logAssignmentDeleted({
-            assignmentId: assignmentId,
-            title: assignment.title
-          });
-        }
-        
-        showSuccess('Deleted', 'Assignment has been deleted.');
-        await loadAssignments();
-      } catch (error) {
-        console.error('Error deleting assignment:', error);
-        showError('Error', 'Failed to delete assignment: ' + error.message);
-      }
+
+  // Count BEFORE asking, so both dialogs state real numbers rather than a
+  // vague warning. If the count fails we refuse to delete: better to stop
+  // than to destroy an unknown amount of work.
+  (async () => {
+    let subDocs = [], compDocs = [];
+    try {
+      const [subs, comps] = await Promise.all([
+        db.collection('writingSubmissions').where('assignmentId', '==', assignmentId).get(),
+        db.collection('assignmentCompletions').where('assignmentId', '==', assignmentId).get()
+      ]);
+      subDocs  = subs.docs;
+      compDocs = comps.docs;
+    } catch (e) {
+      console.error('Could not count attached work:', e);
+      showError('Cannot delete safely',
+        'Could not check what is attached to this assignment, so nothing was deleted. ' +
+        'Check your connection and try again.');
+      return;
     }
-  );
+
+    const graded = subDocs.filter((d) => {
+      const st = (d.data() || {}).status;
+      return st === 'graded' || st === 'returned';
+    }).length;
+
+    // WHO IS ALLOWED TO DELETE THE CHILDREN.
+    // firestore.rules gives `allow delete: if isAdmin()` on BOTH
+    // writingSubmissions and assignmentCompletions. A non-admin teacher can
+    // delete their own assignment but not its attached work, so cascading for
+    // them would fail on the first batch and - because children go first -
+    // leave them unable to delete the assignment at all.
+    //
+    // So the cascade is admin-only, and a teacher gets the old behaviour with
+    // an honest warning. The Overview names what is left behind rather than
+    // hiding it, so nothing disappears silently.
+    const canCascade = (typeof isAdmin === 'function') ? isAdmin() : false;
+
+    const attached = [];
+    if (subDocs.length)  attached.push(subDocs.length + ' student submission' + (subDocs.length === 1 ? '' : 's'));
+    if (compDocs.length) attached.push(compDocs.length + ' progress record' + (compDocs.length === 1 ? '' : 's'));
+
+    let firstMsg;
+    if (!attached.length) {
+      firstMsg = `Delete "${assignment.title}"? Nothing has been submitted for it yet.`;
+    } else if (canCascade) {
+      firstMsg = `"${assignment.title}" has ${attached.join(' and ')} attached. ` +
+                 'Deleting the assignment deletes those too.';
+    } else {
+      firstMsg = `"${assignment.title}" has ${attached.join(' and ')} attached. ` +
+                 'Only an admin can remove those, so they will stay in the database ' +
+                 'and show on the Overview as belonging to a deleted assignment. ' +
+                 'Ask an admin if you want them cleared properly.';
+    }
+
+    // ── Ask once ──────────────────────────────────────────────────────────
+    showConfirm('🗑️', 'Delete Assignment?', firstMsg,
+                (attached.length && canCascade) ? 'Continue' : 'Yes, Delete', () => {
+      // Nothing attached, or no permission to cascade: one confirmation. The
+      // second dialog exists to guard the destruction of student work, and
+      // neither of these paths destroys any.
+      if (!attached.length || !canCascade) { _doDeleteAssignment(assignment, [], []); return; }
+
+      // ── Ask again, harder, naming what is unrecoverable ────────────────
+      const secondMsg =
+        (graded
+          ? `${graded} of these have already been graded and carry your comments. `
+          : '') +
+        'This permanently deletes the students\' work as well as the assignment. ' +
+        'It cannot be undone and there is no backup. Delete anyway?';
+
+      // Let the first modal finish closing before the second opens; they share
+      // one #confirmModal element and one callback slot.
+      setTimeout(() => {
+        showConfirm('⚠️', 'This cannot be undone', secondMsg,
+          `Delete ${assignment.title ? '"' + assignment.title + '"' : 'it'} and ${subDocs.length + compDocs.length} record${(subDocs.length + compDocs.length) === 1 ? '' : 's'}`,
+          () => _doDeleteAssignment(assignment, subDocs, compDocs));
+      }, 60);
+    });
+  })();
+}
+
+async function _doDeleteAssignment(assignment, subDocs, compDocs) {
+  const assignmentId = assignment.id;
+  try {
+    // Children FIRST. If this fails part-way the assignment still exists, so
+    // the remaining work is still reachable. Deleting the parent first and
+    // then failing is exactly what creates orphans.
+    const removed = await _deleteInBatches(
+      subDocs.map((d) => d.ref).concat(compDocs.map((d) => d.ref))
+    );
+
+    await db.collection('assignments').doc(assignmentId).delete();
+
+    if (typeof ActivityLogger !== 'undefined') {
+      await ActivityLogger.logAssignmentDeleted({
+        assignmentId: assignmentId,
+        title: assignment.title,
+        deletedWithAssignment: removed
+      });
+    }
+
+    showSuccess('Deleted', removed
+      ? `Assignment deleted, along with ${removed} attached record${removed === 1 ? '' : 's'}.`
+      : 'Assignment has been deleted.');
+    await loadAssignments();
+  } catch (error) {
+    console.error('Error deleting assignment:', error);
+    showError('Error', 'Failed to delete assignment: ' + error.message);
+  }
 }
 
 // ============================================

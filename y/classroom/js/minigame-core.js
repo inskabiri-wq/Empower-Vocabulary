@@ -64,8 +64,66 @@
 
   // Background music - same wiring as the other classroom games; each
   // game passes its own SoundHelix set for a distinct sonic identity.
+  /* Game sound effects. Thin wrapper over js/sound.js so a host game has one
+     obvious call and never has to check whether the engine loaded.
+     Separate from setupMusic below: that is streamed background music with
+     its own button, this is short synthesised cues.
+
+     STUDENT PAGES DELIBERATELY DO NOT LOAD js/sound.js, so MG.sfx is a no-op
+     there. That is the design, not an oversight: these games run on a
+     projector with a room full of phones, and a cue on every device would be
+     a thousand chimes at once. Sound belongs on the host screen. */
+  MG.sfx = function (type, opts) {
+    if (window.LLSound) return window.LLSound.play(type, opts);
+    return false;
+  };
+  // Call from the first real click of a game. Browsers only let audio start
+  // from a user gesture, so without this the first cue is swallowed.
+  MG.sfxWarmUp = function () { if (window.LLSound) window.LLSound.warmUp(); };
+
+  /* The default background playlist.
+     Six of the fourteen game pages passed their own copy of exactly this
+     list; the other eight passed nothing and got a button that threw. One
+     list here means every page behaves the same and there is one place to
+     change it - which is where it will need changing, because these are
+     streamed from soundhelix.com, a third-party demo site, and hosting them
+     ourselves is the obvious later improvement. */
+  MG.DEFAULT_MUSIC = [
+    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',
+    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3',
+    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3'
+  ];
+
   MG.setupMusic = function (tracks) {
     var playing = false, current = -1;
+
+    // CALLED WITH NOTHING? Use the default list.
+    //
+    // Eight pages called MG.setupMusic() with no argument while still
+    // carrying a 🎵 button wired to toggleMusic(). Pressing it ran
+    // playRandom(), which read `tracks.length` on undefined - a TypeError, on
+    // the host page for a 1000-student event. They get the shared playlist
+    // now instead of a dead button.
+    //
+    // An EXPLICIT empty array still means "this page has no music": the
+    // button is hidden and every entry point is a no-op, so a page can opt
+    // out deliberately without a crash.
+    if (tracks === undefined || tracks === null) tracks = MG.DEFAULT_MUSIC;
+    tracks = Array.isArray(tracks) ? tracks.filter(Boolean) : [];
+    if (!tracks.length) {
+      window.toggleMusic = function () {};
+      window.nextTrack = function () {};
+      window.setVolume = function () {};
+      document.addEventListener('DOMContentLoaded', function () {
+        var btn = document.getElementById('musicBtn');
+        if (btn) btn.style.display = 'none';
+      });
+      return;
+    }
+
     function playRandom() {
       var audio = document.getElementById('bgMusic');
       if (!audio) return;

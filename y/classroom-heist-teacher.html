@@ -4,24 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Heist · Teacher | Lingualab</title>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
 <!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css?v=17">
+<link rel="stylesheet" href="css/brand.css?v=30">
 <!-- Load the shared classroom stylesheet FIRST so the heist-specific
      overrides in heist.css win where needed (vault list, modals, etc.).
      The lobby's code-display + QR-card reuse the EXACT classes from
      styles.css so the visual is identical to the Vocab Race lobby. -->
-<link rel="stylesheet" href="classroom/css/styles.css?v=7">
-<link rel="stylesheet" href="classroom/css/heist.css?v=3">
+<link rel="stylesheet" href="classroom/css/styles.css?v=60">
+<link rel="stylesheet" href="classroom/css/heist.css?v=11">
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-dialog.js?v=8"></script>
+  <script src="js/sound.js?v=4"></script>
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body class="heist">
+
+
+<!-- Animated Background - same as every classroom page -->
+<div class="gradient-bg"></div>
+<div class="floating-shapes">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <div class="shape shape-4"></div>
+</div>
+<canvas id="particles-bg"></canvas>
 
 <!-- PRE-PAINT SYNC: there are now only TWO legitimate entry states:
      1. ?auto=1 → show the "Setting up the heist…" placeholder
@@ -66,31 +81,25 @@
 <!-- Hidden audio element backing the music control -->
 <audio id="bgMusic" preload="none"></audio>
 
+<!-- Header - the same bar as every other classroom host. .heist-brand is
+     what js/app-settings.js folds into the Lingualab lockup as the subtitle,
+     and .ll-navbtn is what moves the two nav links to the left beside the
+     settings wheel. .ll-gamebar carries the shared styling, because .heist-top
+     is also used as a toolbar row inside the results view further down. -->
+<div class="heist-top ll-gamebar">
+  <div class="heist-brand">
+    <span style="font-size: 1.5rem;">🦹</span>
+    <h1>The Heist</h1>
+  </div>
+  <div class="header-actions">
+    <span style="color: var(--text-secondary); margin-right: 12px;">Hello, <span id="teacherName"></span></span>
+    <a id="backToClassroom" href="classroom-teacher.html" class="btn btn-secondary ll-navbtn">🎮<span class="ll-navtext"> Pick a different game</span></a>
+    <a id="backToDashboard" href="teacher-dashboard.html" class="btn btn-secondary ll-navbtn">🏠<span class="ll-navtext"> Dashboard</span></a>
+  </div>
+</div>
+
 <div class="heist-shell">
 
-  <!-- Top bar matches the existing classroom-teacher.html header shape
-       (👨‍🏫 + "Hello, name" + Dashboard + Logout) so a teacher
-       toggling between the two games doesn't feel like they jumped
-       into a different app. The breadcrumb "Classroom Mode › The
-       Heist" makes the hierarchy explicit: this is still classroom
-       mode, just a different game inside it. -->
-  <div class="heist-top">
-    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-      <span style="font-size:1.4rem;">👨‍🏫</span>
-      <div style="display:flex; align-items:baseline; gap:8px;">
-        <a href="classroom-teacher.html" id="backToClassroom"
-           style="color:var(--heist-text-mut); text-decoration:none; font-weight:600;">
-          Classroom Mode
-        </a>
-        <span style="color:var(--heist-text-mut);">›</span>
-        <strong>The Heist</strong>
-      </div>
-    </div>
-    <div style="display:flex; align-items:center; gap:10px;">
-      <span style="color:var(--heist-text-mut); font-size:0.9em;">Hello, <span id="teacherName">…</span></span>
-      <a href="teacher-dashboard.html" id="backToDashboard" class="heist-btn ll-navbtn">← Dashboard</a>
-    </div>
-  </div>
 
   <!-- ════════════════════════════════════════════════════
        VIEW 0: AUTO-CREATING - flashed for the half-second
@@ -233,7 +242,7 @@
         <!-- Hidden join link - kept in DOM for the host JS but not
              prominently displayed; the QR and code above are the
              primary affordances. -->
-        <a id="joinUrl" target="_blank" rel="noopener" style="display:none;">join link</a>
+        <a id="joinUrl" target="_blank" rel="noopener" class="session-join-url">join link</a>
 
         <!-- Status line, mirrors the Vocab Race "Level | Words | Time" row -->
         <div id="sessionInfo" style="text-align: center; color: var(--text-secondary, #94a3b8); margin-bottom: 18px;">
@@ -281,7 +290,7 @@
         <div style="line-height: 1.3;">
           <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
                       color: var(--heist-text-mut); font-weight: 700;">Join code</div>
-          <div style="font-family: JetBrains Mono; font-weight: 800; font-size: 1.4em;
+          <div style="font-family: var(--ll-mono); font-weight: 800; font-size: 1.4em;
                       letter-spacing: 0.1em; color: var(--heist-gold-2);" id="liveCode">----</div>
         </div>
       </div>
@@ -303,7 +312,7 @@
           <img id="liveQrBig" alt="Scan to join" width="380" height="380" style="display:block;">
         </div>
         <div style="margin-top: 16px; font-size: 1.3em; font-weight: 700;">
-          Join code: <span id="liveQrCode" style="font-family:JetBrains Mono; color:var(--heist-gold-2);">----</span>
+          Join code: <span id="liveQrCode" style="font-family:var(--ll-mono); color:var(--heist-gold-2);">----</span>
         </div>
         <div style="margin-top: 8px; color: var(--heist-text-mut);">
           Tap anywhere to close.
@@ -410,7 +419,7 @@
         </button>
         <a href="classroom-teacher.html" class="heist-btn"
            style="text-decoration:none;">
-          ← Back to Classroom
+          🎮 Pick a different game
         </a>
       </div>
     </div>
@@ -422,9 +431,13 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<!-- Which university, then start Firebase for it. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
 <!-- Persists a finished-game record for Admin > Reports. -->
+<script src="classroom/js/bg-particles.js?v=2"></script>
 <script src="classroom/js/game-report.js?v=1"></script>
-<script src="classroom/js/heist-teacher.js"></script>
+<script src="classroom/js/heist-teacher.js?v=5"></script>
 
 <!-- Mirror liveCode badge into the live header (set once code exists) -->
 <script>
@@ -440,6 +453,6 @@
     });
   })();
 </script>
-<script src="js/classroom-timer.js?v=3"></script>
+<script src="js/classroom-timer.js?v=6"></script>
 </body>
 </html>

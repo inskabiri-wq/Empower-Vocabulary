@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classroom game palette harness</title>
+<!--
+  The game pages are auth-gated and bounce to the login screen, so the palette
+  cannot be checked on the real page without a signed-in teacher. This harness
+  loads the REAL game stylesheet in the REAL order and renders that game's own
+  classes, so what it shows is the cascade under test.
+
+  Usage:  classroom-palette.html?game=heist|trust|listening|reading|shell
+          add &theme=dark to check the dark side has not regressed.
+
+  Stylesheets are written from JS with a per-load cache-buster: static hrefs
+  meant the harness kept showing an earlier edit, which is worse than no
+  harness because it reports a palette that is no longer in the file.
+-->
+<script>
+(function () {
+  var q    = new URLSearchParams(location.search);
+  var game = q.get('game') || 'heist';
+  // BEFORE app-settings.js loads, or the one-time repaint reset wins.
+  var t = q.get('theme');
+  if (t) { try { localStorage.setItem('ll-theme-epoch','white-blue-1'); localStorage.setItem('theme', t); } catch (e) {} }
+  var bust = '?b=' + Date.now();
+  var sheets = ['../../css/brand.css', '../../classroom/css/styles.css'];
+  if (game === 'shell') sheets.push('../../classroom/css/minigames.css');
+  else sheets.push('../../classroom/css/' + game + '.css');
+  sheets.push('../../css/app-settings.css');
+  sheets.forEach(function (h) {
+    document.write('<link rel="stylesheet" href="' + h + bust + '">');
+  });
+  document.write('<scr' + 'ipt src="../../js/app-settings.js' + bust + '"></scr' + 'ipt>');
+  window.__game = game;
+})();
+</script>
+</head>
+<body data-app-settings="off">
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  document.body.className = window.__game === 'shell' ? '' : window.__game;
+})();
+</script>
+
+<div style="padding:24px; max-width:960px; margin:0 auto; display:flex; flex-direction:column; gap:18px;">
+  <h1 id="ttl" style="margin:0; font-size:1.5rem;"></h1>
+  <p id="sub" style="margin:0; opacity:.85;">Surfaces, text and state colours for this game.</p>
+
+  <div id="panels"></div>
+</div>
+
+<script>
+(function () {
+  var g = window.__game;
+  var P = {
+    heist: { title: 'The Heist', surface: '--heist-surface', text: '--heist-text',
+             mut: '--heist-text-mut', border: '--heist-border',
+             states: [['--heist-green','Banked'],['--heist-red','Caught'],['--heist-gold','Loot'],['--heist-cyan','Vault']] },
+    trust: { title: 'Trust No One', surface: '--t-surface', text: '--t-text',
+             mut: '--t-text-mut', border: '--t-border',
+             states: [['--t-cyan','Crew'],['--t-red','Impostor'],['--t-violet','Meeting'],['--t-amber','Task']] },
+    listening: { title: 'Listening Race', surface: '--l-surface', text: '--l-text',
+             mut: '--l-text-mut', border: '--l-border',
+             states: [['--l-emerald','Correct'],['--l-rose','Wrong'],['--l-sky','Playing'],['--l-violet','Bonus']] },
+    reading: { title: 'Reading Race', surface: '--r-surface', text: '--r-text',
+             mut: '--r-text-mut', border: '--r-border',
+             states: [['--r-emerald','Correct'],['--r-rose','Wrong'],['--r-rose-2','Streak'],['--r-amber','Time']] },
+    shell: { title: 'Classroom shell (bingo / scramble / tug)', surface: '--bg-card', text: '--text-primary',
+             mut: '--text-muted', border: '--border-color',
+             states: [['--success','Correct'],['--error','Wrong'],['--warning','Careful'],['--accent-primary','Action']] }
+  }[g];
+
+  document.getElementById('ttl').textContent = P.title;
+
+  function card(inner) {
+    return '<div style="background:var(' + P.surface + ');border:1px solid var(' + P.border + ');'
+      + 'border-radius:14px;padding:18px;margin-bottom:14px;color:var(' + P.text + ');">' + inner + '</div>';
+  }
+
+  var chips = P.states.map(function (s) {
+    return '<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;'
+      + 'border:1px solid var(' + s[0] + ');color:var(' + s[0] + ');font-weight:700;font-size:.8rem;">'
+      + '<i style="width:9px;height:9px;border-radius:50%;background:var(' + s[0] + ');display:inline-block"></i>'
+      + s[1] + '</span>';
+  }).join(' ');
+
+  var players = ['Ayşe', 'Mehmet', 'Zeynep', 'Emre'].map(function (n, i) {
+    return '<div style="display:flex;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var('
+      + P.border + ');"><span>' + (i + 1) + '. ' + n + '</span>'
+      + '<strong style="color:var(' + P.states[0][0] + ')">' + (940 - i * 130) + '</strong></div>';
+  }).join('');
+
+  document.getElementById('panels').innerHTML =
+      card('<h2 style="margin:0 0 10px;font-size:1.05rem;">Live board</h2>' + players)
+    + card('<h2 style="margin:0 0 10px;font-size:1.05rem;">State colours</h2>'
+           + '<div style="display:flex;gap:8px;flex-wrap:wrap;">' + chips + '</div>'
+           + '<p style="margin:12px 0 0;color:var(' + P.mut + ');font-size:.85rem;">'
+           + 'Muted caption text, the kind used for hints and timestamps.</p>')
+    + card('<h2 style="margin:0 0 10px;font-size:1.05rem;">Question</h2>'
+           + '<p style="margin:0 0 10px;">Which sentence is correct?</p>'
+           + '<div style="display:grid;gap:8px;">'
+           + '<div style="padding:10px 12px;border-radius:10px;border:1.5px solid var(' + P.states[0][0] + ');color:var(' + P.states[0][0] + ');">She has lived here since 2019.</div>'
+           + '<div style="padding:10px 12px;border-radius:10px;border:1.5px solid var(' + P.states[1][0] + ');color:var(' + P.states[1][0] + ');">She lived here since 2019.</div>'
+           + '<div style="padding:10px 12px;border-radius:10px;border:1px solid var(' + P.border + ');">She is living here since 2019.</div>'
+           + '</div>');
+})();
+</script>
+</body>
+</html>

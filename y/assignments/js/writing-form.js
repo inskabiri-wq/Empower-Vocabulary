@@ -1,5 +1,5 @@
 /* ============================================================
-   WRITING ASSIGNMENT FORM — Phase 2
+   WRITING ASSIGNMENT FORM - Phase 2
    Dedicated open/close/save logic for skill='writing' assignments.
    Lives alongside teacher-assignments.js (which handles the
    vocabulary form + the skill picker). Loaded AFTER both
@@ -130,14 +130,14 @@
   async function populateWritingClasses() {
     const sel = document.getElementById('writingTargetClass');
     if (!sel) return;
-    sel.innerHTML = '<option value="">— Loading classes —</option>';
+    sel.innerHTML = '<option value="">- Loading classes -</option>';
 
     // Source 1: student-derived
     const fromStudents = (Array.isArray(allStudents) ? allStudents : [])
       .map(s => (s && s.studentClass ? String(s.studentClass).trim() : ''))
       .filter(Boolean);
 
-    // Source 2: admin-registered. Wrapped in try/catch — missing doc or
+    // Source 2: admin-registered. Wrapped in try/catch - missing doc or
     // permission denied is fine, we just fall back to source 1.
     let registry = [];
     try {
@@ -149,12 +149,12 @@
     } catch (_) { /* no-op */ }
 
     const all = [...new Set([...fromStudents, ...registry])].sort();
-    sel.innerHTML = '<option value="">— Select a class —</option>'
+    sel.innerHTML = '<option value="">- Select a class -</option>'
       + all.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c.replace(/</g, '&lt;')}</option>`).join('');
   }
 
   function populateWritingStudents() {
-    // Phase G follow-up — delegate to the shared StudentPicker module
+    // Phase G follow-up - delegate to the shared StudentPicker module
     // (assignments/js/student-picker.js) so the writing form gets the
     // same search box + select-all + live count UX that the vocab form
     // has. We pass the existing `writing-student-checkbox` class so any
@@ -168,7 +168,7 @@
       });
       return;
     }
-    // Fallback (should be unreachable in production — student-picker.js
+    // Fallback (should be unreachable in production - student-picker.js
     // is loaded before this file in teacher-dashboard.html). Kept so a
     // misconfigured page still shows the list, just without search.
     const list = document.getElementById('writingTargetStudentsList');
@@ -234,7 +234,7 @@
     const targetWords  = parseInt(document.getElementById('writingTargetWords').value, 10);
     const minWords     = parseInt(document.getElementById('writingMinWords').value, 10);
     const rubric       = document.getElementById('writingRubric').value.trim();
-    // Phase G fix — second rubric source. Teacher pastes a public link
+    // Phase G fix - second rubric source. Teacher pastes a public link
     // (Google Drive PDF, Google Doc, etc.) instead of (or alongside)
     // pasting the rubric text. Native file upload via Firebase Storage
     // is on the roadmap; this URL field is the no-infrastructure
@@ -255,7 +255,7 @@
     clearFieldErrors('writingAssignmentModal');
     const errs = validateAll([
       { id: 'writingTitle',        msg: 'Assignment title is required.' },
-      { id: 'writingPrompt',       msg: 'Writing prompt is required — what should students write about?' },
+      { id: 'writingPrompt',       msg: 'Writing prompt is required - what should students write about?' },
       { id: 'writingTimeLimit',    msg: 'Time limit must be a positive number (in minutes).',
         test: v => Number(v) >= 1 },
       { id: 'writingDeadline',     msg: 'Due date cannot be empty.' },
@@ -278,7 +278,7 @@
     }
     const deadlineDate = new Date(deadline);
 
-    // Values are collected here — validation already happened above
+    // Values are collected here - validation already happened above
     // via validateAll() / showFieldErrors().
     let targetClass = '';
     let targetLevel = '';

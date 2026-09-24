@@ -4,17 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Policy Course | Lingualab</title>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Great+Vibes&display=swap" rel="stylesheet">
 <!-- Brand-wide reset first so page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css?v=17">
-<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
-<link rel="stylesheet" href="student/css/policy-course.css?v=9">
-<script src="js/app-dialog.js"></script>
+<link rel="stylesheet" href="css/brand.css?v=30">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=14">
+<link rel="stylesheet" href="student/css/policy-course.css?v=15">
+<script src="js/app-dialog.js?v=8"></script>
+  <script src="js/sound.js?v=4"></script>
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-settings.js?v=40"></script>
+<!-- Great Vibes is the certificate's lettering: the title, the student's name and
+     the signature lines all specify it in student/css/policy-course.css.
+     It used to arrive on a link shared with Nunito. The font-unification pass
+     removed that link to get rid of Nunito as a stray UI typeface, and took
+     Great Vibes down with it, so the certificate silently fell back to generic
+     `cursive` (Segoe Script on Windows) and stopped looking like a certificate.
+     Only Great Vibes is requested here - Nunito is deliberately NOT coming back. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 
@@ -44,10 +56,12 @@
       <span class="pc-header-icon">🎓</span>
       <span id="pcCourseTitle">Policy Course</span>
     </div>
+    <!-- DIRECT child of the header, below, not inside .pc-header-right. -->
     <div class="pc-header-right">
       <button type="button" class="pc-lang" id="pcLangBtn" title="Language">EN / TR</button>
-      <span class="pc-student-chip" id="pcStudentChip"></span>
+      <span class="pc-student-chip" id="pcStudentChip" hidden style="display:none"></span>
     </div>
+    <span data-profile-hub-mount></span>
   </header>
 
   <!-- OVERVIEW: module map -->
@@ -144,8 +158,18 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<!-- Which university, then start Firebase for it. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
 <script src="student/js/policy-course-content.js?v=7"></script>
-<script src="student/js/course-target.js?v=2"></script>
-<script src="student/js/policy-course.js?v=13"></script>
+<script src="student/js/course-target.js?v=3"></script>
+<script src="student/js/policy-course.js?v=15"></script>
+<!-- Profile hub: the avatar picture, and under it the display settings,
+     achievements, avatar chooser, password, logout and (for teachers) the
+     teacher dashboard. One shared module so all thirteen pages match. -->
+<!-- "Rate Lingualab" - before the profile hub, which offers it as a row. -->
+<script src="js/app-rating.js?v=3"></script>
+<script src="js/faq.js?v=1"></script>
+<script src="js/profile-hub.js?v=22"></script>
 </body>
 </html>

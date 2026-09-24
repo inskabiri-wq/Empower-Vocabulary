@@ -4,23 +4,38 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reading Exam · Teacher | Lingualab</title>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
 <!-- Brand reset (number-spinner kill etc.) -->
-<link rel="stylesheet" href="css/brand.css?v=17">
+<link rel="stylesheet" href="css/brand.css?v=30">
 <!-- Shared classroom styles so the lobby code+QR+player-cards match
      Vocab Race + Heist + Trust No One exactly. -->
-<link rel="stylesheet" href="classroom/css/styles.css?v=7">
+<link rel="stylesheet" href="classroom/css/styles.css?v=60">
 <!-- Reading-specific overrides (rose accent on the deep-glass shell). -->
-<link rel="stylesheet" href="classroom/css/reading.css?v=1">
+<link rel="stylesheet" href="classroom/css/reading.css?v=8">
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-dialog.js?v=8"></script>
+  <script src="js/sound.js?v=4"></script>
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body class="reading">
+
+
+<!-- Animated Background - same as every classroom page -->
+<div class="gradient-bg"></div>
+<div class="floating-shapes">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <div class="shape shape-4"></div>
+</div>
+<canvas id="particles-bg"></canvas>
 
 <!-- PRE-PAINT SYNC - only ?auto=1 is a valid entry. Without it,
      bounce back to the unified Classroom Mode picker. Prevents any
@@ -44,26 +59,25 @@
   html[data-reading-view="auto-creating"] #view-auto-creating { display: block !important; }
 </style>
 
+<!-- Header - the same bar as every other classroom host. .reading-brand is
+     what js/app-settings.js folds into the Lingualab lockup as the subtitle,
+     and .ll-navbtn is what moves the two nav links to the left beside the
+     settings wheel. .ll-gamebar carries the shared styling, because .reading-top
+     is also used as a toolbar row inside the results view further down. -->
+<div class="reading-top ll-gamebar">
+  <div class="reading-brand">
+    <span style="font-size: 1.5rem;">📖</span>
+    <h1>Reading Exam</h1>
+  </div>
+  <div class="header-actions">
+    <span style="color: var(--text-secondary); margin-right: 12px;">Hello, <span id="teacherName"></span></span>
+    <a id="backToClassroom" href="classroom-teacher.html" class="btn btn-secondary ll-navbtn">🎮<span class="ll-navtext"> Pick a different game</span></a>
+    <a id="backToDashboard" href="teacher-dashboard.html" class="btn btn-secondary ll-navbtn">🏠<span class="ll-navtext"> Dashboard</span></a>
+  </div>
+</div>
+
 <div class="reading-shell">
 
-  <!-- Top bar with breadcrumb back to Classroom Mode picker. -->
-  <div class="reading-top">
-    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-      <span style="font-size:1.4rem;">👨‍🏫</span>
-      <div style="display:flex; align-items:baseline; gap:8px;">
-        <a href="classroom-teacher.html" id="backToClassroom"
-           style="color:var(--r-text-mut); text-decoration:none; font-weight:600;">
-          Classroom Mode
-        </a>
-        <span style="color:var(--r-text-mut);">›</span>
-        <strong>Reading Exam</strong>
-      </div>
-    </div>
-    <div style="display:flex; align-items:center; gap:10px;">
-      <span style="color:var(--r-text-mut); font-size:0.9em;">Hello, <span id="teacherName">…</span></span>
-      <a href="teacher-dashboard.html" id="backToDashboard" class="reading-btn ll-navbtn">← Dashboard</a>
-    </div>
-  </div>
 
   <!-- ════════════════════════════════════════════════════
        VIEW 0: AUTO-CREATING - flashed for the half-second
@@ -105,7 +119,7 @@
           <div class="session-qr-label">📱 Scan with phone camera to join</div>
         </div>
 
-        <a id="joinUrl" target="_blank" rel="noopener" style="display:none;">join link</a>
+        <a id="joinUrl" target="_blank" rel="noopener" class="session-join-url">join link</a>
 
         <div id="sessionInfo" style="text-align: center; color: var(--text-secondary, #94a3b8); margin-bottom: 18px;">
           <span id="lobbyExamTitle">Loading exam…</span>
@@ -142,7 +156,7 @@
   <div id="view-live" style="display:none;">
     <div class="reading-top" style="margin-top: 14px;">
       <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
-        <strong style="font-family: JetBrains Mono; letter-spacing: 0.1em;">CODE <span id="liveCode" style="color: var(--r-rose-2);"></span></strong>
+        <strong style="font-family: var(--ll-mono); letter-spacing: 0.1em;">CODE <span id="liveCode" style="color: var(--r-rose-2);"></span></strong>
         <span class="reading-chip">⏱ <span id="liveTimer">--:--</span></span>
         <span class="reading-chip">✅ <span id="liveSubmittedCount">0</span> / <span id="liveTotalStudents">0</span> submitted</span>
         <!-- Projector-safe chip: visible when the eye-toggle is OFF
@@ -233,7 +247,7 @@
 
       <div style="display:flex; gap:10px; justify-content:center; margin-top:24px; flex-wrap:wrap;">
         <button id="newGameBtn" class="reading-btn primary">🔁 Run another exam</button>
-        <a href="classroom-teacher.html" class="reading-btn" style="text-decoration:none;">← Back to Classroom</a>
+        <a href="classroom-teacher.html" class="reading-btn" style="text-decoration:none;">🎮 Pick a different game</a>
       </div>
     </div>
   </div>
@@ -256,11 +270,15 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="assignments/js/exam-registry.js"></script>
+<!-- Which university, then start Firebase for it. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
+<script src="assignments/js/exam-registry.js?v=5"></script>
 <!-- Persists a finished-game record for Admin > Reports. -->
+<script src="classroom/js/bg-particles.js?v=2"></script>
 <script src="classroom/js/game-report.js?v=1"></script>
-<script src="classroom/js/reading-teacher.js"></script>
+<script src="classroom/js/reading-teacher.js?v=4"></script>
 
-<script src="js/classroom-timer.js?v=3"></script>
+<script src="js/classroom-timer.js?v=6"></script>
 </body>
 </html>

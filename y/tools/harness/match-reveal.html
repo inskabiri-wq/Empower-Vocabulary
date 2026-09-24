@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Harness - matching reveals the right answer</title>
+<!-- The REAL stylesheet, so .reveal is tested as it actually ships. -->
+<link rel="stylesheet" href="../../student/css/styles.css">
+<style>
+  body{font-family:system-ui,sans-serif;padding:20px;max-width:900px;margin:0 auto}
+  h1{font-size:18px}
+  .match-column{display:flex;flex-direction:column;gap:10px;flex:1}
+  #matchContainer{display:flex;gap:18px;margin:18px 0}
+  #out{white-space:pre-wrap;font-family:ui-monospace,monospace;font-size:12px;
+       background:#111827;color:#e5e7eb;padding:12px;border-radius:8px}
+</style>
+</head>
+<body>
+<h1>Matching: does a wrong pair reveal the right answer?</h1>
+<div id="matchContainer"></div>
+<div>score <span id="matchScore">0</span> / <span id="matchTotal">3</span></div>
+<div id="matchProgress"></div>
+<button id="matchNextRound" style="display:none">Next</button>
+<pre id="out">click Run from the console</pre>
+
+<script>
+// ── the globals games.js expects, stubbed to the minimum ──────────
+var selectedItems = [];
+var matchedInBatch = 0;
+var score = 0;
+var matchBatchStart = 0;
+var turkishEnabled = false, selectedLevel = 'B1';
+var currentWords = [
+  { word: 'abundant', def: 'existing in large quantities', ex: 'Fish are abundant here.' },
+  { word: 'reluctant', def: 'unwilling and hesitant', ex: 'She was reluctant to go.' },
+  { word: 'diligent', def: 'showing careful and persistent effort', ex: 'A diligent student.' }
+];
+var missedWords = [];
+function updateStreak(){}
+function playSound(){}
+function speak(){}
+function setProgress(){}
+function showCompletion(){}
+function escapeHtml(s){ return String(s==null?'':s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+</script>
+<script src="../../student/js/games.js"></script>
+<script>
+// games.js defines loadMatchBatch + selectMatchItem on the global scope.
+window.runHarness = function () {
+  score = 0; matchedInBatch = 0; matchBatchStart = 0; selectedItems = [];
+  loadMatchBatch();
+  var items = document.querySelectorAll('#matchContainer .match-item');
+  var words = [...items].filter(function (e) { return e.dataset.type === 'word'; });
+  var defs  = [...items].filter(function (e) { return e.dataset.type === 'def'; });
+  // Pick a WORD and a DEF that do NOT belong together.
+  var w = words[0];
+  var wrongDef = defs.find(function (d) { return d.dataset.id !== w.dataset.id; });
+  var rightDef = defs.find(function (d) { return d.dataset.id === w.dataset.id; });
+  selectMatchItem(w);
+  selectMatchItem(wrongDef);
+  return {
+    pickedWord: w.dataset.id,
+    pickedDef: wrongDef.dataset.id,
+    correctPartnerIs: rightDef.dataset.id,
+    wrongTilesFlaggedIncorrect: w.classList.contains('incorrect') && wrongDef.classList.contains('incorrect'),
+    CORRECT_PARTNER_REVEALED: rightDef.classList.contains('reveal'),
+    revealBorderStyle: getComputedStyle(rightDef).borderStyle,
+    revealBorderColor: getComputedStyle(rightDef).borderColor,
+    revealText: rightDef.textContent.trim().slice(0, 40)
+  };
+};
+</script>
+</body>
+</html>

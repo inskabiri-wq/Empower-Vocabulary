@@ -1,0 +1,84 @@
+/* ============================================================
+   ADMIN > FAQ - teacher/js/faq-admin.js
+   ------------------------------------------------------------
+   On the --t2-* tokens only, like Admin > Feedback and Messages, so it
+   matches the rest of Admin in both themes. Body text 14px, nothing below
+   12px - the "admin fonts ran too small" correction. Dropdowns are the shared
+   .ll-select.
+   ============================================================ */
+
+#faqPanel .faq-panel { border: 1px solid var(--t2-border, #30363d); border-radius: 14px;
+  padding: 18px 20px; background: var(--t2-bg-inset, rgba(255,255,255,.02)); }
+#faqPanel .faq-title { margin: 0; font-size: 16px; font-weight: 800; color: var(--t2-text, #e6edf3); }
+#faqPanel .faq-note { margin: 8px 0 14px; font-size: 13px; color: var(--t2-text-muted, #7d8590); }
+
+[data-faq-admin] { color: var(--t2-text, #e6edf3); font-size: 14px; }
+[data-faq-admin] .faq-empty { padding: 22px; text-align: center; color: var(--t2-text-muted, #7d8590); line-height: 1.55; }
+
+/* ── toolbar ── */
+[data-faq-admin] .faq-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 14px; }
+[data-faq-admin] .faq-bar .ll-select { min-width: 170px; }
+[data-faq-admin] .faq-sum { margin-left: auto; font-size: 13px; color: var(--t2-text-muted, #7d8590); }
+[data-faq-admin] .faq-flash { width: 100%; font-size: 13px; font-weight: 700; color: var(--t2-green, #10b981); }
+
+/* ── buttons: the Messages inbox's pill ── */
+[data-faq-admin] .faq-btn { cursor: pointer; font-family: inherit; font-weight: 700; font-size: 13px;
+  padding: 7px 14px; border-radius: 999px; border: 1px solid var(--t2-border, #30363d);
+  background: transparent; color: var(--t2-text, #e6edf3); }
+[data-faq-admin] .faq-btn:hover { border-color: #2563eb; }
+[data-faq-admin] .faq-btn.primary { color: #fff; background: #2563eb; border-color: #2563eb; }
+[data-faq-admin] .faq-btn.danger { color: var(--t2-red, #ef4444); }
+[data-faq-admin] .faq-btn.danger:hover { border-color: var(--t2-red, #ef4444); }
+[data-faq-admin] .faq-btn:disabled { opacity: .45; cursor: default; }
+[data-faq-admin] .faq-btn:disabled:hover { border-color: var(--t2-border, #30363d); }
+
+/* ── questions ── */
+[data-faq-admin] .faq-list { display: flex; flex-direction: column; gap: 10px; }
+[data-faq-admin] .faq-card { border: 1px solid var(--t2-border, #30363d); border-radius: 12px; padding: 12px 15px;
+  background: var(--t2-surface, #161b22); }
+[data-faq-admin] .faq-card.is-draft { border-style: dashed; }
+[data-faq-admin] .faq-card.is-editing { border-color: #2563eb; margin-bottom: 10px; }
+[data-faq-admin] .faq-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+[data-faq-admin] .faq-n { font-size: 12.5px; font-weight: 800; color: var(--t2-text-muted, #7d8590);
+  min-width: 22px; font-variant-numeric: tabular-nums; }
+[data-faq-admin] .faq-tag { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px;
+  border: 1px solid var(--t2-border, #30363d); color: var(--t2-text-muted, #7d8590); }
+[data-faq-admin] .faq-tag.is-live { color: var(--t2-green, #10b981); border-color: rgba(16, 185, 129, .45); }
+[data-faq-admin] .faq-tag.is-draft { color: var(--t2-amber, #f59e0b); border-color: rgba(245, 158, 11, .45); }
+[data-faq-admin] .faq-tag.is-login { color: var(--t2-blue, #60a5fa); border-color: rgba(96, 165, 250, .45); }
+[data-faq-admin] .faq-q { margin: 9px 0 4px; font-size: 14.5px; font-weight: 750; }
+/* pre-wrap: the answer's line breaks are what students will see. */
+[data-faq-admin] .faq-a { font-size: 13.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;
+  color: var(--t2-text-muted, #7d8590); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+[data-faq-admin] .faq-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; margin-top: 10px; }
+
+/* ── the form ── */
+[data-faq-admin] .faq-label { display: block; font-size: 12.5px; font-weight: 700; color: var(--t2-text-muted, #7d8590);
+  margin: 10px 0 5px; }
+[data-faq-admin] .faq-form .faq-label:first-child { margin-top: 0; }
+[data-faq-admin] .faq-in { width: 100%; box-sizing: border-box; padding: 9px 11px; border-radius: 10px; font: inherit;
+  font-size: 14px; line-height: 1.45; color: var(--t2-text, #e6edf3); background: var(--t2-bg, #0d1117);
+  border: 1px solid var(--t2-border, #30363d); }
+[data-faq-admin] .faq-in:focus { outline: none; border-color: #2563eb; }
+[data-faq-admin] .faq-ta { min-height: 130px; resize: vertical; }
+[data-faq-admin] .faq-count { text-align: right; font-size: 12px; color: var(--t2-text-muted, #7d8590); margin-top: 3px;
+  font-variant-numeric: tabular-nums; }
+[data-faq-admin] .faq-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 4px; }
+[data-faq-admin] .faq-row .ll-select { width: 100%; }
+[data-faq-admin] .faq-checks { padding-top: 26px; }
+[data-faq-admin] .faq-check { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-bottom: 7px; }
+[data-faq-admin] .faq-hint { font-size: 12px; color: var(--t2-text-muted, #7d8590); margin-top: 5px; line-height: 1.45; }
+[data-faq-admin] .faq-err { margin-top: 10px; font-size: 13px; color: var(--t2-red, #ef4444); }
+[data-faq-admin] .faq-err[hidden] { display: none !important; }
+
+@media (max-width: 620px) {
+  #faqPanel .faq-panel { padding: 14px 12px; }
+  [data-faq-admin] .faq-sum { margin-left: 0; width: 100%; }
+  [data-faq-admin] .faq-bar .faq-btn { flex: 1 1 auto; }
+  [data-faq-admin] .faq-bar .ll-select { flex: 1 1 100%; min-width: 0; }
+  [data-faq-admin] .faq-row { grid-template-columns: 1fr; gap: 6px; }
+  [data-faq-admin] .faq-checks { padding-top: 6px; }
+  /* 16px stops iPhone Safari zooming the page when a box is tapped. */
+  [data-faq-admin] .faq-in { font-size: 16px; }
+  [data-faq-admin] .faq-actions .faq-btn { flex: 1 1 auto; }
+}

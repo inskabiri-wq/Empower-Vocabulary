@@ -2,7 +2,7 @@
    READING EXAM ENGINE
    ----------------------------------------------------------------
    Loads a reading-exam JSON (e.g. student/data/readings/B2/exam-1.json),
-   renders a split-pane exam screen (passage left, questions right —
+   renders a split-pane exam screen (passage left, questions right -
    each independently scrollable), supports paragraph paging, scores
    the four scorable question types, and ships with the polish tools
    the user asked for: highlighter, per-question notes, flags, and a
@@ -27,12 +27,12 @@
   // of truth), NOT this file.
   const READINGS_INDEX = (function () {
     if (typeof window.EXAM_REGISTRY === 'undefined') {
-      console.warn('[reading-exam] EXAM_REGISTRY missing — exam list will be empty.');
+      console.warn('[reading-exam] EXAM_REGISTRY missing - exam list will be empty.');
       return {};
     }
     const out = {};
     window.EXAM_REGISTRY.levelsFor('reading').forEach(lvl => {
-      // Only expose AVAILABLE exams to the runner — disabled
+      // Only expose AVAILABLE exams to the runner - disabled
       // entries shouldn't appear to students.
       out[lvl] = window.EXAM_REGISTRY.examsForLevel('reading', lvl)
         .filter(e => e.available !== false);
@@ -42,13 +42,20 @@
   window.READINGS_INDEX = READINGS_INDEX;
 
   // ── Engine state ─────────────────────────────────────────────
-  // Reset on every exam open. Single-exam-at-a-time semantics —
+  // Reset on every exam open. Single-exam-at-a-time semantics -
   // attempting to reopen while one is active replaces the state.
   let state = null;
-  function freshState(exam, mode) {
+  function freshState(exam, mode, lockdown) {
     return {
       exam,
       mode,                                  // 'timed' | 'untimed'
+      // Lockdown used to be inferred from `mode === 'timed'`, which tied
+      // "block copy/find/right-click" to "show a countdown". The placement
+      // test needs the blocking WITHOUT a timer (it opens the exam untimed,
+      // see student/js/placement.js), so it is now its own flag. A timed exam
+      // still turns it on implicitly; free practice still leaves it off, so
+      // students can select and copy while studying.
+      lockdown: !!lockdown,
       passageIdx: 0,
       answers: {},                           // answers[pIdx][sectionId][itemId] = value
       flags:   {},                           // flags["{pIdx}|{sectionId}|{itemId}"] = true
@@ -91,8 +98,8 @@
   }
 
   // ── Loader ───────────────────────────────────────────────────
-  // Fetches the source JSON, then — if the index entry pins a
-  // single `passageIndex` — slices the data down to that one passage
+  // Fetches the source JSON, then - if the index entry pins a
+  // single `passageIndex` - slices the data down to that one passage
   // and overrides title/subtitle/timeLimit from the index. The
   // engine treats it as any other exam from there.
   async function loadExam(level, examId) {
@@ -118,10 +125,10 @@
   }
 
   // ── Public entry ─────────────────────────────────────────────
-  async function openReadingExam(level, examId, mode) {
+  async function openReadingExam(level, examId, mode, opts) {
     try {
       const exam = await loadExam(level, examId);
-      state = freshState(exam, mode || 'untimed');
+      state = freshState(exam, mode || 'untimed', (opts && opts.lockdown) || mode === 'timed');
       buildAndShow();
       if (state.mode === 'timed') startTimer();
     } catch (e) {
@@ -147,6 +154,10 @@ function leaveExamFullscreen() {
 
   function closeReadingExam() {
     leaveExamFullscreen();
+    // Always drop the class, even on the early return below: a half-opened
+    // exam that never set `state` would otherwise leave the app header hidden
+    // for the rest of the page's life.
+    document.body.classList.remove('ll-exam-open');
     if (!state) return;
     if (state.timerHandle) { clearInterval(state.timerHandle); state.timerHandle = null; }
     if (typeof showScreen === 'function') showScreen('readingScreen');
@@ -154,10 +165,36 @@ function leaveExamFullscreen() {
   }
   window.closeReadingExam = closeReadingExam;
 
+  // The body class must track whether the exam actually OWNS THE SCREEN, not
+  // which function happened to run last.
+  //
+  // Removing it only in closeReadingExam() was wrong, and shipped that way:
+  // placement.js never calls closeReadingExam. After the reading step it takes
+  // the screen back with showScreen('plBetween'), so the class survived and
+  // .ll-header stayed display:none for the whole rest of the placement test -
+  // the listening exam, the writing part and the score screen. That header is
+  // where the settings wheel, the profile chip and the Exit button live, so
+  // the student lost all three.
+  //
+  // showScreen() toggles `.active` on every `.screen`, and #readingExamScreen
+  // is one (placement.html:172, student-dashboard.html:676). Watching that one
+  // attribute covers every exit path there is, including submit, the placement
+  // handoff, and any route added later.
+  function watchExamScreenVisibility() {
+    const root = document.getElementById('readingExamScreen');
+    if (!root || root.__chromeWatched) return;
+    root.__chromeWatched = true;
+    new MutationObserver(function () {
+      if (!root.classList.contains('active')) {
+        document.body.classList.remove('ll-exam-open');
+      }
+    }).observe(root, { attributes: true, attributeFilter: ['class'] });
+  }
+
   // ── Build screen ─────────────────────────────────────────────
   // The exam shell needs to escape the `.container` element (which uses
   // backdrop-filter and therefore becomes a containing block for any
-  // position:fixed descendants — that's why the exam was rendering with
+  // position:fixed descendants - that's why the exam was rendering with
   // visible margins instead of filling the viewport). On first open we
   // detach #readingExamScreen and re-attach it directly under <body>.
   function ensurePortaled() {
@@ -174,6 +211,16 @@ function leaveExamFullscreen() {
     if (!root) return;
     root.innerHTML = renderShell();
     if (typeof showScreen === 'function') showScreen('readingExamScreen');
+    // The exam is a full-screen `position:fixed; inset:0` overlay at z-index 5,
+    // but the shared app header (.ll-header) is sticky at z-index 99964, so on
+    // any page that mounts it the header painted ON TOP of the exam and covered
+    // the Submit button. Measured on placement.html: elementFromPoint at the
+    // centre of #rd-submit-btn returned .ph-badge-name, the profile chip.
+    // Hiding the chrome is the right answer rather than climbing the z-index
+    // ladder, because AppDialog (100000) and the placement Continue button
+    // (99999) must stay ABOVE the exam. See student/css/reading-exam.css.
+    document.body.classList.add('ll-exam-open');
+    watchExamScreenVisibility();
     applyReadingPrefs();          // load + apply saved theme/size
     applyLockdownAttr();          // sets data-lockdown on shell for timed mode
     wireLockdownListeners();      // installs blockers (gated by isLockdownActive)
@@ -186,7 +233,10 @@ function leaveExamFullscreen() {
   // Persisted across sessions so a student doesn't have to re-pick
   // "Large + Sepia" every time they open an exam.
   const RD_PREF_KEY = 'rd-prefs-v1';
-  const RD_PREF_DEFAULT = { size: 'M', theme: 'dark' };
+  // Light by default, like the rest of the app. A student who has already
+  // picked a theme keeps it: readPrefs() only falls back to this when the
+  // stored value is missing or not one of RD_PREF_THEMES.
+  const RD_PREF_DEFAULT = { size: 'M', theme: 'light' };
   const RD_PREF_SIZES  = ['S', 'M', 'L', 'XL'];
   const RD_PREF_THEMES = ['dark', 'light', 'sepia', 'hc'];
 
@@ -259,7 +309,7 @@ function leaveExamFullscreen() {
   //   • Switch count is reported on the results screen
 
   function isLockdownActive() {
-    return !!(state && state.mode === 'timed' && !state.submitted);
+    return !!(state && (state.mode === 'timed' || state.lockdown) && !state.submitted);
   }
 
   function applyLockdownAttr() {
@@ -290,7 +340,7 @@ function leaveExamFullscreen() {
     if (!ctrl) return;
     const k = (e.key || '').toLowerCase();
 
-    // Always block these — page-level destructive / leak / search
+    // Always block these - page-level destructive / leak / search
     // shortcuts. Ctrl+F is included so students can't pop the
     // browser's find-in-page dialog to scan for answer keywords.
     if (k === 'f' || k === 'p' || k === 's' || k === 'u' || k === 'g') {
@@ -307,7 +357,7 @@ function leaveExamFullscreen() {
     }
   }
 
-  // Timer pause / resume — preserves the current timeLeftSec.
+  // Timer pause / resume - preserves the current timeLeftSec.
   function pauseTimer() {
     if (state && state.timerHandle) {
       clearInterval(state.timerHandle);
@@ -376,7 +426,7 @@ function leaveExamFullscreen() {
       e.preventDefault();
     });
 
-    // Drag — blocked (text + images)
+    // Drag - blocked (text + images)
     document.addEventListener('dragstart', (e) => {
       if (!isLockdownActive()) return;
       const root = document.getElementById('readingExamScreen');
@@ -384,7 +434,7 @@ function leaveExamFullscreen() {
       e.preventDefault();
     });
 
-    // Copy / cut — blocked (anywhere inside the exam)
+    // Copy / cut - blocked (anywhere inside the exam)
     document.addEventListener('copy', (e) => {
       if (!isLockdownActive()) return;
       const root = document.getElementById('readingExamScreen');
@@ -397,7 +447,7 @@ function leaveExamFullscreen() {
       if (!root || !root.contains(e.target)) return;
       e.preventDefault();
     });
-    // Paste — blocked outside inputs (so students can still paste in
+    // Paste - blocked outside inputs (so students can still paste in
     // answer fields if they want).
     document.addEventListener('paste', (e) => {
       if (!isLockdownActive()) return;
@@ -418,7 +468,7 @@ function leaveExamFullscreen() {
 
   function renderShell() {
     const ex = state.exam;
-    // With one passage the tab strip is visual noise — hide it.
+    // With one passage the tab strip is visual noise - hide it.
     // The single tab still renders so the tab-progress badge logic
     // (`#rd-tab-progress-0`) keeps working without conditional code,
     // but the <nav> wrapper is collapsed via the `is-single` modifier.
@@ -452,7 +502,7 @@ function leaveExamFullscreen() {
           </div>
         </header>
 
-        <!-- Reading preferences panel — anchored under the gear button.
+        <!-- Reading preferences panel - anchored under the gear button.
              Lets the student adjust font size and colour theme on the
              fly. Choices persist to localStorage so the next exam
              opens with the same preferences. -->
@@ -526,7 +576,7 @@ function leaveExamFullscreen() {
     if (!main) return;
     const p = state.exam.passages[state.passageIdx];
 
-    // LEFT PANE — passage text. We inject the JSON's passageHtml as-is
+    // LEFT PANE - passage text. We inject the JSON's passageHtml as-is
     // (it was authored by us and includes the gap markers / strong tags).
     // The intro (Part A) is rendered ABOVE the passage when present.
     const introBlock = p.introHtml
@@ -545,7 +595,7 @@ function leaveExamFullscreen() {
       </section>
     `;
 
-    // RIGHT PANE — questions. One panel per scorable section, plus the
+    // RIGHT PANE - questions. One panel per scorable section, plus the
     // optional Part F writing prompt at the bottom.
     const sectionsHtml = p.sections.map(sec => renderSection(sec)).join('');
     const right = `
@@ -574,7 +624,7 @@ function leaveExamFullscreen() {
   // clickable surface (role=button + tabindex + aria-expanded) that
   // toggles `.is-collapsed` on the parent `.rd-section`. Default
   // state is expanded so first-paint behaviour is identical to the
-  // pre-accordion build — the collapse is a student-initiated
+  // pre-accordion build - the collapse is a student-initiated
   // "tuck this away now" affordance.
   function renderSection(sec) {
     const head = `
@@ -605,7 +655,7 @@ function leaveExamFullscreen() {
         ${qSideTools(sec.id, it.id)}
         <div class="rd-q-label">${escHtml(it.label)}</div>
         <select class="rd-input rd-select ll-select" data-q="${escHtml(it.id)}" data-section="${escHtml(sec.id)}">
-          <option value="">— choose —</option>
+          <option value="">- choose -</option>
           ${opts}
         </select>
       </div>
@@ -622,7 +672,7 @@ function leaveExamFullscreen() {
         ${qSideTools(sec.id, it.id)}
         <div class="rd-q-label">${escHtml(it.label)}</div>
         <select class="rd-input rd-select rd-gap-select ll-select" data-q="${escHtml(it.id)}" data-section="${escHtml(sec.id)}" data-gap-id="${escHtml(it.id)}">
-          <option value="">— choose —</option>
+          <option value="">- choose -</option>
           ${opts}
         </select>
       </div>
@@ -700,7 +750,7 @@ function leaveExamFullscreen() {
         <textarea class="rd-input rd-textarea"
                   rows="6" placeholder="Type your answer here…"
                   data-q="prompt" data-section="${escHtml(sec.id)}"></textarea>
-        <p class="rd-writing-note">This part is for practice — not auto-graded.</p>
+        <p class="rd-writing-note">This part is for practice - not auto-graded.</p>
       </div>
     `;
   }
@@ -708,7 +758,7 @@ function leaveExamFullscreen() {
   // Per-question side tools: flag + note toggle. The note popup is
   // dynamically created on demand and positioned next to the question.
   // Inline SVG icons (instead of unicode ⚑ / ✎) keep both buttons
-  // optically the same size — the unicode pair has wildly different
+  // optically the same size - the unicode pair has wildly different
   // intrinsic metrics so even centred they look mismatched. Both
   // SVGs use the same 14×14 viewBox + stroke style.
   const FLAG_SVG = '<svg viewBox="0 0 14 14" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12V2"/><path d="M3 2.5h7l-1.5 2.5L10 7.5H3"/></svg>';
@@ -721,7 +771,7 @@ function leaveExamFullscreen() {
     // The chevron is an additional side-tool used only by block
     // questions (MCQ / find-word / free-text). Row-layout questions
     // (match-headings / match-gaps) are just label+dropdown and
-    // wouldn't benefit from collapsing — they pass `false`.
+    // wouldn't benefit from collapsing - they pass `false`.
     const chevronBtn = withChevron ? `
         <button class="rd-q-toggle" type="button"
                 data-section="${escHtml(sectionId)}" data-q="${escHtml(itemId)}"
@@ -760,7 +810,7 @@ function leaveExamFullscreen() {
     });
   }
   function cssEscape(s) {
-    // Minimal CSS-attribute escape — IDs in our JSON are alphanumeric
+    // Minimal CSS-attribute escape - IDs in our JSON are alphanumeric
     // with hyphens, but we still escape defensively.
     return String(s).replace(/(["\\\\])/g, '\\$1');
   }
@@ -792,7 +842,7 @@ function leaveExamFullscreen() {
       if (chosen) {
         const opt = sec.options.find(o => o.id === chosen);
         el.classList.add('is-filled');
-        // Show the chosen letter as a small badge — full sentence on hover via title
+        // Show the chosen letter as a small badge - full sentence on hover via title
         el.innerHTML = `<span class="rd-gap-num">${escHtml(gid)}</span><span class="rd-gap-letter">${escHtml(chosen)}</span>`;
         el.setAttribute('title', opt ? opt.text : '');
       } else {
@@ -864,7 +914,7 @@ function leaveExamFullscreen() {
   // ── Tracker grid (drawer on the right) ──────────────────────
   // Sectioned layout: each passage is split into its scorable parts
   // (B / C / D / E …), each part gets a thin label and a row of cells
-  // numbered 1..N. Letter prefixes were dropped per spec — the part
+  // numbered 1..N. Letter prefixes were dropped per spec - the part
   // label tells you the section, the cell tells you the question
   // within that section.
   function refreshTracker() {
@@ -872,7 +922,7 @@ function leaveExamFullscreen() {
     if (!body) return;
 
     // Pull the JSON's `sec.label` (e.g. "Part B") and shorten it for
-    // the tracker — "Part B" → "B". Falls back to the section id if no
+    // the tracker - "Part B" → "B". Falls back to the section id if no
     // label is present.
     const shortPart = (sec) => {
       const lbl = String(sec.label || sec.id || '').trim();
@@ -917,7 +967,7 @@ function leaveExamFullscreen() {
     body.innerHTML = html;
   }
 
-  // ── Note popover — minimal: a textarea per question ─────────
+  // ── Note popover - minimal: a textarea per question ─────────
   function toggleNote(sectionId, itemId, anchorEl) {
     const fk = flagKey(state.passageIdx, sectionId, itemId);
     // If already open near this question, close it
@@ -939,7 +989,7 @@ function leaveExamFullscreen() {
     // Append INSIDE the exam screen so the popover inherits the
     // exam's CSS custom properties (--rd-text, --rd-bg, …). When it
     // was appended to <body> the variables were undefined and the
-    // textarea text fell back to black on dark — invisible.
+    // textarea text fell back to black on dark - invisible.
     const host = document.getElementById('readingExamScreen') || document.body;
     host.appendChild(pop);
     // Position near the anchor
@@ -960,10 +1010,10 @@ function leaveExamFullscreen() {
 
   // ── Highlighter ─────────────────────────────────────────────
   // Two pieces of state:
-  //   • savedHighlightRange — the live selection we'll wrap when the
+  //   • savedHighlightRange - the live selection we'll wrap when the
   //     user clicks a colour button. The button steals focus and
   //     collapses window.getSelection(), so we cache the range first.
-  //   • activeHighlightEl   — an existing <span class="rd-hl"> the
+  //   • activeHighlightEl   - an existing <span class="rd-hl"> the
   //     user clicked on. Lets the ✕ button know which highlight to
   //     unwrap when there is no live selection (i.e. the user just
   //     clicked a coloured word and clicked clear).
@@ -971,7 +1021,7 @@ function leaveExamFullscreen() {
   let activeHighlightEl   = null;
 
   // Pick the most useful rect for positioning the bar.
-  // A multi-line selection's getBoundingClientRect() spans both lines —
+  // A multi-line selection's getBoundingClientRect() spans both lines -
   // the bar would land between them, often visually disconnected from
   // either edge of the highlight. Using the LAST entry from
   // getClientRects() pins the bar to the end of the selection (where
@@ -1040,17 +1090,17 @@ function leaveExamFullscreen() {
     span.className = 'rd-hl';
     span.style.background = color;
     try { range.surroundContents(span); }
-    catch (_) { /* selection crossed element boundaries — give up silently */ }
+    catch (_) { /* selection crossed element boundaries - give up silently */ }
 
     const sel = window.getSelection();
     if (sel) sel.removeAllRanges();
     hideHighlightBar();
   }
 
-  // Unwrap a highlight. Looks at — in priority order:
-  //   1. activeHighlightEl  — the highlight the user clicked
-  //   2. The saved range's start node — the selection just made
-  //   3. The current live selection — fallback for keyboard users
+  // Unwrap a highlight. Looks at - in priority order:
+  //   1. activeHighlightEl  - the highlight the user clicked
+  //   2. The saved range's start node - the selection just made
+  //   3. The current live selection - fallback for keyboard users
   function clearHighlight() {
     let target = activeHighlightEl;
     if (!target && savedHighlightRange) {
@@ -1098,7 +1148,7 @@ function leaveExamFullscreen() {
       overlay.id = 'rd-confirm-overlay';
       overlay.className = 'rd-confirm-overlay';
       overlay.innerHTML = `
-        <div class="rd-confirm" role="dialog" aria-modal="true" aria-labelledby="rd-confirm-title">
+        <div class="rd-confirm ll-dialog ll-dialog-pop" role="dialog" aria-modal="true" aria-labelledby="rd-confirm-title">
           <div class="rd-confirm-icon ${danger ? 'is-danger' : ''}">${danger ? '⚠' : '?'}</div>
           <h3 id="rd-confirm-title" class="rd-confirm-title">${escHtml(title || 'Are you sure?')}</h3>
           <p class="rd-confirm-message">${escHtml(message || '')}</p>
@@ -1162,7 +1212,7 @@ function leaveExamFullscreen() {
       }
     } catch (_) {}
     // Persist to Firestore so the teacher dashboard can see the
-    // attempt. Fire-and-forget — the results screen renders
+    // attempt. Fire-and-forget - the results screen renders
     // immediately and the network write happens in the background.
     logReadingExamSession(result, viaTimer);
     showResults(result, viaTimer);
@@ -1175,7 +1225,7 @@ function leaveExamFullscreen() {
   // we just need to teach the dashboard about the new `activity:
   // 'reading-exam'` value (handled in teacher/js/* files).
   async function logReadingExamSession(result, viaTimer) {
-    // Phase F: preview mode — teacher is just inspecting the exam,
+    // Phase F: preview mode - teacher is just inspecting the exam,
     // don't pollute their session history / XP / activity log.
     if (window.__previewMode) {
       console.log('[preview] skipping reading session write');
@@ -1187,7 +1237,7 @@ function leaveExamFullscreen() {
       // Denormalize student class / level / module onto every session
       // so the teacher dashboard's Firestore rules can scope per-doc
       // (see Phase B in DEPLOY.md). studentScopeFields() lives in
-      // y/student/js/auth.js — exposed via window.
+      // y/student/js/auth.js - exposed via window.
       const scope = (typeof studentScopeFields === 'function') ? studentScopeFields() : { studentClass:'', studentLevel:'', studentModule:'' };
       // Per-question detail for the teacher answer drill-down (QA #4):
       // flatten passages → sections → items into one uniform array.
@@ -1204,6 +1254,8 @@ function leaveExamFullscreen() {
           });
         });
       });
+      // Running total for the dashboard average; see student/js/score-rollup.js.
+      if (window.LLRollup) LLRollup.record(db, user.uid, pct);
       await db.collection('sessions').add({
         userId:        auth.currentUser.uid,
         userName:      auth.currentUser.displayName || auth.currentUser.email || 'Student',
@@ -1228,7 +1280,7 @@ function leaveExamFullscreen() {
         createdAt:     firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      // XP reward — same scale as the listening exam (1 XP per 10% scored).
+      // XP reward - same scale as the listening exam (1 XP per 10% scored).
       if (typeof addXP === 'function') addXP(Math.round(result.totalPct / 10));
 
       // Refresh the student's journey stats so the home screen updates
@@ -1236,7 +1288,7 @@ function leaveExamFullscreen() {
       if (typeof loadJourneyStats === 'function') await loadJourneyStats();
 
       // Hook into the activity logger pipeline if present (mirrors the
-      // listening exam — same call shape).
+      // listening exam - same call shape).
       if (typeof ActivityLogger !== 'undefined') {
         try {
           await ActivityLogger.logPracticeCompleted({
@@ -1319,7 +1371,7 @@ function leaveExamFullscreen() {
                   <li class="rd-result-item ${it.isRight ? 'is-right' : 'is-wrong'}">
                     <span class="rd-result-mark">${it.isRight ? '✓' : '✗'}</span>
                     <span class="rd-result-label">${escHtml(it.label)}</span>
-                    <span class="rd-result-your">your: <em>${escHtml(it.userAns || '—')}</em></span>
+                    <span class="rd-result-your">your: <em>${escHtml(it.userAns || '-')}</em></span>
                     ${it.isRight ? '' : `<span class="rd-result-correct">correct: <strong>${escHtml(it.correctAns)}</strong></span>`}
                   </li>
                 `).join('')}
@@ -1360,9 +1412,14 @@ function leaveExamFullscreen() {
       const lvl = state.exam.level;
       const id = state.exam.id;
       const mode = state.mode;
+      // Carry the lockdown flag across the retake. Without this a retake
+      // dropped it, so a placement student who pressed Retake got the same
+      // exam with copy, right-click and find-in-page all working again. mode
+      // was already forwarded; lockdown is no longer implied by it.
+      const lockdown = state.lockdown;
       // Tear down current state and re-open fresh
       state = null;
-      openReadingExam(lvl, id, mode);
+      openReadingExam(lvl, id, mode, { lockdown: lockdown });
     });
   }
 
@@ -1379,7 +1436,7 @@ function leaveExamFullscreen() {
       const t = e.target;
       if (t.id === 'rd-back-btn') {
         // If exam is already submitted (e.g. on the results screen)
-        // we just close — no confirmation needed.
+        // we just close - no confirmation needed.
         if (!state || state.submitted) { closeReadingExam(); return; }
         rdConfirm({
           title: 'Leave this exam?',
@@ -1394,7 +1451,7 @@ function leaveExamFullscreen() {
       if (t.id === 'rd-tracker-btn') { toggleTracker();   return; }
       if (t.id === 'rd-tracker-close') { toggleTracker(false); return; }
 
-      // Settings panel — gear button toggles, pref buttons set,
+      // Settings panel - gear button toggles, pref buttons set,
       // reset clears to defaults.
       if (t.id === 'rd-settings-btn') { toggleSettingsPanel(); return; }
       if (t.id === 'rd-pref-reset')   { writePrefs({ ...RD_PREF_DEFAULT }); applyReadingPrefs(); return; }
@@ -1442,7 +1499,7 @@ function leaveExamFullscreen() {
         if (!isNaN(pIdx) && pIdx !== state.passageIdx) switchPassage(pIdx);
         const sec = cell.dataset.section;
         const q = cell.dataset.q;
-        // On mobile the panes are toggled via [data-view] — make sure
+        // On mobile the panes are toggled via [data-view] - make sure
         // we land on the Questions pane so the target is visible.
         const shell = document.querySelector('#readingExamScreen .rd-shell');
         if (shell) {
@@ -1485,7 +1542,7 @@ function leaveExamFullscreen() {
           // the most recent jump glows.
           document.querySelectorAll('.rd-q.is-jumped').forEach(n => n.classList.remove('is-jumped'));
           el.classList.add('is-jumped');
-          // Match the CSS animation duration (1.6s) — drop the class so
+          // Match the CSS animation duration (1.6s) - drop the class so
           // the next jump can re-trigger the pulse cleanly.
           setTimeout(() => el.classList.remove('is-jumped'), 1600);
           // Move keyboard focus into the input/select for the question
@@ -1500,7 +1557,7 @@ function leaveExamFullscreen() {
         return;
       }
 
-      // Highlight-bar buttons — chalky palette (mix of options A & C).
+      // Highlight-bar buttons - chalky palette (mix of options A & C).
       // All four colours sit at similar luminance (~80%) so they read
       // as a matched chalk-pen set, while still being visible on the
       // dark passage with dark text overlaid.
@@ -1518,7 +1575,7 @@ function leaveExamFullscreen() {
         const shell = document.querySelector('#readingExamScreen .rd-shell');
         if (shell && shell.contains(hlEl)) {
           activeHighlightEl   = hlEl;
-          savedHighlightRange = null;        // no live selection — clear path uses activeHighlightEl
+          savedHighlightRange = null;        // no live selection - clear path uses activeHighlightEl
           const rect = hlEl.getBoundingClientRect();
           showHighlightBar(rect);
         }
@@ -1560,7 +1617,7 @@ function leaveExamFullscreen() {
         hideHighlightBar();
         return;
       }
-      // Skip selections that originated from a form control — those
+      // Skip selections that originated from a form control - those
       // are typed values, not text the user wants to highlight.
       const anchor = sel.anchorNode;
       const anchorEl = anchor && (anchor.nodeType === 1 ? anchor : anchor.parentElement);
@@ -1570,14 +1627,14 @@ function leaveExamFullscreen() {
       }
       // bestRectForBar walks getClientRects() and returns the last
       // non-degenerate rect. Important for two cases:
-      //   • Multi-line selections — the aggregate getBoundingClientRect
+      //   • Multi-line selections - the aggregate getBoundingClientRect
       //     spans both lines so the bar ends up between them, awkwardly.
-      //   • Selections that touch an inline-span boundary — Chrome
+      //   • Selections that touch an inline-span boundary - Chrome
       //     occasionally reports a 0×0 aggregate rect for one frame.
       const r = bestRectForBar(range);
       if (!r) { hideHighlightBar(); return; }
       // A fresh selection invalidates any previous "click on existing
-      // highlight" target — otherwise clearing would unwrap the wrong span.
+      // highlight" target - otherwise clearing would unwrap the wrong span.
       activeHighlightEl   = null;
       savedHighlightRange = range.cloneRange();
       showHighlightBar(r);
@@ -1620,7 +1677,7 @@ function leaveExamFullscreen() {
       if (!point || !passage.contains(point.startContainer)) return;
       const node = point.startContainer;
       if (node.nodeType !== Node.TEXT_NODE) return;
-      // Don't override an existing drag-selection — if the user
+      // Don't override an existing drag-selection - if the user
       // already has a non-collapsed selection, leave it alone.
       const sel = window.getSelection();
       if (sel && sel.rangeCount && !sel.isCollapsed) return;
@@ -1702,7 +1759,7 @@ function leaveExamFullscreen() {
   // Wire events on #rd-main ONCE per buildAndShow. The element is
   // preserved across renderPassage() calls (only innerHTML changes), so
   // we delegate from main rather than rebinding per render. Without
-  // this, switching passages caused each click to fire 2×, 3×, … —
+  // this, switching passages caused each click to fire 2×, 3×, … -
   // flag toggles cancelled themselves, note popovers reopened, etc.
   function wireMainEvents() {
     const main = document.getElementById('rd-main');
@@ -1758,7 +1815,7 @@ function leaveExamFullscreen() {
         return;
       }
       // Accordion section-header click. Ignore clicks on focusable
-      // descendants (flag/note/chevron buttons handled above) —
+      // descendants (flag/note/chevron buttons handled above) -
       // `.closest()` catches the right element even if the student
       // clicks the label, instructions, or chevron text.
       const head = e.target.closest && e.target.closest('.rd-section-head');
@@ -1770,7 +1827,7 @@ function leaveExamFullscreen() {
         head.setAttribute('aria-expanded', willCollapse ? 'false' : 'true');
       }
     });
-    // Keyboard support — Enter / Space on a focused section head
+    // Keyboard support - Enter / Space on a focused section head
     // toggles the same accordion. role="button" + tabindex="0" on
     // the head element is what makes it tab-reachable.
     main.addEventListener('keydown', (e) => {

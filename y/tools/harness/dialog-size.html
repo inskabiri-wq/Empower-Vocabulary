@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dialog button sizes</title>
+<!-- ============================================================
+     Are the two buttons in a confirm dialog the SAME WIDTH?
+     ------------------------------------------------------------
+     Asked repeatedly and answered by eye every time, which is why it kept
+     coming back. This measures instead: it opens the real AppDialog (the
+     shipped y/js/app-dialog.js, not a copy) for each label pair the app
+     actually uses, and prints both button widths to the pixel.
+
+     Run: static-y, then /tools/harness/dialog-size.html
+     ============================================================ -->
+<style>
+  body { font: 14px/1.6 "Segoe UI", system-ui, sans-serif; background: #0d1117; color: #e6edf3; padding: 24px; }
+  h1 { font-size: 18px; }
+  table { border-collapse: collapse; margin-top: 12px; width: 100%; max-width: 680px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid #30363d; font-size: 13px; }
+  th { color: #7d8590; font-weight: 600; }
+  .ok { color: #22c55e; font-weight: 700; }
+  .bad { color: #f87171; font-weight: 700; }
+  code { background: #161b22; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Confirm dialog - are both buttons the same width?</h1>
+<p>Measured on the real <code>AppDialog</code>, at the viewport width of this page.
+Above 480px the buttons sit side by side; at or below 480px they each go full width.</p>
+<div id="out">Running...</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // Both dependencies are injected with a cache buster rather than written as
+  // plain <link>/<script> tags. A static src came back from the HTTP cache and
+  // reported the OLD `flex:1 1 auto` rule as though the fix had not landed.
+  // brand.css matters too: it sizes .ll-dialog, which is the AppDialog card.
+  // Without it the card shrank to 198px and squeezed both buttons to the same
+  // wrong width, so the harness "passed" while measuring nothing real.
+  var cb = Date.now();
+  var css = document.createElement('link');
+  css.rel = 'stylesheet';
+  css.href = '../../css/brand.css?cb=' + cb;
+  css.onload = function () {
+    var s = document.createElement('script');
+    s.src = '../../js/app-dialog.js?cb=' + cb;
+    s.onload = start;
+    document.head.appendChild(s);
+  };
+  document.head.appendChild(css);
+
+  function start() {
+
+  // The label pairs the app actually ships. Different text lengths are the
+  // whole point: with flex-basis:auto each button starts at its own text
+  // width, so unequal labels give unequal buttons.
+  var PAIRS = [
+    { ok: 'Log out', cancel: 'Stay' },
+    { ok: 'Leave',   cancel: 'Stay' },
+    { ok: 'Delete',  cancel: 'Cancel' },
+    { ok: 'OK',      cancel: 'Cancel' }
+  ];
+
+  function measureOnce(pair) {
+    return new Promise(function (resolve) {
+      AppDialog.confirm('Measuring.', {
+        title: 'Test', okLabel: pair.ok, cancelLabel: pair.cancel, danger: true
+      });
+      // NO requestAnimationFrame here. The preview pane reports
+      // visibilityState 'hidden' and never composites, so rAF never fires and
+      // this harness would hang for ever waiting for a frame that is not
+      // coming. getBoundingClientRect forces layout synchronously, which is
+      // all a width measurement needs - the entry transition only animates
+      // opacity and transform on the CARD, never the button box.
+      (function () {
+        var overlay = document.querySelector('.appdlg-overlay');
+        var okEl = overlay.querySelector('[data-r="ok"]');
+        var cancelEl = overlay.querySelector('[data-r="cancel"]');
+        var a = Math.round(okEl.getBoundingClientRect().width * 100) / 100;
+        var b = Math.round(cancelEl.getBoundingClientRect().width * 100) / 100;
+        // Close it before the next pair, so only one dialog is ever measured.
+        cancelEl.click();
+        setTimeout(function () {
+          resolve({ pair: pair, okW: a, cancelW: b, diff: Math.round(Math.abs(a - b) * 100) / 100 });
+        }, 260);
+      })();
+    });
+  }
+
+  (async function () {
+    var rows = [];
+    for (var i = 0; i < PAIRS.length; i++) rows.push(await measureOnce(PAIRS[i]));
+
+    var worst = rows.reduce(function (m, r) { return Math.max(m, r.diff); }, 0);
+    var html = '<table><tr><th>Primary</th><th>Secondary</th><th>Primary px</th><th>Secondary px</th><th>Difference</th></tr>';
+    rows.forEach(function (r) {
+      var equal = r.diff < 0.5;
+      html += '<tr><td>' + r.pair.ok + '</td><td>' + r.pair.cancel + '</td>' +
+        '<td>' + r.okW + '</td><td>' + r.cancelW + '</td>' +
+        '<td class="' + (equal ? 'ok' : 'bad') + '">' + (equal ? 'same' : '+' + r.diff + 'px') + '</td></tr>';
+    });
+    html += '</table>';
+    html += '<p style="margin-top:14px;">viewport <b>' + window.innerWidth + 'px</b> &middot; worst difference <b class="' +
+      (worst < 0.5 ? 'ok' : 'bad') + '">' + worst + 'px</b></p>';
+    document.getElementById('out').innerHTML = html;
+
+    // Read by the session rather than scraped out of the HTML.
+    window.__dialogSizes = {
+      viewport: window.innerWidth,
+      worst: worst,
+      rows: rows,
+      // Proves the measurement ran against the CURRENT rule, not a cached one.
+      runningCodeHasFix: /flex:\s*1 1 0/.test(
+        Array.prototype.map.call(document.querySelectorAll('style'), function (s) { return s.textContent; }).join('')
+      )
+    };
+  })();
+  }
+})();
+</script>
+</body>
+</html>

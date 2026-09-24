@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/teacher/css/styles.css">
+<link rel="stylesheet" href="/teacher/css/dashboard-v2.css">
+<style>
+/* mimic mobile-shell.js injected phone rules exactly */
+@media (max-width: 768px){
+  body{padding-left:0 !important;padding-right:0 !important;}
+  .t2-main{padding:16px 14px !important;scrollbar-gutter:auto !important;}
+  .section-header{flex-direction:column;align-items:stretch;}
+}
+html,body{margin:0;}
+</style>
+</head>
+<body class="t2-active">
+<div class="t2-main" id="main">
+  <div class="section" id="panel" style="margin-top:20px;">
+    <div class="section-header" style="display:flex; align-items:center; justify-content:space-between;">
+      <div><h2 class="section-title">Deadline Calendar</h2></div>
+    </div>
+    <div id="deadlineCalendarBody">
+      <div class="cal-grid cal-head" id="head"></div>
+      <div class="cal-grid" id="grid"></div>
+    </div>
+  </div>
+</div>
+<script>
+const ICON={writing:'✍️',reading:'📖',listening:'🎧'};
+document.getElementById('head').innerHTML=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>'<div class="cal-dow">'+d+'</div>').join('');
+let cells='';
+for(let i=0;i<3;i++) cells+='<div class="cal-cell cal-empty"></div>';
+for(let d=1;d<=28;d++){
+  const has = (d%4===0);
+  const chips = has ? '<div class="cal-chip" title="x">'+ICON.writing+' Unit 5 Essay</div>' : '';
+  cells+='<div class="cal-cell '+(has?'cal-has':'')+'"><div class="cal-day">'+d+'</div>'+chips+'</div>';
+}
+document.getElementById('grid').innerHTML=cells;
+</script>
+</body></html>

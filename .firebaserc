@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "empower-vocabulary-practice"
+    "default": "empower-vocabulary-practice",
+    "fsmvu": "empower-vocabulary-practice",
+    "ozyegin": "lingualab-ozyegin"
   }
 }

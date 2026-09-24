@@ -11,8 +11,8 @@
 
   /* Accent Colors */
   --accent-primary: #3b82f6;
-  --accent-secondary: #0ea5e9;
-  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 50%, #06b6d4 100%);
+  --accent-secondary: #60a5fa;
+  --accent-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
 
   /* Status Colors */
   --success: #10b981;

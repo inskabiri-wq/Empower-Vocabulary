@@ -6,25 +6,26 @@
 // Flag to prevent onAuthStateChanged from running during registration
 let isRegistering = false;
 
-// Phase H — domain allowlist is now DATA-DRIVEN, sourced from
+// Phase H - domain allowlist is now DATA-DRIVEN, sourced from
 // /settings/organizations via window.OrgRegistry (org-registry.js).
 // emailIsFsm() is kept under its historical name for minimum churn,
 // but it now means "email belongs to an allowed organization." If
 // OrgRegistry hasn't loaded yet (very early registration attempt),
-// we fall back to the FSM hardcoded defaults so the user isn't
+// we fall back to the built-in default domains so the user isn't
 // blocked by a race. Firestore rules re-verify on every write.
 function emailIsFsm(email) {
   if (typeof window.OrgRegistry !== 'undefined' && typeof window.OrgRegistry.checkEmail === 'function') {
     return window.OrgRegistry.checkEmail(email).ok;
   }
-  // Fallback — same hardcoded FSM list as the rule's grandfather branch.
+  // Fallback - same built-in domain list as the rule's grandfather branch.
   const e = (email || '').toLowerCase().trim();
   return e.endsWith('@fsm.edu.tr') || e.endsWith('@stu.fsm.edu.tr');
 }
 
 // Friendly error message that lists the currently-allowed domains,
-// for use when registration / login is rejected. Falls back to the
-// generic FSM message if OrgRegistry isn't ready yet.
+// for use when registration / login is rejected. Falls back to a
+// generic line if OrgRegistry isn't ready yet - the fallback names no
+// institution, because this text ships to every university.
 function _allowedDomainsHumanMessage() {
   if (typeof window.OrgRegistry !== 'undefined' && typeof window.OrgRegistry.allowedDomains === 'function') {
     const ds = window.OrgRegistry.allowedDomains();
@@ -33,7 +34,7 @@ function _allowedDomainsHumanMessage() {
         ds.map(d => '@' + d).join(', ');
     }
   }
-  return 'Only FSM email addresses (@fsm.edu.tr or @stu.fsm.edu.tr) can register.';
+  return 'Only approved institutional email addresses can register.';
 }
 
 /* ---------- Check teacher whitelist from Firestore ---------- */
@@ -74,14 +75,14 @@ async function checkUserRoleAndRedirect(user) {
   try {
     const email = user.email || '';
 
-    // Domain check FIRST - block non-FSM emails
+    // Domain check FIRST - block unapproved domains
     if (!emailIsFsm(email)) {
       await auth.signOut();
-      showMessage('Access denied. Only FSM university emails are allowed.', 'error');
+      showMessage('Access denied. This account is not on an approved university email domain.', 'error');
       return;
     }
 
-    // Email verification gate — block unverified accounts from logging in.
+    // Email verification gate - block unverified accounts from logging in.
     if (!user.emailVerified) {
       // Cache email so the resend button works after we sign them out below.
       try { sessionStorage.setItem('pendingVerificationEmail', email); } catch (_) {}
@@ -95,12 +96,12 @@ async function checkUserRoleAndRedirect(user) {
 
     // Role is the source-of-truth on the user doc (admin-controlled).
     // We do NOT try to recompute it from the whitelist on each login,
-    // because firestore.rules block non-admin role changes — admin must
+    // because firestore.rules block non-admin role changes - admin must
     // manually promote a user to 'teacher' via the Firebase Console.
     let role = 'student';
     if (userDoc.exists) {
       role = userDoc.data().role || 'student';
-      // Touch lastLogin / name only — never role.
+      // Touch lastLogin / name only - never role.
       await userRef.update({
         email: email,
         name: user.displayName || userDoc.data().name || '',
@@ -119,7 +120,7 @@ async function checkUserRoleAndRedirect(user) {
       }, { merge: true });
     }
 
-    // Teachers go straight to their dashboard — they're not subject
+    // Teachers go straight to their dashboard - they're not subject
     // to the student-account gate.
     if (role === 'teacher') {
       window.location.replace('teacher-dashboard.html');
@@ -131,7 +132,7 @@ async function checkUserRoleAndRedirect(user) {
     if (window.AccountGate) {
       const gate = await window.AccountGate.check(db, user.uid);
       if (!gate.ok) {
-        // Account is expired or deactivated — sign out and surface
+        // Account is expired or deactivated - sign out and surface
         // the message inline on the login page. The auth callback
         // that would otherwise redirect won't re-fire because the
         // sign-out moves the user back to anonymous state.
@@ -143,7 +144,7 @@ async function checkUserRoleAndRedirect(user) {
         return;
       }
     }
-    // .replace() so /index.html doesn't linger in browser history —
+    // .replace() so /index.html doesn't linger in browser history -
     // see back-nav.js for the full rationale.
     window.location.replace('student-dashboard.html');
   } catch (error) {
@@ -215,7 +216,7 @@ async function register() {
   // Combine class letter + number (e.g., "B125")
   const studentClass = classLetter + classNumber;
 
-  // Email-domain check (Phase H — dynamic via OrgRegistry).
+  // Email-domain check (Phase H - dynamic via OrgRegistry).
   if (!emailIsFsm(email)) {
     showMessage(_allowedDomainsHumanMessage(), 'error');
     return;
@@ -267,7 +268,7 @@ async function register() {
     });
     console.log('6. Firestore document created');
 
-    // Send verification email and sign the user out — they must verify
+    // Send verification email and sign the user out - they must verify
     // before they can sign in. This blocks fake-email accounts from ever
     // reaching the dashboard.
     try {
@@ -329,7 +330,7 @@ async function signInWithGoogle() {
     const result = await auth.signInWithPopup(provider);
     const email = result.user.email || '';
 
-    // Domain check (Phase H — dynamic via OrgRegistry).
+    // Domain check (Phase H - dynamic via OrgRegistry).
     if (!emailIsFsm(email)) {
       await auth.signOut();
       showMessage('Access denied. ' + _allowedDomainsHumanMessage(), 'error');
@@ -337,7 +338,7 @@ async function signInWithGoogle() {
     }
 
     // Google accounts are already verified, but double-check the token claim
-    // — some providers return unverified accounts.
+    // - some providers return unverified accounts.
     if (!result.user.emailVerified) {
       try { sessionStorage.setItem('pendingVerificationEmail', email); } catch (_) {}
       showVerificationPrompt(email);
@@ -397,7 +398,7 @@ async function resendVerification() {
   } catch (error) {
     console.error('Resend verification error:', error);
     if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-      showMessage('Wrong password — could not resend.', 'error');
+      showMessage('Wrong password - could not resend.', 'error');
     } else if (error.code === 'auth/too-many-requests') {
       showMessage('Too many requests. Please try again later.', 'error');
     } else {
@@ -411,7 +412,7 @@ async function resendVerification() {
 function showVerificationPrompt(email, justRegistered) {
   const panel = document.getElementById('verifyPanel');
   if (!panel) {
-    // Fallback if the HTML element isn't on the page for some reason —
+    // Fallback if the HTML element isn't on the page for some reason -
     // just use the existing message box.
     showMessage(
       justRegistered

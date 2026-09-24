@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile replica</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1120px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;vertical-align:top;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:86ch;line-height:1.55;}
+  pre{background:#0f172a;color:#e2e8f0;padding:10px;border-radius:8px;font-size:12px;overflow:auto;}
+  iframe{position:absolute;left:-99999px;width:1200px;height:800px;border:0;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">The profile UI must be a replica on every page</h3>
+<p class="lede">
+  Each profile page loads a different set of stylesheets, so "it looked right on
+  the dashboard" says nothing about courses or placement. This renders the badge
+  and the panel under each page's OWN stylesheets and compares the measurements.
+  Anything that differs is a page where a student would see a different box.
+  Also checks the phone layout, where the badge used to wrap under the title.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+<pre id="dump"></pre>
+
+<script>
+const rows = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const cb = '?cb=' + Math.random();
+
+// Exactly what each real page loads, in order.
+const PAGES = {
+  'student-dashboard': ['css/brand.css','student/css/styles.css','student/css/extra.css','student/css/hub.css',
+                        'student/css/skills.css','student/css/grammar.css','student/css/reading-exam.css',
+                        'assignments/css/assignments.css','css/app-settings.css'],
+  'courses':           ['css/brand.css','css/fsmvu-loader.css','student/css/policy-course.css','css/app-settings.css'],
+  'placement':         ['index/css/variables.css','css/brand.css','student/css/reading-exam.css',
+                        'student/css/extra.css','css/app-settings.css'],
+  'policy-course':     ['css/brand.css','css/fsmvu-loader.css','student/css/policy-course.css','css/app-settings.css']
+};
+
+const STUDENT = { name: 'Alireza', role: 'student', studentClass: 'B1-A', level: 'B1',
+                  module: 'Module 2', profile: { avatar: 'star' } };
+
+function frame(sheets, vw) {
+  try { localStorage.removeItem('ll-profile'); } catch (e) {}
+  return new Promise(resolve => {
+    const f = document.createElement('iframe');
+    f.style.cssText = 'position:absolute;left:-99999px;width:' + vw + 'px;height:800px';
+    document.body.appendChild(f);
+    const d = f.contentDocument, w = f.contentWindow;
+    d.open();
+    d.write('<!DOCTYPE html><html><head><meta charset="utf-8"><base href="/">' +
+      sheets.map(s => '<link rel="stylesheet" href="/' + s + cb + '">').join('') +
+      '</head><body><header style="display:flex;align-items:center;gap:12px;padding:10px 16px;">' +
+      '<span style="font-size:20px;font-weight:800">Lingualab</span>' +
+      '<span data-profile-hub-mount></span></header>');
+    w.currentStudentData = STUDENT;
+    w.AppSettings = { open(){}, close(){} };
+    const s = d.createElement('script');
+    s.src = '/js/profile-hub.js' + cb;
+    s.onload = s.onerror = () => { d.write('</body></html>'); d.close(); setTimeout(() => resolve({ f, w, d }), 350); };
+    d.body.appendChild(s);
+  });
+}
+
+function badgeGeo(w, d) {
+  const b = d.querySelector('[data-ph-badge]');
+  const pic = d.querySelector('[data-ph-pic]');
+  const cs = w.getComputedStyle(b), pcs = w.getComputedStyle(pic);
+  const r = b.getBoundingClientRect();
+  return {
+    h: Math.round(r.height),
+    padding: cs.paddingTop + '/' + cs.paddingRight + '/' + cs.paddingBottom + '/' + cs.paddingLeft,
+    radius: cs.borderTopLeftRadius,
+    border: cs.borderTopWidth,
+    gap: cs.gap,
+    picSize: Math.round(pic.getBoundingClientRect().width) + 'x' + Math.round(pic.getBoundingClientRect().height),
+    picRadius: pcs.borderRadius,
+    floating: b.classList.contains('ph-float')
+  };
+}
+function panelGeo(w, d) {
+  const p = d.querySelector('#phPanel .ph-panel');
+  const cs = w.getComputedStyle(p);
+  const rowEls = [...d.querySelectorAll('#phPanel .ph-row')];
+  const rcs = rowEls.length ? w.getComputedStyle(rowEls[0]) : {};
+  return {
+    width: p.offsetWidth,
+    padding: cs.paddingTop + '/' + cs.paddingRight,
+    radius: cs.borderTopLeftRadius,
+    opaque: !(cs.backgroundColor === 'rgba(0, 0, 0, 0)' || cs.backgroundColor === 'transparent'),
+    rows: rowEls.length,
+    rowH: rowEls.length ? Math.round(rowEls[0].getBoundingClientRect().height) : 0,
+    rowPad: rcs.paddingTop ? rcs.paddingTop + '/' + rcs.paddingLeft : '',
+    rowRadius: rcs.borderTopLeftRadius || ''
+  };
+}
+
+(async function(){
+  const badge = {}, panel = {}, rowSpread = {};
+
+  for (const [name, sheets] of Object.entries(PAGES)) {
+    const { f, w, d } = await frame(sheets, 1200);
+    badge[name] = badgeGeo(w, d);
+    d.querySelector('[data-ph-badge]').click();
+    await wait(250);
+    panel[name] = panelGeo(w, d);
+    // Every row inside one page must match its siblings too.
+    const geo = [...d.querySelectorAll('#phPanel .ph-row')].map(r => {
+      const c = w.getComputedStyle(r), b = r.getBoundingClientRect();
+      return Math.round(b.width) + '|' + Math.round(b.height) + '|' + c.paddingTop + '|' + c.borderTopLeftRadius;
+    });
+    rowSpread[name] = new Set(geo).size;
+    f.remove();
+  }
+
+  const names = Object.keys(PAGES);
+  const sameB = k => new Set(names.map(n => String(badge[n][k]))).size === 1;
+  const sameP = k => new Set(names.map(n => String(panel[n][k]))).size === 1;
+
+  check('1. badge height identical on every page', true, sameB('h'));
+  check('2. badge padding identical', true, sameB('padding'));
+  check('3. badge corner radius identical', true, sameB('radius'));
+  check('4. badge border identical', true, sameB('border'));
+  check('5. avatar picture the same size everywhere', true, sameB('picSize'));
+  check('6. the picture is round everywhere', true, sameB('picRadius'));
+  check('7. no page falls back to a floating badge', false, names.some(n => badge[n].floating));
+
+  check('8. panel width identical on every page', true, sameP('width'));
+  check('9. panel padding identical', true, sameP('padding'));
+  check('10. panel radius identical', true, sameP('radius'));
+  check('11. panel is opaque on every page', true, names.every(n => panel[n].opaque));
+  check('12. same number of rows on every page', true, sameP('rows'));
+  check('13. row height identical across pages', true, sameP('rowH'));
+  check('14. row padding identical across pages', true, sameP('rowPad'));
+  check('15. row radius identical across pages', true, sameP('rowRadius'));
+  check('16. within each page every row matches its siblings', true,
+        names.every(n => rowSpread[n] === 1));
+
+  // ── Phone: the badge must hold the right edge, not wrap under the title ──
+  const phone = {};
+  for (const [name, sheets] of Object.entries(PAGES)) {
+    const { f, w, d } = await frame(sheets, 390);
+    const hdr = d.querySelector('header');
+    const b = d.querySelector('[data-ph-badge]');
+    const title = hdr.querySelector('span');
+    const hb = hdr.getBoundingClientRect(), bb = b.getBoundingClientRect(), tb = title.getBoundingClientRect();
+    phone[name] = {
+      sameRowAsTitle: Math.abs(bb.top - tb.top) < 24,
+      hugsRight: (hb.right - bb.right) < 30,
+      // Read the WRAPPER, not the name span. The media query hides
+      // .ph-badge-txt, and a hidden parent does not change a child's computed
+      // display - so asking the span said "still showing" while the badge had
+      // plainly collapsed to 42px.
+      nameHidden: w.getComputedStyle(d.querySelector('.ph-badge-txt')).display === 'none',
+      w: Math.round(bb.width)
+    };
+    f.remove();
+  }
+  check('17. PHONE: badge stays on the title row', true, names.every(n => phone[n].sameRowAsTitle));
+  check('18. PHONE: badge hugs the right edge', true, names.every(n => phone[n].hugsRight));
+  check('19. PHONE: it collapses to the picture alone', true, names.every(n => phone[n].nameHidden));
+  check('20. PHONE: identical width on every page', true,
+        new Set(names.map(n => phone[n].w)).size === 1);
+
+  document.getElementById('dump').textContent =
+    names.map(n => n.padEnd(20) + 'badge h' + String(badge[n].h).padStart(3) +
+      '  pic ' + badge[n].picSize.padEnd(7) +
+      '  panel ' + String(panel[n].width).padStart(4) + 'px' +
+      '  rows ' + panel[n].rows + ' @' + panel[n].rowH + 'px' +
+      '  phone w' + String(phone[n].w).padStart(3)).join('\n');
+
+  try { localStorage.removeItem('ll-profile'); } catch (e) {}
+  const tb2 = document.querySelector('#t tbody');
+  tb2.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__repTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok).map(r=>r.name), badge, panel, phone };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Feature-toggle boot trace</title>
+<!--
+  Traces the exact order of events that decides whether a deactivated skill is
+  ever shown before being hidden - the "it flashes / needs two refreshes"
+  report.
+
+  It loads the REAL skill-registry.js and instruments the clock around it,
+  because the bug is entirely about WHEN window.featureToggles exists relative
+  to when each surface renders.
+-->
+<style>
+  body{font:14px/1.6 'Segoe UI',system-ui,sans-serif;background:#f6f8fb;color:#0f172a;padding:24px;max-width:900px;margin:0 auto}
+  h1{font-size:1.3rem;margin:0 0 4px}
+  p.sub{margin:0 0 18px;color:#556274}
+  table{border-collapse:collapse;width:100%;margin:12px 0 24px;background:#fff;border:1px solid #e3e9f2;border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:8px 12px;border-bottom:1px solid #eef2f8;font-size:13px}
+  th{background:#f2f6fc;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#556274}
+  tr:last-child td{border-bottom:0}
+  .ok{color:#15803d;font-weight:700}
+  .bad{color:#b91c1c;font-weight:700}
+  code{background:#f2f6fc;padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+<h1>Feature-toggle boot trace</h1>
+<p class="sub">Which surfaces answer correctly <em>before</em> the toggles land, and which answer wrong then correct themselves (the flash).</p>
+<div id="out">running…</div>
+
+<script src="../../assignments/js/skill-registry.js?v=1"></script>
+<script>
+(function () {
+  const rows = [];
+  function row(stage, q, got, want) {
+    rows.push({ stage, q, got, want, pass: JSON.stringify(got) === JSON.stringify(want) });
+  }
+
+  // ---- STAGE 1: before the toggles have arrived --------------------------
+  // This is the window every surface renders in on a real page load, because
+  // feature-toggles.js has to wait for auth and then a Firestore read.
+  delete window.featureToggles;
+
+  row('before toggles', 'SKILL_REGISTRY.all().length',
+      SKILL_REGISTRY.all().length, 6);
+  row('before toggles', 'SKILL_REGISTRY.visible() ids',
+      SKILL_REGISTRY.visible().map(s => s.id),
+      ['vocabulary','listening','reading','writing','grammar','speaking']);
+  row('before toggles', 'SKILL_REGISTRY.active() ids',
+      SKILL_REGISTRY.active().map(s => s.id),
+      ['vocabulary','listening','reading','writing','grammar']);
+
+  // ---- STAGE 2: toggles land with speaking + writing switched OFF --------
+  window.featureToggles = { speaking: false, writing: false };
+
+  row('after toggles', 'visible() drops the two switched off',
+      SKILL_REGISTRY.visible().map(s => s.id),
+      ['vocabulary','listening','reading','grammar']);
+  row('after toggles', 'active() drops them too',
+      SKILL_REGISTRY.active().map(s => s.id),
+      ['vocabulary','listening','reading','grammar']);
+  row('after toggles', 'all() still returns everything (config screens)',
+      SKILL_REGISTRY.all().length, 6);
+
+  // ---- STAGE 3: coming-soon must SURVIVE visible() ------------------------
+  // speaking is 'coming-soon'. With nothing switched off it should still be
+  // listed (dimmed), or the strip loses the "on the way" affordance.
+  window.featureToggles = {};
+  row('nothing switched off', 'visible() keeps coming-soon (speaking)',
+      SKILL_REGISTRY.visible().some(s => s.id === 'speaking'), true);
+  row('nothing switched off', 'active() excludes coming-soon (speaking)',
+      SKILL_REGISTRY.active().some(s => s.id === 'speaking'), false);
+
+  const pass = rows.filter(r => r.pass).length;
+  document.getElementById('out').innerHTML =
+    '<table><thead><tr><th>Stage</th><th>Check</th><th>Got</th><th>Result</th></tr></thead><tbody>'
+    + rows.map(r => '<tr><td>' + r.stage + '</td><td>' + r.q + '</td><td><code>'
+        + JSON.stringify(r.got) + '</code></td><td class="' + (r.pass ? 'ok">PASS' : 'bad">FAIL, wanted ' + JSON.stringify(r.want))
+        + '</td></tr>').join('')
+    + '</tbody></table><p><strong>' + pass + ' / ' + rows.length + ' passed.</strong></p>';
+
+  window.__trace = { rows, pass, total: rows.length };
+})();
+</script>
+</body>
+</html>

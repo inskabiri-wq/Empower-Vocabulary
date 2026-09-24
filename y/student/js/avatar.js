@@ -1,5 +1,5 @@
 /**
- * FSM Vocabulary Trainer — Emoji Avatar System
+ * Lingualab - Emoji Avatar System
  * Zero API, zero images, works offline, instant load.
  */
 
@@ -172,7 +172,7 @@ async function saveXPToFirebase() {
   } catch (e) { console.error('Error saving XP:', e); }
 }
 
-// ─── Init — avatar grid clicks via delegation ────────────────────────────────
+// ─── Init - avatar grid clicks via delegation ────────────────────────────────
 (function initAvatarSystem() {
   function setup() {
     const grid = document.getElementById('avatarGrid');

@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lingualab - Teacher Dashboard Walkthrough</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#0d1117; --panel:#161b22; --panel2:#1c2128; --border:#30363d;
     --text:#e6edf3; --muted:#9aa4b2; --dim:#6b7280;
-    --blue:#3b82f6; --cyan:#22d3ee; --green:#22c55e; --amber:#f59e0b;
+    --blue:#3b82f6; --cyan:#60a5fa; --green:#22c55e; --amber:#f59e0b;
     --red:#ef4444; --purple:#a855f7;
     --grad:linear-gradient(135deg,#3b82f6,#a855f7);
   }
@@ -17,10 +17,10 @@
   html,body{margin:0;height:100%;}
   body{
     background:var(--bg); color:var(--text);
-    font-family:'DM Sans',system-ui,Segoe UI,sans-serif;
+    font-family:var(--ll-font);
     -webkit-font-smoothing:antialiased; overflow:hidden;
   }
-  h1,h2,h3,.num{font-family:'Space Grotesk','DM Sans',sans-serif;}
+  h1,h2,h3,.num{font-family:var(--ll-font);}
 
   /* Deck shell */
   .deck{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
@@ -67,7 +67,7 @@
   .mock .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:10px 10px 4px;}
   .mock .row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;font-size:14px;color:var(--muted);}
   .mock .row.on{background:var(--grad);color:#fff;font-weight:600;}
-  .mock .row.hl{background:rgba(34,211,238,.12);color:var(--cyan);border:1px solid rgba(34,211,238,.3);}
+  .mock .row.hl{background:rgba(96,165,250,.12);color:var(--cyan);border:1px solid rgba(96,165,250,.3);}
   .mock .row .e{width:18px;text-align:center;}
 
   .step{display:flex;gap:16px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border);}
@@ -111,11 +111,21 @@
     .slide h1,.slide h2,.step .t b,ul.big li b{color:#111;}
     .grad-text{-webkit-text-fill-color:#5b3bd6;}
   }
+
+/* LIGHT MODE - see the note in join.html. */
+.light-mode {
+  --bg:#f6f8fb; --panel:#ffffff; --panel2:#f2f6fc; --border:#d8e1ee;
+  --text:#0f172a; --muted:#556274; --dim:#667487;
+  --blue:#2563eb; --cyan:#2563eb; --green:#15803d; --amber:#b45309;
+  --red:#b91c1c; --purple:#1d4ed8;
+  --grad:linear-gradient(135deg,#1d4ed8,#3b82f6);
+}
 </style>
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 <div class="prog" id="prog"></div>
@@ -126,7 +136,7 @@
   <section class="slide active">
     <div class="title-wrap">
       <div class="logo">🧪</div>
-      <p class="kicker">FSMVU School of Foreign Languages</p>
+      <p class="kicker">School of Foreign Languages</p>
       <h1>The <span class="grad-text">Lingualab</span><br>Teacher Dashboard</h1>
       <p class="lead">A guided walkthrough of every panel you will use: tracking students, setting assignments, running the classroom, and the admin controls.</p>
       <div class="meta-row">
@@ -142,7 +152,7 @@
     <p class="kicker">Step one</p>
     <h2>Signing in</h2>
     <div class="step"><div class="n">1</div><div class="t"><b>Open the app</b><small>Go to the Lingualab web address in any browser, or install it as an app.</small></div></div>
-    <div class="step"><div class="n">2</div><div class="t"><b>Sign in</b><small>Use your FSM email and password, or "Continue with Google".</small></div></div>
+    <div class="step"><div class="n">2</div><div class="t"><b>Sign in</b><small>Use your university email and password, or "Continue with Google".</small></div></div>
     <div class="step"><div class="n">3</div><div class="t"><b>You land on the dashboard</b><small>The teacher view loads automatically for teacher accounts.</small></div></div>
     <p class="note">Forgot your password? Use "Forgot password?" on the sign-in screen, or ask the admin to reset it. Your account role decides what you see; the admin controls stay with the program admin.</p>
   </section>
@@ -193,7 +203,7 @@
     <div class="cards c3">
       <div class="card" style="border-color:rgba(239,68,68,.4)"><div class="ic">🚨</div><h3>Inactive students</h3><p>Who has not logged in for a week or more.</p></div>
       <div class="card" style="border-color:rgba(245,158,11,.4)"><div class="ic">📉</div><h3>Low scores</h3><p>Who is averaging below the pass line and needs support.</p></div>
-      <div class="card" style="border-color:rgba(34,211,238,.4)"><div class="ic">🌱</div><h3>No sessions yet</h3><p>New students who have not started practising.</p></div>
+      <div class="card" style="border-color:rgba(96,165,250,.4)"><div class="ic">🌱</div><h3>No sessions yet</h3><p>New students who have not started practising.</p></div>
     </div>
     <p class="lead" style="margin-top:20px;">Each alert is clickable: it opens the list so you can act right away. Below the alerts you get the level distribution and a recent-activity teaser.</p>
   </section>

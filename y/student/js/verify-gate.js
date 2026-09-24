@@ -1,5 +1,5 @@
 /* ============================================================
-   VERIFY GATE — bi-monthly academic info confirmation.
+   VERIFY GATE - bi-monthly academic info confirmation.
    ----------------------------------------------------------------
    On dashboard load, after auth.js has fetched the user doc and
    stashed it on window.currentStudentData, we run a verification
@@ -9,7 +9,7 @@
 
    Form rules:
      • Level / class / academic year: can stay the same OR change.
-     • Module: MUST change. Per the teacher spec — "they cannot
+     • Module: MUST change. Per the teacher spec - "they cannot
        stay in the same module" because every 2 months the student
        takes an exam and either passes (advance to next module) or
        fails (still advances to next module in the same level).
@@ -17,7 +17,7 @@
 (function () {
   'use strict';
 
-  // Re-derive the same windows as account-gate.js — kept in sync
+  // Re-derive the same windows as account-gate.js - kept in sync
   // intentionally. If the auth gate changes its threshold these
   // need to follow.
   const SIXTY_DAYS_MS = 60 * 24 * 60 * 60 * 1000;
@@ -39,7 +39,7 @@
     if (!data) return false;
     if (data.role && data.role !== 'student' && data.role !== 'demo') return false;
     const last = toDate(data.lastVerifiedAt);
-    if (!last) return true;                       // legacy users — verify once
+    if (!last) return true;                       // legacy users - verify once
     return (Date.now() - last.getTime()) > SIXTY_DAYS_MS;
   }
 
@@ -65,7 +65,7 @@
 
     // Pre-fill from current doc. Browsers may not have the option
     // in the dropdown (e.g. a legacy academicYear we don't list); in
-    // that case the .value setter silently no-ops, which is fine —
+    // that case the .value setter silently no-ops, which is fine -
     // the student picks a fresh value.
     if (lvlSel  && currentData.level)        lvlSel.value  = currentData.level;
     if (yrSel   && currentData.academicYear) yrSel.value   = currentData.academicYear;
@@ -73,7 +73,7 @@
     if (letterEl) letterEl.value = cls.letter || 'B';
     if (numberEl) numberEl.value = cls.number || '';
 
-    // Module dropdown — EXCLUDE the current module so the student
+    // Module dropdown - EXCLUDE the current module so the student
     // is forced to advance. If the user has no module set (legacy),
     // show all options.
     const cur = (currentData.module || '').trim();
@@ -89,7 +89,7 @@
     const hintEl = document.getElementById('verifyModuleHint');
     if (hintEl) {
       hintEl.textContent = cur
-        ? `Previous: ${cur}. After every 2-month exam your module advances — pick the next one.`
+        ? `Previous: ${cur}. After every 2-month exam your module advances - pick the next one.`
         : 'After every 2-month exam your module advances. Pick the next one.';
     }
 
@@ -97,7 +97,7 @@
     overlay.classList.add('active');
     overlay.style.display = '';                    // .active should reveal it; belt-and-braces
 
-    // Submit handler — re-attaches per open so we don't accumulate.
+    // Submit handler - re-attaches per open so we don't accumulate.
     formEl.onsubmit = (e) => onSubmit(e, currentData, errEl);
   }
 
@@ -117,7 +117,7 @@
     const module_  = document.getElementById('verifyModule').value;
     const acadYear = document.getElementById('verifyYear').value;
 
-    // Defensive validation — the HTML already enforces required, but
+    // Defensive validation - the HTML already enforces required, but
     // we double-check so the error renders inline (not a browser tooltip).
     if (!level || !letter || !number || !module_ || !acadYear) {
       errEl.textContent = 'Please fill in every field.';
@@ -130,7 +130,7 @@
       return;
     }
     if (module_ === (currentData.module || '')) {
-      // Should be impossible — current module is filtered out of the
+      // Should be impossible - current module is filtered out of the
       // dropdown. Keep the check as a hard floor.
       errEl.textContent = 'You must pick a different module from your previous one.';
       errEl.style.display = '';
@@ -173,7 +173,7 @@
 
   // Boot: poll for window.currentStudentData (set by student/js/auth.js
   // after it fetches the user doc). When present, decide whether to
-  // open the modal. A short interval is fine — we don't need this on
+  // open the modal. A short interval is fine - we don't need this on
   // the millisecond.
   function boot() {
     let tries = 0;
@@ -185,7 +185,7 @@
         if (needsVerification(data)) openModal(data);
         return;
       }
-      // Give up after ~6 seconds — if auth.js never set the global,
+      // Give up after ~6 seconds - if auth.js never set the global,
       // it means the user couldn't authenticate; auth.js handles that
       // path (redirect to login).
       if (tries > 60) clearInterval(t);

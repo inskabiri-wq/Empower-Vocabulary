@@ -90,7 +90,7 @@ const ActivityConfig = {
   categories: {
     auth: { text: 'Authentication', icon: '🔐', color: '#3b82f6' },
     student: { text: 'Student Actions', icon: '🎓', color: '#10b981' },
-    teacher: { text: 'Teacher Actions', icon: '👨‍🏫', color: '#f59e0b' },
+    teacher: { text: 'Teacher Actions', icon: '👨‍🏫', color: '#3b82f6' },
     admin: { text: 'Admin Actions', icon: '👑', color: '#ef4444' }
   },
   
@@ -110,8 +110,15 @@ const ActivityConfig = {
     // Collection name in Firestore
     collectionName: 'activityLogs',
     
-    // How many days to keep logs (0 = forever)
+    // How many days to keep logs (0 = forever). Nothing enforces this on its
+    // own - see retentionMonths below, which the admin tab acts on.
     retentionDays: 0,
+
+    // The retention window the Activity Logs tab offers to prune to. It lives
+    // here rather than in a box on the page: it is a policy decision made once
+    // with the KVKK office, not a per-visit choice, and a spinner sitting on
+    // screen invited someone to change it by accident.
+    retentionMonths: 6,
     
     // Max logs to load at once
     pageSize: 50,

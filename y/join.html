@@ -4,13 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Join your class - Lingualab</title>
+  <link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
   <link rel="icon" href="favicon.ico">
   <style>
     :root { --bg:#0a0f1a; --card:#152035; --card2:#1c2a42; --border:rgba(59,130,246,0.20); --text:#f8fafc; --muted:#94a3b8; --blue:#3b82f6; --green:#22c55e; --amber:#f59e0b; --red:#f87171; }
     * { box-sizing:border-box; }
     body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
       background:radial-gradient(1200px 600px at 50% -10%, #16223b 0%, var(--bg) 60%); color:var(--text);
-      font-family:'DM Sans','Segoe UI',system-ui,sans-serif; }
+      font-family:var(--ll-font); }
     .card { width:100%; max-width:440px; background:var(--card); border:1px solid var(--border); border-radius:18px;
       padding:28px 26px; box-shadow:0 24px 60px rgba(0,0,0,0.45); text-align:center; }
     .badge { font-size:40px; line-height:1; margin-bottom:6px; }
@@ -25,11 +26,21 @@
     .spinner { width:34px; height:34px; border:3px solid var(--border); border-top-color:var(--blue); border-radius:50%;
       margin:10px auto; animation:spin 0.8s linear infinite; } @keyframes spin { to { transform:rotate(360deg); } }
     .row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-  </style>
+  
+/* LIGHT MODE. This page's palette lives in the <style> block above, not in a
+   stylesheet, so the app-wide repaint never reached it. Same specificity as
+   :root and later in the same block, so it wins. */
+.light-mode {
+  --bg:#f6f8fb; --card:#ffffff; --card2:#f2f6fc;
+  --border:#e3e9f2; --text:#0f172a; --muted:#556274;
+  --blue:#2563eb; --green:#15803d; --amber:#b45309; --red:#b91c1c;
+}
+</style>
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
   <div class="card" id="card">
@@ -42,18 +53,16 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
+<!-- Which university, then start Firebase for it. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
   <script>
     (function () {
       'use strict';
-      var firebaseConfig = {
-        apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-        authDomain: "empower-vocabulary-practice.firebaseapp.com",
-        projectId: "empower-vocabulary-practice",
-        storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-        messagingSenderId: "136270199832",
-        appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-      };
-      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      // Firebase is started by js/firebase-init.js, loaded just above.
+      if (!firebase.apps.length) {
+        throw new Error('join: js/tenant.js + js/firebase-init.js must load first.');
+      }
       var auth = firebase.auth();
       var db = firebase.firestore();
 

@@ -14,6 +14,10 @@
   'use strict';
 
   var state = null; // { done: bool, level: 'B1' } once eligible
+  // Set when the live toggle says placement is off and this tenant hides
+  // inactive tiles. ensureCard() checks it, so an in-flight boot() that
+  // resolves AFTER the switch was flipped cannot put the card back.
+  var suppressed = false;
 
   function db_() { return (typeof db !== 'undefined') ? db : (window.firebase && firebase.firestore ? firebase.firestore() : null); }
 
@@ -25,9 +29,10 @@
     btn.dataset.skill = 'placement';
     btn.setAttribute('aria-label', 'Open Placement Test');
     btn.style.setProperty('--pct', '0');
-    btn.style.setProperty('--skill-accent', '#a78bfa');
-    // Same convention as every other feature-toggled skill: switched OFF keeps
-    // the card visible but grayed ("Not activated"), it is never removed.
+    btn.style.setProperty('--skill-accent', '#1e40af');
+    // Same convention as every other feature-toggled skill. Where the tenant
+    // sets hideInactiveTiles the card is not built at all (see boot()); this
+    // grayed "Not activated" state is what the other tenants get.
     var sub = state.off ? 'Not activated'
       : (state.done ? ('Completed - recommended ' + state.level) : 'Find your English level');
     var pill = state.off ? '<span class="hub-live-pill hub-off-pill">OFF</span>'
@@ -49,7 +54,7 @@
   }
 
   function ensureCard() {
-    if (!state) return;
+    if (suppressed || !state) return;
     var grid = document.getElementById('hubGrid');
     if (!grid || document.getElementById('placementHubCard')) return;
     var ph = document.getElementById('placementHubSkeleton');
@@ -98,7 +103,18 @@
     ]).then(function (res) {
       var cfg = res[0].exists ? (res[0].data() || {}) : {};
       var userDoc = cached ? cached : (res[1] && res[1].exists ? (res[1].data() || {}) : {});
-      var toggles = res[3].exists ? (res[3].data() || {}) : {};
+      // Prefer the value feature-toggles.js holds. Its own read here is a
+      // plain .get(), which Firestore is free to answer from the OFFLINE CACHE,
+      // so on a fresh sign-in it can come back empty or stale - and this card
+      // then paints from it and gets corrected a moment later by the
+      // 'feature-toggles-ready' handler below. That is the placement card's own
+      // copy of the tile flash. window.featureToggles is primed at parse time
+      // from the last visit and replaced by a SERVER snapshot, so when it is
+      // known it is the better answer. The read stays as the fallback for the
+      // very first sign-in on a device.
+      var toggles = (window.featureToggles != null)
+        ? window.featureToggles
+        : (res[3].exists ? (res[3].data() || {}) : {});
       // Staff (teacher / admin) see the card too. It used to be students-only,
       // so on an admin account the skeleton painted and was pulled a moment
       // later - the tile "appeared for a second then disappeared". Staff also
@@ -106,7 +122,7 @@
       var isStaff = userDoc.role === 'teacher' || userDoc.role === 'admin';
       // TARGETING (placementConfig.scope) decides WHO gets the card at all;
       // the Admin > Features toggle decides its state: ON = live, OFF (or not
-      // yet enabled) = grayed "Not activated" - the card is never removed.
+      // yet enabled) = hidden where hideInactiveTiles is set, grayed otherwise.
       // ACTIVATION is authoritative. This used to pass a hardcoded
       // `active: true` into courseActiveFor, so placementConfig.active was
       // read by nobody and turning the switch OFF in the admin panel changed
@@ -119,13 +135,42 @@
         : true;
       if (!inScope && !isStaff) { dropSkeleton(); return; }
       var r = res[2].exists ? (res[2].data() || {}) : null;
-      state = { off: toggles.placement !== true, done: !!r, level: (r && r.recommendedLevel) || '' };
+      var placementOff = toggles.placement !== true;
+      // The placement card builds itself and appends to the hub grid, so it
+      // never went through hub.js and never learned about hideInactiveTiles.
+      // Every other tile disappears when its skill is switched off; this one
+      // stayed as a greyed "Not activated" card, which is why deactivation
+      // "worked for everything except placement". Same rule for both now.
+      var hideInactive = !!(window.Tenant && window.Tenant.feature('hideInactiveTiles', false));
+      if (placementOff && hideInactive) { suppressed = true; dropSkeleton(); return; }
+      state = { off: placementOff, done: !!r, level: (r && r.recommendedLevel) || '' };
       ensureCard();
       // hub.js wipes the grid on every render - put the card back each time.
       var grid = document.getElementById('hubGrid');
       if (grid) new MutationObserver(function () { ensureCard(); }).observe(grid, { childList: true });
-    }).catch(function () { dropSkeleton(); });
+    }).catch(function () { dropSkeleton(); })
+      // Card added, or ruled out: the placement slot is settled either way.
+      .then(function () { try { if (window.LLHubBoot) LLHubBoot.ready('placement'); } catch (_) {} });
   }
+
+  // feature-toggles.js is a LIVE listener now, so the placement switch can flip
+  // while the page is open. Without this the card kept whatever state it read
+  // at sign-in while every other tile updated around it.
+  document.addEventListener('feature-toggles-ready', function () {
+    if (!booted) return;                       // boot() has not read config yet
+    var ft = window.featureToggles || {};
+    var off = ft.placement !== true;
+    var hideInactive = !!(window.Tenant && window.Tenant.feature('hideInactiveTiles', false));
+    if (off && hideInactive) {
+      suppressed = true;
+      var card = document.getElementById('placementHubCard');
+      if (card) card.remove();
+      dropSkeleton();
+      return;
+    }
+    suppressed = false;
+    if (state) { state.off = off; ensureCard(); }
+  });
 
   // Wait for sign-in by LISTENING, not by polling. This used to wake up every
   // 400ms and ask "is the user here yet?", so the card sat idle for up to

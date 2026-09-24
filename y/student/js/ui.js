@@ -25,6 +25,10 @@ function toggleSound() {
   if (btn) btn.classList.toggle('active', soundEnabled);
   if (icon) icon.textContent = soundEnabled ? '🔊' : '🔇';
   localStorage.setItem('soundEnabled', soundEnabled);
+  // Unlock audio on the very click that switched it ON. Browsers only let a
+  // context start from a user gesture, and without this the first sound after
+  // enabling is swallowed, which reads as "the switch does nothing".
+  if (soundEnabled && window.LLSound) window.LLSound.warmUp();
 }
 
 function toggleTurkish() {
@@ -59,160 +63,21 @@ function loadSettings() {
 }
 
 // ============================================
-// IMPROVED PLEASANT ACADEMIC SOUNDS
+// SOUNDS
 // ============================================
-
-// Shared AudioContext — browsers limit concurrent contexts (Chrome caps
-// around 6) and suspend any context created before a user gesture. The
-// previous implementation spawned a fresh context per playSound() call:
-// first-click sounds were often silent, and a long session eventually
-// triggered "context was not allowed to start" warnings with dropped
-// audio. One shared context, resumed lazily on each call, removes both
-// issues without changing the SFX design.
-let _sharedAudioCtx = null;
-function getAudioCtx() {
-  try {
-    if (!_sharedAudioCtx) {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return null;
-      _sharedAudioCtx = new AC();
-    }
-    if (_sharedAudioCtx.state === 'suspended') {
-      _sharedAudioCtx.resume().catch(() => {});
-    }
-    return _sharedAudioCtx;
-  } catch (e) {
-    return null;
-  }
-}
-
+// The engine lives in js/sound.js now, shared by every page. It used to be
+// here, which is why the nine classroom games had no sound at all: this file
+// is loaded by student-dashboard.html and nothing else, so playSound() did
+// not exist anywhere they ran. A second, drifting copy sat inline in app.html.
+//
+// These two wrappers stay so the fifteen existing call sites in games.js keep
+// working unchanged, and so anything that still calls getAudioCtx() finds it.
 function playSound(type) {
-  if (!soundEnabled) return;
-
-  const ctx = getAudioCtx();
-  if (!ctx) return;
-
-  if (type === 'correct') {
-    // Pleasant "ding" chime - like a gentle bell
-    // Uses a major third interval for a happy, affirming sound
-    const masterGain = ctx.createGain();
-    masterGain.connect(ctx.destination);
-    masterGain.gain.setValueAtTime(0.3, ctx.currentTime);
-    masterGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-    
-    // Main tone (E5)
-    const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
-    osc1.connect(gain1);
-    gain1.connect(masterGain);
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(659.25, ctx.currentTime); // E5
-    gain1.gain.setValueAtTime(0.4, ctx.currentTime);
-    gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-    osc1.start(ctx.currentTime);
-    osc1.stop(ctx.currentTime + 0.4);
-    
-    // Harmonic overtone (E6) - adds brightness
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.connect(gain2);
-    gain2.connect(masterGain);
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(1318.5, ctx.currentTime); // E6
-    gain2.gain.setValueAtTime(0.15, ctx.currentTime);
-    gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
-    osc2.start(ctx.currentTime);
-    osc2.stop(ctx.currentTime + 0.25);
-    
-    // Soft shimmer (G#5) - major third for pleasant feel
-    const osc3 = ctx.createOscillator();
-    const gain3 = ctx.createGain();
-    osc3.connect(gain3);
-    gain3.connect(masterGain);
-    osc3.type = 'sine';
-    osc3.frequency.setValueAtTime(830.6, ctx.currentTime); // G#5
-    gain3.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain3.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-    osc3.start(ctx.currentTime + 0.05);
-    osc3.stop(ctx.currentTime + 0.35);
-    
-  } else if (type === 'incorrect') {
-    // Soft, gentle "nope" - not harsh, just informative
-    // Two descending tones, soft and brief
-    const masterGain = ctx.createGain();
-    masterGain.connect(ctx.destination);
-    masterGain.gain.setValueAtTime(0.15, ctx.currentTime);
-    masterGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
-    
-    // First tone (A4) - soft start
-    const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
-    osc1.connect(gain1);
-    gain1.connect(masterGain);
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(440, ctx.currentTime); // A4
-    gain1.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
-    osc1.start(ctx.currentTime);
-    osc1.stop(ctx.currentTime + 0.15);
-    
-    // Second tone (F4) - gentle descent
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.connect(gain2);
-    gain2.connect(masterGain);
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(349.23, ctx.currentTime + 0.12); // F4
-    gain2.gain.setValueAtTime(0.25, ctx.currentTime + 0.12);
-    gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
-    osc2.start(ctx.currentTime + 0.12);
-    osc2.stop(ctx.currentTime + 0.35);
-    
-  } else if (type === 'complete') {
-    // Triumphant ascending arpeggio - C major chord progression
-    // Like a gentle "achievement unlocked" sound
-    const masterGain = ctx.createGain();
-    masterGain.connect(ctx.destination);
-    masterGain.gain.setValueAtTime(0.25, ctx.currentTime);
-    
-    // C major arpeggio: C5, E5, G5, C6
-    const notes = [
-      { freq: 523.25, time: 0, duration: 0.6 },      // C5
-      { freq: 659.25, time: 0.1, duration: 0.5 },    // E5
-      { freq: 783.99, time: 0.2, duration: 0.4 },    // G5
-      { freq: 1046.50, time: 0.3, duration: 0.5 }    // C6
-    ];
-    
-    notes.forEach(note => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(masterGain);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(note.freq, ctx.currentTime + note.time);
-      gain.gain.setValueAtTime(0.3, ctx.currentTime + note.time);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + note.time + note.duration);
-      osc.start(ctx.currentTime + note.time);
-      osc.stop(ctx.currentTime + note.time + note.duration);
-      
-      // Add subtle harmonic for richness
-      const osc2 = ctx.createOscillator();
-      const gain2 = ctx.createGain();
-      osc2.connect(gain2);
-      gain2.connect(masterGain);
-      osc2.type = 'sine';
-      osc2.frequency.setValueAtTime(note.freq * 2, ctx.currentTime + note.time);
-      gain2.gain.setValueAtTime(0.08, ctx.currentTime + note.time);
-      gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + note.time + note.duration * 0.7);
-      osc2.start(ctx.currentTime + note.time);
-      osc2.stop(ctx.currentTime + note.time + note.duration * 0.7);
-    });
-    
-    // Final shimmer
-    setTimeout(() => {
-      masterGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1);
-    }, 600);
-  }
+  if (window.LLSound) window.LLSound.play(type);
+}
+function getAudioCtx() {
+  if (window.LLSound) window.LLSound.warmUp();
+  return null;   // callers only ever used this to prime the context
 }
 
 // STREAK
@@ -236,7 +101,7 @@ function updateStreak(correct) {
 
 // Best-streak cloud sync. Uses a transaction so a lower value (e.g. from
 // a freshly-cleared localStorage on a second device) can never overwrite
-// a higher value already stored in Firestore. Silent failure — the
+// a higher value already stored in Firestore. Silent failure - the
 // localStorage value is still valid for this session.
 async function syncBestStreakToFirestore(newBest) {
   try {
@@ -394,7 +259,7 @@ function populateUnitSelector() {
     select.innerHTML += `<option value="${unassignedValue}">Bonus</option>`;
   }
 
-  // Dashboard v2 pill mirror — rebuild unit pills to match the native select
+  // Dashboard v2 pill mirror - rebuild unit pills to match the native select
   const pillsEl = document.getElementById('unitPills');
   if (pillsEl) {
     let pillsHTML = '<div class="sel-opt" data-value="all">All</div>';
@@ -412,7 +277,7 @@ function populateUnitSelector() {
 }
 
 // ────────────────────────────────────────────────────────────
-// Dashboard v2 — pill-select wiring (mirrors hidden native selects
+// Dashboard v2 - pill-select wiring (mirrors hidden native selects
 // so existing changeBook/changeLevel/changeUnit wiring stays intact).
 // ────────────────────────────────────────────────────────────
 function syncPillsToSelect(pillsId, selectId) {
@@ -435,7 +300,7 @@ function wireDashboardPills() {
     const pills = document.getElementById(pillsId);
     const select = document.getElementById(selectId);
     if (!pills || !select) return;
-    // Delegated click — survives unit-pill re-renders
+    // Delegated click - survives unit-pill re-renders
     pills.addEventListener('click', (e) => {
       const opt = e.target.closest('.sel-opt');
       if (!opt || !pills.contains(opt)) return;
@@ -465,15 +330,32 @@ function updateWordCount() {
   const n = getFilteredWords().length;
   const el = document.getElementById('wordCount');
   if (el) el.textContent = n;
-  // Dashboard welcome banner (design v2) — mirror word count
+  // Dashboard welcome banner (design v2) - mirror word count
   const welcomeCount = document.getElementById('welcomeWordCount');
   if (welcomeCount) welcomeCount.textContent = n;
 }
 
 // SCREENS
 function showScreen(id) {
+  // Leaving the hub while it is still held (a deep link or preview the head
+  // check did not catch): show the page now, never a hidden screen.
+  if (id !== 'hubScreen' && window.LLHubBoot) LLHubBoot.release('screen');
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+
+  // Every screen lives in ONE long document and is shown by toggling a class,
+  // so the window keeps whatever scroll offset the previous screen had. Open a
+  // skill from halfway down the hub, come back, and you land in the middle of
+  // the page with the header off-screen - which reads as the header having
+  // moved. Each screen is a fresh view and starts at its top.
+  //
+  // `auto`, not `smooth`: this is a screen change, not a scroll, and animating
+  // it means the new screen visibly slides past on every navigation.
+  try {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  } catch (_) {
+    window.scrollTo(0, 0);            // older browsers reject the options form
+  }
 }
 
 function backToMenu() {
@@ -482,7 +364,7 @@ function backToMenu() {
 
 // CONFETTI
 function createConfetti() {
-  const colors = ['#3b82f6', '#06b6d4', '#0ea5e9', '#10b981', '#eab308'];
+  const colors = ['#3b82f6', '#2563eb', '#2563eb', '#10b981', '#3b82f6'];
   for (let i = 0; i < 60; i++) {
     const conf = document.createElement('div');
     conf.className = 'confetti';
@@ -512,7 +394,7 @@ function showFeedback(correct) {
 
 // TOAST
 // NOTE: previously used `var(--accent-gradient)` which is undefined in
-// the student dashboard's CSS scope — meaning the toast rendered as
+// the student dashboard's CSS scope - meaning the toast rendered as
 // white text on no background and looked like a floating system error.
 // Now it has a proper dark teal gradient that matches the brand and
 // always renders, regardless of which page calls showToast().
@@ -528,7 +410,7 @@ function showToast(message) {
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #2dd4bf 100%);
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #93c5fd 100%);
     color: #ffffff;
     padding: 12px 22px;
     border-radius: 999px;
@@ -536,7 +418,7 @@ function showToast(message) {
     font-size: 14px;
     letter-spacing: 0.01em;
     z-index: 9999;
-    box-shadow: 0 10px 30px -10px rgba(13, 148, 136, 0.55),
+    box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.55),
                 0 2px 6px rgba(0, 0, 0, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.08);
     max-width: min(90vw, 520px);

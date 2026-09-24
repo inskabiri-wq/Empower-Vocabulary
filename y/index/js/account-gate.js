@@ -1,5 +1,5 @@
 /* ============================================================
-   ACCOUNT GATE — runs after a successful auth, BEFORE we let the
+   ACCOUNT GATE - runs after a successful auth, BEFORE we let the
    student land on the dashboard.
    ----------------------------------------------------------------
    Two checks:
@@ -12,9 +12,9 @@
 
      2. Bi-monthly verification due.
         If `now − lastVerifiedAt > 60 days` (or `lastVerifiedAt` is
-        missing — legacy accounts), the student must re-confirm their
+        missing - legacy accounts), the student must re-confirm their
         level, class, module, and academic year on the dashboard.
-        We don't block login for this case — we just set a sessionStorage
+        We don't block login for this case - we just set a sessionStorage
         flag and let the dashboard render a blocking modal.
 
    Returns an object so callers can decide what to do:
@@ -28,7 +28,7 @@
 
      • index/js/main.js (login + Google sign-in)
      • index/js/auth.js (post-register / post-verify redirect)
-     • student-dashboard.html (re-check on every dashboard load —
+     • student-dashboard.html (re-check on every dashboard load -
        belt-and-braces so a stale tab can't bypass the gate)
    ============================================================ */
 (function () {
@@ -65,7 +65,7 @@
     try {
       userDoc = await db.collection('users').doc(uid).get();
     } catch (e) {
-      // Network / permissions failure — fail OPEN here so a transient
+      // Network / permissions failure - fail OPEN here so a transient
       // hiccup doesn't lock everyone out. Server-side rules still
       // enforce role/scope on every read & write downstream.
       console.warn('[account-gate] could not read user doc:', e);
@@ -96,7 +96,7 @@
         await db.collection('users').doc(uid).update({ active: false });
       } catch (e) {
         // If the write fails (rules / network), still return the
-        // expired message — defence in depth.
+        // expired message - defence in depth.
         console.warn('[account-gate] could not flip active:', e);
       }
       return {
@@ -108,7 +108,7 @@
 
     // ── Check 3: bi-monthly verification due ───────────────────
     // Legacy users without lastVerifiedAt also trip this (treated as
-    // overdue, which is the safest fail-open default — they go
+    // overdue, which is the safest fail-open default - they go
     // through the dashboard verification modal once, then they're set).
     const lastV = toDate(u.lastVerifiedAt);
     const verificationDue = !lastV || (Date.now() - lastV.getTime() > SIXTY_DAYS_MS);

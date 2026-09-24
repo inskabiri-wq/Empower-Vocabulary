@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FSMVÜ Seal — Loader Animations</title>
+<title>Lingualab Mark - Loader Animations</title>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=14">
 <style>
   html,body{margin:0;min-height:100%;}
   body{
@@ -34,17 +35,23 @@
   .cap.dark{color:rgba(255,255,255,.55);}
   .cap.light{color:rgba(40,30,28,.45);}
   .foot{max-width:1040px;margin:38px auto 0;color:rgba(40,30,28,.5);font-size:13px;line-height:1.6;font-style:italic;}
-  .foot code{font-family:ui-monospace,Menlo,Consolas,monospace;font-style:normal;background:rgba(0,0,0,.05);padding:1px 6px;border-radius:5px;}
+  .foot code{font-family:var(--ll-mono);font-style:normal;background:rgba(0,0,0,.05);padding:1px 6px;border-radius:5px;}
 </style>
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
   <div class="head">
-    <h1>FSMVÜ Seal · Loader Animations</h1>
-    <p>Six stately, crimson-true motion directions — true to the original mark.
+    <h1>Lingualab Mark · Loader Animations</h1>
+    <p>Eight motion treatments on the Lingualab flask. The last two are built by
+       <code>js/fsmvu-loader.js</code> rather than CSS alone: one needs twelve
+       child ticks, the other a per-instance id for its <code>textPath</code>.
        Wired into Lingualab's loading screens via <code>css/fsmvu-loader.css</code>.</p>
   </div>
 
@@ -90,7 +97,30 @@
       </div>
       <div class="fsmvu-dots"><i></i><i></i><i></i></div>
     </div><div class="name">06 · Progress Ring</div></div>
+
+    <!-- 07 Tick Dial · LIGHT.  Built by JS because it needs 12 children;
+         the placeholder below is filled in by the script at the foot. -->
+    <div class="card"><div class="art" style="background:#f7f3ee">
+      <div data-loader="dial"></div>
+      <div class="cap light">Loading</div>
+    </div><div class="name">07 · Tick Dial&nbsp;&nbsp;<small><code style="font-style:normal">FSMVULoader.markup('dial')</code></small></div></div>
+
+    <!-- 08 Circling Word · PARCHMENT.  Also JS-built: its textPath needs a
+         unique id per instance. -->
+    <div class="card"><div class="art" style="background:#efe7da">
+      <div data-loader="orbit"></div>
+      <div class="cap light">Please wait</div>
+    </div><div class="name">08 · Circling Word&nbsp;&nbsp;<small><code style="font-style:normal">FSMVULoader.markup('orbit')</code></small></div></div>
   </div>
+
+  <script src="js/fsmvu-loader.js"></script>
+  <script>
+    // Render the two markup-driven variants from the real helper, so this page
+    // shows what a caller actually gets rather than a hand-copied snapshot.
+    document.querySelectorAll('[data-loader]').forEach(function (el) {
+      el.outerHTML = FSMVULoader.markup(el.getAttribute('data-loader'));
+    });
+  </script>
 
   <div class="foot">
     Drop-in: <code>&lt;div class="fsmvu-loader"&gt;&lt;/div&gt;</code> replaces the old

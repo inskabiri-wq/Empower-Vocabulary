@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Back-nav trace</title>
+<style>
+  body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:#f6f8fb;color:#0f172a;margin:0;padding:26px;}
+  h1{font-size:19px;margin:0 0 6px;}
+  p.lede{margin:0 0 18px;color:#475569;max-width:74ch;line-height:1.55;}
+  table{border-collapse:collapse;width:100%;max-width:900px;font-size:13px;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:16px;font-size:15px;font-weight:700;}
+</style>
+</head>
+<body>
+<h1>back-nav.js - system Back trap</h1>
+<p class="lede">
+  Runs the real <code>student/js/back-nav.js</code> against stubbed
+  <code>showScreen</code> / <code>openLogoutModal</code> and drives the actual
+  browser history. The case that regressed is step 5: after a Back press has
+  consumed the sentinel, does a fresh user gesture push a replacement? The old
+  build removed its gesture listeners after the first arm, so every later
+  sentinel was pushed from inside the popstate handler with no user activation,
+  which Chrome and Samsung Internet are entitled to skip - and skipping it is
+  what closes the PWA.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Step</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<div class="screen active" id="hubScreen" style="display:none"></div>
+
+<script>
+  // Stubs the module expects.
+  window.__screens = [];
+  window.showScreen = function (id) { window.__screens.push(id); };
+  window.__logoutOpened = 0;
+  window.openLogoutModal = function () { window.__logoutOpened++; };
+</script>
+<script src="../../student/js/back-nav.js"></script>
+<script>
+const rows = [];
+function check(name, expected, actual) {
+  const ok = String(expected) === String(actual);
+  rows.push({ name, expected, actual, ok });
+}
+function gesture() {
+  // capture-phase listener on window, so dispatching on document reaches it
+  window.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+}
+function onPop() { return new Promise(r => window.addEventListener('popstate', r, { once: true })); }
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+(async function run(){
+  await wait(200);                     // let setupOnce find showScreen
+
+  const base = history.length;
+  check('1. module took over showScreen', true, window.showScreen.toString().indexOf('origShowScreen') > -1);
+
+  gesture();
+  await wait(60);
+  const afterArm = history.length;
+  check('2. first gesture arms a sentinel', true, afterArm > base);
+
+  // a second gesture must NOT stack another one
+  gesture();
+  await wait(60);
+  check('3. second gesture does not stack', afterArm, history.length);
+
+  // Back at the root: should fire popstate, open the logout modal, NOT leave
+  const p = onPop();
+  history.back();
+  await p;
+  await wait(80);
+  check('4. Back at root opens the logout modal', 1, window.__logoutOpened);
+
+  // THE REGRESSION: a gesture after the pop must be able to arm again.
+  const beforeRearm = history.length;
+  gesture();
+  await wait(80);
+  check('5. gesture after Back re-arms the sentinel', true, history.length > beforeRearm);
+
+  // and Back must still be trapped a second time
+  const p2 = onPop();
+  history.back();
+  await p2;
+  await wait(80);
+  check('6. second Back still trapped', 2, window.__logoutOpened);
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r, i) =>
+    '<tr><td>' + (i+1) + '</td><td>' + r.name + '</td><td>' + r.expected + '</td><td>' + r.actual +
+    '</td><td class="' + (r.ok ? 'pass">PASS' : 'fail">FAIL') + '</span></td></tr>').join('');
+  const pass = rows.filter(r => r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass + ' / ' + rows.length + (pass === rows.length ? '  PASS' : '  FAIL');
+  el.className = pass === rows.length ? 'pass' : 'fail';
+  window.__backTrace = { pass, total: rows.length, rows };
+})();
+</script>
+</body>
+</html>

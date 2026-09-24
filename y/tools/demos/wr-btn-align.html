@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writing button probe</title>
+<link rel="stylesheet" href="/css/brand.css">
+<link rel="stylesheet" href="/student/css/writing-exam.css">
+<style>
+  body { margin: 0; background: #0f172a; padding: 24px; }
+  .row { margin: 18px 0; text-align: center; }
+  .lbl { color: #94a3b8; font: 12px system-ui; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="lbl">Submit button (the reference, already on the page)</div>
+  <button class="wr-btn" id="ref">Submit</button>
+</div>
+
+<div class="row">
+  <div class="lbl">NEW: the completion link, using .wr-btn</div>
+  <a href="#" class="wr-btn" id="now" style="margin-top: 22px;">&larr; Back to dashboard</a>
+</div>
+
+<div class="row">
+  <div class="lbl">OLD: the hand-rolled inline version, for comparison</div>
+  <a href="#" id="old"
+     style="display: inline-block; margin-top: 22px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white; padding: 10px 22px; border-radius: 10px;
+            text-decoration: none; font-weight: 600;">&larr; Back to dashboard</a>
+</div>
+
+<script>
+window.probeReady = (async function () {
+  const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
+  await Promise.all(links.map(l => l.sheet ? null : new Promise(res => {
+    l.addEventListener('load', res, { once: true });
+    l.addEventListener('error', res, { once: true });
+  })));
+  // setTimeout, never rAF: a hidden Browser pane never fires rAF.
+  for (let i = 0; i < 100; i++) {
+    if (getComputedStyle(document.getElementById('ref')).borderRadius !== '0px') break;
+    await new Promise(r => setTimeout(r, 10));
+  }
+  return links.map(l => l.href.split('/').pop().split('?')[0] + (l.sheet ? ' ok' : ' FAILED'));
+})();
+
+window.measure = function () {
+  const pick = (id) => {
+    const el = document.getElementById(id), cs = getComputedStyle(el), r = el.getBoundingClientRect();
+    return {
+      padding: cs.paddingTop + '/' + cs.paddingRight,
+      radius: cs.borderTopLeftRadius,
+      weight: cs.fontWeight,
+      size: cs.fontSize,
+      decoration: cs.textDecorationLine,
+      display: cs.display,
+      h: Math.round(r.height)
+    };
+  };
+  const ref = pick('ref'), now = pick('now'), old = pick('old');
+  return {
+    reference_submit: ref,
+    new_link: now,
+    old_inline: old,
+    matchesReference: ['padding','radius','weight','size','h'].every(k => now[k] === ref[k]),
+    oldMatchedReference: ['padding','radius','weight','size','h'].every(k => old[k] === ref[k]),
+    newIsNotUnderlined: now.decoration === 'none'
+  };
+};
+</script>
+</body>
+</html>

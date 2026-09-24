@@ -1,0 +1,624 @@
+﻿1
+00:00:00,000 --> 00:00:05,000
+Chapter 7, Lecture.
+
+2
+00:00:05,000 --> 00:00:08,000
+Alright, let's get going.
+
+3
+00:00:08,000 --> 00:00:11,000
+I've got a lot of material to get through today.
+
+4
+00:00:11,000 --> 00:00:15,000
+So, let's go back to our discussion of the news media
+
+5
+00:00:15,000 --> 00:00:17,000
+and how people get their news.
+
+6
+00:00:17,000 --> 00:00:21,000
+And yeah, this turns out to be a very interesting topic
+
+7
+00:00:21,000 --> 00:00:23,000
+because we are seeing a significant change
+
+8
+00:00:23,000 --> 00:00:26,000
+in the way people get their news these days.
+
+9
+00:00:26,000 --> 00:00:29,000
+And it's important to note that this change,
+
+10
+00:00:29,000 --> 00:00:32,000
+like so many other trends we see today,
+
+11
+00:00:32,000 --> 00:00:36,000
+has a lot to do with the Internet.
+
+12
+00:00:36,000 --> 00:00:39,000
+So what I want to do today is I want to cover
+
+13
+00:00:39,000 --> 00:00:41,000
+several aspects of this trend
+
+14
+00:00:41,000 --> 00:00:46,000
+and talk about what this means for news.
+
+15
+00:00:46,000 --> 00:00:49,000
+Now we see the number of people actually getting the news
+
+16
+00:00:49,000 --> 00:00:51,000
+from print media is declining.
+
+17
+00:00:51,000 --> 00:00:54,000
+It's dropping.
+
+18
+00:00:54,000 --> 00:00:58,000
+And the Internet is quickly becoming an important source
+
+19
+00:00:58,000 --> 00:01:00,000
+for more and more people.
+
+20
+00:01:00,000 --> 00:01:03,000
+Okay? Great.
+
+21
+00:01:03,000 --> 00:01:08,000
+Now, let me move on to give you some statistics on this trend.
+
+22
+00:01:08,000 --> 00:01:11,000
+I want you to pay attention to this.
+
+23
+00:01:11,000 --> 00:01:14,000
+Researchers noticed that in 2000,
+
+24
+00:01:14,000 --> 00:01:17,000
+about 70% of the people they asked
+
+25
+00:01:17,000 --> 00:01:19,000
+said that newspapers were an important source
+
+26
+00:01:19,000 --> 00:01:21,000
+of information for them.
+
+27
+00:01:21,000 --> 00:01:25,000
+So 70% said reading the paper was important.
+
+28
+00:01:25,000 --> 00:01:31,000
+In 2003, that number dropped to 51%.
+
+29
+00:01:31,000 --> 00:01:34,000
+51%.
+
+30
+00:01:34,000 --> 00:01:37,000
+That's a pretty significant decline.
+
+31
+00:01:37,000 --> 00:01:41,000
+And I'm willing to bet that that number is even lower now.
+
+32
+00:01:41,000 --> 00:01:46,000
+So now I'm looking at this room full of college students.
+
+33
+00:01:46,000 --> 00:01:49,000
+Most of you are between 18 and 24.
+
+34
+00:01:49,000 --> 00:01:52,000
+And my guess is that most or maybe all of you
+
+35
+00:01:52,000 --> 00:01:54,000
+use the Internet.
+
+36
+00:01:54,000 --> 00:01:58,000
+The reason I'm talking about your age group
+
+37
+00:01:58,000 --> 00:02:03,000
+is that you represent the new trend away from newspapers
+
+38
+00:02:03,000 --> 00:02:05,000
+and toward the Internet.
+
+39
+00:02:05,000 --> 00:02:07,000
+You are the trend.
+
+40
+00:02:07,000 --> 00:02:10,000
+And experts predict that this trend away,
+
+41
+00:02:10,000 --> 00:02:13,000
+this trend away from newspapers,
+
+42
+00:02:13,000 --> 00:02:16,000
+will continue as more and more young people grow up
+
+43
+00:02:16,000 --> 00:02:20,000
+using the Internet to do so many things.
+
+44
+00:02:20,000 --> 00:02:23,000
+Let me spell this out a little more for you.
+
+45
+00:02:23,000 --> 00:02:28,000
+There was a key study of young people done in 2004.
+
+46
+00:02:28,000 --> 00:02:33,000
+And for this study, they interviewed 35 to 54-year-olds
+
+47
+00:02:33,000 --> 00:02:35,000
+who read the newspaper.
+
+48
+00:02:35,000 --> 00:02:37,000
+And they asked them if the newspaper
+
+49
+00:02:37,000 --> 00:02:40,000
+was an important part of their day.
+
+50
+00:02:40,000 --> 00:02:44,000
+Well, 38% of them said yes.
+
+51
+00:02:44,000 --> 00:02:51,000
+But, but, when they asked 18 to 24-year-old newspaper readers
+
+52
+00:02:51,000 --> 00:02:55,000
+the same question, the same question,
+
+53
+00:02:55,000 --> 00:02:59,000
+only 17% of them said yes.
+
+54
+00:02:59,000 --> 00:03:03,000
+Only 17%.
+
+55
+00:03:03,000 --> 00:03:06,000
+This is big news.
+
+56
+00:03:06,000 --> 00:03:08,000
+All right.
+
+57
+00:03:08,000 --> 00:03:11,000
+So to be sure, there is a move away from the traditional way
+
+58
+00:03:11,000 --> 00:03:14,000
+that people have gotten in use.
+
+59
+00:03:14,000 --> 00:03:15,000
+Okay.
+
+60
+00:03:15,000 --> 00:03:19,000
+Let's move on to why this trend is happening.
+
+61
+00:03:19,000 --> 00:03:22,000
+So why?
+
+62
+00:03:22,000 --> 00:03:26,000
+Now, many young people say that they prefer Internet news
+
+63
+00:03:26,000 --> 00:03:29,000
+because it's a fast way to keep up with events.
+
+64
+00:03:29,000 --> 00:03:31,000
+Now, that's probably true.
+
+65
+00:03:31,000 --> 00:03:34,000
+But there are a couple of other significant reasons
+
+66
+00:03:34,000 --> 00:03:38,000
+why news on the Internet is gaining popularity.
+
+67
+00:03:38,000 --> 00:03:44,000
+One is simply that news on the Internet is more up-to-date.
+
+68
+00:03:44,000 --> 00:03:47,000
+It's the most current information.
+
+69
+00:03:47,000 --> 00:03:52,000
+That's a significant difference from the news you read
+
+70
+00:03:52,000 --> 00:03:55,000
+in the newspaper that comes out once a day
+
+71
+00:03:55,000 --> 00:03:58,000
+and stays the same for 24 hours.
+
+72
+00:03:58,000 --> 00:04:01,000
+Now, a second feature of Internet news is
+
+73
+00:04:01,000 --> 00:04:04,000
+it gives people the ability to get informed
+
+74
+00:04:04,000 --> 00:04:06,000
+about any kind of news--
+
+75
+00:04:06,000 --> 00:04:09,000
+weather, road events, traffic--
+
+76
+00:04:09,000 --> 00:04:13,000
+news that is more in-depth than in a newspaper.
+
+77
+00:04:13,000 --> 00:04:23,000
+So the bottom line here is Internet news is more complete.
+
+78
+00:04:23,000 --> 00:04:26,000
+With an online newspaper, for example,
+
+79
+00:04:26,000 --> 00:04:29,000
+you can begin to read a news story,
+
+80
+00:04:29,000 --> 00:04:33,000
+go to a related audio or video link, and so on.
+
+81
+00:04:33,000 --> 00:04:36,000
+You can keep going and get more information.
+
+82
+00:04:36,000 --> 00:04:40,000
+Now, let's move on to another attraction of the Internet.
+
+83
+00:04:40,000 --> 00:04:44,000
+I want you to notice I keep talking about links.
+
+84
+00:04:44,000 --> 00:04:50,000
+That's because on the Internet, those links are there,
+
+85
+00:04:50,000 --> 00:04:54,000
+and you decide how much you want to learn,
+
+86
+00:04:54,000 --> 00:04:58,000
+and you decide what kind of news you want to get.
+
+87
+00:04:58,000 --> 00:05:03,000
+So the Internet is interactive.
+
+88
+00:05:07,000 --> 00:05:10,000
+In other words, there is communication
+
+89
+00:05:10,000 --> 00:05:14,000
+between the person looking for news and the website.
+
+90
+00:05:14,000 --> 00:05:21,000
+Again, you, the Internet user, control the news you get.
+
+91
+00:05:21,000 --> 00:05:25,000
+Now, I want to point out that this movement to Internet news
+
+92
+00:05:25,000 --> 00:05:28,000
+has obviously made a lot of people excited,
+
+93
+00:05:28,000 --> 00:05:33,000
+but it's also made some experts who study the media--
+
+94
+00:05:33,000 --> 00:05:37,000
+well, it's made them worried.
+
+95
+00:05:37,000 --> 00:05:40,000
+Some of their concerns are the flip side,
+
+96
+00:05:40,000 --> 00:05:45,000
+meaning the opposite of the attractions we talked about earlier.
+
+97
+00:05:45,000 --> 00:05:49,000
+For example, I mentioned that Internet news is fresh.
+
+98
+00:05:49,000 --> 00:05:51,000
+It's up to date.
+
+99
+00:05:51,000 --> 00:05:58,000
+Well, the downside, that is, the negative side of this,
+
+100
+00:05:58,000 --> 00:06:01,000
+is that reporters writing the news for the Internet
+
+101
+00:06:01,000 --> 00:06:05,000
+must work extremely quickly to research, write,
+
+102
+00:06:05,000 --> 00:06:09,000
+and get the news on the Internet as soon as possible.
+
+103
+00:06:09,000 --> 00:06:15,000
+So in this rush, rush, rush, to get the news onto the Internet,
+
+104
+00:06:15,000 --> 00:06:18,000
+it's easy for the reporters to make mistakes
+
+105
+00:06:18,000 --> 00:06:23,000
+or maybe leave out some important information.
+
+106
+00:06:23,000 --> 00:06:27,000
+So media experts are concerned that Internet news
+
+107
+00:06:27,000 --> 00:06:36,000
+might sometimes be less accurate and less reliable than newspaper news.
+
+108
+00:06:36,000 --> 00:06:40,000
+So that's one possible downside of Internet news.
+
+109
+00:06:40,000 --> 00:06:46,000
+Okay, now, here's another possible problem.
+
+110
+00:06:46,000 --> 00:06:48,000
+We said before that many Internet users
+
+111
+00:06:48,000 --> 00:06:52,000
+really enjoy controlling their news.
+
+112
+00:06:52,000 --> 00:06:55,000
+Maybe that sounded good, right?
+
+113
+00:06:55,000 --> 00:06:58,000
+But the worry for media experts is the possibility
+
+114
+00:06:58,000 --> 00:07:02,000
+that Internet users will limit their news too much.
+
+115
+00:07:02,000 --> 00:07:05,000
+They won't know everything they should.
+
+116
+00:07:05,000 --> 00:07:09,000
+Now, this is a crucial idea.
+
+117
+00:07:09,000 --> 00:07:13,000
+And the idea is that people who get their news on the Internet
+
+118
+00:07:13,000 --> 00:07:16,000
+may only learn what they want to learn
+
+119
+00:07:16,000 --> 00:07:21,000
+and miss other important information that they should know.
+
+120
+00:07:21,000 --> 00:07:26,000
+All right, now, I want to bring up another concern,
+
+121
+00:07:26,000 --> 00:07:29,000
+and it's related to the previous one.
+
+122
+00:07:29,000 --> 00:07:34,000
+It has to do with this idea of limiting what news you get on the Internet.
+
+123
+00:07:34,000 --> 00:07:41,000
+So, now, right now, let's take a look at this.
+
+124
+00:07:41,000 --> 00:07:44,000
+It's the front page of a newspaper.
+
+125
+00:07:44,000 --> 00:07:47,000
+It's a typical front page of a newspaper.
+
+126
+00:07:47,000 --> 00:07:51,000
+Here you see all kinds of news just on the front page,
+
+127
+00:07:51,000 --> 00:07:55,000
+international, national, local news.
+
+128
+00:07:55,000 --> 00:08:00,000
+And you can also find out right away what news is most important.
+
+129
+00:08:00,000 --> 00:08:03,000
+The important news has a bigger headline.
+
+130
+00:08:03,000 --> 00:08:06,000
+Here it is, at or near the top of the page.
+
+131
+00:08:06,000 --> 00:08:09,000
+And maybe it's longer.
+
+132
+00:08:09,000 --> 00:08:12,000
+Look at this headline.
+
+133
+00:08:12,000 --> 00:08:16,000
+You know by where it's at that it's the most important news.
+
+134
+00:08:16,000 --> 00:08:22,000
+It's more important than the other news.
+
+135
+00:08:22,000 --> 00:08:25,000
+But when you get the news online,
+
+136
+00:08:25,000 --> 00:08:29,000
+you tend to see something like a list, a list, you know,
+
+137
+00:08:29,000 --> 00:08:33,000
+line, line, line of headlines to choose.
+
+138
+00:08:33,000 --> 00:08:36,000
+You don't always know what's important.
+
+139
+00:08:36,000 --> 00:08:41,000
+So the worry is that Internet news readers will have much less information
+
+140
+00:08:41,000 --> 00:08:46,000
+about the important things they need to find out in today's news.
+
+141
+00:08:46,000 --> 00:08:51,000
+So what I'm saying is some experts fear that online news readers
+
+142
+00:08:51,000 --> 00:08:55,000
+will be less informed citizens who maybe, well,
+
+143
+00:08:55,000 --> 00:08:59,000
+who might not participate as much in their communities.
+
+144
+00:08:59,000 --> 00:09:02,000
+In other words, if people know less about the world around them,
+
+145
+00:09:02,000 --> 00:09:09,000
+then they might not vote, say, or help make other decisions in their communities.
+
+146
+00:09:09,000 --> 00:09:14,000
+And they just won't be as interested in the events going on around them.
+
+147
+00:09:14,000 --> 00:09:16,000
+That's the fear.
+
+148
+00:09:16,000 --> 00:09:20,000
+All right, I see our time is almost up.
+
+149
+00:09:20,000 --> 00:09:24,000
+Well, I want to stress that the trend away from newspapers to the Internet
+
+150
+00:09:24,000 --> 00:09:27,000
+is happening right in front of us.
+
+151
+00:09:27,000 --> 00:09:30,000
+And as students of the media,
+
+152
+00:09:30,000 --> 00:09:34,000
+you may or may not agree with some of the concerns of the researchers.
+
+153
+00:09:34,000 --> 00:09:38,000
+But it certainly offers us a lot to think about.
+
+154
+00:09:38,000 --> 00:09:41,000
+Okay, I'll see you guys next time.
+
+155
+00:09:43,000 --> 00:09:45,000
+[music]
+
+156
+00:09:45,000 --> 00:09:47,000
+[music]
+

@@ -1,5 +1,5 @@
 /* ============================================================
-   WRITING ANNOTATIONS — shared inline-feedback engine
+   WRITING ANNOTATIONS - shared inline-feedback engine
    ------------------------------------------------------------
    Powers the Google-Docs-style inline comments on a student's
    essay. Used by BOTH:
@@ -15,7 +15,7 @@
    render we verify text.slice(start,end) === quote; if the text
    shifted (e.g. student resubmitted), we search for the quote and
    re-anchor. If it can't be found, the annotation is "detached"
-   and shown in a side list instead of inline — never lost.
+   and shown in a side list instead of inline - never lost.
 
    window.WritingAnnotations API:
      render(container, text, annotations, opts)
@@ -28,10 +28,10 @@
   'use strict';
 
   const CRIT_COLORS = {
-    CC: '#34d399', // Organization — emerald
-    TA: '#a78bfa', // Content — violet
-    GR: '#38bdf8', // Language — sky
-    VO: '#fbbf24'  // Word choice — amber
+    CC: '#34d399', // Organization - emerald
+    TA: '#60a5fa', // Content - violet
+    GR: '#60a5fa', // Language - sky
+    VO: '#60a5fa'  // Word choice - amber
   };
   const BANDS = ['No Attempt', 'Poor', 'Needs Improvement', 'Satisfactory', 'Good', 'Excellent'];
 
@@ -104,9 +104,17 @@
     let cursor = 0;
     placed.forEach(r => {
       if (r.start > cursor) html += esc(text.slice(cursor, r.start));
-      const color = CRIT_COLORS[r.a.criterion] || '#a78bfa';
+      const color = CRIT_COLORS[r.a.criterion] || '#60a5fa';
+      // color:inherit is load-bearing. <mark> is a real HTML element with a
+      // user-agent default of black text on yellow. Setting only `background`
+      // left the UA's black text in place, so on the dark feedback modal every
+      // annotated word rendered black on a 15%-opacity blue and was unreadable.
+      // Measured: container color rgb(226,232,240), mark color rgb(0,0,0).
+      // Inheriting keeps it correct on the dark student modal AND on the light
+      // teacher grading view, which a fixed colour would not.
       html += '<mark class="wa-hl" data-ann="' + esc(r.a.id) + '" '
             + 'style="background:' + color + '26; border-bottom:2px solid ' + color + '; '
+            + 'color:inherit; '
             + 'border-radius:2px; padding:0 1px; cursor:pointer;">'
             + esc(text.slice(r.start, r.end)) + '</mark>';
       cursor = r.end;
@@ -157,8 +165,8 @@
   // ── Comment bubble (view a single annotation) ──────────────
   function showBubble(anchorEl, ann, opts) {
     closeBubble();
-    const color = CRIT_COLORS[ann.criterion] || '#a78bfa';
-    const scoreTxt = (ann.score != null) ? (ann.score + ' — ' + (BANDS[ann.score] || '')) : '';
+    const color = CRIT_COLORS[ann.criterion] || '#60a5fa';
+    const scoreTxt = (ann.score != null) ? (ann.score + ' - ' + (BANDS[ann.score] || '')) : '';
     const rubric = opts.rubric || 'essay';
     const bub = document.createElement('div');
     bub.className = 'wa-bubble';
@@ -208,7 +216,7 @@
 
   // ── Teacher composer popup ─────────────────────────────────
   // opts: { rubric, quote, criterion?, score?, onSave(annPartial), onCancel }
-  // onSave receives { criterion, score, text } — caller adds id/anchor.
+  // onSave receives { criterion, score, text } - caller adds id/anchor.
   function openComposer(opts) {
     opts = opts || {};
     const rubric = opts.rubric || 'essay';
@@ -236,8 +244,8 @@
       for (let s = 5; s >= 0; s--) {
         const on = score === s;
         h += '<button type="button" class="wa-score" data-s="' + s + '" '
-          + 'style="' + (on ? 'background:#6366f1;color:#fff;border-color:#6366f1;' : '') + '">'
-          + s + ' — ' + BANDS[s] + '</button>';
+          + 'style="' + (on ? 'background:#2563eb;color:#fff;border-color:#2563eb;' : '') + '">'
+          + s + ' - ' + BANDS[s] + '</button>';
       }
       return h;
     }
@@ -254,13 +262,13 @@
       }
       h += '<div class="wa-section-lbl">' + esc(critLabel(rubric, criterion)) + ' · ' + s_band(score) + '</div>';
       if (!comments.length) {
-        h += '<div class="wa-hint">No saved comments for this cell yet — type your own below.</div>';
+        h += '<div class="wa-hint">No saved comments for this cell yet - type your own below.</div>';
       } else {
         h += comments.map(t => '<button type="button" class="wa-cmt">' + esc(t) + '</button>').join('');
       }
       return h;
     }
-    function s_band(s) { return s + ' — ' + BANDS[s]; }
+    function s_band(s) { return s + ' - ' + BANDS[s]; }
 
     function paint() {
       box.innerHTML =
@@ -349,7 +357,7 @@
 .wa-cmt{text-align:left;padding:8px 10px;border-radius:8px;border:1px solid var(--border-color,rgba(255,255,255,0.10));
   background:rgba(255,255,255,0.03);color:var(--text-primary,#f1f5f9);font-family:inherit;font-size:0.88em;
   cursor:pointer;line-height:1.4;}
-.wa-cmt:hover{border-color:#6366f1;background:rgba(99,102,241,0.12);}
+.wa-cmt:hover{border-color:#2563eb;background:rgba(37,99,235,0.12);}
 .wa-recent-cmt{border-style:dashed;}
 .wa-hint{color:var(--text-muted,#94a3b8);font-size:0.85em;padding:8px;font-style:italic;}
 .wa-staged-lbl{font-size:0.8em;font-weight:600;color:var(--text-primary,#f1f5f9);margin-bottom:4px;}

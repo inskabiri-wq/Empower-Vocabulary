@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- REQUIRED: without it a narrow emulation falls back to a 980px layout
+     viewport and every phone measurement silently reports the desktop grid. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alert grid alignment probe</title>
+<style>
+  body { margin: 0; background: #0d1117; color: #e6edf3; font: 14px/1.5 system-ui; padding: 12px; }
+
+  /* The rules copied verbatim from teacher-dashboard.html, including the two
+     responsive overrides, so the cascade here matches the real page. */
+  .overview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  #alertCardEssays { grid-column: 1 / -1; }
+  @media (max-width: 1000px) { .overview-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px)  { .overview-grid { grid-template-columns: 1fr; } }
+
+  .overview-card { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px; text-align:center; }
+  .icon { font-size: 22px; }
+  .value { font-size: 22px; font-weight: 700; color:#58a6ff; }
+  .label { font-size: 11px; text-transform: uppercase; color:#8b949e; }
+</style>
+</head>
+<body>
+
+<div class="overview-grid" id="alertSummaryGrid">
+  <div class="overview-card alert-summary-card" id="alertCardInactive"><div class="icon">🕐</div><div class="value">3</div><div class="label">Inactive 7+ Days</div></div>
+  <div class="overview-card alert-summary-card" id="alertCardLowScore"><div class="icon">📉</div><div class="value">5</div><div class="label">Score &lt; 50%</div></div>
+  <div class="overview-card alert-summary-card" id="alertCardNoSessions"><div class="icon">📭</div><div class="value">2</div><div class="label">No Sessions</div></div>
+  <div class="overview-card alert-summary-card" id="alertCardTotal"><div class="icon">⚠️</div><div class="value">10</div><div class="label">Total Alerts</div></div>
+  <div class="overview-card alert-summary-card" id="alertCardEssays"><div class="icon">✍️</div><div class="value">12</div><div class="label">Essays Waiting</div></div>
+</div>
+
+<script>
+window.measure = function () {
+  var grid = document.getElementById('alertSummaryGrid');
+  var cards = Array.prototype.slice.call(grid.children);
+  var cols = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length;
+  var rows = {};
+  cards.forEach(function (c) {
+    var t = Math.round(c.getBoundingClientRect().top);
+    (rows[t] = rows[t] || []).push(Math.round(c.getBoundingClientRect().width));
+  });
+  var rowKeys = Object.keys(rows).sort(function (a, b) { return a - b; });
+  var perRow = rowKeys.map(function (k) { return rows[k].length; });
+  // An orphan is a last row that does not FILL the grid - not merely one that
+  // holds fewer cards. A single card spanning the whole row is deliberate and
+  // looks correct; counting cards alone called that an orphan and would have
+  // had me "fix" a layout that was already right.
+  var gridW = grid.getBoundingClientRect().width;
+  var lastTop = rowKeys[rowKeys.length - 1];
+  var lastRowW = rows[lastTop].reduce(function (t, w) { return t + w; }, 0)
+               + 16 * (rows[lastTop].length - 1);
+  var orphan = rowKeys.length > 1 && lastRowW < gridW - 2;
+  var widths = cards.map(function (c) { return Math.round(c.getBoundingClientRect().width); });
+  return {
+    viewport: window.innerWidth,
+    columns: cols,
+    cardsPerRow: perRow,
+    cardWidths: Array.from(new Set(widths)),
+    orphanRow: orphan,
+    narrowestCard: Math.min.apply(null, widths),
+    sideScroll: document.documentElement.scrollWidth > document.documentElement.clientWidth
+  };
+};
+</script>
+</body>
+</html>

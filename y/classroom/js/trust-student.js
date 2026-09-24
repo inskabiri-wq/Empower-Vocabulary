@@ -21,15 +21,12 @@
 (function () {
   'use strict';
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-    authDomain: "empower-vocabulary-practice.firebaseapp.com",
-    projectId: "empower-vocabulary-practice",
-    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-    messagingSenderId: "136270199832",
-    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // Firebase is started by js/firebase-init.js, which reads the project
+  // from js/tenant.js. This file used to name one university directly, which would
+  // have pointed every deployment at that same project.
+  if (!firebase.apps.length) {
+    throw new Error('trust-student: js/tenant.js + js/firebase-init.js must load first.');
+  }
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
@@ -229,7 +226,7 @@
       return `
         <div style="padding:7px 8px; border-bottom:1px dashed var(--t-border);
                     font-size:0.88em; display:flex; gap:8px; align-items:flex-start;">
-          <span style="color:var(--t-text-mut); font-family:JetBrains Mono;
+          <span style="color:var(--t-text-mut); font-family:var(--ll-mono);
                        font-size:0.78em; min-width:46px;">${t}</span>
           <span style="flex:1; line-height:1.4;">${escHtml(c.text || '')}</span>
         </div>`;
@@ -504,7 +501,7 @@
     let opts;
     if (item.gq) {
       stemEl.innerHTML = escHtml(item.stem).replace(/_{2,}/,
-        '<span style="display:inline-block;min-width:56px;border-bottom:3px solid var(--t-cyan-2,#22d3ee);vertical-align:bottom;"></span>');
+        '<span style="display:inline-block;min-width:56px;border-bottom:3px solid var(--t-cyan-2,#60a5fa);vertical-align:bottom;"></span>');
       opts = shuffleInPlace(item.options.map((t, i) => ({ def: t, isCorrect: i === item.answer })));
     } else {
       const others = packData.words.filter(w => w.word !== item.word);
@@ -999,7 +996,7 @@
       return `
         <div style="padding:7px 8px; border-bottom:1px dashed var(--t-border);
                     font-size:0.88em; display:flex; gap:8px; align-items:flex-start;">
-          <span style="color:var(--t-text-mut); font-family:JetBrains Mono;
+          <span style="color:var(--t-text-mut); font-family:var(--ll-mono);
                        font-size:0.78em; min-width:46px;">${t}</span>
           <span style="flex:1; line-height:1.4;">${escHtml(c.text || '')}</span>
         </div>`;

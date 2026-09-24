@@ -1,18 +1,18 @@
 /* ============================================================
-   TEACHER — Dashboard extras
+   TEACHER - Dashboard extras
    ------------------------------------------------------------
    Two self-installing panels, same pattern as
    assignments-overview.js (patch the render pipeline, read
    already-loaded globals, no new Firestore reads):
 
-     • Missing#5 — Class comparison (Overview tab)
+     • Missing#5 - Class comparison (Overview tab)
          Per-class avg score / sessions / active-this-week,
          side by side, + a cohort this-week-vs-last-week delta.
 
-     • Missing#7 — Deadline calendar (Assignments tab)
+     • Missing#7 - Deadline calendar (Assignments tab)
          Month grid with assignment-deadline chips, prev/next nav.
 
-   Reads: allStudents, allSessions, allAssignments (bare names —
+   Reads: allStudents, allSessions, allAssignments (bare names -
    they're `let`-scoped in config.js / teacher-assignments.js,
    reachable from this classic script but NOT on window).
    ============================================================ */
@@ -34,7 +34,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  // Missing#5 — CLASS COMPARISON
+  // Missing#5 - CLASS COMPARISON
   // ═══════════════════════════════════════════════════════════
   function ensureClassPanel() {
     let panel = document.getElementById('classComparisonPanel');
@@ -71,12 +71,12 @@
 
     // Map userId → class for fast session grouping.
     const classByUser = {};
-    students.forEach(s => { classByUser[s.id] = (s.studentClass || '').trim() || '—'; });
+    students.forEach(s => { classByUser[s.id] = (s.studentClass || '').trim() || '-'; });
 
     // Group.
     const byClass = {};
     students.forEach(s => {
-      const c = (s.studentClass || '').trim() || '—';
+      const c = (s.studentClass || '').trim() || '-';
       if (!byClass[c]) byClass[c] = { cls: c, students: 0, sessions: 0, scoreSum: 0, scoreN: 0, activeWeek: new Set() };
       byClass[c].students++;
     });
@@ -96,7 +96,7 @@
     });
 
     const rows = Object.values(byClass)
-      .filter(c => c.cls !== '—' || c.students > 0)
+      .filter(c => c.cls !== '-' || c.students > 0)
       .map(c => ({
         cls: c.cls,
         students: c.students,
@@ -131,7 +131,7 @@
     }
 
     const barRows = rows.map(r => {
-      const color = r.avg >= 80 ? '#22c55e' : r.avg >= 50 ? '#f59e0b' : '#ef4444';
+      const color = r.avg >= 80 ? '#22c55e' : r.avg >= 50 ? '#3b82f6' : '#ef4444';
       return `
         <div style="display:grid; grid-template-columns: 90px 1fr 46px; align-items:center; gap:10px; margin-bottom:8px;">
           <div style="font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${_esc(r.cls)}">${_esc(r.cls)}</div>
@@ -149,7 +149,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════
-  // Missing#7 — DEADLINE CALENDAR
+  // Missing#7 - DEADLINE CALENDAR
   // ═══════════════════════════════════════════════════════════
   // Viewed month persists across data re-renders.
   let _calMonth = new Date(); _calMonth.setDate(1);
@@ -258,10 +258,10 @@
   }
 
   // Module-level guard so each target function is wrapped AT MOST ONCE
-  // by this module — no matter how many times tryWire runs (setTimeout
+  // by this module - no matter how many times tryWire runs (setTimeout
   // fires + every onAuthStateChanged tick). Tagging the wrapper itself
-  // (the old approach) breaks when a SECOND patcher — assignments-
-  // overview.js — wraps over us: its wrapper hides our tag, so we'd
+  // (the old approach) breaks when a SECOND patcher - assignments-
+  // overview.js - wraps over us: its wrapper hides our tag, so we'd
   // re-wrap, then it re-wraps, escalating without bound on every tick.
   const _patched = Object.create(null);
   function _patch(name) {

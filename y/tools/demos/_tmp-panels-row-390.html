@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEMP harness - overview panels row at 390</title>
+<link rel="stylesheet" href="../../css/brand.css">
+<link rel="stylesheet" href="../../teacher/css/styles.css">
+<link rel="stylesheet" href="../../teacher/css/skills.css">
+<link rel="stylesheet" href="../../assignments/css/assignments.css">
+<link rel="stylesheet" href="../../teacher/css/dashboard-v2.css">
+</head>
+<body>
+<div class="container">
+  <div class="t2-shell" style="display:flex">
+    <aside class="t2-sidebar" id="t2sidebar">
+      <button class="t2-nav-item active" data-tab="overview"><span class="ico">O</span><span class="label">Overview</span></button>
+      <button class="t2-nav-item" data-tab="students"><span class="ico">S</span><span class="label">Students</span></button>
+      <button class="t2-nav-item" data-tab="assignments"><span class="ico">A</span><span class="label">Assignments</span></button>
+      <button class="t2-nav-item" data-tab="activity"><span class="ico">C</span><span class="label">Activity</span></button>
+    </aside>
+    <div class="t2-main">
+
+      <!-- ROW 1: no inline style (control) -->
+      <div class="t2-panels-row" id="row1">
+        <div class="t2-panel">
+          <div class="t2-panel-title"><span>Level Distribution</span></div>
+          <p class="t2-panel-sub">Number of students at each CEFR level (from their profile)</p>
+        </div>
+        <div class="t2-panel">
+          <div class="t2-panel-title"><span>Activity Popularity</span></div>
+          <p class="t2-panel-sub">Which games students used most - last 7 days</p>
+        </div>
+      </div>
+
+      <!-- ROW 2: verbatim from teacher-dashboard.html:1538 -->
+      <div class="t2-panels-row" id="row2" style="grid-template-columns: 1.4fr 1fr;">
+        <div class="t2-panel alert-tinted" id="panelAttn">
+          <div class="t2-panel-title" style="justify-content:space-between">
+            <span style="display:flex; align-items:center; gap:8px;">
+              <span>Needs Attention</span>
+              <span class="t2-badge warning" id="t2attnCount">6 students</span>
+            </span>
+            <button type="button" class="t2-btn">View All</button>
+          </div>
+          <div class="t2-attn-list" id="t2attnList"></div>
+        </div>
+
+        <div class="t2-panel" id="panelFeed">
+          <div class="t2-panel-title" style="justify-content: space-between;">
+            <span style="display:flex; align-items:center; gap:8px;">
+              <span>Recent Activity</span>
+            </span>
+            <button type="button" class="t2-btn">View all</button>
+          </div>
+          <div class="t2-feed" id="t2feedList"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// Real markup from teacher/js/overview-v2.js renderNeedsAttention()
+var RED='#ef4444', AMBER='#f59e0b', BLUE='#3b82f6';
+var rows = [
+  {name:'Zeynep Kaya', init:'ZK', sev:'critical', color:RED,   issue:'Inactive 21 days · Avg score 34%'},
+  {name:'Mehmet Demir', init:'MD', sev:'critical', color:RED,   issue:'Avg score 38%'},
+  {name:'Ayşe Yılmaz', init:'AY', sev:'warning',  color:AMBER, issue:'Inactive 9 days'},
+  {name:'Emre Çelik', init:'EÇ', sev:'warning',  color:AMBER, issue:'No sessions completed'},
+  {name:'Elif Şahin', init:'EŞ', sev:'warning',  color:AMBER, issue:'Avg score 47%'},
+  {name:'Burak Arık', init:'BA', sev:'info',     color:BLUE,  issue:'Inactive 7 days'}
+];
+document.getElementById('t2attnList').innerHTML = rows.map(function(r){
+  return '<div class="t2-attn-row severity-'+r.sev+'">'
+   + '<div class="t2-attn-avatar" style="background:'+r.color+'20; border-color:'+r.color+'50; color:'+r.color+';">'+r.init+'</div>'
+   + '<div class="t2-attn-info">'
+   +   '<div class="t2-attn-name">'+r.name+'</div>'
+   +   '<div class="t2-attn-issue">'+r.issue+'</div>'
+   + '</div>'
+   + '<span class="t2-badge '+r.sev+'">'+r.sev.toUpperCase()+'</span>'
+   + '<button type="button" class="t2-attn-flag" title="Flag for follow-up">⚐</button>'
+   + '<button type="button" class="t2-attn-action">View</button>'
+   + '</div>';
+}).join('');
+
+var feed = [
+  ['Zeynep Kaya','completed a vocabulary session · 82%','3 hours ago'],
+  ['Mehmet Demir','completed a reading exam · 61%','5 hours ago'],
+  ['Ayşe Yılmaz','completed a listening exam · 74%','yesterday'],
+  ['Emre Çelik','completed a grammar session · 90%','yesterday'],
+  ['Elif Şahin','completed a vocabulary session · 55%','2 days ago']
+];
+document.getElementById('t2feedList').innerHTML = feed.map(function(f){
+  return '<div class="t2-feed-row">'
+    + '<span class="t2-feed-dot" style="background:'+BLUE+'"></span>'
+    + '<div><div class="t2-feed-text"><strong>'+f[0]+'</strong> '+f[1]+'</div>'
+    + '<div class="t2-feed-time">'+f[2]+'</div></div></div>';
+}).join('');
+</script>
+<script src="../../teacher/js/mobile-shell.js"></script>
+<script src="../../teacher/js/mobile-tables.js"></script>
+</body>
+</html>

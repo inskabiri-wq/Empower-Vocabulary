@@ -1,15 +1,15 @@
 /* ============================================================
-   LINGUALAB — PWA registration
+   LINGUALAB - PWA registration
    ------------------------------------------------------------
    Registers the service worker. Resilient + feature-detected:
    a failure here NEVER breaks the page (the app works exactly
-   the same with or without the SW — the SW is pure enhancement).
+   the same with or without the SW - the SW is pure enhancement).
 
-   Update behaviour: when a NEW service worker takes control after
-   a deploy, the page reloads ONCE so the student lands on the
-   latest version with no manual hard-refresh. On the very first
-   install we deliberately do NOT reload (avoids a pointless
-   first-load refresh).
+   Update behaviour: registration only. The page is never reloaded
+   from here. HTML is served network-first and assets are versioned
+   with ?v=N, so a deploy is already picked up on the next
+   navigation; reloading on top of that only produced a second load
+   that raced the sign-in redirect. See the note further down.
 
    To fully remove the PWA later: delete service-worker.js +
    manifest.json + this file + the few <link>/<script> tags, OR
@@ -20,12 +20,6 @@
   if (!('serviceWorker' in navigator)) return;
 
   window.addEventListener('load', function () {
-    // Was this page already controlled by a SW when it loaded?
-    //   • false → first-ever install. Don't reload on controllerchange.
-    //   • true  → an UPDATE is taking over → reload once to get fresh.
-    var hadController = !!navigator.serviceWorker.controller;
-    var refreshing = false;
-
     navigator.serviceWorker.register('/service-worker.js')
       .catch(function (err) {
         // Non-fatal. Page keeps working without offline/install.
@@ -35,11 +29,25 @@
         }
       });
 
-    navigator.serviceWorker.addEventListener('controllerchange', function () {
-      if (!hadController) return;   // first install — nothing to refresh
-      if (refreshing) return;
-      refreshing = true;
-      window.location.reload();
-    });
+    // NO reload on controllerchange. This used to call location.reload() when a
+    // new worker took over, and it is what made the app load twice on every
+    // open and land unpredictably on either the dashboard or the login page.
+    //
+    // Two things made the reload both useless and harmful:
+    //
+    // 1. It was never needed. service-worker.js serves HTML NETWORK-FIRST, so
+    //    every navigation already fetches the current page, and the assets it
+    //    references carry ?v=N, so a bumped asset is a different URL that misses
+    //    the cache anyway. There was nothing stale left for the reload to fix.
+    //
+    // 2. It raced the sign-in redirect. The worker calls skipWaiting() on
+    //    install and clients.claim() on activate, so after any deploy it takes
+    //    control within the first moments of the very first page - exactly when
+    //    index/js/main.js is doing location.replace() to the right dashboard.
+    //    Whichever landed first decided where the app ended up, which is why it
+    //    was random.
+    //
+    // The new worker still controls the page the moment it claims it, and every
+    // later navigation uses it. Nothing about freshness depends on reloading.
   });
 })();

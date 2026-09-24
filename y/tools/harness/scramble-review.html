@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Harness - scramble per-sentence results</title>
+<link rel="stylesheet" href="../../css/brand.css">
+<link rel="stylesheet" href="../../classroom/css/styles.css">
+<link rel="stylesheet" href="../../classroom/css/minigames.css">
+<style>body{padding:18px;font-family:system-ui,sans-serif} h1{font-size:16px} h2{font-size:14px;margin:22px 0 6px}</style>
+</head>
+<body>
+<h1>Sentence Scramble results: which sentence did the class get wrong?</h1>
+
+<h2>Class of 12, game ended on sentence 5</h2>
+<div class="leaderboard-list" id="sentenceReview"></div>
+
+<h2>Solo test (the owner's game): skipped #2, End pressed during #4</h2>
+<div class="leaderboard-list" id="soloReview"></div>
+
+<h2>Hard sentence: 12 shown it, only 2 finished in time (all answered the next)</h2>
+<div class="leaderboard-list" id="hardReview"></div>
+
+<h2>Late joiners and a duplicate: 4 from the lobby, 2 joined during #2, 1 copy that never answers</h2>
+<div class="leaderboard-list" id="lateReview"></div>
+
+<script>
+var MG = { escHtml: function (s) { return String(s == null ? '' : s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;'); } };
+
+// MIRROR of the Sentence Review block in classroom/js/scramble-teacher.js
+// (showResults). Keep the body identical so this page proves the real logic:
+// rounds are synchronized, a missing r<i> means "shown, not submitted", and
+// only sentences after s.roundIndex (where endGame leaves it) were never shown.
+function render(elId, players, s) {
+  const lastShown = s.roundIndex == null ? -1 : s.roundIndex;
+  document.getElementById(elId).innerHTML = (s.rounds || []).map((r, i) => {
+    const key = 'r' + i;
+    let attempted = 0, right = 0, present = 0;
+    players.forEach((p) => {
+      const rr = p.roundResults || {};
+      // Counted only if they were in the room for this sentence AND answered
+      // at least one sentence in the game. A late joiner never saw the
+      // sentences before they joined (scramble-student.js writes
+      // joinedRound). A player doc that never answered anything is usually
+      // not a student at all: a second copy from reopening the link in
+      // another browser, or a tab closed in the lobby. It used to add "1 no
+      // answer" to every sentence.
+      if ((p.joinedRound == null ? -1 : p.joinedRound) <= i && Object.keys(rr).length) present++;
+      if (Object.prototype.hasOwnProperty.call(rr, key)) {
+        attempted++;
+        if (rr[key]) right++;
+      }
+    });
+    const pct = attempted ? Math.round((right / attempted) * 100) : 0;
+    const tone = !attempted ? 'none' : pct >= 80 ? 'good' : pct >= 50 ? 'mid' : 'bad';
+    const wrong = attempted - right;
+    const shown = i <= lastShown;
+    const noAnswer = shown ? Math.max(0, present - attempted) : 0;
+    const tip = shown
+      ? `${right} right, ${wrong} wrong, ${noAnswer} no answer`
+      : 'The game ended before this sentence';
+    const count = attempted
+      ? right + '/' + attempted + (noAnswer ? '<br>' + noAnswer + ' no answer' : '')
+      : (shown ? 'no answers' : 'not played');
+    return `<div class="sr-row">
+      <div class="sr-n">${i + 1}</div>
+      <div class="sr-body">
+        <div class="sr-sentence">${MG.escHtml(r.answer)}</div>
+        <div class="sr-word">${MG.escHtml(r.word)}</div>
+      </div>
+      <div class="sr-bar" title="${tip}">
+        <div class="sr-fill sr-${tone}" style="width:${pct}%;"></div>
+      </div>
+      <div class="sr-pct sr-${tone}-text" title="${tip}">${attempted ? pct + '%' : '-'}</div>
+      <div class="sr-count" title="${tip}">${count}</div>
+    </div>`;
+  }).join('');
+}
+
+var ROUNDS = [
+  { answer: 'She has lived here since 2019.',           word: 'since' },
+  { answer: 'They were watching a film when I called.', word: 'when' },
+  { answer: 'Had he known, he would have come earlier.', word: 'had' },
+  { answer: 'The report was written by the committee.',  word: 'passive' },
+  { answer: 'I wish I had studied harder.',              word: 'wish' }
+];
+
+// A realistic room: 12 students, 5 sentences, all shown (the game ended on
+// #5). Everyone saw every sentence; the later ones ran out of time for some.
+var classPlayers = [];
+for (var i = 0; i < 12; i++) {
+  var rr = {};
+  rr.r0 = true;                          // everyone got #1
+  rr.r1 = i < 10;                        // 10/12
+  rr.r2 = i < 4;                         // 4/12  <- the hard one
+  if (i < 9) rr.r3 = i < 7;              // 9 submitted, 7 right, 3 no answer
+  if (i < 3) rr.r4 = true;               // 3 submitted, 9 no answer
+  classPlayers.push({ name: 'S' + i, roundResults: rr });
+}
+render('sentenceReview', classPlayers, { roundIndex: 4, rounds: ROUNDS });
+
+// The owner's report: right on #1, let #2 time out, answered #3, pressed End
+// during #4 (roundIndex 3), so #5 was never shown.
+render('soloReview',
+  [{ name: 'Owner', roundResults: { r0: true, r2: true } }],
+  { roundIndex: 3, rounds: ROUNDS });
+
+// 12 shown the hard sentence, only 2 finished it (both right); everyone
+// answered the next one. #1 used to read a clean green "100% 2/2" with the
+// other 10 invisible.
+var hardPlayers = [];
+for (var j = 0; j < 12; j++) {
+  hardPlayers.push({ name: 'H' + j, roundResults: j < 2 ? { r0: true, r1: true } : { r1: true } });
+}
+render('hardReview', hardPlayers, { roundIndex: 1, rounds: [ROUNDS[2], ROUNDS[0]] });
+
+// Four joined in the lobby (joinedRound -1) and answered all three. Two
+// joined during #2 (joinedRound 1): Late1 answered #2 and #3, Late2 only #3.
+// Dup is a second copy of a student (the link reopened in another browser)
+// that never answers anything. #1 must read a clean 4/4 (the late pair never
+// saw it), #2 "5/5, 1 no answer" (Late2), #3 "6/6" - and Dup counts nowhere.
+var latePlayers = [];
+for (var q = 0; q < 4; q++) latePlayers.push({ name: 'L' + q, joinedRound: -1, roundResults: { r0: true, r1: true, r2: true } });
+latePlayers.push({ name: 'Late1', joinedRound: 1, roundResults: { r1: true, r2: true } });
+latePlayers.push({ name: 'Late2', joinedRound: 1, roundResults: { r2: true } });
+latePlayers.push({ name: 'Dup', joinedRound: -1, roundResults: {} });
+render('lateReview', latePlayers, { roundIndex: 2, rounds: ROUNDS.slice(0, 3) });
+
+// report(listId): one entry per row of that list. count is innerText, so the
+// two-line "7/9 / 3 no answer" comes back with a newline between the lines.
+window.report = function (elId) {
+  var list = document.getElementById(elId || 'sentenceReview');
+  return [...list.querySelectorAll('.sr-row')].map(function (row) {
+    var fill = row.querySelector('.sr-fill');
+    return {
+      n: row.querySelector('.sr-n').textContent,
+      pct: row.querySelector('.sr-pct').textContent,
+      count: row.querySelector('.sr-count').innerText,
+      tip: row.querySelector('.sr-count').getAttribute('title'),
+      barWidth: fill.getBoundingClientRect().width.toFixed(0) + 'px',
+      barColour: getComputedStyle(fill).backgroundColor
+    };
+  });
+};
+
+// verify(): every list against its expected rows, plus the rule that a row
+// nobody answered never shows "0%" and has an empty bar.
+window.EXPECTED = {
+  sentenceReview: [
+    ['100%', '12/12'], ['83%', '10/12'], ['33%', '4/12'],
+    ['78%', '7/9\n3 no answer'], ['100%', '3/3\n9 no answer']
+  ],
+  soloReview: [
+    ['100%', '1/1'], ['-', 'no answers'], ['100%', '1/1'],
+    ['-', 'no answers'], ['-', 'not played']
+  ],
+  hardReview: [
+    ['100%', '2/2\n10 no answer'], ['100%', '12/12']
+  ],
+  lateReview: [
+    ['100%', '4/4'], ['100%', '5/5\n1 no answer'], ['100%', '6/6']
+  ]
+};
+window.verify = function () {
+  var fails = [];
+  Object.keys(window.EXPECTED).forEach(function (id) {
+    var rows = window.report(id), exp = window.EXPECTED[id];
+    if (rows.length !== exp.length) fails.push(id + ': ' + rows.length + ' rows, expected ' + exp.length);
+    exp.forEach(function (e, k) {
+      var r = rows[k] || {};
+      var count = String(r.count || '').replace(/\r/g, '').trim();
+      if (r.pct !== e[0] || count !== e[1]) {
+        fails.push(id + ' #' + (k + 1) + ': got ' + JSON.stringify([r.pct, count]) + ', expected ' + JSON.stringify(e));
+      }
+      if ((count === 'no answers' || count === 'not played') && (r.pct === '0%' || r.barWidth !== '0px')) {
+        fails.push(id + ' #' + (k + 1) + ': unanswered row shows ' + r.pct + ' / bar ' + r.barWidth);
+      }
+    });
+    // innerText cannot see a soft wrap, so measure it: each count is at most
+    // its own two lines ("7/9" and "3 no answer"). At the old 74px column
+    // "10 no answer" broke onto a third.
+    document.querySelectorAll('#' + id + ' .sr-count').forEach(function (c, k) {
+      var lh = parseFloat(getComputedStyle(c).lineHeight) || parseFloat(getComputedStyle(c).fontSize) * 1.2;
+      var want = c.innerText.split('\n').length;
+      var lines = Math.round(c.getBoundingClientRect().height / lh);
+      if (lines > want) fails.push(id + ' #' + (k + 1) + ': count wraps onto ' + lines + ' lines');
+    });
+  });
+  return fails.length ? 'FAIL\n' + fails.join('\n') : 'PASS (' + Object.keys(window.EXPECTED).length + ' lists)';
+};
+</script>
+</body>
+</html>

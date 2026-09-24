@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iOS install prompt trace</title>
+<link rel="stylesheet" href="../../css/brand.css">
+<link rel="stylesheet" href="../../css/app-settings.css">
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;}
+  table{border-collapse:collapse;width:100%;max-width:1000px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  iframe{display:none;}
+</style>
+</head>
+<body class="light-mode">
+<h3 style="margin:0 0 4px;font-size:16px;">js/ios-install.js - who sees the prompt</h3>
+<p style="margin:0 0 14px;color:#475569;font-size:13px;max-width:70ch;">
+  Each case runs the real module in its own frame with a spoofed user agent and
+  platform. The prompt must appear ONLY on iOS, and must say something different
+  in a non-Safari iOS browser, because only Safari can install.
+</p>
+<table id="t"><thead><tr><th>Case</th><th>Expect sheet</th><th>Got</th><th>Message</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script>
+const IPHONE  = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1';
+const IOSCHR  = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/125.0 Mobile/15E148 Safari/604.1';
+const ANDROID = 'Mozilla/5.0 (Linux; Android 14; SM-S911B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Mobile Safari/537.36';
+const DESKTOP = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36';
+const IPADOS  = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15';
+
+const CASES = [
+  { id:'iPhone Safari',            ua:IPHONE,  plat:'iPhone',   touch:5, standalone:false, expect:true,  want:'Share' },
+  { id:'iPhone Chrome (CriOS)',    ua:IOSCHR,  plat:'iPhone',   touch:5, standalone:false, expect:true,  want:'only' },
+  { id:'iPad (reports as Mac)',    ua:IPADOS,  plat:'MacIntel', touch:5, standalone:false, expect:true,  want:'Share' },
+  { id:'Mac desktop Safari',       ua:IPADOS,  plat:'MacIntel', touch:0, standalone:false, expect:false, want:'' },
+  { id:'Android Chrome',           ua:ANDROID, plat:'Linux',    touch:5, standalone:false, expect:false, want:'' },
+  { id:'Windows Chrome',           ua:DESKTOP, plat:'Win32',    touch:0, standalone:false, expect:false, want:'' },
+  { id:'iPhone, already installed',ua:IPHONE,  plat:'iPhone',   touch:5, standalone:true,  expect:false, want:'' },
+];
+
+const PAGE = c => `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>
+  var C = ${JSON.stringify(c)};
+  Object.defineProperty(navigator, 'userAgent',      { get: function(){ return C.ua; } });
+  Object.defineProperty(navigator, 'platform',       { get: function(){ return C.plat; } });
+  Object.defineProperty(navigator, 'maxTouchPoints', { get: function(){ return C.touch; } });
+  Object.defineProperty(navigator, 'standalone',     { get: function(){ return C.standalone; } });
+  try { localStorage.removeItem('ll-ios-install-dismissed'); } catch(e){}
+  setTimeout(function(){
+    var s = document.querySelector('.ll-ios-sheet');
+    parent.postMessage({ id: C.id, shown: !!s,
+      text: s ? s.textContent.replace(/\\s+/g,' ').trim().slice(0,90) : '' }, '*');
+  }, 1900);
+<\/script>
+<script src="../../js/ios-install.js"><\/script>
+</body></html>`;
+
+const got = {};
+window.addEventListener('message', e => { if (e.data && e.data.id) { got[e.data.id] = e.data; render(); } });
+
+function render(){
+  const tb = document.querySelector('#t tbody');
+  let done = 0, pass = 0;
+  tb.innerHTML = CASES.map(c => {
+    const g = got[c.id];
+    let v = '<span style="color:#64748b">...</span>';
+    if (g) {
+      done++;
+      const ok = g.shown === c.expect && (!c.want || g.text.indexOf(c.want) > -1);
+      if (ok) pass++;
+      v = ok ? '<span class="pass">PASS</span>' : '<span class="fail">FAIL</span>';
+    }
+    return '<tr><td>'+c.id+'</td><td>'+c.expect+'</td><td>'+(g?g.shown:'-')+
+           '</td><td style="max-width:380px">'+(g?g.text:'-')+'</td><td>'+v+'</td></tr>';
+  }).join('');
+  const el = document.getElementById('sum');
+  if (done < CASES.length) { el.textContent = 'running... '+done+'/'+CASES.length; return; }
+  el.textContent = pass+' / '+CASES.length+(pass===CASES.length?'  PASS':'  FAIL');
+  el.className = pass===CASES.length?'pass':'fail';
+  window.__iosTrace = { pass, total: CASES.length,
+    rows: CASES.map(c => ({ id:c.id, expect:c.expect, got: got[c.id]?got[c.id].shown:null,
+                            text: got[c.id]?got[c.id].text:'' })) };
+}
+render();
+
+// sequential: every frame shares one localStorage on this origin
+(async function(){
+  for (const c of CASES) {
+    const f = document.createElement('iframe');
+    const done = new Promise(res => {
+      const h = e => { if (e.data && e.data.id === c.id) { window.removeEventListener('message', h); res(); } };
+      window.addEventListener('message', h);
+      setTimeout(res, 4000);
+    });
+    f.srcdoc = PAGE(c);
+    document.body.appendChild(f);
+    await done;
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listening question render + grading</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1020px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;vertical-align:top;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:82ch;line-height:1.55;}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:3px;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">renderQuestion() and fill-blank grading</h3>
+<p class="lede">
+  Two shipped defects. The MCQ letter list was hardcoded to
+  <code>['a','b','c']</code>, so every paper with a fourth option drew it as
+  "undefined." with <code>value="undefined"</code> - distractor D was unlabelled
+  AND unscoreable. The fill-blank renderer replaced a literal ten-underscore
+  string, but the FSMEPT papers use fifteen and seventeen, so those questions
+  rendered with no input box at all. Grading also compared the whole answer
+  string, marking "current" wrong against a key of "up to date / current".
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script src="/student/js/listening-exam.js"></script>
+<script>
+const rows = [];
+function check(name, expected, actual){
+  rows.push({name, expected, actual, ok:String(expected)===String(actual)});
+}
+function parse(html){ const d=document.createElement('div'); d.innerHTML=html; return d; }
+
+(function(){
+  const haveRender = typeof renderQuestion === 'function';
+  check('1. renderQuestion is reachable', true, haveRender);
+  const haveGrade = typeof acceptsFill === 'function';
+  check('2. acceptsFill is reachable', true, haveGrade);
+
+  if (haveRender) {
+    // ── MCQ with FOUR options: the actual reported bug ──────────────────────
+    const q4 = { id:'b1', text:'Q with four options',
+                 options:['alpha','beta','gamma','delta'], answer:'d' };
+    const d4 = parse(renderQuestion(q4, 0, 'mcq'));
+    const letters4 = [...d4.querySelectorAll('.exam-mcq-letter')].map(e=>e.textContent.trim());
+    const values4  = [...d4.querySelectorAll('input[type=radio]')].map(e=>e.value);
+
+    check('3. four options render four labels', 4, letters4.length);
+    check('4. no label reads "undefined."', false, letters4.some(l=>/undefined/i.test(l)));
+    check('5. fourth label is "d."', 'd.', letters4[3]);
+    check('6. no radio value is "undefined"', false, values4.some(v=>/undefined/i.test(v)));
+    check('7. fourth radio value is "d"', 'd', values4[3]);
+    // The whole point: the key answer must be selectable.
+    check('8. the key answer "d" exists as a value', true, values4.includes(q4.answer));
+
+    // ── MCQ with THREE options must be untouched ────────────────────────────
+    const q3 = { id:'b2', text:'Q with three options',
+                 options:['one','two','three'], answer:'c' };
+    const d3 = parse(renderQuestion(q3, 0, 'mcq'));
+    const letters3 = [...d3.querySelectorAll('.exam-mcq-letter')].map(e=>e.textContent.trim());
+    check('9. three options still render three labels', 3, letters3.length);
+    check('10. three-option letters unchanged', 'a.,b.,c.', letters3.join(','));
+
+    // ── Fill-blank: the three blank widths in real papers ───────────────────
+    const widths = { 'ten (sample exam)':10, 'fifteen (paper 2)':15, 'seventeen (paper 2)':17 };
+    let n = 11;
+    for (const [label, w] of Object.entries(widths)) {
+      const q = { id:'f'+w, text:'The answer is ' + '_'.repeat(w) + '.', answer:'x' };
+      const d = parse(renderQuestion(q, 0, 'fillblank'));
+      const input = d.querySelector('input.exam-fill-input');
+      check(n++ + '. blank of ' + label + ' gets an input', true, !!input);
+      check(n++ + '. underscores are gone from ' + w, false, /_{3,}/.test(d.textContent));
+    }
+
+    // A statement with no blank must still be answerable, not silently dropped.
+    const qNo = { id:'fn', text:'A statement with no blank', answer:'x' };
+    const dNo = parse(renderQuestion(qNo, 0, 'fillblank'));
+    check('17. statement with no blank still gets an input', true,
+          !!dNo.querySelector('input.exam-fill-input'));
+
+    // The input must carry the question id or the grader cannot find it.
+    const qId = { id:'a4', text:'Blank here __________ ok', answer:'x' };
+    const dId = parse(renderQuestion(qId, 0, 'fillblank'));
+    check('18. input name matches the question id', 'a4',
+          (dId.querySelector('input.exam-fill-input')||{}).name);
+    check('19. only one input per question', 1,
+          dId.querySelectorAll('input.exam-fill-input').length);
+  }
+
+  if (haveGrade) {
+    // ── Alternatives in the key ─────────────────────────────────────────────
+    check('20. accepts the first alternative', true,  acceptsFill('up to date', 'up to date / current'));
+    check('21. accepts the second alternative', true, acceptsFill('current', 'up to date / current'));
+    check('22. still rejects a wrong answer', false,  acceptsFill('outdated', 'up to date / current'));
+    check('23. plain single answer still works', true, acceptsFill('teamwork', 'teamwork'));
+    check('24. plain single answer still rejects', false, acceptsFill('teamplay', 'teamwork'));
+    check('25. case insensitive', true, acceptsFill('Declining', 'declining'));
+    check('26. tolerates extra inner spaces', true, acceptsFill('important  part', 'important part'));
+    check('27. a number answer works', true, acceptsFill('70%', '70%'));
+    check('28. empty answer is never correct', false, acceptsFill('', 'declining'));
+    check('29. whitespace-only is never correct', false, acceptsFill('   ', 'declining'));
+    // A bare slash inside a real answer must NOT be treated as alternatives.
+    check('30. "24/7" is not split into 24 and 7', false, acceptsFill('24', '24/7'));
+    check('31. "24/7" matches itself', true, acceptsFill('24/7', '24/7'));
+    check('32. a null key is never correct', false, acceptsFill('anything', null));
+  }
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__lqTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok).map(r=>r.name) };
+})();
+</script>
+</body>
+</html>

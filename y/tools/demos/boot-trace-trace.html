@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boot trace self-check</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1000px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:82ch;line-height:1.55;}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:3px;}
+  iframe{position:absolute;left:-99999px;width:520px;height:420px;border:0;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">js/boot-trace.js</h3>
+<p class="lede">
+  This ships on the student dashboard, so it must be completely inert without
+  <code>?boot=1</code>. It also has to COUNT correctly or it will send back a
+  misleading report: one <code>innerHTML</code> assignment fires many mutation
+  records but is a single visible redraw, so a naive counter would cry "x30"
+  and send me chasing a bug that is not there.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script>
+const rows = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+function frame(search) {
+  return new Promise(resolve => {
+    const f = document.createElement('iframe');
+    document.body.appendChild(f);
+    const d = f.contentDocument;
+    d.open();
+    d.write('<!DOCTYPE html><html><head><meta charset="utf-8"><base href="/"></head><body>' +
+            '<div id="hubGrid"></div><div id="assignmentsContainer"></div>' +
+            '<div class="avatar-display"><span class="avatar-emoji">x</span></div>' +
+            '</body></html>');
+    d.close();
+    try { f.contentWindow.history.replaceState(null, '', '/student-dashboard.html' + search); } catch (e) {}
+    const s = d.createElement('script');
+    s.src = '/js/boot-trace.js?cb=' + Math.random();
+    s.onload = () => resolve(f);
+    d.body.appendChild(s);
+  });
+}
+
+(async function(){
+  // ── OFF by default ────────────────────────────────────────────────────────
+  const off = await frame('');
+  await wait(350);
+  const offDoc = off.contentDocument;
+  check('1. no panel without ?boot=1', null, offDoc.getElementById('btBody'));
+  const extra = [...offDoc.body.children].filter(e => e.tagName !== 'SCRIPT' && !e.id && !e.className);
+  check('2. adds no panel element', 0, extra.length);
+  // It must not even observe - a stray observer costs the student nothing
+  // visible but proves the guard leaked.
+  offDoc.getElementById('hubGrid').innerHTML = '<b>x</b>';
+  await wait(120);
+  check('3. still no panel after a DOM change', null, offDoc.getElementById('btBody'));
+  off.remove();
+
+  // ── ON with the flag ──────────────────────────────────────────────────────
+  const on = await frame('?boot=1');
+  await wait(350);
+  const d = on.contentDocument;
+  check('4. panel appears with ?boot=1', true, !!d.getElementById('btBody'));
+  check('5. copy button is a real touch target', true,
+        (d.getElementById('btCopy') || {}).getBoundingClientRect().height >= 32);
+
+  const bodyText = () => (d.getElementById('btBody') || {}).textContent || '';
+
+  // One innerHTML assignment with MANY children = ONE redraw.
+  d.getElementById('hubGrid').innerHTML =
+    Array.from({length: 30}, (_, i) => '<div class="c">' + i + '</div>').join('');
+  await wait(150);
+  let m = /hub tiles\s+x(\d+)/.exec(bodyText());
+  check('6. a 30-node innerHTML burst counts as ONE redraw', '1', m ? m[1] : 'not counted');
+
+  // A second, separate assignment = a second redraw.
+  d.getElementById('hubGrid').innerHTML = '<div>later</div>';
+  await wait(150);
+  m = /hub tiles\s+x(\d+)/.exec(bodyText());
+  check('7. a second rewrite counts as two', '2', m ? m[1] : 'not counted');
+
+  // The assignments container is watched independently.
+  d.getElementById('assignmentsContainer').innerHTML = '<div>a</div>';
+  await wait(150);
+  check('8. assignments container is watched', true, /assignments\s+x1/.test(bodyText()));
+
+  // The re-render announcement is recorded by name.
+  d.dispatchEvent(new on.contentWindow.CustomEvent('feature-toggles-ready'));
+  await wait(120);
+  check('9. feature-toggles-ready is recorded', true, /feature-toggles-ready/.test(bodyText()));
+
+  // Timestamps must be present, or a report cannot show the gap that is the flash.
+  check('10. redraws carry timestamps', true, /\d+ms/.test(bodyText()));
+
+  // A container above x1 must be flagged, not just listed.
+  check('11. a repeated redraw is flagged', true, bodyText().indexOf('!') >= 0);
+
+  // The report must be plain text worth pasting.
+  const rep = on.contentWindow.eval('(function(){var b=document.getElementById("btCopy");return b?1:0})()');
+  check('12. copy control exists', 1, rep);
+  on.remove();
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__btTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok).map(r=>r.name+' -> '+r.actual) };
+})();
+</script>
+</body>
+</html>

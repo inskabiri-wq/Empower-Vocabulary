@@ -8,6 +8,12 @@
       "port": 5000
     },
     {
+      "name": "firebase-authfs",
+      "runtimeExecutable": "firebase",
+      "runtimeArgs": ["emulators:start", "--only", "auth,firestore"],
+      "port": 4000
+    },
+    {
       "name": "firebase-hosting",
       "runtimeExecutable": "firebase",
       "runtimeArgs": ["emulators:start", "--only", "hosting"],
@@ -24,6 +30,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "5173", "--directory", "E:/vocab-trainer/y", "--bind", "127.0.0.1"],
       "port": 5173
+    },
+    {
+      "name": "static-ycopy",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5175", "--directory", "C:/Users/kabir/AppData/Local/Temp/claude/E--vocab-trainer/54415bdd-cde7-405d-b98f-fc3b49e7f135/scratchpad/ycopy", "--bind", "127.0.0.1"],
+      "port": 5175
     },
     {
       "name": "static-y-alt",

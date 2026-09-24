@@ -14,7 +14,7 @@
   const CLASSIC_CRIT = ['CC', 'TA', 'GR', 'VO'];
   const FALLBACK_CRIT = { CC: 'Organization', TA: 'Content', GR: 'Language Accuracy', VO: 'Word Choice' };
   const FALLBACK_RUBRICS = { essay: 'Essay (Int / Upper-Int)', academic: 'Academic paragraph', short: 'Short paragraph' };
-  const BAND_COLORS = { A1: '#34d399', A2: '#38bdf8', B1: '#a78bfa', B2: '#fbbf24', C1: '#f472b6', C2: '#fb7185', 'Off-list': '#ef4444' };
+  const BAND_COLORS = { A1: '#34d399', A2: '#60a5fa', B1: '#60a5fa', B2: '#60a5fa', C1: '#f472b6', C2: '#60a5fa', 'Off-list': '#ef4444' };
 
   let activeLevel = 'medium';
   let activeCorrection = null, activeEssay = '';
@@ -52,7 +52,7 @@
     if (R && R.COLORS && R.COLORS[c]) return R.COLORS[c];
     const wa = window.WritingAnnotations;
     if (wa && wa.CRIT_COLORS && wa.CRIT_COLORS[c]) return wa.CRIT_COLORS[c];
-    return (window.CORRECTOR_CRIT_COLORS || {})[c] || '#a78bfa';
+    return (window.CORRECTOR_CRIT_COLORS || {})[c] || '#60a5fa';
   }
   function critLabel(rubric, c) {
     const R = reg();
@@ -74,6 +74,30 @@
     const R = reg();
     if (R && R.isExam(r)) return R.get(r).scale.name;
     return 'Rubric';
+  }
+  // Snap a criterion verdict onto the scale the exam actually awards.
+  //
+  // The prompt asks for whole bands on IELTS, but a verdict is free text the
+  // model writes, so asking is not the same as knowing. This is the guard: any
+  // number in a criterion verdict is rounded to that exam's criterion step and
+  // clamped to its range, so "Task Achievement 6.5" cannot reach the screen.
+  // Only criterion verdicts go through here; the OVERALL estimate is left
+  // alone, because a half band is correct there.
+  function normaliseVerdict(rubricId, text) {
+    const R = reg();
+    if (!R || !R.isExam(rubricId)) return text;
+    const sc = R.get(rubricId).scale || {};
+    const stepC = R.criterionStep ? R.criterionStep(rubricId) : (sc.criterionStep || sc.step || 1);
+    if (!stepC || stepC === 0.5) return text;
+    return String(text == null ? '' : text).replace(/\d+(?:\.\d+)?/g, (m) => {
+      const n = parseFloat(m);
+      if (!isFinite(n)) return m;
+      // Half values round up, matching how IELTS rounds an overall score.
+      let v = Math.round(n / stepC) * stepC;
+      if (sc.min != null) v = Math.max(sc.min, v);
+      if (sc.max != null) v = Math.min(sc.max, v);
+      return String(v);
+    });
   }
   // One line under the picker: what the chosen exam task expects (scale,
   // length, time, how many criteria), so the teacher can see exactly what
@@ -292,7 +316,7 @@
     const tabs = ['ALL'].concat(present);
     const tabHtml = tabs.map((t, i) => '<button type="button" class="cor-tab' + (i === 0 ? ' active' : '') + '" data-glevel="' + esc(t) + '">' + esc(t) + '</button>').join('');
     const featHtml = g.features.map(f => {
-      const col = BAND_COLORS[f.cefr] || '#a78bfa';
+      const col = BAND_COLORS[f.cefr] || '#60a5fa';
       const ex = (Array.isArray(f.examples) && f.examples.length)
         ? '<div class="cor-feat-ex">' + f.examples.map(x => '<span>' + esc(x) + '</span>').join('') + '</div>' : '';
       return '<div class="cor-feat" data-glevel="' + esc(f.cefr || '') + '"><div class="cor-feat-top">'
@@ -473,7 +497,8 @@
         h += '<div class="cor-crit" data-crit="' + cc + '"><span class="cor-crit-dot" style="background:' + color + '"></span><div class="cor-crit-main">'
           + '<div class="cor-crit-top"><span class="cor-crit-name">' + esc(critLabel(rubric, cc)) + '</span>'
           + '<span class="cor-crit-verdict' + (Ec ? ' cor-ed' : '') + '" style="background:' + color + '22;color:' + color + '"'
-            + (Ec ? ' contenteditable="true" data-edit="crit-verdict" data-crit="' + cc + '"' : '') + '>' + esc(cr.verdict || (Ec ? 'verdict' : '')) + '</span>'
+            + (Ec ? ' contenteditable="true" data-edit="crit-verdict" data-crit="' + cc + '"' : '') + '>'
+            + esc(normaliseVerdict(rubric, cr.verdict) || (Ec ? 'verdict' : '')) + '</span>'
           + (n ? '<span class="cor-crit-count" data-crit="' + cc + '" title="Jump to these comments">' + n + ' issue' + (n > 1 ? 's' : '') + ' ›</span>' : '')
           + (Ec ? '<button type="button" class="cor-del" data-del="crit" data-crit="' + cc + '" title="Delete criterion">✕</button>' : '')
           + '</div>'
@@ -621,8 +646,8 @@
     const nOf = (n, one, many) => n + ' ' + (n === 1 ? one : many);
     el.resultMeta.innerHTML = lvl.icon + ' <b>' + esc(lvl.label) + '</b> · ' + esc(rubricLabel(currentRubric))
       + ' · ' + nOf(t.fix, 'fix', 'fixes') + ' · ' + nOf(t.tip, 'tip', 'tips') + ' · ' + nOf(t.strength, 'strength', 'strengths');
-    el.legend.innerHTML = '<span style="color:#38bdf8"><i></i> Fix</span>'
-      + '<span style="color:#fbbf24"><i style="border-bottom-style:dashed"></i> Tip</span>'
+    el.legend.innerHTML = '<span style="color:#60a5fa"><i></i> Fix</span>'
+      + '<span style="color:#60a5fa"><i style="border-bottom-style:dashed"></i> Tip</span>'
       + '<span style="color:#10b981"><i></i> Strength</span>';
   }
 
@@ -663,6 +688,15 @@
             ? ' EXAM TASK: ' + reg().get(rubric).guidance
               + ' Expected length ' + reg().get(rubric).wordTarget + '.'
               + ' Give each criterion verdict as an estimated ' + reg().get(rubric).scale.name + '.'
+              // IELTS band descriptors are published at whole bands, so a
+              // criterion is 5, 6 or 7 and never 6.5. Left unsaid, the model
+              // happily returned half bands per criterion, which is not a
+              // score the exam awards.
+              + (reg().criterionStep(rubric) === 1
+                  ? ' Each criterion MUST be a WHOLE ' + reg().get(rubric).scale.name
+                    + ' (for example 6 or 7). Half bands such as 6.5 are NOT valid for a single'
+                    + ' criterion; only an overall score can be a half band.'
+                  : '')
             : ''),
       'DEPTH ' + depth,
       'Put guidance in "plan": a 4 to 5 step list of ideas (what to do next) that refer to the grammar points.',
@@ -777,7 +811,22 @@
     const oldLabel = el.run.textContent;
     el.run.disabled = true; el.run.textContent = 'Analyzing...';
     note('Analyzing with AI - this can take a few seconds...');
-    firebase.functions().httpsCallable('analyzeWriting')({ essay: essay, rubric: rubric, depth: depth, task: task })
+    // Behind a circuit breaker (js/circuit-breaker.js). This call has no
+    // timeout of its own, so the Firebase callable default of about 70s
+    // applies, and the function tries up to three Gemini models in sequence
+    // before giving up - during a Gemini outage that is a very long dead
+    // button, repeated for every teacher and every click. The breaker caps a
+    // single attempt at 25s and, after 4 consecutive DEPENDENCY failures,
+    // fails instantly for a minute instead of queueing more doomed calls.
+    // A teacher who simply lacks the permission, or has spent their Deep cap,
+    // does not count towards that - see the note in circuit-breaker.js.
+    var breaker = window.CircuitBreaker
+      ? window.CircuitBreaker.get('analyzeWriting', { failureThreshold: 4, cooldownMs: 60000, timeoutMs: 25000 })
+      : { run: function (t) { return Promise.resolve().then(t); } };   // module absent: behave exactly as before
+
+    breaker.run(function () {
+      return firebase.functions().httpsCallable('analyzeWriting')({ essay: essay, rubric: rubric, depth: depth, task: task });
+    })
       .then(function (res) {
         const d = (res && res.data) || {};
         if (!d.correction) { note('The AI did not return any feedback. Please try again.'); return; }
@@ -786,6 +835,13 @@
         el.results.scrollIntoView({ behavior: 'smooth', block: 'start' });
       })
       .catch(function (e) {
+        // The breaker's own messages already say what happened and when to
+        // come back, so they are shown as-is rather than wrapped in
+        // "Could not analyze:", which would read as a failure of THIS essay.
+        if (window.CircuitBreaker && (window.CircuitBreaker.isOpenError(e) || window.CircuitBreaker.isTimeout(e))) {
+          note((e && e.message) || 'Writing AI is temporarily unavailable.');
+          return;
+        }
         const perm = e && e.code === 'permission-denied';
         note('Could not analyze: ' + ((e && e.message) || 'error') + (perm ? ' (ask an admin to enable Writing AI for your account in Admin ▸ Writing AI)' : ''));
       })

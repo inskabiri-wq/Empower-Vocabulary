@@ -1,14 +1,14 @@
 /* ============================================================
-   org-registry.js  —  Phase H
+   org-registry.js  -  Phase H
    Client-side mirror of /settings/organizations.
 
    Single source of truth for "which email domains are allowed
    to register" + "which can host teachers". Shared between:
-     • Registration page (index.html)        — pre-auth email check
-     • Admin dashboard (teacher-dashboard)   — org management UI
+     • Registration page (index.html)        - pre-auth email check
+     • Admin dashboard (teacher-dashboard)   - org management UI
      • Any other code that needs domain info
 
-   The rule layer enforces the same data — this module is for UX
+   The rule layer enforces the same data - this module is for UX
    (showing the user a friendly error before submit). Tampering
    with this client cache CAN'T grant access; Firestore rules
    re-check against the real /settings/organizations on every
@@ -32,18 +32,18 @@
   'use strict';
 
   // ── Hardcoded fallback. Matches the grandfather branch in
-  // firestore.rules — if the settings doc is missing, we still
-  // treat these as allowed so existing FSM users can log in.
+  // firestore.rules - if the settings doc is missing, we still
+  // treat these as allowed so existing users can log in.
   const FALLBACK = {
     list: [
-      { name: 'FSM University (Staff)',    domain: 'fsm.edu.tr',     active: true, teacherEligible: true },
-      { name: 'FSM University (Students)', domain: 'stu.fsm.edu.tr', active: true, teacherEligible: false }
+      { name: 'Staff',    domain: 'fsm.edu.tr',     active: true, teacherEligible: true },
+      { name: 'Students', domain: 'stu.fsm.edu.tr', active: true, teacherEligible: false }
     ],
     activeDomains:          ['fsm.edu.tr', 'stu.fsm.edu.tr'],
     teacherEligibleDomains: ['fsm.edu.tr']
   };
 
-  // Internal state — overwritten by the live snapshot. Always
+  // Internal state - overwritten by the live snapshot. Always
   // an object with the three keys above; never null after the
   // first frame.
   let _state = FALLBACK;
@@ -60,7 +60,7 @@
 
   // Normalize a doc into the shape we care about. Tolerant to
   // partial / missing fields so a half-typed admin write doesn't
-  // throw — we just fall back to defaults for whatever's missing.
+  // throw - we just fall back to defaults for whatever's missing.
   function _normalize(data) {
     if (!data || typeof data !== 'object') return FALLBACK;
     const list = Array.isArray(data.list) ? data.list.filter(o => o && o.domain) : [];
@@ -71,8 +71,8 @@
       ? data.teacherEligibleDomains.filter(d => typeof d === 'string' && d.length > 0)
       : list.filter(o => o.active !== false && o.teacherEligible === true)
             .map(o => String(o.domain).toLowerCase());
-    // ALWAYS union the fallback FSM domains in so the existing
-    // deployment can never accidentally lock itself out — mirrors
+    // ALWAYS union the built-in fallback domains in so the existing
+    // deployment can never accidentally lock itself out - mirrors
     // the hardcoded grandfather in firestore.rules.
     const merged = {
       list,
@@ -82,7 +82,7 @@
     return merged;
   }
 
-  // Wire up a live listener. Lazy — only attaches once `init()`
+  // Wire up a live listener. Lazy - only attaches once `init()`
   // is called (typically by the page that needs the data).
   function init() {
     if (_unsub) return _ready;   // already started
@@ -99,14 +99,14 @@
           if (_resolveReady) { _resolveReady(); _resolveReady = null; }
         },
         (err) => {
-          console.warn('[OrgRegistry] snapshot error — falling back to defaults:', err.message || err);
+          console.warn('[OrgRegistry] snapshot error - falling back to defaults:', err.message || err);
           _state = FALLBACK;
           _emit();
           if (_resolveReady) { _resolveReady(); _resolveReady = null; }
         }
       );
     } catch (e) {
-      console.warn('[OrgRegistry] init failed — using defaults:', e);
+      console.warn('[OrgRegistry] init failed - using defaults:', e);
       _state = FALLBACK;
       if (_resolveReady) { _resolveReady(); _resolveReady = null; }
     }
@@ -124,7 +124,7 @@
 
   // Parse an email and tell the caller whether it's accepted.
   // Returns { ok: bool, domain: string|null, org: object|null, reason: string }.
-  // Defensive — handles null/empty/malformed strings without throwing.
+  // Defensive - handles null/empty/malformed strings without throwing.
   function checkEmail(email) {
     if (!email || typeof email !== 'string') {
       return { ok: false, domain: null, org: null, reason: 'Email is empty.' };
@@ -163,7 +163,7 @@
     allowedDomains, teacherEligibleDomains, list,
     checkEmail, subscribe,
     ready: _ready,
-    // Exposed for the admin UI's "factory reset" affordance — read-only.
+    // Exposed for the admin UI's "factory reset" affordance - read-only.
     FALLBACK: Object.freeze(JSON.parse(JSON.stringify(FALLBACK)))
   };
 

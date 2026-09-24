@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher return button</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1060px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;vertical-align:top;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:84ch;line-height:1.55;}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:3px;}
+  iframe{position:absolute;left:-99999px;width:1100px;height:700px;border:0;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">student/js/teacher-return.js</h3>
+<p class="lede">
+  Three things to hold at once. It must reach teachers <strong>at first
+  paint</strong> - arriving late made the whole header cluster shift sideways,
+  which is what read as "it changes the margin". It must be
+  <strong>completely absent</strong> for students: not hidden, but no node in
+  the document. And the localStorage hint that makes it fast must never be
+  trusted - a wrong or hand-edited cache has to correct itself as soon as the
+  real user document lands.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script>
+const rows = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const KEY = 'll-role';
+
+const MARKUP =
+  '<div class="dashboard-header"><div class="header-right">' +
+  '  <button class="header-icon-btn"><span>gear</span></button>' +
+  '  <button class="logout-btn"><span>door</span><span>Logout</span></button>' +
+  '</div></div>' +
+  '<div class="dashboard-header"><div class="header-right">' +
+  '  <button class="logout-btn"><span>door</span><span>Logout</span></button>' +
+  '</div></div>';
+
+// localStorage is per ORIGIN, so every test frame shares one store - AND a
+// frame that is left in the document keeps running its re-assert interval and
+// its settle timer, which write that same key. Leaving frames alive made two
+// cases read the previous case's value and report the exact opposite of the
+// truth. Every case now disposes of its frame before the next one starts.
+function setCache(v) {
+  try { v === null ? localStorage.removeItem(KEY) : localStorage.setItem(KEY, v); } catch (e) {}
+}
+function getCache() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+
+// The script sits after the headers in the real markup, so it runs while the
+// document is still parsing. Writing it with document.write reproduces that
+// exactly - and lets us look at the DOM the instant the script has run,
+// BEFORE DOMContentLoaded, which is what "as fast as the tiles" means.
+function frame(userData, cache) {
+  setCache(cache === undefined ? null : cache);
+  return new Promise(resolve => {
+    const f = document.createElement('iframe');
+    document.body.appendChild(f);
+    const d = f.contentDocument;
+    const w = f.contentWindow;
+    d.open();
+    d.write('<!DOCTYPE html><html><head><meta charset="utf-8"><base href="/"></head><body>' + MARKUP);
+    const s = d.createElement('script');
+    s.src = '/student/js/teacher-return.js?cb=' + Math.random();
+    s.onload = s.onerror = () => {
+      // Snapshot the DOM the moment the script finishes, still mid-parse and
+      // with NO user document yet. That is the real situation on the page:
+      // auth.js only sets window.currentStudentData after a Firestore read.
+      //
+      // An earlier version of this harness set the document BEFORE loading the
+      // script. That made the optimistic injection and the settle run back to
+      // back inside one synchronous pass, so `atParse` could never show the
+      // optimistic state and two checks reported the exact opposite of the
+      // truth. The code was right; the model was wrong.
+      const atParse = d.querySelectorAll('[data-teacher-return]').length;
+      const domReady = d.readyState;
+      d.write('</body></html>');
+      d.close();
+      // Deliver the user document afterwards, the way auth.js does.
+      if (userData !== undefined) setTimeout(function () { w.currentStudentData = userData; }, 30);
+      resolve({ f, w, d, atParse, domReady });
+    };
+    d.body.appendChild(s);
+  });
+}
+const btns = d => d.querySelectorAll('[data-teacher-return]');
+
+(async function(){
+  // ── SPEED: a remembered teacher gets it before the page finishes parsing ──
+  {
+    const { f, d, atParse, domReady } = await frame({ role: 'teacher' }, 'teacher');
+    check('1. present the instant the script runs, mid-parse', 2, atParse);
+    check('2. and that really was before DOMContentLoaded', 'loading', domReady);
+    await wait(400);
+    check('3. still exactly two after the document confirms', 2, btns(d).length);
+    f.remove();
+  }
+
+  // ── The button itself ────────────────────────────────────────────────────
+  {
+    const { f, d } = await frame({ role: 'teacher' }, 'teacher');
+    await wait(300);
+    const b = btns(d);
+    check('4. points at the teacher dashboard', 'teacher-dashboard.html', b[0].getAttribute('href'));
+    check('5. is a real link, not a dead span', 'A', b[0].tagName);
+    check('6. labelled', true, /teacher dashboard/i.test(b[0].textContent));
+    const right = d.querySelector('.header-right');
+    const kids = [...right.children];
+    const realLogout = right.querySelector('.logout-btn:not([data-teacher-return])');
+    check('7. sits before Logout', true, kids.indexOf(b[0]) < kids.indexOf(realLogout));
+    check('8. Logout is still last', true, kids.indexOf(realLogout) === kids.length - 1);
+    await wait(1300);
+    check('9. re-asserting never duplicates it', 2, btns(d).length);
+    f.remove();
+  }
+
+  // ── STUDENT: the one that matters ────────────────────────────────────────
+  {
+    const { f, d } = await frame({ role: 'student' }, null);
+    await wait(1200);
+    check('10. STUDENT: no button node exists', 0, btns(d).length);
+    check('11. STUDENT: no href to the teacher dashboard anywhere', 0,
+          d.querySelectorAll('a[href*="teacher-dashboard"]').length);
+    check('12. STUDENT: no "teacher" text in the header at all', false,
+          /teacher/i.test(d.querySelector('.header-right').textContent));
+    f.remove();
+  }
+
+  // ── The cache is a hint, never the authority ─────────────────────────────
+  {
+    // Left over from a teacher, but this account is a student. It may flash,
+    // and then it MUST be taken away again.
+    const { f, d, atParse } = await frame({ role: 'student' }, 'teacher');
+    check('13. stale cache does show it optimistically', 2, atParse);
+    await wait(600);
+    check('14. ...and the real document removes it', 0, btns(d).length);
+    check('15. ...and the bad cache is corrected on disk', 'student', getCache());
+    f.remove();
+  }
+  {
+    // Hand-edited by someone curious. Same outcome - it cannot survive.
+    const { f, d } = await frame({ role: 'demo' }, 'teacher');
+    await wait(600);
+    check('16. a hand-edited cache cannot survive the document', 0, btns(d).length);
+    f.remove();
+  }
+  {
+    // First ever visit for a teacher: nothing cached, so it waits, then appears
+    // and remembers for next time.
+    const { f, d, atParse } = await frame({ role: 'teacher' }, null);
+    check('17. no cache means nothing at parse time', 0, atParse);
+    await wait(600);
+    check('18. it appears once the document lands', 2, btns(d).length);
+    check('19. and is remembered for the next load', 'teacher', getCache());
+    f.remove();
+  }
+
+  // ── Roles that must NOT count as teacher ─────────────────────────────────
+  for (const [label, data] of [
+    ['role missing',      { name: 'x' }],
+    ['role null',         { role: null }],
+    ['role is an object', { role: { admin: true } }],
+    ['capital T',         { role: 'Teacher' }]
+  ]) {
+    const { f, d } = await frame(data, null);
+    await wait(500);
+    check('20. denied: ' + label, 0, btns(d).length);
+    f.remove();
+  }
+
+  // ── Late user document (the real order on the page) ──────────────────────
+  {
+    const { f, w, d } = await frame(undefined, null);
+    await wait(250);
+    check('21. nothing while the role is still unknown', 0, btns(d).length);
+    w.currentStudentData = { role: 'teacher' };
+    await wait(500);
+    check('22. appears once the document arrives', 2, btns(d).length);
+    f.remove();
+  }
+
+  setCache(null);
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__trTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok).map(r=>r.name+' -> '+r.actual) };
+})();
+</script>
+</body>
+</html>

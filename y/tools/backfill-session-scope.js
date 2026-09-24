@@ -14,7 +14,7 @@
      node tools/backfill-session-scope.js
 
    Requires tools/.serviceAccount.json (same as the other admin
-   scripts). Re-runnable safely — skips sessions already stamped.
+   scripts). Re-runnable safely - skips sessions already stamped.
    ============================================================ */
 
 const path = require('path');
@@ -79,7 +79,7 @@ async function main() {
       counters.scanned++;
       const data = doc.data() || {};
 
-      // Already stamped — Phase B fields exist with non-empty strings
+      // Already stamped - Phase B fields exist with non-empty strings
       // or the studentClass is at least defined (could be '' for users
       // who haven't filled it). We treat presence of the key as "done".
       if ('studentClass' in data && 'studentLevel' in data && 'studentModule' in data) {
@@ -98,7 +98,7 @@ async function main() {
       if (!user) {
         // Student account was deleted. Stamp empty so the doc isn't
         // re-scanned next run; non-admin teachers will not be able to
-        // read it (correct — no owner).
+        // read it (correct - no owner).
         writer.update(doc.ref, {
           studentClass:  '',
           studentLevel:  '',

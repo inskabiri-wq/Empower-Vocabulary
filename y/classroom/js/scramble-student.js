@@ -10,15 +10,12 @@
 (function () {
   'use strict';
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-    authDomain: "empower-vocabulary-practice.firebaseapp.com",
-    projectId: "empower-vocabulary-practice",
-    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-    messagingSenderId: "136270199832",
-    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // Firebase is started by js/firebase-init.js, which reads the project
+  // from js/tenant.js. This file used to name one university directly, which would
+  // have pointed every deployment at that same project.
+  if (!firebase.apps.length) {
+    throw new Error('scramble-student: js/tenant.js + js/firebase-init.js must load first.');
+  }
   const auth = firebase.auth();
   const db = firebase.firestore();
 
@@ -90,16 +87,47 @@
     session = sdoc.data();
     if (session.status === 'finished') { MG.toast('That game has ended', 'fail'); return; }
 
+    // A new room in the same page starts from nothing.
+    if (code !== sessionCode) { renderedRound = -1; submittedRound = -1; myScore = 0; }
     sessionCode = code;
     myName = name;
     myAvatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
 
+    // REJOINING MUST NOT WIPE THE GAME SO FAR.
+    //
+    // A reload keeps the same uid, so it lands on this student's existing
+    // player document. The join used to write score 0, answered 0 and
+    // lastRound -1 over it (merge does not protect a field it writes): the
+    // real score was lost on the teacher's board, and the phone forgot the
+    // sentence already submitted, so it could be submitted twice or be called
+    // "not submitted" while the teacher's review counted it. Same fix as the
+    // AI Quiz: an existing player keeps everything and only the name changes;
+    // a new one starts from zero.
     try {
-      await sref.collection('players').doc(myUid).set({
-        uid: myUid, name: myName, avatar: myAvatar,
-        score: 0, correct: 0, answered: 0, lastRound: -1, lastOk: false,
-        joinedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
+      const pref = sref.collection('players').doc(myUid);
+      const mine = await pref.get();
+      if (mine.exists) {
+        const p = mine.data() || {};
+        myAvatar = p.avatar || myAvatar;
+        myScore = Number(p.score) || 0;
+        document.getElementById('myScore').textContent = myScore;
+        const rr = p.roundResults || {};
+        const live = session.roundIndex == null ? -1 : session.roundIndex;
+        submittedRound = Math.max(typeof p.lastRound === 'number' ? p.lastRound : -1,
+          Object.prototype.hasOwnProperty.call(rr, 'r' + live) ? live : -1);
+        await pref.set({ name: myName, avatar: myAvatar }, { merge: true });
+      } else {
+        // joinedRound: the sentence that was live when they arrived (-1 in the
+        // lobby). The teacher's review does not count a late joiner as "no
+        // answer" for the sentences before it. Written once, here, so a
+        // reload (the branch above) never moves it.
+        await pref.set({
+          uid: myUid, name: myName, avatar: myAvatar,
+          score: 0, correct: 0, answered: 0, lastRound: -1, lastOk: false,
+          joinedRound: session.roundIndex == null ? -1 : session.roundIndex,
+          joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      }
     } catch (e) { MG.toast('Could not join: ' + e.message, 'fail'); return; }
 
     setView('wait');
@@ -131,6 +159,20 @@
   }
 
   function renderRound(idx) {
+    // The round moved on before this phone submitted. Nothing is recorded for
+    // it (a result is written on Submit only), so say so instead of silently
+    // swapping the sentence: the teacher's review lists it as "no answer".
+    // A phone that slept can come back several sentences later, so name every
+    // sentence it missed, not only the one it had on screen.
+    if (renderedRound >= 0) {
+      const firstMissed = submittedRound < renderedRound ? renderedRound : renderedRound + 1;
+      const lastMissed = idx - 1;
+      if (firstMissed === lastMissed) {
+        MG.toast('Sentence ' + (firstMissed + 1) + ' was not submitted - moving on.', 'fail');
+      } else if (firstMissed < lastMissed) {
+        MG.toast('Sentences ' + (firstMissed + 1) + ' to ' + (lastMissed + 1) + ' were not submitted - moving on.', 'fail');
+      }
+    }
     renderedRound = idx;
     builtIdx = [];
     const round = session.rounds[idx];
@@ -138,6 +180,13 @@
     document.getElementById('roundResult').innerHTML = '';
     document.getElementById('submitBtn').style.display = '';
     document.getElementById('submitBtn').disabled = false;
+    // Back after a reload on a sentence already answered: it is counted, so
+    // say so rather than offer a Submit that would do nothing.
+    if (submittedRound >= idx) {
+      document.getElementById('submitBtn').style.display = 'none';
+      document.getElementById('roundResult').innerHTML =
+        '<div style="color: var(--text-secondary);">Your answer for this sentence is in. Wait for the next one.</div>';
+    }
     renderChips(round);
     startCountdown();
   }
@@ -209,13 +258,25 @@
       : `<div class="scr-result-no">❌ Not quite.</div><div style="color: var(--text-secondary); margin-top: 6px;">Correct: "${MG.escHtml(round.answer)}"</div>`;
 
     try {
-      await db.collection('scramble_sessions').doc(sessionCode).collection('players').doc(myUid).update({
+      // PER-ROUND RESULT, in the SAME write.
+      //
+      // Only totals were kept - correct, answered, and the LAST round's
+      // outcome - so the results screen could say "3 / 10 correct" but could
+      // never say WHICH sentence anyone got wrong. The per-sentence breakdown
+      // the host now shows was impossible because the data never existed.
+      //
+      // A dotted path adds one boolean to a nested map on the player's own
+      // document. Same single write per answer, so no extra cost and no extra
+      // contention: at 20 rounds it is 20 booleans.
+      var patch = {
         score: firebase.firestore.FieldValue.increment(points),
         correct: firebase.firestore.FieldValue.increment(ok ? 1 : 0),
         answered: firebase.firestore.FieldValue.increment(1),
         lastRound: idx,
         lastOk: ok
-      });
+      };
+      patch['roundResults.r' + idx] = ok;
+      await db.collection('scramble_sessions').doc(sessionCode).collection('players').doc(myUid).update(patch);
     } catch (e) { console.error('submit update', e); }
   }
 

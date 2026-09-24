@@ -58,4 +58,35 @@
 
   // Handy for support: which university and which project is this page on?
   window.FIREBASE_PROJECT_ID = cfg.projectId;
+
+  // LOCAL TESTING ONLY: talk to the Firebase emulators instead of production.
+  // Runs only when BOTH are true: the page is served from localhost AND the
+  // tester has set localStorage.useEmulators = '1'. Production domains and
+  // normal local previews are untouched. See y/tools/README-emulator-e2e.md.
+  //
+  // WHY IT IS HERE and not only in the two config.js files. student/js/config.js
+  // and teacher/js/config.js have carried this block for a while, which covered
+  // 10 of the 32 pages. The other 22 - app.html, courses, placement,
+  // writing-exam, and most of the classroom pages - load only this file, so
+  // they could never be driven against the emulator and could not be tested
+  // logged in at all. Putting it here covers every page that starts Firebase.
+  //
+  // IT MUST RUN HERE, right after initializeApp. Firestore refuses settings
+  // changes once the client has started ("Firestore has already been started
+  // and its settings can no longer be changed"), so this is the last safe
+  // moment. That failure is also the reason it cannot be bolted on later from
+  // a page script.
+  //
+  // The 10 pages that also load a config.js now call useEmulator TWICE.
+  // MEASURED on a fresh app instance before any query: the second call is a
+  // no-op for both auth and firestore, so the duplicate is harmless and those
+  // files are left alone rather than edited for the sake of tidiness.
+  try {
+    if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') &&
+        localStorage.getItem('useEmulators') === '1') {
+      firebase.auth().useEmulator('http://127.0.0.1:9099');
+      firebase.firestore().useEmulator('127.0.0.1', 8080);
+      console.warn('[emulator] connected to LOCAL Auth (9099) + Firestore (8080)');
+    }
+  } catch (e) { /* never block app boot */ }
 })();

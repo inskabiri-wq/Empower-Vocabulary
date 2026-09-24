@@ -21,7 +21,7 @@
   transition: background 0.15s;
 }
 .wr-student-row:hover {
-  background: rgba(167, 139, 250, 0.08);
+  background: rgba(96, 165, 250, 0.08);
 }
 .wr-student-row input[type="checkbox"] {
   width: 18px;
@@ -40,10 +40,10 @@
 .wr-student-class {
   color: var(--text-muted);
   font-size: 0.8em;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.05));
   padding: 2px 8px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--tint-line, rgba(255, 255, 255, 0.08));
 }
 
 /* ============================================
@@ -60,7 +60,7 @@
   transition: all 0.2s ease;
   position: relative;
   border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.02));
 }
 
 .student-checkbox-item:hover {
@@ -96,7 +96,7 @@
 
 /* Checkbox checked state */
 .student-checkbox-item:has(input[type="checkbox"]:checked)::before {
-  background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   border-color: transparent;
   box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
 }
@@ -206,14 +206,14 @@
 }
 
 .assignment-btn.edit:hover {
-  border-color: #f59e0b;
-  color: #fcd34d;
-  box-shadow: 0 5px 20px rgba(245, 158, 11, 0.25);
+  border-color: #3b82f6;
+  color: var(--text-accent, #93c5fd);
+  box-shadow: 0 5px 20px rgba(59, 130, 246, 0.25);
 }
 
 .assignment-btn.delete:hover {
   border-color: #ef4444;
-  color: #fca5a5;
+  color: var(--text-error, #fca5a5);
   box-shadow: 0 5px 20px rgba(239, 68, 68, 0.25);
 }
 
@@ -223,7 +223,7 @@
   align-items: center;
   gap: 10px;
   padding: 14px 28px;
-  background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 50%, #06b6d4 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #2563eb 100%);
   background-size: 200% 200%;
   border: none;
   border-radius: 14px;
@@ -232,12 +232,31 @@
   font-size: 0.95em;
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(59, 130, 246, 0.35);
+  /* The drifting gradient moved to ::before - see the note there. */
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+/* Composited gradient drift - see tools/anim-cost-check.js.
+   background-position is a paint property, so this button repainted on every
+   frame for as long as the assignments panel was on screen. The oversized
+   gradient now lives on a layer that is simply slid back and forth. Negative
+   z-index inside an isolated stacking context keeps it under the label without
+   needing z-index on the text. */
+.create-assignment-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 200%;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #2563eb 100%);
   animation: gradientShift 3s ease infinite;
+  pointer-events: none;
 }
 
 @keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(-50%); }
 }
 
 .create-assignment-btn:hover {
@@ -252,17 +271,17 @@
 /* Select action buttons */
 .select-action-btn {
   padding: 8px 14px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(14, 165, 233, 0.1));
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.1));
   border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: 8px;
-  color: #7dd3fc;
+  color: var(--text-accent, #7dd3fc);
   font-size: 0.8em;
   font-weight: 600;
   cursor: pointer;
 }
 
 .select-action-btn:hover {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(14, 165, 233, 0.15));
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.15));
   border-color: var(--accent-primary);
   transform: translateY(-1px);
   box-shadow: 0 4px 15px var(--border-color, rgba(59, 130, 246, 0.2));
@@ -283,7 +302,7 @@
 }
 
 .assignment-stat-value {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--ll-font);
   font-size: 2em;
   font-weight: 700;
   background: var(--accent-gradient);
@@ -322,7 +341,7 @@
 }
 
 .assignment-card.urgent {
-  border-color: rgba(245, 158, 11, 0.4);
+  border-color: rgba(59, 130, 246, 0.4);
 }
 
 .assignment-card.fully-completed {
@@ -335,7 +354,7 @@
 
 .assignment-card-header {
   padding: 22px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(14, 165, 233, 0.06));
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.06));
   border-bottom: 1px solid rgba(59, 130, 246, 0.15);
 }
 
@@ -369,25 +388,25 @@
 
 .assignment-status.active {
   background: linear-gradient(135deg, var(--border-color, rgba(59, 130, 246, 0.2)), rgba(59, 130, 246, 0.1));
-  color: #7dd3fc;
+  color: var(--text-accent, #7dd3fc);
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .assignment-status.urgent {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
-  color: #fcd34d;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg, var(--border-color, rgba(59, 130, 246, 0.2)), rgba(59, 130, 246, 0.1));
+  color: var(--text-accent, #93c5fd);
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .assignment-status.overdue {
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
-  color: #fca5a5;
+  color: var(--text-error, #fca5a5);
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .assignment-status.completed {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
-  color: #6ee7b7;
+  color: var(--text-success, #6ee7b7);
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
@@ -436,7 +455,7 @@
 }
 
 .completed-stat-value {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--ll-font);
   font-size: 2em;
   font-weight: 700;
   background: linear-gradient(135deg, #10b981, #34d399);
@@ -489,18 +508,33 @@
   border: 1px solid var(--border-color, rgba(59, 130, 246, 0.2));
 }
 
+/* Composited shimmer - see tools/anim-cost-check.js.
+   background-position cannot be composited, so this repainted the bar on every
+   frame, forever, on the student hub. Static gradient now, with a highlight
+   strip moved by transform. Same sweep, no per-frame repaint. */
 .assignment-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #0ea5e9, #06b6d4);
-  background-size: 200% 100%;
+  background: linear-gradient(90deg, #3b82f6, #2563eb, #2563eb);
   border-radius: 5px;
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.assignment-progress-fill::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -40%;
+  width: 40%;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
   animation: progressShimmer 2s ease infinite;
+  pointer-events: none;
 }
 
 @keyframes progressShimmer {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 200% 0%; }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(350%); }
 }
 
 .assignment-students-summary {
@@ -530,7 +564,7 @@
 }
 
 .summary-count {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--ll-font);
   font-weight: 700;
   font-size: 1.2em;
 }
@@ -599,7 +633,7 @@
 }
 
 .selected-count.has-selection {
-  color: #7dd3fc;
+  color: var(--text-accent, #7dd3fc);
   background: var(--border-color, rgba(59, 130, 246, 0.2));
   font-weight: 600;
 }
@@ -624,7 +658,7 @@
 }
 
 .student-checkbox-items::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   border-radius: 3px;
 }
 
@@ -632,7 +666,7 @@
 .modal-btn-save {
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: linear-gradient(135deg, #3b82f6, #0ea5e9) !important;
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
   border: none !important;
   padding: 12px 24px;
   border-radius: 10px;
@@ -664,7 +698,7 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 2px solid var(--tint-line-strong, rgba(255,255,255,0.3));
   border-top-color: white;
   border-radius: 50%;
   animation: btnSpin 0.8s linear infinite;
@@ -676,23 +710,113 @@
   to { transform: rotate(360deg); }
 }
 
-/* Modal Cancel Button */
-.modal-btn-cancel {
+/* Modal Cancel Button, and everything that has to look identical to it.
+   ------------------------------------------------------------------
+   The writing form's step tabs (.wtab) and its Back / Next (.wnav-btn) SHARE
+   this rule rather than copying its values, because copying is exactly how
+   they drifted. They previously carried their own padding 10px 20px, radius
+   8px, no border and no transition, against this button's 12px 24px, radius
+   10px, a 1px border and a 0.3s transition with a hover lift.
+
+   The copies were checked against the OTHER .modal-btn-cancel, the one in
+   teacher/css/styles.css, which THIS file overrides. So the comparison passed
+   while the real button on screen looked nothing like them. One rule now, so
+   the question cannot be asked again. */
+.modal-btn-cancel,
+.wtab,
+.wnav-btn {
   background: linear-gradient(135deg, rgba(30, 30, 50, 0.9), rgba(25, 25, 45, 0.95)) !important;
   border: 1px solid rgba(59, 130, 246, 0.3) !important;
   padding: 12px 24px;
   border-radius: 10px;
   color: var(--text-secondary);
   font-weight: 500;
+  font-family: inherit;
+  font-size: inherit;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.modal-btn-cancel:hover {
+.modal-btn-cancel:hover,
+.wtab:hover,
+.wnav-btn:hover {
   border-color: var(--text-secondary) !important;
   color: var(--text-primary);
   transform: translateY(-2px);
 }
+
+/* ============================================================
+   PHONE: the two modals that did not read well on a small screen
+   ============================================================ */
+@media (max-width: 768px) {
+  /* THE WIZARD STEPS.
+     Four tabs of different lengths in a wrapping flex row gave two ragged
+     lines ("Details / Settings & Rubric" then "Targeting / AI correction").
+     A 2 x 2 grid makes them equal width and squares the block off. */
+  /* !important because `.wtabs{display:flex}` lives in an inline <style> block
+     in teacher-dashboard.html, which sits later in the document and therefore
+     wins at equal specificity. A media query adds no specificity of its own. */
+  .wtabs {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .wtabs .wtab {
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* THE FOOTER.
+     Cancel, Back and Save share the Cancel button's 12px/24px padding, and
+     three of those need about 330px in a 340px row, so the labels wrapped
+     inside the buttons: "Save Assignment" over two lines, the arrow of
+     "Back" stranded above its word. Tighter padding and no wrapping puts
+     all three on one row with room to spare. */
+  .modal-buttons .modal-btn,
+  .modal-buttons .wnav-btn {
+    padding-left: 12px;
+    padding-right: 12px;
+    white-space: nowrap;
+  }
+
+  /* THE SKILL PICKER.
+     Each tile was a centred column: a 2.2em icon on its own line, then the
+     name, then the subtitle, about 200px tall. Six of those is a long scroll
+     to answer one question. On a phone they become compact rows with the icon
+     at the left, which is how every other list in the app reads.
+     The children carry inline styles, so these need !important to win. */
+  .skill-picker-tile {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 14px;
+    align-items: center;
+    text-align: left !important;
+    padding: 14px 16px !important;
+  }
+  .skill-picker-tile > div:nth-child(1) {
+    grid-row: 1 / span 2;
+    font-size: 1.9em !important;
+    margin-bottom: 0 !important;
+  }
+  .skill-picker-tile > div:nth-child(2) { align-self: end; }
+  .skill-picker-tile > div:nth-child(3) {
+    align-self: start;
+    margin-top: 2px !important;
+  }
+}
+
+/* The selected step keeps the accent fill, but nothing else about it changes,
+   so the tabs do not resize as you move through the wizard. The background and
+   border are !important above, so they have to be beaten here. */
+.wtab.active {
+  background: var(--accent-gradient, linear-gradient(135deg, #3b82f6, #2563eb)) !important;
+  border-color: transparent !important;
+  color: #fff;
+}
+.wtab.active:hover { color: #fff; }
 
 /* Assignment Modal */
 .assignment-modal-content {
@@ -730,7 +854,7 @@
   transition: all 0.3s ease;
   /* Tells the browser to render native form-control popups (the
      <select> dropdown list, the date-picker calendar) in dark mode.
-     Without this, Chrome/Edge fall back to the OS light theme — which
+     Without this, Chrome/Edge fall back to the OS light theme - which
      is why the option list was showing white-on-grey. */
   color-scheme: dark;
 }
@@ -851,14 +975,14 @@
 
 .detail-status.completed {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
-  color: #6ee7b7;
+  color: var(--text-success, #6ee7b7);
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .detail-status.in-progress {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
-  color: #fcd34d;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg, var(--border-color, rgba(59, 130, 246, 0.2)), rgba(59, 130, 246, 0.1));
+  color: var(--text-accent, #93c5fd);
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .detail-status.not-started {
@@ -869,7 +993,7 @@
 
 
 /* ============================================================
-   STUDENT DASHBOARD — MY ASSIGNMENTS  (Crystal UI)
+   STUDENT DASHBOARD - MY ASSIGNMENTS  (Crystal UI)
    Sourced from the Claude Design "Crystal UI" handoff bundle.
    Glassmorphism panel + per-status accent colors (orange=urgent,
    blue/cyan=practice, green=done) + animated progress + filter
@@ -877,22 +1001,26 @@
    so it's intentionally not present here.
    Uses oklch() for richer blues that hold up under the dark
    navy background; falls back to hex on browsers that don't
-   support it (Safari ≤15.3 — graceful degradation, not styled).
+   support it (Safari ≤15.3 - graceful degradation, not styled).
    ============================================================ */
 
-/* Crystal palette — scoped to the assignments card so we don't
+/* Crystal palette - scoped to the assignments card so we don't
    pollute the rest of the dashboard's variable space. */
 .assignments-card {
   --crystal-text-primary:   #e8f0ff;
   --crystal-text-secondary: #8098c4;
   --crystal-text-muted:     #4a6090;
   --crystal-blue:   oklch(72% 0.18 220);
-  --crystal-cyan:   oklch(78% 0.20 195);
+  /* Cyan / orange / amber are blue now. They were decoration, not meaning:
+     cyan headed a section, amber marked "pending", and orange was unused.
+     Green stays because it means done, and the urgent and overdue states keep
+     their own amber and grey below - those do carry meaning. */
+  --crystal-cyan:   oklch(78% 0.15 230);
   --crystal-green:  oklch(72% 0.19 155);
-  --crystal-orange: oklch(72% 0.22 55);
-  --crystal-amber:  oklch(80% 0.20 75);
+  --crystal-orange: oklch(72% 0.17 245);
+  --crystal-amber:  oklch(80% 0.14 235);
 
-  /* The outer shell — replaces the old translucent blue card */
+  /* The outer shell - replaces the old translucent blue card */
   background: linear-gradient(135deg,
     oklch(18% 0.08 230 / 0.85) 0%,
     oklch(14% 0.06 240 / 0.90) 100%);
@@ -907,7 +1035,7 @@
     0 4px 20px oklch(40% 0.15 240 / 0.15);
   position: relative;
   overflow: hidden;
-  font-family: 'Outfit', 'Poppins', sans-serif;
+  font-family: var(--ll-font);
   color: var(--crystal-text-primary);
 }
 /* Top shimmer line on the panel itself */
@@ -938,7 +1066,7 @@
   flex: 1;
 }
 .assignments-card-title > span:first-child {
-  /* The 📋 icon — wrap it in a tinted rounded square for the Crystal look */
+  /* The 📋 icon - wrap it in a tinted rounded square for the Crystal look */
   font-size: 1.125rem;
   width: 36px; height: 36px;
   display: inline-flex; align-items: center; justify-content: center;
@@ -994,7 +1122,7 @@
 }
 .summary-done    { color: var(--crystal-green); font-weight: 600; }
 
-/* ---- Filter Tabs (NEW — All / Pending / Completed) ---- */
+/* ---- Filter Tabs (NEW - All / Pending / Completed) ---- */
 .assignments-filters {
   display: flex;
   gap: 6px;
@@ -1011,7 +1139,7 @@
   transition: all 0.2s;
   background: transparent;
   color: var(--crystal-text-muted);
-  font-family: 'Outfit', 'Poppins', sans-serif;
+  font-family: var(--ll-font);
 }
 .assignment-filter-tab:hover {
   color: var(--crystal-text-secondary);
@@ -1107,11 +1235,13 @@
   border-color: oklch(55% 0.18 155 / 0.4);
 }
 .my-assignment-card.overdue {
-  border-color: oklch(40% 0.05 240 / 0.5);
-  opacity: 0.78;
+  border-color: rgba(239, 68, 68, 0.45);
+  /* was 0.78 - an overdue card was literally FADED OUT, which is the opposite
+     of what an overdue card should do. */
+  opacity: 1;
 }
 
-/* Left accent bar — colored per state, set inline by JS */
+/* Left accent bar - colored per state, set inline by JS */
 .my-assignment-card .card-accent {
   position: absolute;
   left: 0; top: 16px; bottom: 16px;
@@ -1160,7 +1290,7 @@
 }
 .my-assignment-meta .meta-dot { color: var(--crystal-text-muted); }
 
-/* Level chip — small mono pill */
+/* Level chip - small mono pill */
 .my-assignment-meta .level-chip {
   display: inline-flex;
   align-items: center;
@@ -1168,7 +1298,7 @@
   border-radius: 6px;
   font-size: 0.6875rem;
   font-weight: 700;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
   letter-spacing: 0.02em;
   background: oklch(30% 0.18 230 / 0.4);
   color: oklch(72% 0.18 220);
@@ -1199,7 +1329,20 @@
 /* Assignment-card accordion. Header (icon + title + meta) and the deadline row
    stay visible; .asg-acc-detail (progress / grade / goal / CTA) collapses on
    click. .asg-acc-detail has no padding, so max-height:0 collapses cleanly. */
-.my-assignment-card.asg-acc .my-assignment-header { cursor: pointer; }
+/* The header is a BUTTON in effect, so it must not behave like prose. Without
+   this, tapping it - and especially double-tapping, or the long-press a touch
+   device sends before the click - swept the whole title and meta into a
+   selection highlight, so the card flashed blue before it opened.
+   -webkit-touch-callout stops iOS offering its copy/define bubble on the same
+   gesture, and -webkit-tap-highlight-color removes the grey flash Android
+   paints over the whole header. */
+.my-assignment-card.asg-acc .my-assignment-header {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
 /* max-height is driven from the element's real scrollHeight by
    toggleAsgCard(); the 1200px here is only the resting "open" value handed
    back after the animation, so growing content is never clipped. Duration is
@@ -1223,7 +1366,7 @@
   border-radius: 8px;
   background: rgba(59,130,246,0.16);
   border: 1.5px solid rgba(59,130,246,0.5);
-  color: #93c5fd;
+  color: var(--text-accent, #93c5fd);
   font-size: 0.9375rem;
   font-weight: 800;
   line-height: 1;
@@ -1236,7 +1379,7 @@
 }
 .my-assignment-card.asg-collapsed .asg-acc-chevron { transform: rotate(-90deg); }
 
-/* Due date row — 📅 date on the left, badge on the right */
+/* Due date row - 📅 date on the left, badge on the right */
 .my-assignment-deadline {
   display: flex;
   align-items: center;
@@ -1270,10 +1413,14 @@
   border: 1px solid oklch(50% 0.12 220 / 0.35);
   color: var(--crystal-blue);
 }
+/* Overdue is the most urgent state a student can be in, and it was styled as
+   the QUIETEST thing on the card - a desaturated grey-blue that read as
+   "inactive". It is red now, in both themes. */
 .deadline-status.overdue {
-  background: oklch(20% 0.04 240 / 0.6);
-  border: 1px solid oklch(40% 0.05 240 / 0.45);
-  color: oklch(60% 0.04 240);
+  background: rgba(239, 68, 68, 0.16);
+  border: 1px solid rgba(239, 68, 68, 0.55);
+  color: var(--text-error, #fca5a5);
+  font-weight: 700;
 }
 .deadline-status.done {
   background: oklch(30% 0.15 155 / 0.3);
@@ -1289,7 +1436,7 @@
   color: var(--crystal-text-muted);
   font-weight: 600;
   margin-bottom: 6px;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
   letter-spacing: 0.04em;
 }
 .progress-info .progress-label,
@@ -1352,7 +1499,7 @@
   padding: 14px;
   border-radius: 12px;
   border: none;
-  font-family: 'Outfit', 'Poppins', sans-serif;
+  font-family: var(--ll-font);
   font-size: 0.9375rem;
   font-weight: 700;
   cursor: pointer;
@@ -1370,7 +1517,7 @@
   box-shadow:
     0 4px 24px oklch(58% 0.22 210 / 0.45),
     0 0 40px oklch(58% 0.22 210 / 0.2);
-  animation: none; /* no infinite gradientShift — keeps it calm */
+  animation: none; /* no infinite gradientShift - keeps it calm */
 }
 .assignment-start-btn::before {
   content: '';
@@ -1386,7 +1533,7 @@
 }
 .assignment-start-btn:active { transform: translateY(0); }
 
-/* Urgent CTA — orange/amber */
+/* Urgent CTA - orange/amber */
 .assignment-start-btn.urgent {
   background: linear-gradient(135deg,
     oklch(72% 0.22 55) 0%, oklch(65% 0.24 45) 100%);
@@ -1396,7 +1543,7 @@
     0 0 40px oklch(65% 0.24 45 / 0.2);
 }
 
-/* Overdue CTA — muted "Try Again" */
+/* Overdue CTA - muted "Try Again" */
 .assignment-start-btn.overdue {
   background: linear-gradient(135deg,
     oklch(35% 0.04 240) 0%, oklch(25% 0.04 240) 100%);
@@ -1404,7 +1551,7 @@
   box-shadow: 0 4px 14px oklch(15% 0.04 240 / 0.5);
 }
 
-/* Completed CTA — green "Review" */
+/* Completed CTA - green "Review" */
 .assignment-start-btn.completed,
 .assignment-start-btn.review {
   background: linear-gradient(135deg,
@@ -1427,8 +1574,40 @@
     grid-template-columns: 1fr;
   }
   
+  /* Done / Trying / Not Started are three short counters, side by side.
+     minmax(0, 1fr) and NOT a bare 1fr: a grid track's automatic minimum is
+     min-content, so "Not Started" refused to shrink and pushed the third
+     column off the edge of the card. The 0 minimum lets the track match the
+     card and the shrinking happens inside the item instead. */
   .assignment-students-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  /* Count ABOVE the label, not beside it.
+     Side by side, the label had only whatever the count left of a 112px box,
+     so "Not Started" was ellipsised to nothing useful. Stacking gives the
+     label the full width of the box and it fits on one line. */
+  .summary-item {
+    min-width: 0;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8px 6px;
+    gap: 2px;
+  }
+  .summary-item .summary-count {
+    font-size: 1.15em;
+    line-height: 1.2;
+  }
+  .summary-item .summary-label {
+    min-width: 0;
+    font-size: 0.72em;
+    line-height: 1.25;
+    /* Wrap rather than truncate: two short lines beat "Not Sta...". */
+    white-space: normal;
+    overflow-wrap: normal;
   }
   
   .detail-student-row {
@@ -1450,12 +1629,259 @@
     font-size: 1.6em;
   }
   
+  /* Four actions (View Details / Preview / Edit / Delete) cannot share one
+     phone row: they want roughly 470px and the card gives them about 260px.
+     `flex: 1` expands to `flex: 1 1 0%`, so every button had a zero basis and
+     the row always "fitted" - which meant the `flex-wrap: wrap` above could
+     never fire. The automatic min-content floor that would normally stop the
+     shrink was gone too, because .assignment-btn carries `overflow: hidden`
+     for its ripple, and that floor only applies while overflow is visible. So
+     the buttons shrank below their text and clipped it, which is why "View
+     Details" read as "View Detail" with the rest under the edge.
+
+     A 2x2 grid gives each button a real column and lets the label wrap. */
   .assignment-card-footer {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
-  
+
   .assignment-btn {
-    flex: 1;
+    flex: none;
+    width: 100%;
     justify-content: center;
+    text-align: center;
+    /* A phone tap target, and room for a label that wraps to two lines. */
+    min-height: 44px;
+    height: auto;
+    white-space: normal;
+    /* NOT overflow-wrap: anywhere. That let the browser break inside a word
+       when it helped the fit, which is how "Submissions" rendered as
+       "Submission" over "s". Words break only at real break points now; the
+       minmax(0, ...) above is what stops the row overflowing instead. */
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+    padding-left: 8px;
+    padding-right: 8px;
   }
+}
+
+/* ============================================================
+   LIGHT MODE - the crystal card on white
+   ------------------------------------------------------------
+   This card is painted in hand-picked dark oklch() rather than the
+   app's tokens, so it stayed a navy slab when the rest of the page
+   turned white. Each surface below mirrors its dark rule with the
+   lightness flipped and the hue kept, so the card reads as the same
+   component in both themes.
+
+   The filled CTAs are deliberately NOT restated: they are saturated
+   blue/amber/green with their own text colour and already sit
+   correctly on white. Only .overdue, which was a dark grey slab, needs
+   a light equivalent.
+   ============================================================ */
+.light-mode .assignments-card {
+  --crystal-text-primary: #0f172a;
+  --crystal-text-secondary: #475569;
+  --crystal-text-muted: #64748b;
+  --crystal-blue: oklch(46.2% 0.18 220);
+  --crystal-cyan: oklch(42.8% 0.15 230);
+  --crystal-green: oklch(46.2% 0.19 155);
+  --crystal-orange: oklch(46.2% 0.17 245);
+  --crystal-amber: oklch(41.6% 0.14 235);
+  background: linear-gradient(135deg,
+    oklch(95.2% 0.028 230 / 0.85) 0%,
+    oklch(96.3% 0.021 240 / 0.90) 100%);
+  border: 1px solid oklch(88% 0.042 220 / 0.35);
+  box-shadow: 0 0 0 1px oklch(47.4% 0.15 220 / 0.08) inset,
+    0 30px 80px oklch(98.7% 0.017 240 / 0.6),
+    0 4px 20px oklch(89.3% 0.052 240 / 0.15);
+}
+.light-mode .assignments-card::before {
+  background: linear-gradient(90deg,
+    transparent, oklch(41.6% 0.15 220 / 0.5), transparent);
+}
+.light-mode .assignments-card-title > span:first-child {
+  background: oklch(92% 0.042 240 / 0.5);
+  border: 1px solid oklch(88% 0.052 220 / 0.3);
+}
+.light-mode .assignment-badge {
+  box-shadow: 0 0 12px oklch(88% 0.087 25 / 0.5);
+}
+.light-mode .assignments-summary {
+  background: oklch(96% 0.025 230 / 0.6);
+  border: 1px solid oklch(89.3% 0.035 220 / 0.25);
+}
+.light-mode .assignment-filter-tab:hover {
+  background: oklch(93.3% 0.028 230 / 0.4);
+}
+.light-mode .assignment-filter-tab.active {
+  background: oklch(92.5% 0.049 220 / 0.6);
+  border-color: oklch(88% 0.063 220 / 0.45);
+}
+.light-mode .assignments-section-divider .divider-line {
+  background: linear-gradient(90deg,
+    oklch(90.7% 0.035 220 / 0.3), transparent);
+}
+.light-mode .no-assignments {
+  background: oklch(96% 0.025 230 / 0.4);
+  border: 1px dashed oklch(89.3% 0.035 220 / 0.3);
+}
+.light-mode .my-assignment-card {
+  background: linear-gradient(145deg,
+    oklch(95.7% 0.032 235 / 0.8) 0%,
+    oklch(96.5% 0.025 240 / 0.85) 100%);
+  border: 1px solid oklch(89.3% 0.042 220 / 0.28);
+}
+.light-mode .my-assignment-card::before {
+  background: linear-gradient(90deg,
+    transparent, oklch(41.6% 0.15 220 / 0.25), transparent);
+}
+.light-mode .my-assignment-card:hover {
+  border-color: oklch(88% 0.056 220 / 0.45);
+  box-shadow: 0 12px 40px oklch(97.3% 0.028 240 / 0.5);
+}
+.light-mode .my-assignment-card.urgent {
+  border-color: oklch(88% 0.07 55 / 0.4);
+}
+.light-mode .my-assignment-card.urgent::after {
+  background: linear-gradient(135deg,
+    oklch(88% 0.07 55 / 0.04) 0%, transparent 50%);
+}
+.light-mode .my-assignment-card.completed {
+  border-color: oklch(88% 0.063 155 / 0.4);
+}
+.light-mode .my-assignment-card.overdue {
+  border-color: rgba(185, 28, 28, 0.45);
+}
+.light-mode .my-assignment-meta .level-chip {
+  background: oklch(92% 0.063 230 / 0.4);
+  color: oklch(46.2% 0.18 220);
+  border: 1px solid oklch(53.2% 0.18 220 / 0.4);
+}
+.light-mode .my-assignment-check {
+  border: 2px solid oklch(88% 0.042 220 / 0.4);
+}
+.light-mode .my-assignment-card.completed .my-assignment-check {
+  background: oklch(88% 0.063 155 / 0.2);
+}
+.light-mode .deadline-status.urgent, .deadline-status.soon {
+  background: oklch(88% 0.077 55 / 0.25);
+  border: 1px solid oklch(50.3% 0.22 55 / 0.5);
+  box-shadow: 0 0 12px oklch(50.3% 0.22 55 / 0.2);
+}
+.light-mode .deadline-status.pending {
+  background: oklch(92% 0.042 220 / 0.4);
+  border: 1px solid oklch(88% 0.042 220 / 0.35);
+}
+.light-mode .deadline-status.overdue {
+  background: #fdecec;
+  border: 1px solid #e5484d;
+  color: #b91c1c;
+  font-weight: 700;
+}
+.light-mode .deadline-status.done {
+  background: oklch(92% 0.052 155 / 0.3);
+  border: 1px solid oklch(88% 0.063 155 / 0.45);
+}
+.light-mode .assignment-progress-bar {
+  background: oklch(94.7% 0.028 230 / 0.6);
+}
+.light-mode .my-assignment-requirement {
+  background: oklch(96.5% 0.021 240 / 0.7);
+  border: 1px solid oklch(90.7% 0.035 220 / 0.22);
+}
+.light-mode .assignment-start-btn.overdue {
+  background: linear-gradient(135deg, #eef2f7 0%, #e2e8f0 100%);
+  color: #475569;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+}
+/* Native dropdowns / date pickers / scrollbars follow the page, not the OS. */
+.light-mode .assignments-card { color-scheme: light; }
+
+/* ============================================================
+   LIGHT MODE - generated by tools/light-coverage.js findings
+   Each rule mirrors a real one above and flips only its SURFACE,
+   keeping the original alpha so translucent panels stay translucent
+   and nothing about the layering changes. Dark is untouched.
+   ============================================================ */
+.light-mode .student-checkbox-item::before {
+  background: rgba(246, 248, 251, 0.6);
+}
+.light-mode .assignment-btn {
+  background: linear-gradient(135deg, rgba(242, 246, 252, 0.8), rgba(255, 255, 255, 0.9));
+}
+.light-mode .assignment-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95));
+}
+.light-mode .summary-item {
+  background: linear-gradient(135deg, rgba(242, 246, 252, 0.8), rgba(255, 255, 255, 0.9));
+}
+.light-mode .assignment-card-footer {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(246, 248, 251, 0.95));
+}
+.light-mode .student-search-input {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(246, 248, 251, 0.95));
+}
+.light-mode .modal-btn-cancel,
+.light-mode .wtab,
+.light-mode .wnav-btn {
+  background: linear-gradient(135deg, rgba(242, 246, 252, 0.9), rgba(255, 255, 255, 0.95)) !important;
+}
+/* The active step is an accent button in light mode too, not a pale one. */
+.light-mode .wtab.active {
+  background: var(--accent-gradient, linear-gradient(135deg, #3b82f6, #2563eb)) !important;
+}
+.light-mode .assignment-form-group input {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(246, 248, 251, 0.95));
+}
+.light-mode .assignment-form-group select {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(246, 248, 251, 0.95));
+}
+.light-mode .student-checkbox-list {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(246, 248, 251, 0.9));
+}
+.light-mode .detail-student-row {
+  background: linear-gradient(135deg, rgba(242, 246, 252, 0.8), rgba(255, 255, 255, 0.9));
+}
+/* The scrollbar track is chrome, so it follows the page like everything else. */
+.light-mode .student-checkbox-items::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.06); }
+
+/* ── Assignment card meta row ──────────────────────────────────
+   1. The skill chip pairs an emoji with mono text. Those two have different
+      intrinsic line boxes, so with the chip's default line-height the words sat
+      visibly higher than the icon beside them and the whole label looked lifted
+      off its baseline. Pinning line-height and centring both parts on the same
+      axis settles it.
+   2. The row is flex-wrap:wrap, so as soon as the chips plus the type plus the
+      time plus the level exceeded the card it dropped a line and the card grew.
+      On narrower cards the type shrinks a step and truncates rather than
+      wrapping, which is what keeps it on one line. */
+.my-assignment-meta .level-chip {
+  line-height: 1;
+  vertical-align: middle;
+}
+.my-assignment-meta .level-chip,
+.my-assignment-meta > span {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.15;
+}
+.my-assignment-meta {
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: hidden;
+}
+/* The free-text part is the only thing allowed to give way. Chips, the dots and
+   the time keep their size; the activity name truncates. */
+.my-assignment-meta > span:not(.meta-dot):not(.level-chip) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 560px) {
+  .my-assignment-meta { font-size: 0.7rem; gap: 5px; }
+  .my-assignment-meta .level-chip { padding: 2px 6px; font-size: 0.64rem; }
 }

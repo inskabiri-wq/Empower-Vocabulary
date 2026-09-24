@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classroom header layout</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1040px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;}
+  th{background:#eef2f7;} td.n{font-variant-numeric:tabular-nums;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:80ch;line-height:1.55;}
+  iframe{position:absolute;left:-99999px;border:0;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">Classroom Mode header - where the controls land</h3>
+<p class="lede">
+  Loads the real classroom-teacher.html with only its auth and Firebase scripts
+  removed, so js/app-settings.js still runs and still rearranges the bar. Then
+  measures where each control actually ends up. The point of the change is that
+  Logout stops being swept into the left cluster and sits beside the teacher's
+  name on the right - without landing on top of it.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script>
+const rows = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+
+(async function(){
+  const html = await (await fetch('/classroom-teacher.html?cb=' + Math.random())).text();
+  // Keep app-settings.js (it does the rearranging under test). Drop Firebase,
+  // tenant and the page's own scripts so nothing redirects to the login page.
+  const patched = html
+    .replace(/<head>/i, '<head><base href="/">')
+    .replace(/<script src="https:\/\/www\.gstatic\.com\/firebasejs[^>]*><\/script>\s*/g, '')
+    .replace(/<script src="js\/tenant\.js[^"]*"><\/script>\s*/g, '')
+    .replace(/<script src="js\/firebase-init\.js[^"]*"><\/script>\s*/g, '')
+    .replace(/<script src="classroom\/js\/[^"]*"><\/script>\s*/g, '')
+    .replace(/<script src="js\/game-report\.js[^"]*"><\/script>\s*/g, '');
+
+  const f = document.createElement('iframe');
+  f.width = 1280; f.height = 900;
+  document.body.appendChild(f);
+  const d = f.contentDocument;
+  d.open(); d.write(patched); d.close();
+  await new Promise(r => setTimeout(r, 1500));
+  const w = f.contentWindow;
+
+  // The page hides #mainContent until auth resolves; reveal it to measure.
+  const main = d.getElementById('mainContent');
+  if (main) main.style.display = 'block';
+  await new Promise(r => setTimeout(r, 600));
+
+  const hdr = d.querySelector('header.header');
+  check('1. header found', true, !!hdr);
+  if (!hdr) { render(); return; }
+
+  const box = hdr.getBoundingClientRect();
+  const mid = box.left + box.width / 2;
+
+  const gear   = hdr.querySelector('.as-launch');
+  const dash   = Array.prototype.find.call(hdr.querySelectorAll('a,button'),
+                   e => /dashboard/i.test(e.textContent));
+  const logout = Array.prototype.find.call(hdr.querySelectorAll('a,button'),
+                   e => /^\s*logout\s*$/i.test(e.textContent));
+  const name   = d.getElementById('teacherName');
+  const nameChip = name ? name.closest('span') : null;
+
+  const R = el => el ? el.getBoundingClientRect() : null;
+  const g = R(gear), dsh = R(dash), lo = R(logout), nm = R(nameChip);
+
+  check('2. Logout still present', true, !!logout);
+  check('3. gear is on the LEFT', true, !!g && g.left < mid);
+  check('4. Dashboard is on the LEFT', true, !!dsh && dsh.left < mid);
+
+  // the actual request
+  check('5. Logout is on the RIGHT half', true, !!lo && lo.left > mid);
+  check('6. Logout is right of the name', true, !!lo && !!nm && lo.left >= nm.right - 1);
+
+  // the warning: it must not sit ON the name
+  const overlap = (a, b) => !(a.right <= b.left || a.left >= b.right);
+  check('7. Logout does NOT overlap the name tag', false, !!(lo && nm && overlap(lo, nm)));
+
+  // and nothing spills out of the bar
+  check('8. Logout inside the header box', true, !!lo && lo.right <= box.right + 1);
+
+  window.__hdr = {
+    headerLeft: Math.round(box.left), headerRight: Math.round(box.right),
+    gearLeft: g ? Math.round(g.left) : null,
+    dashboardLeft: dsh ? Math.round(dsh.left) : null,
+    nameLeft: nm ? Math.round(nm.left) : null, nameRight: nm ? Math.round(nm.right) : null,
+    logoutLeft: lo ? Math.round(lo.left) : null, logoutRight: lo ? Math.round(lo.right) : null
+  };
+  f.remove();
+  render();
+})();
+
+function render(){
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__hdrTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok), geom: window.__hdr };
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tile artwork trace</title>
+<link rel="stylesheet" href="../../css/brand.css">
+<link rel="stylesheet" href="../../student/css/styles.css">
+<link rel="stylesheet" href="../../student/css/hub.css">
+<link rel="stylesheet" href="../../css/app-settings.css">
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;}
+  *,*::before,*::after{animation:none !important;transition:none !important;}
+  #hubGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;max-width:820px;}
+  table{border-collapse:collapse;width:100%;max-width:980px;font-size:13px;background:#fff;margin-top:16px;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:12px;font-size:15px;font-weight:700;}
+</style>
+</head>
+<body class="light-mode">
+<h3 style="margin:0 0 4px;font-size:16px;">js/tile-images.js - drop-in tile artwork</h3>
+<p style="margin:0 0 14px;color:#475569;font-size:13px;max-width:76ch;">
+  "reading" has a file in y/img/skill-tiles/. "nosuchskill" is a deliberately
+  fake id with no file on disk. The first must pick the artwork up; the second
+  must be byte-for-byte the tile we ship today, because a missing file has to
+  be a no-op rather than a broken image. The control uses a FAKE id on purpose:
+  it was a real skill until artwork was authored for every skill, at which
+  point the test quietly stopped testing anything.
+</p>
+
+<div id="hubScreen">
+  <div id="hubGrid">
+    <button class="hub-card" data-skill="reading">
+      <div class="hub-ring"><span class="hub-icon">📖</span></div>
+      <div class="hub-meta"><div class="hub-name">Reading</div><div class="hub-sub">Exams and practice</div></div>
+      <div class="hub-pct">40%</div>
+    </button>
+    <!-- A skill id with NO file on disk, deliberately fake. Using a real skill
+         here made the test lie the moment artwork was authored for it. -->
+    <button class="hub-card" data-skill="nosuchskill">
+      <div class="hub-ring"><span class="hub-icon">🚫</span></div>
+      <div class="hub-meta"><div class="hub-name">No artwork</div><div class="hub-sub">Control case</div></div>
+      <div class="hub-pct">0%</div>
+    </button>
+  </div>
+</div>
+
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script>try{sessionStorage.removeItem('ll-tile-img-v1');}catch(e){}</script>
+<script src="../../js/tile-images.js"></script>
+<script>
+const rows = [];
+const wait = ms => new Promise(r => setTimeout(r, ms));
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+
+(async function(){
+  // Cache-bust our own stylesheets FIRST. These <link>s carry no ?v=, so the
+  // browser happily serves the copy it already has and the harness then
+  // measures the previous build while reporting it as current. Re-setting each
+  // href forces a refetch; a plain reload does not.
+  document.querySelectorAll('link[rel="stylesheet"]').forEach(function (l) {
+    var u = new URL(l.href, location.href);
+    u.searchParams.set('cb', String(Math.random()));
+    l.href = u.toString();
+  });
+  await wait(1200);   // let the refetched CSS apply
+  await wait(1500);   // let the probe try every extension for both tiles
+
+  const withImg = document.querySelector('[data-skill="reading"]');
+  const without = document.querySelector('[data-skill="nosuchskill"]');
+
+  check('1. tile WITH a file gets the class', true, withImg.classList.contains('has-tile-img'));
+  check('2. its --tile-img points at the file', true,
+        /skill-tile-reading\./.test(withImg.style.getPropertyValue('--tile-img')));
+
+  check('3. tile WITHOUT a file gets no class', false, without.classList.contains('has-tile-img'));
+  check('4. and no --tile-img', '', without.style.getPropertyValue('--tile-img').trim());
+
+  // the ::after layer must exist on one and not the other
+  const aWith = getComputedStyle(withImg, '::after');
+  const aWithout = getComputedStyle(without, '::after');
+  check('5. artwork layer painted on the tile with a file', true, aWith.content !== 'none');
+  check('6. no artwork layer on the tile without one', 'none', aWithout.content);
+
+  // readability: the layer must stay faint, and must sit BEHIND the content
+  check('7. artwork stays faint', true, parseFloat(aWith.opacity) <= 0.25);
+  check('8. artwork paints behind the content', true, parseFloat(aWith.zIndex) < 0);
+
+  // THE BUG THIS HARNESS SHIPPED PAST ONCE.
+  // Asserting `z-index: -1` is not enough. A negative-z child paints above the
+  // background of its nearest STACKING-CONTEXT ancestor, not its parent. The
+  // card was position:relative with nothing else, so it created no stacking
+  // context and the artwork rendered BEHIND the card's opaque background. It
+  // looked fine for 0.34s only because the entrance animation on opacity and
+  // transform creates a stacking context while it runs, then drops it.
+  // So: whenever the layer is negative-z, the card MUST establish a context.
+  function establishesStackingContext(el) {
+    var s = getComputedStyle(el);
+    if (s.isolation === 'isolate') return true;
+    if (s.position !== 'static' && s.zIndex !== 'auto') return true;
+    if (parseFloat(s.opacity) < 1) return true;
+    if (s.transform !== 'none' || s.filter !== 'none' || s.perspective !== 'none') return true;
+    if (s.mixBlendMode && s.mixBlendMode !== 'normal') return true;
+    if (s.contain && /paint|layout|strict|content/.test(s.contain)) return true;
+    if (s.willChange && /transform|opacity|filter|isolation/.test(s.willChange)) return true;
+    return false;
+  }
+  check('9. card establishes a stacking context, so the layer is not lost behind it',
+        true, establishesStackingContext(withImg));
+
+  // THE REGRESSION THIS HARNESS MISSED THE FIRST TIME.
+  // Lifting the card's children with `.has-tile-img > * { position: relative }`
+  // is specificity 120 and beats `#hubScreen .hub-pct` at 110, so it silently
+  // turned the corner-pinned percentage into an in-flow element and dropped it
+  // 151px down the card. The artwork was "working" the whole time; the layout
+  // around it was not. Comparing the two tiles is what catches that.
+  const pctA = withImg.querySelector('.hub-pct');
+  const pctB = without.querySelector('.hub-pct');
+  check('10. percentage stays absolutely positioned', 'absolute', getComputedStyle(pctA).position);
+
+  const boxA = withImg.getBoundingClientRect(), boxB = without.getBoundingClientRect();
+  const rA = pctA.getBoundingClientRect(), rB = pctB.getBoundingClientRect();
+  const topA = Math.round(rA.top - boxA.top),   topB = Math.round(rB.top - boxB.top);
+  const rgtA = Math.round(boxA.right - rA.right), rgtB = Math.round(boxB.right - rB.right);
+  check('11. percentage sits at the same height with or without artwork', topB, topA);
+  check('12. and the same distance from the right edge', rgtB, rgtA);
+  check('13. percentage is near the TOP of the card', true, topA < 40);
+
+  // the no-image tile must be visually identical to the shipped design
+  check('14. no-image tile keeps its normal surface',
+        getComputedStyle(without).backgroundColor, getComputedStyle(without).backgroundColor);
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__tileTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok) };
+})();
+</script>
+</body>
+</html>

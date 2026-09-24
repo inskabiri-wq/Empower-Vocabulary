@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Harness - hub boot hold</title>
+<!--
+  Tests the HUB BOOT HOLD block in student-dashboard.html's <head> on its own:
+  the class that keeps #hubScreen invisible, the 150ms loader, the 2.5s cap,
+  the six ready() signals, the deep-link / preview skip and the error release.
+
+  Serve with the static-y launch config and open
+      http://127.0.0.1:5173/tools/harness/hub-boot.html
+  then press "Run all cases", or call   await runAll()   from the console.
+
+  THE BLOCK IS NOT COPIED HERE. runAll() fetches student-dashboard.html,
+  asserts HTTP 200, cuts out everything between the START and END markers and
+  hands it to each case's fresh iframe (this same page with ?frame=1), which
+  writes it into its own <head> while parsing. So the harness always tests
+  what the dashboard ships, and a case can set the frame's own hash or query.
+
+  Cases wait on data-hub-boot and LLHubBoot.pending() by polling, never on a
+  fixed sleep. A hidden tab clamps timers to about once a second, so where a
+  case measures time it widens its upper bound when this page is hidden and
+  says so in the result.
+-->
+<script>
+// FRAME MODE: this page with ?frame=1 is the stand-in dashboard for one case.
+// The block is written in HERE, during parsing and before <body> exists,
+// which is exactly where it runs on the real page.
+window.__FRAME = /[?&]frame=1(&|$)/.test(location.search);
+if (window.__FRAME) {
+  document.documentElement.setAttribute('data-frame', '');
+  // Every class change on <html>, with a timestamp, so a case can prove the
+  // hold was NEVER applied (deep links) or measure when the loader appeared.
+  window.__classLog = [];
+  new MutationObserver(function () {
+    window.__classLog.push({ t: performance.now(), cls: document.documentElement.className });
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  var __block = null;
+  try { __block = (parent !== window) ? parent.__hubBootBlock : null; } catch (_) {}
+  window.__blockFound = !!__block;
+  if (__block) document.write(__block);
+}
+</script>
+<script>
+// Runs after the written block: was the page already held before <body>?
+if (window.__FRAME) window.__holdAtParse = document.documentElement.classList.contains('ll-hub-hold');
+</script>
+<style>
+  html[data-frame] #harness { display: none; }
+  html:not([data-frame]) #hubScreen { display: none; }
+  body { margin: 0; font-family: system-ui, sans-serif; background: #fff; color: #111; }
+  #harness { padding: 18px; }
+  #harness h1 { font-size: 16px; margin: 0 0 10px; }
+  #harness button { font: inherit; padding: 6px 14px; cursor: pointer; }
+  #out { font: 12px/1.5 ui-monospace, Consolas, monospace; white-space: pre-wrap; }
+  #stage iframe { width: 320px; height: 200px; border: 1px solid #ccc; margin: 4px; }
+  /* The stand-in hub: one tile at a known place, for hit-testing. */
+  #hubScreen { position: absolute; left: 0; top: 0; width: 300px; height: 180px; }
+  #tile { position: absolute; left: 40px; top: 40px; width: 180px; height: 80px; }
+</style>
+</head>
+<body>
+<div id="hubScreen" class="screen active">
+  <button id="tile" type="button">Tile</button>
+</div>
+
+<div id="harness">
+  <h1>Hub boot hold: is the dashboard held, revealed once, and never left blank?</h1>
+  <button id="runBtn" type="button">Run all cases</button>
+  <pre id="out">not run yet</pre>
+  <div id="stage"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  if (window.__FRAME) return;
+
+  var DASHBOARD = '../../student-dashboard.html';
+  var START = '<!-- HUB BOOT HOLD START';
+  var END = '<!-- HUB BOOT HOLD END -->';
+  var NEED = ['tiles', 'placement', 'user', 'logo', 'stats', 'assignments'];
+  var stage = document.getElementById('stage');
+  var out = document.getElementById('out');
+  var nonce = 0;
+
+  function hidden() { return document.visibilityState === 'hidden'; }
+
+  // Poll until pred() is truthy or the time runs out. Resolves with the
+  // truthy value, or false on timeout.
+  function waitFor(pred, timeoutMs) {
+    return new Promise(function (resolve) {
+      var start = performance.now();
+      (function tick() {
+        var v = false;
+        try { v = pred(); } catch (_) { v = false; }
+        if (v) { resolve(v); return; }
+        if (performance.now() - start > timeoutMs) { resolve(false); return; }
+        setTimeout(tick, 20);
+      })();
+    });
+  }
+
+  function openFrame(query, hash) {
+    return new Promise(function (resolve, reject) {
+      var f = document.createElement('iframe');
+      f.src = 'hub-boot.html?frame=1&n=' + Date.now() + '-' + (++nonce) + (query || '') + (hash || '');
+      var timer = setTimeout(function () { reject(new Error('frame did not load: ' + f.src)); }, 8000);
+      f.addEventListener('load', function () { clearTimeout(timer); resolve(f); });
+      stage.appendChild(f);
+    });
+  }
+
+  // Everything a case needs to read from one frame.
+  function env(f) {
+    var w = f.contentWindow, d = w.document, html = d.documentElement;
+    return {
+      f: f, w: w, d: d, html: html,
+      H: function () { return w.LLHubBoot; },
+      held: function () { return html.classList.contains('ll-hub-hold'); },
+      slow: function () { return html.classList.contains('ll-hub-slow'); },
+      boot: function () { return html.getAttribute('data-hub-boot'); },
+      hubVisibility: function () { return w.getComputedStyle(d.getElementById('hubScreen')).visibility; },
+      // Hit-testing, not el.click(): a hidden tile must not be what a real
+      // tap at its centre lands on.
+      tileHit: function () {
+        var t = d.getElementById('tile');
+        var r = t.getBoundingClientRect();
+        return d.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) === t;
+      },
+      everHad: function (cls) {
+        return (w.__classLog || []).some(function (e) { return (' ' + e.cls + ' ').indexOf(' ' + cls + ' ') !== -1; });
+      },
+      firstHad: function (cls) {
+        var e = (w.__classLog || []).filter(function (x) { return (' ' + x.cls + ' ').indexOf(' ' + cls + ' ') !== -1; })[0];
+        return e ? e.t : null;
+      },
+      revealedCount: function () { return w.__revealed || 0; },
+      countReveals: function () {
+        w.__revealed = 0;
+        d.addEventListener('ll-hub-revealed', function () { w.__revealed++; });
+      }
+    };
+  }
+
+  async function run(id, title, fn) {
+    var c = { id: id, title: title, pass: true, checks: [] };
+    var frames = [];
+    var check = function (label, ok, got) {
+      var row = { label: label, pass: !!ok };
+      if (got !== undefined) row.got = got;
+      c.checks.push(row);
+      if (!ok) c.pass = false;
+    };
+    var open = async function (query, hash) {
+      var f = await openFrame(query, hash);
+      frames.push(f);
+      return env(f);
+    };
+    try { await fn(check, open); }
+    catch (e) { check('case ran without throwing', false, String((e && e.message) || e)); }
+    frames.forEach(function (f) { try { f.remove(); } catch (_) {} });
+    return c;
+  }
+
+  // ---- The block itself ---------------------------------------------------
+  async function loadBlock(check) {
+    var res = await fetch(DASHBOARD + '?h=' + Date.now(), { cache: 'no-store' });
+    check('student-dashboard.html answers HTTP 200', res.status === 200, res.status);
+    if (res.status !== 200) throw new Error('student-dashboard.html HTTP ' + res.status);
+    var src = await res.text();
+    var a = src.indexOf(START), b = src.indexOf(END);
+    check('both markers found, START before END', a >= 0 && b > a, { start: a, end: b });
+    if (!(a >= 0 && b > a)) throw new Error('HUB BOOT HOLD markers not found');
+    var block = src.slice(a, b + END.length);
+    var head = src.indexOf('</head>');
+    check('the block sits inside <head>', head > b, { end: b, headClose: head });
+    check('one <style> and one <script> in the block',
+      (block.match(/<style\b/g) || []).length === 1 && (block.match(/<script\b/g) || []).length === 1);
+    // profile-hub-check.js counts these two strings across the whole page.
+    check('no string profile-hub-check.js counts',
+      block.indexOf('data-app-settings-open') === -1 && block.indexOf('class="logout-btn"') === -1);
+    window.__hubBootBlock = block;
+    return block.length;
+  }
+
+  // ---- Cases ----------------------------------------------------------------
+  var CASES = [
+    ['a', 'held at load: class set before <body>, hub invisible, tile not hittable', async function (check, open) {
+      var e = await open();
+      check('frame received the block', e.w.__blockFound === true);
+      check('<html> had ll-hub-hold before <body> parsed', e.w.__holdAtParse === true);
+      check('<html> has ll-hub-hold at load', e.held());
+      check('#hubScreen visibility is hidden', e.hubVisibility() === 'hidden', e.hubVisibility());
+      check('elementFromPoint at the tile centre is NOT the tile', !e.tileHit());
+      check('nothing released yet (no data-hub-boot)', e.boot() === null, e.boot());
+      check('all six signals pending', e.H() && e.H().pending().join(',') === NEED.join(','),
+        e.H() && e.H().pending());
+    }],
+
+    ['b', 'the loader appears after about 150ms and goes with the hold', async function (check, open) {
+      var e = await open();
+      var ok = await waitFor(function () { return e.slow(); }, 4000);
+      check('ll-hub-slow appeared', !!ok);
+      var tHold = e.firstHad('ll-hub-hold'), tSlow = e.firstHad('ll-hub-slow');
+      var delta = (tHold != null && tSlow != null) ? Math.round(tSlow - tHold) : null;
+      var max = hidden() ? 1600 : 600;
+      check('ll-hub-slow came 150ms or more after the hold, and by ' + max + 'ms (page ' +
+        document.visibilityState + ')', delta != null && delta >= 140 && delta <= max, delta);
+      check('still held while the loader shows', e.held() && e.boot() === null, e.boot());
+      var after = e.w.getComputedStyle(e.d.body, '::after');
+      check('body::after is drawn (content is not none)', after.content !== 'none' && after.content !== 'normal', after.content);
+      check('body::after shows the Lingualab mark', /lingualab-mark\.svg/.test(after.backgroundImage), after.backgroundImage);
+      var reduce = e.w.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      check('loader animation is llHubWait (none under reduced motion)',
+        reduce ? after.animationName === 'none' : after.animationName === 'llHubWait', after.animationName);
+      e.H().release('test');
+      var gone = e.w.getComputedStyle(e.d.body, '::after').content;
+      check('release removes both classes', !e.held() && !e.slow(), e.html.className);
+      check('release removes the loader', gone === 'none' || gone === 'normal', gone);
+    }],
+
+    ['c', 'all six ready() calls reveal synchronously on the sixth', async function (check, open) {
+      var e = await open();
+      e.countReveals();
+      var H = e.H();
+      var order = NEED.slice().reverse();     // the last one sent is 'tiles'
+      H.ready('bogus');                       // not one of the six
+      H.ready(order[0]); H.ready(order[0]); H.ready(order[0]);
+      check('an unknown name and a repeated one do not release', e.held() && e.boot() === null);
+      for (var i = 0; i < order.length - 1; i++) H.ready(order[i]);
+      check('five of six: still held', e.held() && e.boot() === null, H.pending());
+      H.ready(order[order.length - 1]);
+      // No await between the sixth call and these reads: the reveal is synchronous.
+      check('sixth: ll-hub-hold removed synchronously', !e.held(), e.html.className);
+      check('data-hub-boot starts with ready:', /^ready:\d+$/.test(e.boot() || ''), e.boot());
+      check('pending() is empty', H.pending().length === 0, H.pending());
+      check('timings() has all six', NEED.every(function (n) { return typeof H.timings()[n] === 'number'; }), H.timings());
+      check('ll-hub-revealed fired exactly once', e.revealedCount() === 1, e.revealedCount());
+      check('#hubScreen visible again', e.hubVisibility() === 'visible', e.hubVisibility());
+      check('elementFromPoint at the tile centre IS the tile', e.tileHit());
+
+      // Same again, but the last signal is the real assignments event.
+      var e2 = await open();
+      NEED.filter(function (n) { return n !== 'assignments'; }).forEach(function (n) { e2.H().ready(n); });
+      check('(event) five of six: still held', e2.held() && e2.boot() === null, e2.H().pending());
+      e2.w.dispatchEvent(new e2.w.CustomEvent('assignments:updated', { detail: { count: 2 } }));
+      check("(event) 'assignments:updated' on window releases synchronously",
+        !e2.held() && /^ready:\d+$/.test(e2.boot() || ''), e2.boot());
+    }],
+
+    ['d', 'five of six: the 2.5s cap reveals, and pending() names the missing one', async function (check, open) {
+      var e = await open();
+      NEED.filter(function (n) { return n !== 'logo'; }).forEach(function (n) { e.H().ready(n); });
+      check('five of six: still held', e.held() && e.boot() === null, e.boot());
+      var ok = await waitFor(function () { return /^cap:/.test(e.boot() || ''); }, 7000);
+      check('data-hub-boot starts with cap:', !!ok, e.boot());
+      var m = /^cap:(\d+)$/.exec(e.boot() || '');
+      var ms = m ? Number(m[1]) : null;
+      var max = hidden() ? 3600 : 2800;
+      check('cap fired between 2400 and ' + max + 'ms (page ' + document.visibilityState + ')',
+        ms != null && ms >= 2400 && ms <= max, ms);
+      check("pending() is ['logo']", e.H().pending().join(',') === 'logo', e.H().pending());
+      check('hold and loader both gone', !e.held() && !e.slow(), e.html.className);
+    }],
+
+    ['e', 'deep links and preview are never held; other hashes are', async function (check, open) {
+      var LOADS = [
+        { q: '', h: '#vocabulary', hold: false },
+        { q: '', h: '#Grammar',    hold: false },       // hub.js lowercases the hash too
+        { q: '', h: '#reading',    hold: false },
+        { q: '&preview=1&previewSkill=reading&previewExam=x', h: '', hold: false },
+        // Controls, so a pass above cannot be a hold that never works at all.
+        { q: '', h: '#hubScreen',  hold: true },        // back-nav.js rewrites the hash to this
+        { q: '', h: '#foo',        hold: true },
+        { q: '&preview=10',        h: '', hold: true }
+      ];
+      for (var i = 0; i < LOADS.length; i++) {
+        var L = LOADS[i], tag = (L.q || '') + (L.h || '');
+        var e = await open(L.q, L.h);
+        if (L.hold) {
+          check(tag + ': held', e.w.__holdAtParse === true && e.held(), e.html.className);
+          continue;
+        }
+        // Past the point where the 150ms loader would have been added.
+        await waitFor(function () { return e.w.performance.now() > 400; }, 3000);
+        check(tag + ': never had ll-hub-hold', e.w.__holdAtParse === false && !e.everHad('ll-hub-hold') && !e.held());
+        check(tag + ': never had ll-hub-slow', !e.everHad('ll-hub-slow') && !e.slow());
+        NEED.forEach(function (n) { e.H().ready(n); });
+        check(tag + ': no data-hub-boot, even after all six signals', e.boot() === null, e.boot());
+        check(tag + ': tile visible and hittable', e.hubVisibility() === 'visible' && e.tileHit());
+      }
+    }],
+
+    ['f', 'a script error releases; a failed image or a plain error event does not', async function (check, open) {
+      var e = await open();
+      e.w.dispatchEvent(new e.w.Event('error'));
+      check('plain Event("error") on window: still held', e.held() && e.boot() === null, e.boot());
+      e.w.dispatchEvent(new e.w.ErrorEvent('error'));
+      check('ErrorEvent with no message: still held', e.held() && e.boot() === null, e.boot());
+      var imgFailed = await new Promise(function (resolve) {
+        var img = e.d.createElement('img');
+        var t = setTimeout(function () { resolve(false); }, 5000);
+        img.addEventListener('error', function () { clearTimeout(t); resolve(true); });
+        img.addEventListener('load', function () { clearTimeout(t); resolve(false); });
+        img.src = '/__hub-boot-missing-' + Date.now() + '.png';
+        e.d.body.appendChild(img);
+      });
+      check('a missing image fired its error event', imgFailed);
+      check('missing image: still held', e.held() && e.boot() === null, e.boot());
+      // Runs in the frame's own realm, as a dashboard module's error would.
+      var s = e.d.createElement('script');
+      s.textContent = "setTimeout(function () { throw new Error('x'); });";
+      e.d.head.appendChild(s);
+      var ok = await waitFor(function () { return /^error:/.test(e.boot() || ''); }, 3000);
+      check('a thrown runtime error releases with error:', !!ok, e.boot());
+      check('hold gone after the error', !e.held());
+    }],
+
+    ['g', 'release() twice is harmless and keeps the first reason', async function (check, open) {
+      var e = await open();
+      e.countReveals();
+      var threw = null;
+      try { e.H().release('first'); e.H().release('second'); } catch (err) { threw = String(err); }
+      check('no throw', threw === null, threw);
+      check('data-hub-boot keeps the first reason', /^first:\d+$/.test(e.boot() || ''), e.boot());
+      check('ll-hub-revealed fired once', e.revealedCount() === 1, e.revealedCount());
+      var before = e.boot();
+      e.H().ready('tiles');
+      check('a signal after release is still timed', typeof e.H().timings().tiles === 'number', e.H().timings());
+      check('a signal after release changes nothing on the page', e.boot() === before && !e.held(), e.boot());
+    }]
+  ];
+
+  function render(r) {
+    var lines = [(r.ok ? 'PASS' : 'FAIL') + '  hub boot hold  (page ' + r.visibilityState + ', ' + r.ms + 'ms)', ''];
+    Object.keys(r.cases).forEach(function (k) {
+      var c = r.cases[k];
+      lines.push((c.pass ? 'PASS' : 'FAIL') + '  (' + c.id + ') ' + c.title);
+      c.checks.forEach(function (x) {
+        lines.push('      ' + (x.pass ? 'ok   ' : 'FAIL ') + x.label +
+          (!x.pass && x.got !== undefined ? '   got: ' + JSON.stringify(x.got) : ''));
+      });
+    });
+    out.textContent = lines.join('\n');
+  }
+
+  var running = null;
+  window.runAll = function () {
+    if (running) return running;              // one run at a time
+    running = (async function () {
+      var t0 = performance.now();
+      var result = { ok: false, visibilityState: document.visibilityState, cases: {}, failed: [] };
+      out.textContent = 'running...';
+      var load = await run('fetch', 'student-dashboard.html is served and the block can be cut out', async function (check) {
+        result.blockBytes = await loadBlock(check);
+      });
+      result.cases.fetch = load;
+      if (load.pass) {
+        for (var i = 0; i < CASES.length; i++) {
+          result.cases[CASES[i][0]] = await run(CASES[i][0], CASES[i][1], CASES[i][2]);
+        }
+      }
+      result.failed = Object.keys(result.cases).filter(function (k) { return !result.cases[k].pass; });
+      result.ok = load.pass && result.failed.length === 0 && Object.keys(result.cases).length === CASES.length + 1;
+      result.ms = Math.round(performance.now() - t0);
+      render(result);
+      return result;
+    })();
+    running.then(function () { running = null; }, function () { running = null; });
+    return running;
+  };
+
+  document.getElementById('runBtn').addEventListener('click', function () { window.runAll(); });
+})();
+</script>
+</body>
+</html>

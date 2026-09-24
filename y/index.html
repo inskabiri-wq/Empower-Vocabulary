@@ -1,31 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lingualab - Login</title>
 <!-- PWA: installable app + offline shell. Pure enhancement; the app
      works identically without it. See service-worker.js / pwa-register.js. -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="/manifest.json?v=2">
+<meta name="theme-color" content="#f6f8fb">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Lingualab">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css?v=17">
-<!-- Shared themed dialog (alert/confirm/prompt) — replaces native browser popups app-wide. -->
-<script src="js/app-dialog.js"></script>
-<link rel="stylesheet" href="index/css/styles.css?v=7">
-<link rel="stylesheet" href="css/fsmvu-loader.css?v=3"></head>
-<body>
+<!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css?v=30">
+<!-- Shared themed dialog (alert/confirm/prompt) - replaces native browser popups app-wide. -->
+<script src="js/app-dialog.js?v=8"></script>
+  <script src="js/sound.js?v=4"></script>
+<!-- The login hero. Preloaded because it is the page's largest paint and a
+     stylesheet-discovered background would otherwise start downloading only
+     after the CSS parses. imagesrcset lets the browser pick the same file the
+     media query will, so nothing is fetched twice. -->
+<link rel="preload" as="image" href="/img/login-hero.avif" type="image/avif"
+      imagesrcset="/img/login-hero-sm.avif 1080w, /img/login-hero.avif 1920w"
+      imagesizes="100vw">
+<link rel="stylesheet" href="index/css/styles.css?v=60">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=14">
+<!-- Theme only. This page has its own complete palette and no settings panel,
+     so it loads the controller purely to get the theme class applied before
+     first paint; `data-app-settings="off"` on <body> stops it building a
+     settings wheel here. Without this the login page stayed dark while every
+     screen behind it was white. -->
+<script src="js/app-settings.js?v=40"></script></head>
+<body data-app-settings="off">
 
-<!-- Launch splash — animated FSMVÜ seal that continues the PWA OS-splash
+<!-- Launch splash - animated seal that continues the PWA OS-splash
      "icon grows" motion, then fades into the login. One-shot, tap to skip,
      skipped entirely under prefers-reduced-motion. -->
-<div id="fsmvuSplash" class="fsmvu-splash" role="img" aria-label="Lingualab — Fatih Sultan Mehmet Vakıf Üniversitesi">
+<div id="fsmvuSplash" class="fsmvu-splash" role="img" aria-label="Lingualab">
   <div class="fsmvu-loader fsmvu-loader--rotate fsmvu-loader--white" aria-hidden="true">
     <span class="fsmvu-seal fsmvu-ring"></span><span class="fsmvu-seal fsmvu-emblem"></span>
   </div>
@@ -50,7 +65,7 @@
     <!-- Logo Section -->
     <div class="logo-section">
       <div class="logo-container">
-        <img src="fsm-logo.png" class="logo-icon" alt="FSM">
+        <img src="/lingualab-mark.svg" class="logo-icon" alt="Lingualab">
         <span class="logo-text">Lingualab</span>
       </div>
       <h1 class="welcome-text">Empower Your <span class="text-cycle-wrapper"><span class="text-cycle-word">English</span></span></h1>
@@ -67,12 +82,12 @@
     <div id="messageBox" class="message"></div>
 
     <!-- Email verification prompt (shown after register or unverified login attempt) -->
-    <div id="verifyPanel" style="display:none; margin: 12px 0; padding: 14px 16px; border-radius: 10px; background: rgba(99,102,241,0.10); border: 1px solid rgba(99,102,241,0.35); color: #cbd5e1; font-size: 0.95em; line-height: 1.5;">
-      <div style="font-weight:600; color:#f8fafc; margin-bottom:6px;">📧 Verify your email</div>
+    <div id="verifyPanel" style="display:none; margin: 12px 0; padding: 14px 16px; border-radius: 10px; background: rgba(37,99,235,0.08); border: 1px solid var(--border-color); color: var(--text-secondary); font-size: 0.95em; line-height: 1.5;">
+      <div style="font-weight:600; color:var(--text-primary); margin-bottom:6px;">📧 Verify your email</div>
       We sent a verification link to <strong><span id="verifyEmail">your inbox</span></strong>. Click the link, then sign in. Check the spam folder if you don't see it.
       <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
-        <button type="button" onclick="resendVerification()" style="background:rgba(99,102,241,0.25); border:1px solid rgba(99,102,241,0.5); color:#f8fafc; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.9em;">Resend email</button>
-        <button type="button" onclick="hideVerificationPrompt()" style="background:transparent; border:1px solid rgba(148,163,184,0.35); color:#cbd5e1; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.9em;">Dismiss</button>
+        <button type="button" onclick="resendVerification()" style="background:var(--accent-primary); border:1px solid var(--accent-primary); color:#ffffff; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.9em;">Resend email</button>
+        <button type="button" onclick="hideVerificationPrompt()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.9em;">Dismiss</button>
       </div>
     </div>
 
@@ -82,7 +97,7 @@
         <label class="form-label">Email</label>
         <div class="input-wrapper">
           <span class="input-icon">📧</span>
-          <input type="email" id="loginEmail" class="form-input" placeholder="you@fsm.edu.tr">
+          <input type="email" id="loginEmail" class="form-input" placeholder="you@university.edu">
         </div>
       </div>
       
@@ -122,7 +137,7 @@
         <label class="form-label">Email Address</label>
         <div class="input-wrapper">
           <span class="input-icon">📧</span>
-          <input type="email" id="regEmail" class="form-input" placeholder="you@fsm.edu.tr">
+          <input type="email" id="regEmail" class="form-input" placeholder="you@university.edu">
         </div>
       </div>
       
@@ -184,6 +199,19 @@
     </div>
 
     <!-- Footer -->
+    <!-- A student who cannot sign in cannot reach Messages & help, so "Contact
+         us" opens the same guided message here (js/signin-support.js), with
+         their name and email typed first; it goes to the admin, and the answer
+         waits in Messages & help once they can sign in with that email.
+         If that script did not load, the link falls back to openSupportMail():
+         the address is NOT printed, because this page is public and a plain
+         mailto on it is exactly what address-harvesters scrape. It is
+         assembled at click time, so there is nothing in the HTML to scrape. -->
+    <!-- "Common questions" appears only once the admin has published a
+         question marked for this page (Admin > FAQ); js/faq.js unhides it. -->
+    <p class="footer-text footer-help">
+      Can't sign in? <a href="#" onclick="window.LLSigninSupport ? LLSigninSupport.open(event) : openSupportMail(event)">Contact us</a><span data-login-faq hidden> &middot; <a href="#" data-faq-open>Common questions</a></span>
+    </p>
     <p class="footer-text">
       By continuing, you agree to our <a href="#" onclick="openTosModal(event)">Terms of Service</a>
     </p>
@@ -191,6 +219,20 @@
 </div>
 
 <!-- TOS Modal -->
+<!-- Common questions for people who cannot sign in. Filled by js/faq.js with
+     the published questions marked "Also on the sign-in page". -->
+<div id="faqModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="faqModalTitle">
+  <div class="modal-card">
+    <button type="button" class="modal-close" data-faq-close aria-label="Close">&times;</button>
+    <h2 class="llfaq-title" id="faqModalTitle">Common questions</h2>
+    <p class="modal-muted llfaq-sub">Quick answers to the usual sign-in problems.</p>
+    <input type="search" class="llfaq-search" maxlength="80" autocomplete="off" placeholder="Search, for example: password" aria-label="Search common questions">
+    <div data-faq-list></div>
+    <!-- Same action as the footer link; the contact dialog closes this one. -->
+    <p class="modal-muted" style="margin-top: 14px;">Still stuck? <a href="#" onclick="window.LLSigninSupport ? LLSigninSupport.open(event) : openSupportMail(event)" style="color: var(--accent-primary); font-weight: 600;">Contact us</a></p>
+  </div>
+</div>
+
 <div id="tosModal" class="modal-overlay">
   <div class="modal-card">
     <button class="modal-close" onclick="closeTosModal()">&times;</button>
@@ -203,183 +245,269 @@
 
     <!-- ENGLISH VERSION -->
     <div id="tosEN" class="tos-content">
-      <h2>Terms of Service & Privacy Policy</h2>
-      <p class="modal-muted"><strong>Last Updated:</strong> December 2024</p>
-      
+      <h2>Terms of Service &amp; Privacy Policy</h2>
+      <p class="modal-muted"><strong>Last Updated:</strong> August 2026</p>
+
+      <h3>1. About These Terms</h3>
       <p class="modal-muted">
-        By accessing or using Lingualab ("the App"), you agree to be bound by these Terms of Service and Privacy Policy.
+        Lingualab ("the App") is an English language learning platform. By accessing or using it you agree to be bound by these Terms of Service and Privacy Policy. If you do not agree, do not use the App.
       </p>
-      
-      <h3>1. Eligibility</h3>
+      <p class="modal-muted">In these terms:</p>
+      <ul class="modal-muted">
+        <li><strong>"the Provider"</strong> means Alireza Kabiri, who develops, owns and operates the App.</li>
+        <li><strong>"the Institution"</strong> means the school, university or other educational body that has arranged access to the App for you.</li>
+        <li><strong>"you"</strong> means the student, teacher or administrator using the App.</li>
+      </ul>
+
+      <h3>2. Eligibility and Accounts</h3>
       <p class="modal-muted">
-        This App is exclusively for students and staff of Fatih Sultan Mehmet Vakıf University (FSMVU). Only users with valid @fsm.edu.tr or @stu.fsm.edu.tr email addresses may register and use this service.
+        The App is provided to you through your Institution and is not open to the general public. You may register only with an email address issued by your Institution and approved for the App. Registration from any other address is refused.
       </p>
-      
-      <h3>2. Acceptable Use</h3>
+      <p class="modal-muted">
+        One account belongs to one person. Your account remains active for as long as your Institution's arrangement with the Provider continues and you remain enrolled or employed there.
+      </p>
+
+      <h3>3. Acceptable Use</h3>
       <p class="modal-muted">You agree to use the App only for its intended educational purposes. You shall not:</p>
       <ul class="modal-muted">
         <li>Share your account credentials with others</li>
         <li>Attempt to access accounts belonging to other users</li>
         <li>Use automated tools, bots, or scripts to interact with the App</li>
         <li>Attempt to reverse-engineer, hack, or exploit vulnerabilities</li>
+        <li>Copy, extract or redistribute the App's learning content or question banks</li>
         <li>Use the App for any unlawful or fraudulent purpose</li>
       </ul>
-      
-      <h3>3. Data Collection & Privacy (KVKK Compliance)</h3>
+
+      <h3>4. Data Protection (KVKK)</h3>
       <p class="modal-muted">
         In accordance with Turkish Personal Data Protection Law No. 6698 (KVKK), we inform you that:
       </p>
       <ul class="modal-muted">
-        <li><strong>Data Controller:</strong> Alireza Kabiri, EdTech and AI Coordinator</li>
-        <li><strong>Data Collected:</strong> Name, email address, university affiliation, learning activity data (scores, progress, session history, time spent)</li>
-        <li><strong>Purpose:</strong> To provide educational services, track learning progress, improve teaching methods, and generate academic reports</li>
-        <li><strong>Storage:</strong> Data is stored securely on Firebase (Google Cloud) servers</li>
-        <li><strong>Retention:</strong> Data is retained for the duration of your enrollment at FSMVU plus 2 years</li>
-        <li><strong>Sharing:</strong> Data may be shared with FSMVU administration and instructors for academic purposes. Data will not be sold to third parties.</li>
+        <li><strong>Data Controller (Veri Sorumlusu):</strong> your Institution. It decides that the App will be used in its teaching, which of its members receive accounts, and what is done with the results. It therefore determines the purposes and means of processing.</li>
+        <li><strong>Data Processor (Veri &#304;&#351;leyen):</strong> the Provider, who operates the App on the Institution's behalf and processes personal data only on its documented instructions.</li>
+        <li><strong>Data Collected:</strong> name, email address, institutional affiliation, class and level, and learning activity data (scores, progress, session history, submitted written work, time spent).</li>
+        <li><strong>Legal Basis:</strong> processing is necessary for your Institution to deliver the education you are enrolled in, and for its legitimate interest in measuring and improving that teaching.</li>
+        <li><strong>Purpose:</strong> to provide learning activities, track progress, support teaching decisions, and produce academic reports for your Institution.</li>
+        <li><strong>Storage:</strong> data is held on Google Firebase (Google Cloud) infrastructure.</li>
+        <li><strong>Retention:</strong> account and progress records are kept while you remain with the Institution, and for 2 years afterwards. Detailed activity logs, which record individual page visits and practice events, are kept for 6 months and then deleted.</li>
+        <li><strong>Sharing:</strong> your data is visible to your Institution's teachers and administrators for academic purposes. It is never sold, never used for advertising, and never shared with another institution.</li>
+        <li><strong>Automated decisions:</strong> the App scores work and reports it. It makes no decision producing a legal effect for you. Academic decisions are made by your teachers.</li>
       </ul>
-      
-      <h3>4. Your Rights Under KVKK</h3>
+
+      <h3>5. Service Providers</h3>
+      <p class="modal-muted">
+        Some processing is carried out by third-party providers acting on our instructions. Their servers may be located outside T&uuml;rkiye:
+      </p>
+      <ul class="modal-muted">
+        <li><strong>Google Firebase (Google Cloud):</strong> hosting, sign-in, and database storage for all of the data listed above</li>
+        <li><strong>Google Gemini:</strong> where a teacher enables AI feedback on writing, the text you submitted is sent to Google's Gemini service to generate that feedback. Your name and email are not sent with it.</li>
+        <li><strong>Twilio SendGrid:</strong> delivery of assignment reminder emails, which requires your name and email address</li>
+      </ul>
+      <p class="modal-muted">
+        <strong>Speech recognition.</strong> Pronunciation practice is optional and runs only when you start it. It uses your browser's own speech recognition service, which in Chrome and Edge means the browser sends the audio to Google for recognition. The App does not record, upload or store any audio, and no recording of your voice is kept.
+      </p>
+
+      <h3>6. Your Rights Under KVKK</h3>
       <p class="modal-muted">Under Article 11 of KVKK, you have the right to:</p>
       <ul class="modal-muted">
         <li>Learn whether your personal data is processed</li>
-        <li>Request information about data processing</li>
-        <li>Learn the purpose of data processing</li>
-        <li>Know third parties to whom data is transferred</li>
+        <li>Request information about how it is processed</li>
+        <li>Learn the purpose of processing</li>
+        <li>Know the third parties to whom data is transferred</li>
         <li>Request correction of incomplete or inaccurate data</li>
         <li>Request deletion of your data under applicable conditions</li>
         <li>Object to automated decisions made about you</li>
+        <li>Claim compensation for damage arising from unlawful processing</li>
       </ul>
-      
-      <h3>5. Account Responsibilities</h3>
       <p class="modal-muted">
-        You are responsible for maintaining the confidentiality of your account. All activities under your account are your responsibility. Report any unauthorized access immediately to akabiriaslifar@fsm.edu.tr.
+        These rights are exercised against the Data Controller, which is your Institution. Send your request to your Institution's data protection contact, or to the Lingualab administrator at your Institution, who will forward it. Requests are answered within the period required by KVKK. The Provider assists the Institution in answering them.
       </p>
-      
-      <h3>6. Intellectual Property</h3>
+
+      <h3>7. Account Responsibilities</h3>
       <p class="modal-muted">
-        All content, including vocabulary data, interface design, and software code, is the property of Alireza Kabiri. This application is developed for educational use at FSMVU. Unauthorized reproduction, distribution, or commercial use is prohibited.
+        You are responsible for keeping your account confidential, and all activity under it is your responsibility. Report suspected unauthorized access to your Institution's Lingualab administrator immediately.
       </p>
-      
-      <h3>7. Consequences of Misuse</h3>
+
+      <h3>8. Intellectual Property and Ownership</h3>
+      <p class="modal-muted">
+        Lingualab is the <strong>exclusive property of Alireza Kabiri</strong>. All rights in it are his and remain his. This includes, without limitation, the software code, the interface and visual design, the database structure and schema, the learning content and question banks, the "Lingualab" name and branding, and all future versions, updates and derivative works.
+      </p>
+      <p class="modal-muted">
+        The App is supplied to the Institution under a <strong>revocable, non-exclusive, non-transferable licence</strong> to use it for the Institution's own teaching, for the agreed term. The licence conveys use only. It grants no right to copy, modify, resell, rent, sublicense, decompile or reverse-engineer the App, to operate it independently of the Provider, or to access or claim any interest in its source code. It may not be assigned to another institution.
+      </p>
+      <p class="modal-muted">
+        <strong>Nothing in this document, and nothing in the use of the App, transfers or assigns any intellectual property right.</strong> Ownership of the App is separate from, and unaffected by, the Institution's role as Data Controller under Section 4. That role concerns personal data only and carries no interest in the software.
+      </p>
+      <p class="modal-muted">
+        Personal data belonging to students and staff is not part of the App's intellectual property and remains subject to Section 4. On termination, the Institution may export its own data; the App itself, and any copy of it, must no longer be used.
+      </p>
+
+      <h3>9. Consequences of Misuse</h3>
       <p class="modal-muted">Violations of these terms may result in:</p>
       <ul class="modal-muted">
-        <li>Immediate account suspension or termination</li>
-        <li>Report to FSMVU disciplinary committee</li>
-        <li>Legal action under applicable Turkish law (TCK, KVKK)</li>
+        <li>Immediate suspension or termination of your account</li>
+        <li>Referral to your Institution's disciplinary process</li>
+        <li>Legal action under applicable Turkish law (TCK, KVKK, FSEK)</li>
       </ul>
-      
-      <h3>8. Disclaimer</h3>
+
+      <h3>10. Availability and Disclaimer</h3>
       <p class="modal-muted">
-        The App is provided "as is" for educational purposes. We do not guarantee uninterrupted access or error-free operation. FSMVU and its staff are not liable for any damages arising from use of the App.
+        The App is provided "as is" for educational purposes. We do not guarantee uninterrupted access or error-free operation, and access may be suspended for maintenance or for reasons outside our control. To the fullest extent permitted by applicable law, neither the Provider nor your Institution is liable for indirect or consequential damages arising from use of the App. Nothing in this section limits any liability that cannot be excluded under Turkish law, including obligations owed to you under KVKK.
       </p>
-      
-      <h3>9. Changes to Terms</h3>
+
+      <h3>11. Changes to These Terms</h3>
       <p class="modal-muted">
-        We reserve the right to modify these terms at any time. Users will be notified of significant changes. Continued use of the App constitutes acceptance of updated terms.
+        These terms may be modified at any time. Users are notified of significant changes, and continued use after notice constitutes acceptance. The version shown here is always the one in force.
       </p>
-      
-      <h3>10. Contact & Data Requests</h3>
+
+      <h3>12. Governing Law and Contact</h3>
       <p class="modal-muted">
-        For questions, data requests, or to report misuse:<br><br>
+        These terms are governed by the laws of the Republic of T&uuml;rkiye, and the courts of Istanbul have jurisdiction over any dispute arising from them.
+      </p>
+      <p class="modal-muted">
+        For questions about your account or your data, contact your Institution's Lingualab administrator, who can escalate to the Provider.
+      </p>
+      <p class="modal-muted">
         <strong>Alireza Kabiri</strong><br>
-        EdTech and AI Coordinator<br>
-        FSMVU English Preparatory Program<br>
-        Email: akabiriaslifar@fsm.edu.tr
+        Developer and operator of Lingualab
       </p>
-      
-      <p class="modal-muted" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); font-style: italic;">
+
+      <p class="modal-muted" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color); font-style: italic;">
         By clicking "Sign In" or "Create Account", you acknowledge that you have read, understood, and agree to these Terms of Service and Privacy Policy, and consent to the processing of your personal data as described above.
       </p>
     </div>
 
     <!-- TURKISH VERSION -->
     <div id="tosTR" class="tos-content" style="display: none;">
-      <h2>Kullanım Koşulları ve Gizlilik Politikası</h2>
-      <p class="modal-muted"><strong>Son Güncelleme:</strong> Aralık 2024</p>
-      
+      <h2>Kullan&#305;m Ko&#351;ullar&#305; ve Gizlilik Politikas&#305;</h2>
+      <p class="modal-muted"><strong>Son G&uuml;ncelleme:</strong> A&#287;ustos 2026</p>
+
+      <h3>1. Bu Ko&#351;ullar Hakk&#305;nda</h3>
       <p class="modal-muted">
-        Lingualab ("Uygulama") uygulamasına erişerek veya kullanarak, bu Kullanım Koşulları ve Gizlilik Politikası'na bağlı kalmayı kabul etmiş olursunuz.
+        Lingualab ("Uygulama") bir &#304;ngilizce &ouml;&#287;renme platformudur. Uygulamaya eri&#351;erek veya kullanarak bu Kullan&#305;m Ko&#351;ullar&#305; ve Gizlilik Politikas&#305;'na ba&#287;l&#305; kalmay&#305; kabul edersiniz. Kabul etmiyorsan&#305;z Uygulamay&#305; kullanmay&#305;n&#305;z.
       </p>
-      
-      <h3>1. Uygunluk</h3>
-      <p class="modal-muted">
-        Bu Uygulama yalnızca Fatih Sultan Mehmet Vakıf Üniversitesi (FSMVÜ) öğrencileri ve personeli içindir. Yalnızca geçerli @fsm.edu.tr veya @stu.fsm.edu.tr e-posta adresine sahip kullanıcılar kayıt olabilir ve bu hizmeti kullanabilir.
-      </p>
-      
-      <h3>2. Kabul Edilebilir Kullanım</h3>
-      <p class="modal-muted">Uygulamayı yalnızca amaçlanan eğitim amaçları için kullanmayı kabul edersiniz. Aşağıdakileri yapamazsınız:</p>
+      <p class="modal-muted">Bu ko&#351;ullarda:</p>
       <ul class="modal-muted">
-        <li>Hesap bilgilerinizi başkalarıyla paylaşmak</li>
-        <li>Diğer kullanıcılara ait hesaplara erişmeye çalışmak</li>
-        <li>Uygulama ile etkileşim kurmak için otomatik araçlar, botlar veya komut dosyaları kullanmak</li>
-        <li>Tersine mühendislik yapmaya, hacklemeye veya güvenlik açıklarını istismar etmeye çalışmak</li>
-        <li>Uygulamayı yasadışı veya hileli amaçlar için kullanmak</li>
+        <li><strong>"Sa&#287;lay&#305;c&#305;"</strong>, Uygulamay&#305; geli&#351;tiren, sahibi olan ve i&#351;leten Alireza Kabiri'yi ifade eder.</li>
+        <li><strong>"Kurum"</strong>, Uygulamaya eri&#351;iminizi sa&#287;layan okul, &uuml;niversite veya di&#287;er e&#287;itim kurulu&#351;unu ifade eder.</li>
+        <li><strong>"siz"</strong>, Uygulamay&#305; kullanan &ouml;&#287;renci, &ouml;&#287;retmen veya y&ouml;neticiyi ifade eder.</li>
       </ul>
-      
-      <h3>3. Veri Toplama ve Gizlilik (KVKK Uyumu)</h3>
+
+      <h3>2. Uygunluk ve Hesaplar</h3>
       <p class="modal-muted">
-        6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) uyarınca sizi bilgilendiririz:
+        Uygulama size Kurumunuz arac&#305;l&#305;&#287;&#305;yla sunulmaktad&#305;r ve genel kullan&#305;ma a&ccedil;&#305;k de&#287;ildir. Yaln&#305;zca Kurumunuzun size tahsis etti&#287;i ve Uygulama i&ccedil;in onaylanm&#305;&#351; bir e-posta adresi ile kay&#305;t olabilirsiniz. Ba&#351;ka adreslerden yap&#305;lan kay&#305;tlar reddedilir.
+      </p>
+      <p class="modal-muted">
+        Bir hesap bir ki&#351;iye aittir. Hesab&#305;n&#305;z, Kurumunuzun Sa&#287;lay&#305;c&#305; ile olan d&uuml;zenlemesi devam etti&#287;i ve siz orada kay&#305;tl&#305; veya g&ouml;revli oldu&#287;unuz s&uuml;rece etkin kal&#305;r.
+      </p>
+
+      <h3>3. Kabul Edilebilir Kullan&#305;m</h3>
+      <p class="modal-muted">Uygulamay&#305; yaln&#305;zca ama&ccedil;lanan e&#287;itim ama&ccedil;lar&#305; i&ccedil;in kullanmay&#305; kabul edersiniz. A&#351;a&#287;&#305;dakileri yapamazs&#305;n&#305;z:</p>
+      <ul class="modal-muted">
+        <li>Hesap bilgilerinizi ba&#351;kalar&#305;yla payla&#351;mak</li>
+        <li>Di&#287;er kullan&#305;c&#305;lara ait hesaplara eri&#351;meye &ccedil;al&#305;&#351;mak</li>
+        <li>Uygulama ile etkile&#351;im kurmak i&ccedil;in otomatik ara&ccedil;lar, botlar veya komut dosyalar&#305; kullanmak</li>
+        <li>Tersine m&uuml;hendislik yapmaya, hacklemeye veya g&uuml;venlik a&ccedil;&#305;klar&#305;n&#305; istismar etmeye &ccedil;al&#305;&#351;mak</li>
+        <li>Uygulaman&#305;n &ouml;&#287;renme i&ccedil;eri&#287;ini veya soru bankalar&#305;n&#305; kopyalamak, &ccedil;&#305;karmak veya yeniden da&#287;&#305;tmak</li>
+        <li>Uygulamay&#305; yasad&#305;&#351;&#305; veya hileli ama&ccedil;lar i&ccedil;in kullanmak</li>
+      </ul>
+
+      <h3>4. Ki&#351;isel Verilerin Korunmas&#305; (KVKK)</h3>
+      <p class="modal-muted">
+        6698 say&#305;l&#305; Ki&#351;isel Verilerin Korunmas&#305; Kanunu (KVKK) uyar&#305;nca sizi bilgilendiririz:
       </p>
       <ul class="modal-muted">
-        <li><strong>Veri Sorumlusu:</strong> Alireza Kabiri, Eğitim Teknolojileri ve Yapay Zekâ Koordinatörü</li>
-        <li><strong>Toplanan Veriler:</strong> Ad, e-posta adresi, üniversite bilgisi, öğrenme etkinlik verileri (puanlar, ilerleme, oturum geçmişi, harcanan süre)</li>
-        <li><strong>Amaç:</strong> Eğitim hizmetleri sunmak, öğrenme ilerlemesini takip etmek, öğretim yöntemlerini geliştirmek ve akademik raporlar oluşturmak</li>
-        <li><strong>Depolama:</strong> Veriler Firebase (Google Cloud) sunucularında güvenli bir şekilde saklanır</li>
-        <li><strong>Saklama Süresi:</strong> Veriler, FSMVÜ'deki kayıt süreniz artı 2 yıl boyunca saklanır</li>
-        <li><strong>Paylaşım:</strong> Veriler akademik amaçlarla FSMVÜ yönetimi ve eğitmenleriyle paylaşılabilir. Veriler üçüncü taraflara satılmayacaktır.</li>
+        <li><strong>Veri Sorumlusu:</strong> Kurumunuz. Uygulaman&#305;n &ouml;&#287;retiminde kullan&#305;lmas&#305;na, hangi mensuplar&#305;na hesap a&ccedil;&#305;laca&#287;&#305;na ve sonu&ccedil;lar&#305;n nas&#305;l de&#287;erlendirilece&#287;ine Kurum karar verir. Bu nedenle i&#351;leme ama&ccedil;lar&#305;n&#305; ve vas&#305;talar&#305;n&#305; Kurum belirler.</li>
+        <li><strong>Veri &#304;&#351;leyen:</strong> Sa&#287;lay&#305;c&#305;. Uygulamay&#305; Kurum ad&#305;na i&#351;letir ve ki&#351;isel verileri yaln&#305;zca Kurumun yaz&#305;l&#305; talimatlar&#305; do&#287;rultusunda i&#351;ler.</li>
+        <li><strong>Toplanan Veriler:</strong> ad, e-posta adresi, kurum bilgisi, s&#305;n&#305;f ve seviye, &ouml;&#287;renme etkinlik verileri (puanlar, ilerleme, oturum ge&ccedil;mi&#351;i, g&ouml;nderilen yaz&#305;l&#305; &ccedil;al&#305;&#351;malar, harcanan s&uuml;re).</li>
+        <li><strong>Hukuki Sebep:</strong> i&#351;leme, Kurumunuzun kay&#305;tl&#305; oldu&#287;unuz e&#287;itimi verebilmesi ve bu &ouml;&#287;retimi &ouml;l&ccedil;me ve geli&#351;tirmeye y&ouml;nelik me&#351;ru menfaati i&ccedil;in gereklidir.</li>
+        <li><strong>Ama&ccedil;:</strong> &ouml;&#287;renme etkinlikleri sunmak, ilerlemeyi takip etmek, &ouml;&#287;retim kararlar&#305;n&#305; desteklemek ve Kurumunuz i&ccedil;in akademik raporlar &uuml;retmek.</li>
+        <li><strong>Depolama:</strong> veriler Google Firebase (Google Cloud) altyap&#305;s&#305;nda tutulur.</li>
+        <li><strong>Saklama S&uuml;resi:</strong> hesap ve ilerleme kay&#305;tlar&#305; Kurumla ili&#351;kiniz s&uuml;rd&uuml;&#287;&uuml; m&uuml;ddet&ccedil;e ve sonras&#305;nda 2 y&#305;l saklan&#305;r. Tek tek sayfa ziyaretlerini ve al&#305;&#351;t&#305;rma olaylar&#305;n&#305; kaydeden ayr&#305;nt&#305;l&#305; etkinlik kay&#305;tlar&#305; 6 ay saklan&#305;r ve ard&#305;ndan silinir.</li>
+        <li><strong>Payla&#351;&#305;m:</strong> verileriniz akademik ama&ccedil;larla Kurumunuzun &ouml;&#287;retmen ve y&ouml;neticilerine g&ouml;r&uuml;n&uuml;rd&uuml;r. Hi&ccedil;bir zaman sat&#305;lmaz, reklam i&ccedil;in kullan&#305;lmaz ve ba&#351;ka bir kurumla payla&#351;&#305;lmaz.</li>
+        <li><strong>Otomatik kararlar:</strong> Uygulama &ccedil;al&#305;&#351;malar&#305; puanlar ve raporlar. Hakk&#305;n&#305;zda hukuki sonu&ccedil; do&#287;uran bir karar vermez. Akademik kararlar &ouml;&#287;retmenleriniz taraf&#305;ndan al&#305;n&#305;r.</li>
       </ul>
-      
-      <h3>4. KVKK Kapsamındaki Haklarınız</h3>
-      <p class="modal-muted">KVKK'nın 11. maddesi kapsamında aşağıdaki haklara sahipsiniz:</p>
+
+      <h3>5. Hizmet Sa&#287;lay&#305;c&#305;lar</h3>
+      <p class="modal-muted">
+        Baz&#305; i&#351;leme faaliyetleri, talimatlar&#305;m&#305;z do&#287;rultusunda hareket eden &uuml;&ccedil;&uuml;nc&uuml; taraf sa&#287;lay&#305;c&#305;lar taraf&#305;ndan ger&ccedil;ekle&#351;tirilir. Bu sa&#287;lay&#305;c&#305;lar&#305;n sunucular&#305; T&uuml;rkiye d&#305;&#351;&#305;nda bulunabilir:
+      </p>
       <ul class="modal-muted">
-        <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme</li>
-        <li>Veri işleme hakkında bilgi talep etme</li>
-        <li>Veri işlemenin amacını öğrenme</li>
-        <li>Verilerin aktarıldığı üçüncü tarafları bilme</li>
-        <li>Eksik veya yanlış verilerin düzeltilmesini talep etme</li>
-        <li>Uygulanabilir koşullar altında verilerinizin silinmesini talep etme</li>
-        <li>Hakkınızda alınan otomatik kararlara itiraz etme</li>
+        <li><strong>Google Firebase (Google Cloud):</strong> yukar&#305;da listelenen t&uuml;m veriler i&ccedil;in bar&#305;nd&#305;rma, oturum a&ccedil;ma ve veritaban&#305; depolama</li>
+        <li><strong>Google Gemini:</strong> bir &ouml;&#287;retmen yazma &ccedil;al&#305;&#351;malar&#305;nda yapay zek&acirc; geri bildirimini etkinle&#351;tirdi&#287;inde, g&ouml;nderdi&#287;iniz metin bu geri bildirimin olu&#351;turulmas&#305; i&ccedil;in Google Gemini hizmetine iletilir. Ad&#305;n&#305;z ve e-posta adresiniz bu metinle birlikte g&ouml;nderilmez.</li>
+        <li><strong>Twilio SendGrid:</strong> &ouml;dev hat&#305;rlatma e-postalar&#305;n&#305;n iletilmesi; bunun i&ccedil;in ad&#305;n&#305;z ve e-posta adresiniz kullan&#305;l&#305;r</li>
       </ul>
-      
-      <h3>5. Hesap Sorumlulukları</h3>
       <p class="modal-muted">
-        Hesabınızın gizliliğini korumaktan siz sorumlusunuz. Hesabınız altındaki tüm etkinlikler sizin sorumluluğunuzdadır. Yetkisiz erişimi derhal akabiriaslifar@fsm.edu.tr adresine bildirin.
+        <strong>Konu&#351;ma tan&#305;ma.</strong> Telaffuz al&#305;&#351;t&#305;rmas&#305; iste&#287;e ba&#287;l&#305;d&#305;r ve yaln&#305;zca siz ba&#351;latt&#305;&#287;&#305;n&#305;zda &ccedil;al&#305;&#351;&#305;r. Taray&#305;c&#305;n&#305;z&#305;n kendi konu&#351;ma tan&#305;ma hizmetini kullan&#305;r; Chrome ve Edge'de bu, sesin tan&#305;ma i&ccedil;in taray&#305;c&#305; taraf&#305;ndan Google'a g&ouml;nderilmesi anlam&#305;na gelir. Uygulama hi&ccedil;bir ses kayd&#305; yapmaz, y&uuml;klemez veya saklamaz; sesinize ait hi&ccedil;bir kay&#305;t tutulmaz.
       </p>
-      
-      <h3>6. Fikri Mülkiyet</h3>
-      <p class="modal-muted">
-        Kelime verileri, arayüz tasarımı ve yazılım kodu dahil tüm içerik Alireza Kabiri'nin mülkiyetindedir. Bu uygulama FSMVÜ'de eğitim amaçlı kullanım için geliştirilmiştir. Yetkisiz çoğaltma, dağıtım veya ticari kullanım yasaktır.
-      </p>
-      
-      <h3>7. Kötüye Kullanımın Sonuçları</h3>
-      <p class="modal-muted">Bu koşulların ihlali şunlara neden olabilir:</p>
+
+      <h3>6. KVKK Kapsam&#305;ndaki Haklar&#305;n&#305;z</h3>
+      <p class="modal-muted">KVKK'n&#305;n 11. maddesi kapsam&#305;nda a&#351;a&#287;&#305;daki haklara sahipsiniz:</p>
       <ul class="modal-muted">
-        <li>Hesabın derhal askıya alınması veya sonlandırılması</li>
-        <li>FSMVÜ disiplin kuruluna bildirim</li>
-        <li>Yürürlükteki Türk hukuku kapsamında yasal işlem (TCK, KVKK)</li>
+        <li>Ki&#351;isel verilerinizin i&#351;lenip i&#351;lenmedi&#287;ini &ouml;&#287;renme</li>
+        <li>Nas&#305;l i&#351;lendi&#287;i hakk&#305;nda bilgi talep etme</li>
+        <li>&#304;&#351;lemenin amac&#305;n&#305; &ouml;&#287;renme</li>
+        <li>Verilerin aktar&#305;ld&#305;&#287;&#305; &uuml;&ccedil;&uuml;nc&uuml; taraflar&#305; bilme</li>
+        <li>Eksik veya yanl&#305;&#351; verilerin d&uuml;zeltilmesini talep etme</li>
+        <li>Uygulanabilir ko&#351;ullar alt&#305;nda verilerinizin silinmesini talep etme</li>
+        <li>Hakk&#305;n&#305;zda al&#305;nan otomatik kararlara itiraz etme</li>
+        <li>Kanuna ayk&#305;r&#305; i&#351;leme sebebiyle zarara u&#287;raman&#305;z h&acirc;linde zarar&#305;n giderilmesini talep etme</li>
       </ul>
-      
-      <h3>8. Sorumluluk Reddi</h3>
       <p class="modal-muted">
-        Uygulama eğitim amaçlı olarak "olduğu gibi" sunulmaktadır. Kesintisiz erişim veya hatasız çalışma garanti edilmemektedir. FSMVÜ ve personeli, Uygulamanın kullanımından kaynaklanan herhangi bir zarardan sorumlu değildir.
+        Bu haklar Veri Sorumlusuna, yani Kurumunuza kar&#351;&#305; kullan&#305;l&#305;r. Talebinizi Kurumunuzun ki&#351;isel verilerin korunmas&#305; ileti&#351;im adresine veya Kurumunuzdaki Lingualab y&ouml;neticisine iletebilirsiniz; talebiniz iletilecektir. Talepler KVKK'n&#305;n &ouml;ng&ouml;rd&uuml;&#287;&uuml; s&uuml;re i&ccedil;inde yan&#305;tlan&#305;r. Sa&#287;lay&#305;c&#305;, Kuruma bu taleplerin yan&#305;tlanmas&#305;nda destek olur.
       </p>
-      
-      <h3>9. Koşullarda Değişiklikler</h3>
+
+      <h3>7. Hesap Sorumluluklar&#305;</h3>
       <p class="modal-muted">
-        Bu koşulları herhangi bir zamanda değiştirme hakkımızı saklı tutarız. Önemli değişiklikler kullanıcılara bildirilecektir. Uygulamayı kullanmaya devam etmeniz, güncellenmiş koşulların kabulü anlamına gelir.
+        Hesab&#305;n&#305;z&#305;n gizlili&#287;ini korumaktan siz sorumlusunuz ve hesab&#305;n&#305;z alt&#305;ndaki t&uuml;m etkinlikler sizin sorumlulu&#287;unuzdad&#305;r. Yetkisiz eri&#351;im &#351;&uuml;phesini derhal Kurumunuzdaki Lingualab y&ouml;neticisine bildirin.
       </p>
-      
-      <h3>10. İletişim ve Veri Talepleri</h3>
+
+      <h3>8. Fikri M&uuml;lkiyet ve M&uuml;lkiyet Haklar&#305;</h3>
       <p class="modal-muted">
-        Sorularınız, veri talepleriniz veya kötüye kullanımı bildirmek için:<br><br>
+        Lingualab, <strong>Alireza Kabiri'nin m&uuml;nhas&#305;r m&uuml;lkiyetindedir</strong>. Uygulamaya ili&#351;kin t&uuml;m haklar kendisine aittir ve kendisinde kal&#305;r. Bu haklar, s&#305;n&#305;rl&#305; olmamak &uuml;zere, yaz&#305;l&#305;m kodunu, aray&uuml;z ve g&ouml;rsel tasar&#305;m&#305;, veritaban&#305; yap&#305;s&#305;n&#305; ve &#351;emas&#305;n&#305;, &ouml;&#287;renme i&ccedil;eri&#287;ini ve soru bankalar&#305;n&#305;, "Lingualab" ad&#305;n&#305; ve markas&#305;n&#305;, gelecekteki t&uuml;m s&uuml;r&uuml;mleri, g&uuml;ncellemeleri ve i&#351;lenme eserleri kapsar.
+      </p>
+      <p class="modal-muted">
+        Uygulama, Kuruma kendi &ouml;&#287;retiminde kullanmas&#305; i&ccedil;in, kararla&#351;t&#305;r&#305;lan s&uuml;re boyunca <strong>geri al&#305;nabilir, m&uuml;nhas&#305;r olmayan ve devredilemez bir lisans</strong> ile sunulur. Lisans yaln&#305;zca kullan&#305;m hakk&#305; verir. &Ccedil;o&#287;altma, de&#287;i&#351;tirme, yeniden satma, kiralama, alt lisans verme, kaynak koda eri&#351;me veya tersine m&uuml;hendislik yapma, Uygulamay&#305; Sa&#287;lay&#305;c&#305;dan ba&#287;&#305;ms&#305;z olarak i&#351;letme hakk&#305; vermez ve kaynak kod &uuml;zerinde hi&ccedil;bir hak do&#287;urmaz. Ba&#351;ka bir kuruma devredilemez.
+      </p>
+      <p class="modal-muted">
+        <strong>Bu belgedeki hi&ccedil;bir h&uuml;k&uuml;m ve Uygulaman&#305;n kullan&#305;m&#305;na ili&#351;kin hi&ccedil;bir husus, herhangi bir fikri m&uuml;lkiyet hakk&#305;n&#305; devretmez veya temlik etmez.</strong> Uygulaman&#305;n m&uuml;lkiyeti, Kurumun 4. b&ouml;l&uuml;mdeki Veri Sorumlusu s&#305;fat&#305;ndan ayr&#305;d&#305;r ve bundan etkilenmez. Bu s&#305;fat yaln&#305;zca ki&#351;isel verilere ili&#351;kindir ve yaz&#305;l&#305;m &uuml;zerinde hi&ccedil;bir hak do&#287;urmaz.
+      </p>
+      <p class="modal-muted">
+        &Ouml;&#287;rencilere ve personele ait ki&#351;isel veriler Uygulaman&#305;n fikri m&uuml;lkiyetinin par&ccedil;as&#305; de&#287;ildir ve 4. b&ouml;l&uuml;me tabidir. Lisans sona erdi&#287;inde Kurum kendi verilerini d&#305;&#351;a aktarabilir; Uygulaman&#305;n kendisi ve her t&uuml;rl&uuml; kopyas&#305; art&#305;k kullan&#305;lamaz.
+      </p>
+
+      <h3>9. K&ouml;t&uuml;ye Kullan&#305;m&#305;n Sonu&ccedil;lar&#305;</h3>
+      <p class="modal-muted">Bu ko&#351;ullar&#305;n ihlali &#351;unlara neden olabilir:</p>
+      <ul class="modal-muted">
+        <li>Hesab&#305;n&#305;z&#305;n derhal ask&#305;ya al&#305;nmas&#305; veya sonland&#305;r&#305;lmas&#305;</li>
+        <li>Kurumunuzun disiplin s&uuml;recine bildirim</li>
+        <li>Y&uuml;r&uuml;rl&uuml;kteki T&uuml;rk hukuku kapsam&#305;nda yasal i&#351;lem (TCK, KVKK, FSEK)</li>
+      </ul>
+
+      <h3>10. Eri&#351;ilebilirlik ve Sorumluluk Reddi</h3>
+      <p class="modal-muted">
+        Uygulama e&#287;itim ama&ccedil;l&#305; olarak "oldu&#287;u gibi" sunulmaktad&#305;r. Kesintisiz eri&#351;im veya hatas&#305;z &ccedil;al&#305;&#351;ma garanti edilmez; bak&#305;m veya kontrol&uuml;m&uuml;z d&#305;&#351;&#305;ndaki nedenlerle eri&#351;im ask&#305;ya al&#305;nabilir. Y&uuml;r&uuml;rl&uuml;kteki hukukun izin verdi&#287;i azami &ouml;l&ccedil;&uuml;de, Sa&#287;lay&#305;c&#305; ve Kurumunuz, Uygulaman&#305;n kullan&#305;m&#305;ndan kaynaklanan dolayl&#305; veya sonu&ccedil; niteli&#287;indeki zararlardan sorumlu de&#287;ildir. Bu b&ouml;l&uuml;m, KVKK kapsam&#305;nda size kar&#351;&#305; do&#287;an y&uuml;k&uuml;ml&uuml;l&uuml;kler dahil olmak &uuml;zere T&uuml;rk hukuku uyar&#305;nca s&#305;n&#305;rland&#305;r&#305;lamayacak hi&ccedil;bir sorumlulu&#287;u s&#305;n&#305;rlamaz.
+      </p>
+
+      <h3>11. Ko&#351;ullarda De&#287;i&#351;iklikler</h3>
+      <p class="modal-muted">
+        Bu ko&#351;ullar herhangi bir zamanda de&#287;i&#351;tirilebilir. &Ouml;nemli de&#287;i&#351;iklikler kullan&#305;c&#305;lara bildirilir ve bildirimden sonra kullan&#305;ma devam edilmesi kabul anlam&#305;na gelir. Burada g&ouml;r&uuml;nen s&uuml;r&uuml;m her zaman y&uuml;r&uuml;rl&uuml;kte olan s&uuml;r&uuml;md&uuml;r.
+      </p>
+
+      <h3>12. Uygulanacak Hukuk ve &#304;leti&#351;im</h3>
+      <p class="modal-muted">
+        Bu ko&#351;ullar T&uuml;rkiye Cumhuriyeti hukukuna tabidir ve bunlardan do&#287;acak uyu&#351;mazl&#305;klarda &#304;stanbul mahkemeleri yetkilidir.
+      </p>
+      <p class="modal-muted">
+        Hesab&#305;n&#305;z veya verileriniz hakk&#305;ndaki sorular&#305;n&#305;z i&ccedil;in Kurumunuzdaki Lingualab y&ouml;neticisine ba&#351;vurun; gerekti&#287;inde talebiniz Sa&#287;lay&#305;c&#305;ya iletilir.
+      </p>
+      <p class="modal-muted">
         <strong>Alireza Kabiri</strong><br>
-        Eğitim Teknolojileri ve Yapay Zekâ Koordinatörü<br>
-        FSMVÜ İngilizce Hazırlık Programı<br>
-        E-posta: akabiriaslifar@fsm.edu.tr
+        Lingualab'&#305;n geli&#351;tiricisi ve i&#351;letmecisi
       </p>
-      
-      <p class="modal-muted" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); font-style: italic;">
-        "Giriş Yap" veya "Hesap Oluştur" düğmesine tıklayarak, bu Kullanım Koşulları ve Gizlilik Politikası'nı okuduğunuzu, anladığınızı ve kabul ettiğinizi ve kişisel verilerinizin yukarıda açıklandığı şekilde işlenmesine onay vermiş olursunuz.
+
+      <p class="modal-muted" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color); font-style: italic;">
+        "Giri&#351; Yap" veya "Hesap Olu&#351;tur" d&uuml;&#287;mesine t&#305;klayarak, bu Kullan&#305;m Ko&#351;ullar&#305; ve Gizlilik Politikas&#305;'n&#305; okudu&#287;unuzu, anlad&#305;&#287;&#305;n&#305;z&#305; ve kabul etti&#287;inizi ve ki&#351;isel verilerinizin yukar&#305;da a&ccedil;&#305;kland&#305;&#287;&#305; &#351;ekilde i&#351;lenmesine onay vermi&#351; oldu&#287;unuzu beyan edersiniz.
       </p>
     </div>
   </div>
@@ -389,20 +517,30 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
+<!-- Which university, then start Firebase for it. Must come after the Firebase
+     SDK above and before index/js/main.js below. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
 
-<!-- Account-gate helper (window.AccountGate) — must load BEFORE main.js
+<!-- Account-gate helper (window.AccountGate) - must load BEFORE main.js
      so the post-login redirect paths can call it. Phase J: yearly
      expiry + bi-monthly verification check. -->
-<script src="index/js/account-gate.js"></script>
+<script src="index/js/account-gate.js?v=1"></script>
 
-<!-- Main JS — initialises `db` (firebase.firestore()). -->
-<script src="index/js/main.js"></script>
-<!-- Phase H — dynamic email-domain authorization. Loaded AFTER
+<!-- Main JS - initialises `db` (firebase.firestore()). -->
+<script src="index/js/main.js?v=5"></script>
+<!-- Phase H - dynamic email-domain authorization. Loaded AFTER
      main.js so `db` is already defined when OrgRegistry.init() runs
-     (otherwise its first read fails and it falls back to FSM-only).
+     (otherwise its first read fails and it falls back to the built-in list).
      The registration form's domain check is dynamic via OrgRegistry
-     when present, hardcoded FSM otherwise — see main.js. -->
-<script src="index/js/org-registry.js"></script>
+     when present, the built-in list otherwise - see main.js. -->
+<script src="index/js/org-registry.js?v=3"></script>
+<!-- "Common questions" beside Contact us (Admin > FAQ). One small read, and
+     the link stays hidden unless there is something to show. -->
+<script src="js/faq.js?v=1"></script>
+<!-- "Contact us": a message to the admin without signing in. Builds its
+     dialog only when a link is clicked; nothing is read or written before. -->
+<script src="js/signin-support.js?v=1"></script>
 <script>
 // ── Animated Text Cycle ──────────────────────────────────────────────────────
 (function () {
@@ -439,7 +577,24 @@
 // link and shows the verification panel instead of redirecting straight
 // to the dashboard. The user must verify before they can sign in.)
 </script>
-<script src="/pwa-register.js"></script>
+<script src="/pwa-register.js?v=2"></script>
+<!-- iOS has no beforeinstallprompt: on iPhone the only way to install is
+     Share > Add to Home Screen, by hand. This shows those steps, once. -->
+<script src="/js/ios-install.js?v=2"></script>
+<script>
+// The support address, never written out as a whole string in the markup and
+// never shown on screen. Split so a scraper reading the page source does not
+// find a usable address, and assembled only when someone actually clicks.
+// This is not security - it is the ordinary courtesy of not publishing a
+// personal address on a page the whole internet can load.
+function openSupportMail(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  var user = ['akabiri', 'aslifar'].join('');
+  var host = ['fsm', 'edu', 'tr'].join('.');
+  var subject = encodeURIComponent('Lingualab - I cannot sign in');
+  window.location.href = 'mailto:' + user + '@' + host + '?subject=' + subject;
+}
+</script>
 </body>
 </html>
 </html>

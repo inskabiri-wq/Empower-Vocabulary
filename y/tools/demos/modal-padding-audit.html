@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modal padding audit</title>
+<style>body{margin:0;background:#0b1220;color:#e6edf3;font:14px/1.5 system-ui}iframe{width:100%;height:300px;border:0}</style>
+</head>
+<body>
+<!-- Two frames, because the two modal families load DIFFERENT stylesheets.
+     Auditing them with one sheet set would have proved nothing about either. -->
+<iframe id="dash"></iframe>
+<iframe id="room"></iframe>
+
+<script>
+const DASH_CSS = ['/css/brand.css','/student/css/styles.css','/student/css/extra.css',
+  '/student/css/hub.css','/student/css/skills.css','/student/css/grammar.css',
+  '/student/css/reading-exam.css','/assignments/css/assignments.css','/css/app-settings.css'];
+const ROOM_CSS = ['/css/brand.css','/classroom/css/styles.css','/classroom/css/trust.css','/css/app-settings.css'];
+
+// One representative of every modal variant found in the app.
+const DASH_HTML = `
+  <div class="modal-overlay active"><div class="modal-content learning-map-modal" data-name="learning-map-modal (vocab + grammar Quest Board)"><p>x</p></div></div>
+  <div class="modal-overlay active"><div class="modal-content vg-card" data-name="vg-card (level/class gate)"><p>x</p></div></div>
+  <div class="modal-overlay active"><div class="modal-content ll-dialog ll-dialog-toggle" data-name="ll-dialog (logout / confirm)"><p>x</p></div></div>
+  <div class="modal-overlay active"><div class="modal-content" data-name="plain .modal-content (dashboard)"><p>x</p></div></div>
+  <div class="modal-overlay active"><div class="appdlg-card ll-dialog" data-name="AppDialog card (alert/confirm/prompt)"><p>x</p></div></div>`;
+
+const ROOM_HTML = `
+  <div class="modal-overlay active"><div class="modal-content" data-name="plain .modal-content (classroom pages)"><p>x</p></div></div>`;
+
+function frameDoc(css, body) {
+  // Cache-bust every sheet. Without this the frame is served the stylesheet
+  // the browser already has, so an edit made seconds ago is invisible and the
+  // audit reports the OLD layout as if it were current. This produced a false
+  // "still unpadded" result for a modal that had already been fixed.
+  const bust = 'cb=' + Date.now() + Math.random().toString(36).slice(2);
+  return '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+    css.map(h => '<link rel="stylesheet" href="' + h + '?' + bust + '">').join('') +
+    '</head><body>' + body + '</body></html>';
+}
+
+async function build(id, css, body) {
+  const f = document.getElementById(id);
+  f.srcdoc = frameDoc(css, body);
+  await new Promise(r => f.addEventListener('load', r, { once: true }));
+  const d = f.contentDocument, w = f.contentWindow;
+  // Wait for every sheet, then for a value only the real CSS can produce.
+  const links = Array.from(d.querySelectorAll('link[rel="stylesheet"]'));
+  await Promise.all(links.map(l => l.sheet ? null : new Promise(res => {
+    l.addEventListener('load', res, {once:true}); l.addEventListener('error', res, {once:true});
+  })));
+  // Poll with setTimeout, NOT requestAnimationFrame. When the Browser pane is
+  // hidden the document's visibilityState is "hidden" and rAF never fires, so
+  // an rAF-based wait hangs forever instead of timing out with a useful error.
+  // Awaiting link.sheet above is already sufficient; this is just a belt.
+  for (let i = 0; i < 100; i++) {
+    const probe = d.querySelector('[data-name]');
+    if (w.getComputedStyle(probe).borderRadius !== '0px') break;
+    await new Promise(r => setTimeout(r, 10));
+  }
+  return { d, w, sheets: links.map(l => (l.sheet ? 'ok' : 'FAILED')) };
+}
+
+window.audit = async function () {
+  const out = [];
+  for (const [id, css, body] of [['dash', DASH_CSS, DASH_HTML], ['room', ROOM_CSS, ROOM_HTML]]) {
+    const { d, w, sheets } = await build(id, css, body);
+    if (sheets.includes('FAILED')) { out.push({ frame: id, error: 'a stylesheet failed to load' }); continue; }
+    d.querySelectorAll('[data-name]').forEach(el => {
+      const cs = w.getComputedStyle(el);
+      const l = parseFloat(cs.paddingLeft), r = parseFloat(cs.paddingRight);
+      out.push({
+        modal: el.dataset.name,
+        padding: cs.padding,
+        horizontal: l + '/' + r,
+        padded: l > 0 && r > 0
+      });
+    });
+  }
+  return { viewport: innerWidth, results: out, unpadded: out.filter(o => o.padded === false).map(o => o.modal) };
+};
+</script>
+</body>
+</html>

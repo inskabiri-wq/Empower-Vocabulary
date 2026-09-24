@@ -1,5 +1,5 @@
 /* ============================================================
-   HUB SCREEN — multi-skill landing
+   HUB SCREEN - multi-skill landing
    Scoped to #hubScreen so nothing leaks into existing screens.
    Dashboard tokens are defined on #menuScreen in extra.css; we
    re-declare them here so the hub has the same teal palette
@@ -10,9 +10,9 @@
   /* Shared dashboard tokens (match #menuScreen in extra.css) */
   --dash-surface:     #1e293b;
   --dash-elevated:    #334155;
-  --dash-primary:     #0d9488;
-  --dash-primary-lt:  #2dd4bf;
-  --dash-primary-dk:  #0f766e;
+  --dash-primary:     #2563eb;
+  --dash-primary-lt:  #93c5fd;
+  --dash-primary-dk:  #1d4ed8;
   --dash-border:      rgba(255,255,255,0.07);
   --dash-border-md:   rgba(255,255,255,0.13);
   --text-primary:     #f1f5f9;
@@ -20,7 +20,38 @@
   --text-tertiary:    #64748b;
   /* Default skill accent (overridden per card via inline style) */
   --skill-accent:     var(--dash-primary-lt);
+  /* The accent is a GRAPHIC colour: it fills rings, bars and badges, which only
+     need 3:1. Small text needs 4.5:1, and the lighter rungs of the blue ladder
+     do not clear that on white. So labels use their own ink, which light mode
+     pins to a single readable blue. The ring still carries the tile identity. */
+  --skill-ink:        var(--skill-accent);
 }
+
+/* Light-mode overrides. The dark set above hardcodes near-white text
+   (--dash-fg1 / --text-primary), which is invisible on the white page, so a
+   partial override is worse than none: every token in the set is restated. */
+.light-mode #hubScreen {
+  --skill-ink:        #1d4ed8;
+  --dash-surface:     #ffffff;
+  --dash-elevated:    #f2f6fc;
+  --dash-primary:     #2563eb;
+  --dash-primary-lt:  #60a5fa;
+  --dash-primary-dk:  #1d4ed8;
+  --dash-secondary:   #2563eb;
+  --dash-xp:          #2563eb;
+  --dash-xp-lt:       #60a5fa;
+  --dash-streak:      #2563eb;
+  --dash-success:     #15803d;
+  --dash-fg1:         #0f172a;
+  --dash-fg2:         #475569;
+  --dash-fg3:         #64748b;
+  --dash-border:      #e3e9f2;
+  --dash-border-md:   #d5dfec;
+  --text-primary:     #0f172a;
+  --text-secondary:   #475569;
+  --text-tertiary:    #64748b;
+}
+
 
 #hubScreen .hub-greeting {
   max-width: 900px;
@@ -44,7 +75,9 @@
   max-width: 900px;
   margin: 8px auto 10px;
   padding: 0 4px;
-  font-size: 0.6875rem;
+  /* Was 0.6875rem (11px). Uppercase with 0.14em tracking, so it needs the
+     extra size more than a normal-case label of the same size would. */
+  font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-tertiary, var(--text-muted, #64748b));
@@ -52,21 +85,22 @@
 }
 
 /* ---------- Grid ---------- */
+/* THREE per row, at every width above phone.
+   It used to be 4, going to 5 and 6 on wide screens, which made the tiles
+   small and the hub read as a dense wall. Three keeps each tile big enough to
+   be an obvious target and gives the row a rhythm you can scan.
+   `1fr` columns mean any tile that is hidden (a deactivated skill is not
+   rendered at all, see hub.js) simply leaves the remaining tiles to stretch and
+   fill the row - nothing has to be told how many there are. */
 #hubScreen .hub-grid {
-  max-width: 940px;
+  max-width: 1120px;
   margin: 0 auto 40px;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
 }
-/* Tablet: drop to 3 columns. 7 tiles would orphan the Classroom card
-   on its own row — span it across all 3 columns so it reads as a
-   "featured" wide tile instead of looking forgotten. */
-@media (max-width: 920px) {
-  #hubScreen .hub-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  #hubScreen .hub-card.is-classroom { grid-column: 1 / -1; }
-}
-/* Phone: 2 columns; same featured-banner treatment for Classroom. */
+/* Phone: 2 columns. Classroom spans the full width so it reads as a featured
+   banner rather than an orphan on its own row. */
 @media (max-width: 720px) {
   #hubScreen .hub-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
   #hubScreen .hub-card.is-classroom { grid-column: 1 / -1; }
@@ -76,40 +110,62 @@
    The hub was a stack of ~900px centred blocks → big empty margins on wide
    screens. Lay the skills grid and a right rail (stats + assignments) side
    by side, widened to ~1340px. Collapses to one column ≤1024px (rail below). */
+/* ONE column: skills on top, assignments FULL WIDTH underneath.
+   This used to be a two-column layout with a 360px right rail holding the
+   assignments box. The rail was the only thing in that column, so it squeezed
+   the assignments into a narrow strip while the tiles fought for what was left.
+   Stacking gives the tiles the full width and the assignments the full width,
+   and it removes a breakpoint: there is no longer a "rail collapses" state
+   that behaves differently from the desktop one. */
 #hubScreen .hub-two-col {
   max-width: none;
   margin: 0 auto 40px;
   padding: 0 4px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 22px;
   align-items: start;
 }
-/* Inside the two-col, inner blocks must not re-centre / re-cap themselves. */
+/* Inside the stack, inner blocks must not re-centre / re-cap themselves. */
 #hubScreen .hub-two-col .hub-section-lbl { max-width: none; margin: 4px 0 10px; }
 #hubScreen .hub-main .hub-grid { max-width: none; margin: 0 0 8px; }
-#hubScreen .hub-rail .hub-assignments-box { max-width: none; margin: 0; }
+#hubScreen .hub-below .hub-assignments-box { max-width: none; margin: 0; }
 
-#hubScreen .hub-rail {
+#hubScreen .hub-below {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  position: sticky;
-  top: 16px;
+  min-width: 0;
 }
-/* (rail stats card removed — assignments summary is the rail's top now) */
+/* (rail stats card removed - assignments summary is the rail's top now) */
 
-/* Student-info chips (class / level / module / year) inside the Your-Assignments
-   box. Set apart from the assignments below by a little spacing + a hairline. */
-#hubScreen .student-info-chips {
+/* Student-info chips (class / level / module / year).
+   NOT scoped to an ancestor, deliberately. These used to live in the
+   Your-Assignments box and the rule was written `#hubScreen .student-info-chips`.
+   When the markup MOVED into #profileModal the selector stayed behind, so not
+   one declaration matched any more and the chips rendered as bare inline spans:
+   "Class B125 Level B1+ Module 4 2026-2027" as a single run of unstyled text
+   under the XP line. A location-independent selector cannot break that way
+   again.
+
+   The chips now sit at the foot of .profile-preview, which is centred, so this
+   is a real bordered panel rather than the old left-aligned row with a
+   separator hairline under it. */
+.student-info-chips {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 6px;
-  margin: 2px 0 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 14px auto 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  /* The panel takes the CARD surface, not the tint the chips use. Both on
+     --tint-surface would put a 3.5% ink pill on a 3.5% ink panel and the pills
+     would stop reading as separate objects. */
+  background: var(--bg-card, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.10));
 }
-#hubScreen .student-info-chips .info-chip {
+.student-info-chips .info-chip {
   display: inline-flex;
   align-items: center;
   font-size: 0.6875rem;
@@ -117,8 +173,8 @@
   letter-spacing: .02em;
   padding: 3px 9px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--tint-line, rgba(255, 255, 255, 0.10));
   color: var(--text-secondary, #94a3b8);
   white-space: nowrap;
 }
@@ -127,29 +183,24 @@
    so the left column never gets too tight for 4 tiles + the 360px rail. Below
    this the grid's own 920/720 breakpoints take over (full-width, 4→3→2). */
 @media (max-width: 1200px) {
-  #hubScreen .hub-two-col { grid-template-columns: minmax(0, 1fr); gap: 16px; }
-  #hubScreen .hub-rail { position: static; }
-  /* Both columns must be allowed to shrink to the single-column width, and the
-     hub must NEVER show horizontal overflow (which is what breaks the right
-     margin on phones / the installed PWA). The rail is static at this width, so
-     overflow-x: clip does not break any sticky positioning. */
+  #hubScreen .hub-two-col { gap: 16px; }
+  /* The hub must NEVER show horizontal overflow - that is what breaks the right
+     margin on phones and in the installed PWA. */
   #hubScreen .hub-main,
-  #hubScreen .hub-rail { min-width: 0; }
+  #hubScreen .hub-below { min-width: 0; }
   #hubScreen { overflow-x: clip; }
 }
 
 /* Let the hub card use (almost) the full page. The base .container caps at
-   1200px (styles.css) — that's the leftover side margin. Scope the widening to
+   1200px (styles.css) - that's the leftover side margin. Scope the widening to
    when the HUB is the active screen so the vocabulary screen is untouched, and
    cap at 1900 so it doesn't stretch absurdly on ultrawide monitors. Uses :has()
-   (modern browsers); if unsupported it simply stays at 1200 — no breakage. */
+   (modern browsers); if unsupported it simply stays at 1200 - no breakage. */
 .container:has(#hubScreen.active) { max-width: 1900px; }
 
-/* Fill that width with sensibly-sized skill tiles instead of 4 giant ones:
-   add columns as the viewport widens. Additive — the default 4-col and the
-   ≤920/≤720 (3/2 + classroom-span) breakpoints below all still apply. */
-@media (min-width: 1450px) { #hubScreen .hub-main .hub-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-@media (min-width: 1750px) { #hubScreen .hub-main .hub-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+/* The 5-column (≥1450px) and 6-column (≥1750px) rules were removed: the hub is
+   three per row at every width now, and the grid's own max-width stops it
+   stretching on an ultrawide monitor. */
 
 /* ---------- Card ---------- */
 #hubScreen .hub-card {
@@ -172,11 +223,43 @@
   width: 100%;
   min-width: 0;
 }
-#hubScreen .hub-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--skill-accent, var(--dash-primary));
-  box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--skill-accent) 55%, transparent);
+/* ---------- Tile entrance ----------
+   The tiles arrive from hub.js in one burst, which made the grid pop into
+   existence. They now rise and fade in, staggered left-to-right, so the row
+   reads in the order you would scan it.
+
+   `backwards` matters: without it the tile is drawn at its FINAL position for
+   the length of its delay and then jumps back to the start of the animation,
+   which looks like a flicker on the later tiles. `backwards` holds the opening
+   frame during the delay instead.
+
+   nth-child rather than a JS-set index: the grid is at most 8 tiles, and this
+   keeps hub.js free of presentation concerns. Tiles past the 8th simply appear
+   with the last delay, which is correct - they are already on screen by then. */
+@keyframes hubCardIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
 }
+#hubScreen .hub-card {
+  animation: hubCardIn 0.34s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+#hubScreen .hub-card:nth-child(1) { animation-delay: 0.00s; }
+#hubScreen .hub-card:nth-child(2) { animation-delay: 0.04s; }
+#hubScreen .hub-card:nth-child(3) { animation-delay: 0.08s; }
+#hubScreen .hub-card:nth-child(4) { animation-delay: 0.12s; }
+#hubScreen .hub-card:nth-child(5) { animation-delay: 0.16s; }
+#hubScreen .hub-card:nth-child(6) { animation-delay: 0.20s; }
+#hubScreen .hub-card:nth-child(7) { animation-delay: 0.24s; }
+#hubScreen .hub-card:nth-child(n+8) { animation-delay: 0.28s; }
+
+#hubScreen .hub-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--skill-accent, var(--dash-primary));
+  box-shadow: 0 14px 30px -14px color-mix(in srgb, var(--skill-accent) 60%, transparent);
+}
+/* The ring and icon lift with the card rather than sitting still inside it. */
+#hubScreen .hub-card:hover .hub-icon { transform: scale(1.06) rotate(-3deg); }
+#hubScreen .hub-icon { transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
 #hubScreen .hub-card:focus-visible {
   outline: none;
   border-color: var(--skill-accent, var(--dash-primary));
@@ -241,7 +324,7 @@
   right: 16px;
   font-size: 0.75rem;
   font-weight: 800;
-  color: var(--skill-accent, var(--dash-primary-lt));
+  color: var(--skill-ink, var(--dash-primary-lt));
   font-variant-numeric: tabular-nums;
 }
 
@@ -256,7 +339,7 @@
   color: var(--text-tertiary, var(--text-muted, #64748b));
 }
 
-/* Left accent bar — pulls the skill's hue into the card body */
+/* Left accent bar - pulls the skill's hue into the card body */
 #hubScreen .hub-card::before {
   content: '';
   position: absolute;
@@ -268,6 +351,64 @@
 }
 #hubScreen .hub-card.is-empty::before {
   opacity: 0.35;
+}
+
+/* Optional per-tile artwork.
+   js/tile-images.js sets --tile-img only after the file has actually LOADED,
+   and adds .has-tile-img, so a tile with no image in y/img/skill-tiles/ never
+   paints this layer at all and looks exactly as it does today. Delete the file
+   and the tile reverts on the next load. See y/img/README.md.
+
+   ::before is the accent bar, so this is ::after, and it uses z-index -1.
+   That is load-bearing. The first version used z-index 0 plus
+   `.has-tile-img > * { position: relative; z-index: 1 }` to lift the content
+   above it - and that rule is specificity 120, which BEATS the 110 of
+   `#hubScreen .hub-pct { position: absolute; top: 14px; right: 16px }`. It
+   turned every percentage from absolute back to relative and dropped it out of
+   the top-right corner into the flex flow, measured at 151px down instead of
+   15px. Every tile, since every skill has artwork.
+
+   A negative z-index avoids the whole problem: in paint order a negative
+   descendant sits ABOVE the element's own background but BELOW in-flow
+   content, so the artwork lands exactly where it should with no rule touching
+   the children. The card's own background is opaque, so nothing leaks behind.
+
+   Capped at low opacity under a scrim regardless, because the tile's name,
+   subtitle and percentage have to stay readable over whatever someone drops in. */
+/* isolation:isolate is REQUIRED, not decoration.
+   A negative z-index child paints above the background of its nearest
+   STACKING-CONTEXT ancestor - not simply its parent. `.hub-card` is
+   position:relative with no z-index, opacity or transform of its own, so it
+   creates no stacking context and the artwork was painting behind the card's
+   own opaque background: invisible.
+
+   It LOOKED like it worked for 0.34s because `hubCardIn` animates opacity and
+   transform, and a running animation on those properties does create a
+   stacking context. The artwork appeared during the entrance animation and
+   vanished the instant it finished. isolation:isolate gives the card a
+   permanent stacking context, so the layer sits above the card background and
+   below the content for good. */
+#hubScreen .hub-card.has-tile-img {
+  isolation: isolate;
+}
+#hubScreen .hub-card.has-tile-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-image:
+    linear-gradient(100deg, var(--dash-surface, var(--bg-card, #fff)) 22%, transparent 78%),
+    var(--tile-img);
+  background-size: cover, cover;
+  background-position: center, center;
+  opacity: 0.16;
+  pointer-events: none;
+}
+/* A switched-off tile is already dimmed; a photo behind it just muddies it. */
+#hubScreen .hub-card.is-off.has-tile-img::after,
+#hubScreen .hub-card.is-empty.has-tile-img::after {
+  opacity: 0.06;
 }
 
 /* ---------- Classroom Mode tile (live activity, no progress) ---------- */
@@ -290,15 +431,16 @@
   #hubScreen .hub-card.is-classroom { padding: 22px 24px; }
 }
 
-/* LIVE pill — replaces the percentage label on the Classroom card. */
+/* LIVE pill - replaces the percentage label on the Classroom card. */
 #hubScreen .hub-live-pill {
   display: inline-block;
   padding: 2px 8px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--skill-accent) 22%, transparent);
   border: 1px solid color-mix(in srgb, var(--skill-accent) 55%, transparent);
-  color: var(--skill-accent);
-  font-size: 0.625rem;
+  color: var(--skill-ink);
+  /* Was 0.625rem (10px). */
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -341,7 +483,7 @@
    Wraps the existing .assignments-card so it has the right
    max-width and spacing on the hub. The card's internal styles
    live in assignments/css/assignments.css and already match the
-   dark theme — we just need to position it.
+   dark theme - we just need to position it.
    ============================================================ */
 #hubScreen .hub-assignments-box {
   max-width: 900px;
@@ -350,7 +492,7 @@
 }
 #hubScreen .hub-assignments-box .assignments-card {
   /* Override the sidebar's top margin (which made sense in a
-     stack of cards) — on the hub it sits flush under the grid. */
+     stack of cards) - on the hub it sits flush under the grid. */
   margin-top: 0;
 }
 
@@ -382,6 +524,12 @@
 /* Respect a reduced-motion preference: keep the placeholder, drop the pulse. */
 @media (prefers-reduced-motion: reduce) {
   .hub-card.as-skeleton { animation: none; }
+  /* Entrance and hover motion off. The tile must still be VISIBLE, so the
+     animation is removed rather than paused - `animation: none` on a
+     `backwards` animation would otherwise leave it stuck at opacity 0. */
+  #hubScreen .hub-card { animation: none; opacity: 1; transform: none; }
+  #hubScreen .hub-card:hover { transform: none; }
+  #hubScreen .hub-card:hover .hub-icon { transform: none; }
 }
 
 /* Skill screens use EXACTLY vocabulary's card: 1200px wide, 720px min-height.

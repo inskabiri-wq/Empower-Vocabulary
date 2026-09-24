@@ -8,18 +8,12 @@ function escapeHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-// Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-  authDomain: "empower-vocabulary-practice.firebaseapp.com",
-  projectId: "empower-vocabulary-practice",
-  storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-  messagingSenderId: "136270199832",
-  appId: "1:136270199832:web:174222066ef1cbdc8f576d",
-  measurementId: "G-1BBXBVEP5C"
-};
-
-firebase.initializeApp(firebaseConfig);
+// Firebase is started by js/firebase-init.js, which reads the project
+// from js/tenant.js. This file used to name the project itself, which
+// would have pointed every deployment at that same project.
+if (!firebase.apps.length) {
+  throw new Error('classroom student: js/tenant.js + js/firebase-init.js must load first.');
+}
 const auth = firebase.auth();
 const db = firebase.firestore();
 
@@ -61,7 +55,7 @@ function initParticles() {
       this.speedX = (Math.random() - 0.5) * 0.5;
       this.speedY = (Math.random() - 0.5) * 0.5;
       this.opacity = Math.random() * 0.5 + 0.2;
-      this.color = ['#3b82f6', '#0ea5e9', '#06b6d4', '#10b981'][Math.floor(Math.random() * 4)];
+      this.color = ['#3b82f6', '#2563eb', '#2563eb', '#10b981'][Math.floor(Math.random() * 4)];
     }
     
     update() {
@@ -187,7 +181,7 @@ function setVolume(value) {
 
 // Confetti celebration
 function createConfetti() {
-  const colors = ['#3b82f6', '#0ea5e9', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
+  const colors = ['#3b82f6', '#2563eb', '#2563eb', '#10b981', '#3b82f6', '#ef4444'];
   
   for (let i = 0; i < 100; i++) {
     const confetti = document.createElement('div');
@@ -205,29 +199,64 @@ function createConfetti() {
   }
 }
 
-// Auth Protection
+// NO LOGIN REQUIRED, like every other classroom game.
+//
+// This page used to send anyone without an account to the login screen, which
+// made Vocab Race the only game a visitor could not join. The reason was not
+// security: it was that the join screen had no name field and took the name
+// from the account instead. The screen has one now, so the account is no
+// longer needed.
+//
+// A signed-in student is still recognised, and still gets their real name
+// filled in, so an enrolled class still shows real names on the leaderboard.
+// Anonymous players type their own.
 auth.onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = 'index.html';
-    return;
-  }
-  currentUser = user;
+  currentUser = user || null;
   document.getElementById('loadingScreen').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
-  document.getElementById('studentName').textContent = currentUser.displayName || currentUser.email;
+  const nameEl = document.getElementById('studentName');
+  if (nameEl) nameEl.textContent = user ? (user.displayName || user.email) : '';
+  const nameInput = document.getElementById('nameInput');
+  if (nameInput && !nameInput.value && user && !user.isAnonymous) {
+    nameInput.value = user.displayName || (user.email || '').split('@')[0];
+  }
 });
+
+// Sign in anonymously only when the student actually joins, so a visitor who
+// opens the page and leaves never creates an account.
+async function ensureAuth() {
+  if (auth.currentUser) { currentUser = auth.currentUser; return true; }
+  try {
+    const cred = await auth.signInAnonymously();
+    currentUser = cred.user;
+    return true;
+  } catch (e) {
+    showError(e && e.code === 'auth/operation-not-allowed'
+      ? 'Anonymous sign-in is disabled. Ask your teacher.'
+      : 'Could not sign you in: ' + (e.message || e));
+    return false;
+  }
+}
 
 let currentUser = null;
 let currentSession = null;
 let sessionData = null;
 let sessionListener = null;
 
-// beforeunload guard — discourage students from accidentally swiping
+// beforeunload guard - discourage students from accidentally swiping
 // back during a live game. Browsers show their own "Leave site?"
 // prompt; we just have to set returnValue. Only active while the game
 // is actually in flight, so the join screen and the final-results
 // screen don't nag.
+//
+// `leavingDeliberately` is set just before the page navigates ON PURPOSE:
+// joining a game room, or logging out after answering the app's own
+// Log out / Stay dialog. Without it the browser asks the same question a
+// second time, in a box that cannot be styled or reworded.
+let leavingDeliberately = false;
+
 window.addEventListener('beforeunload', (e) => {
+  if (leavingDeliberately) return;
   if (sessionData && sessionData.status === 'active') {
     e.preventDefault();
     e.returnValue = '';
@@ -264,8 +293,15 @@ async function joinSession() {
     return;
   }
 
+  // A name is required now that an account is not.
+  const typedName = (document.getElementById('nameInput') || {}).value || '';
+  if (!typedName.trim()) { showError('Enter your name.'); return; }
+
+  // Sign in at the moment of joining, not on page load.
+  if (!(await ensureAuth())) return;
+
   try {
-    // Heist codes are 4 chars — check that collection first. If found,
+    // Heist codes are 4 chars - check that collection first. If found,
     // redirect to the dedicated heist-student page (it has the vault /
     // hint UI, totally different layout). The ?code= query string
     // pre-fills the input on the next page so the student doesn't
@@ -273,6 +309,7 @@ async function joinSession() {
     if (code.length === 4) {
       const heistDoc = await db.collection('heist_sessions').doc(code).get();
       if (heistDoc.exists) {
+        leavingDeliberately = true;
         window.location.href = 'classroom-heist-student.html?code=' + encodeURIComponent(code);
         return;
       }
@@ -288,11 +325,16 @@ async function joinSession() {
       const miniGames = [
         ['tug_sessions', 'classroom-tug-student.html'],
         ['bingo_sessions', 'classroom-bingo-student.html'],
-        ['scramble_sessions', 'classroom-scramble-student.html']
+        ['scramble_sessions', 'classroom-scramble-student.html'],
+        // AI Quiz uses the same 5-character code as the other mini-games, so
+        // it has to be listed here or the universal join box says "not found"
+        // for a room that exists.
+        ['aiquiz_sessions', 'classroom-aiquiz-student.html']
       ];
       for (const [coll, page] of miniGames) {
         const doc = await db.collection(coll).doc(code).get();
         if (doc.exists) {
+          leavingDeliberately = true;
           window.location.href = page + '?code=' + encodeURIComponent(code);
           return;
         }
@@ -321,8 +363,13 @@ async function joinSession() {
     // Add player to session
     await db.collection('classroom_sessions').doc(code)
       .collection('players').doc(currentUser.uid).set({
-        name: currentUser.displayName || currentUser.email.split('@')[0],
-        odmail: currentUser.email,
+        // The typed name wins, because an anonymous player has no other one.
+        // `currentUser.email` is undefined for an anonymous account, so it
+        // cannot be read without a guard.
+        name: typedName.trim().slice(0, 24)
+              || currentUser.displayName
+              || (currentUser.email || 'Student').split('@')[0],
+        odmail: currentUser.email || null,
         joinedAt: firebase.firestore.FieldValue.serverTimestamp(),
         status: 'ready',
         score: 0,
@@ -454,7 +501,7 @@ function showQuestion() {
 // four options, reshuffled per student so neighbours can't copy positions.
 function showGrammarChoice(q, container) {
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  const stemHtml = esc(q.word).replace(/_{2,}/, '<span style="display:inline-block;min-width:64px;border-bottom:3px solid #fb923c;vertical-align:bottom;"></span>');
+  const stemHtml = esc(q.word).replace(/_{2,}/, '<span style="display:inline-block;min-width:64px;border-bottom:3px solid #60a5fa;vertical-align:bottom;"></span>');
   const opts = shuffleArray((q.options || []).map((t, i) => ({ text: t, correct: i === q.answer })));
 
   container.innerHTML = `
@@ -612,7 +659,22 @@ function processAnswer(isCorrect) {
         correctAnswers: correctAnswers
       }).catch(err => console.warn('Live score sync failed:', err));
 
-    // Store per-question answer for teacher's review page
+    // Store per-question answer for teacher's review page.
+    //
+    // ONLY FOR A SIGNED-IN STUDENT. The rule on this subcollection is
+    // `isOwner(playerId) && canWriteAsRealUser()`, and canWriteAsRealUser is
+    // admin, teacher or a verified institutional account. An anonymous player is none of
+    // those, so every one of these writes would be refused: the game would
+    // still look fine, because the score above is a separate write that does
+    // succeed, while the console filled with permission errors and the
+    // teacher's per-question review stayed empty.
+    //
+    // Skipping it is the right answer rather than loosening the rule. The
+    // review exists to tell a teacher how a KNOWN student answered, which is
+    // meaningless for a player who typed their own name.
+    if (currentUser.isAnonymous) {
+      // Nothing to record for an anonymous player; the live score already went.
+    } else {
     const word = gameWords[currentQuestionIndex];
     db.collection('classroom_sessions').doc(currentSession)
       .collection('players').doc(currentUser.uid)
@@ -626,9 +688,10 @@ function processAnswer(isCorrect) {
         isCorrect: isCorrect,
         timeSpent: timeSpent
       }).catch(err => console.warn('Answer sync failed:', err));
+    }
   }
 
-  // Next question after delay — longer for wrong answers so students can read the correct answer
+  // Next question after delay - longer for wrong answers so students can read the correct answer
   const delay = isCorrect ? 1500 : 3500;
   nextQuestionTimeout = setTimeout(() => {
     nextQuestionTimeout = null;
@@ -900,9 +963,28 @@ function playAgain() {
 }
 
 function logout() {
-  auth.signOut().then(() => {
-    window.location.href = 'index.html';
-  });
+  // Confirm first, with the app's shared dialog and the app's wording
+  // (Log out / Stay). This used to sign out on the first click with no warning
+  // at all, so classroom mode was the one place a mis-tap ended the session -
+  // and mid-game, which is the worst moment for it.
+  var go = function () {
+    // They answered Log out in our dialog; the browser must not ask again.
+    leavingDeliberately = true;
+    try {
+      localStorage.removeItem('ll-profile');
+      localStorage.removeItem('ll-role');
+    } catch (_) {}
+    auth.signOut()
+      .then(function () { window.location.replace('index.html'); })
+      .catch(function () { window.location.replace('index.html'); });
+  };
+  if (window.AppDialog && AppDialog.confirm) {
+    AppDialog.confirm('You will need to sign in again.',
+      { title: 'Log out?', okLabel: 'Log out', cancelLabel: 'Stay', danger: true })
+      .then(function (ok) { if (ok) go(); });
+  } else {
+    go();
+  }
 }
 
 // Format code input and init
@@ -923,7 +1005,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // When a student scans it, the page opens with the code in the
   // query string. Pre-fill the input so they can just tap "Join"
   // without typing the 6-character code by hand. We don't auto-
-  // submit — students should still see the code and tap Join,
+  // submit - students should still see the code and tap Join,
   // which avoids surprise behavior if a stale link is bookmarked.
   try {
     const params = new URLSearchParams(window.location.search);

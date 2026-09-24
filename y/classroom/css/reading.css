@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════
-   READING CLASSROOM — theme overlay
+   READING CLASSROOM - theme overlay
    Same brand language as Trust No One (dark glass, gradient
-   headlines, glow-on-focus) — but with rose as the dominant accent
+   headlines, glow-on-focus) - but with rose as the dominant accent
    to match the Reading skill tile on the hub.
 
    Loaded AFTER classroom/css/styles.css so it overrides the
@@ -18,17 +18,17 @@ body.reading {
   --r-text:      #f1f5f9;
   --r-text-mut:  #94a3b8;
   --r-rose:      #f43f5e;
-  --r-rose-2:    #fb7185;
-  --r-violet:    #a78bfa;
+  --r-rose-2:    #60a5fa;
+  --r-violet:    #60a5fa;
   --r-emerald:   #34d399;
-  --r-amber:     #f59e0b;
+  --r-amber:     #3b82f6;
   background:
     radial-gradient(1200px 700px at 80% 0%, rgba(244, 63, 94, 0.10), transparent 60%),
-    radial-gradient(900px 600px at 0% 100%, rgba(167, 139, 250, 0.10), transparent 60%),
+    radial-gradient(900px 600px at 0% 100%, rgba(96, 165, 250, 0.10), transparent 60%),
     linear-gradient(180deg, var(--r-bg-0) 0%, var(--r-bg-1) 100%);
   background-attachment: fixed;
   color: var(--r-text);
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--ll-font);
   min-height: 100vh;
 }
 
@@ -79,7 +79,7 @@ body.reading {
   gap: 8px;
   text-decoration: none;
 }
-.reading-btn:hover  { filter: brightness(1.1); border-color: rgba(251, 113, 133, 0.35); }
+.reading-btn:hover  { filter: brightness(1.1); border-color: rgba(96, 165, 250, 0.35); }
 .reading-btn:active { transform: translateY(1px); }
 .reading-btn.primary {
   background: linear-gradient(135deg, var(--r-rose), var(--r-rose-2));
@@ -90,7 +90,7 @@ body.reading {
 .reading-btn.danger {
   background: rgba(239, 68, 68, 0.14);
   border-color: rgba(239, 68, 68, 0.4);
-  color: #fca5a5;
+  color: var(--text-error, #fca5a5);
 }
 .reading-btn:disabled {
   opacity: 0.55;
@@ -108,7 +108,7 @@ body.reading {
   border-radius: 999px;
   padding: 4px 10px;
   font-size: 0.85em;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   letter-spacing: 0.04em;
 }
 
@@ -180,7 +180,7 @@ body.reading {
   padding: 0 8px;
   border-bottom: 2px solid var(--r-rose);
   text-align: center;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   color: var(--r-rose-2);
   font-weight: 700;
 }
@@ -272,23 +272,23 @@ body.reading {
 .ak-dot.empty { background: rgba(148, 163, 184, 0.1); }
 .ak-dot.right { background: var(--r-emerald); border-color: var(--r-emerald); }
 .ak-dot.wrong { background: var(--r-rose); border-color: var(--r-rose); }
-/* Projector-safe neutral dot — visible when the eye-toggle is OFF.
+/* Projector-safe neutral dot - visible when the eye-toggle is OFF.
    Uses brand violet so no green/red leaks correctness to the room. */
-.ak-dot.answered { background: rgba(167,139,250,0.85); border-color: rgba(167,139,250,1); }
+.ak-dot.answered { background: rgba(96,165,250,0.85); border-color: rgba(96,165,250,1); }
 
-/* Projector-safe chip — shown next to the timer when the eye toggle
+/* Projector-safe chip - shown next to the timer when the eye toggle
    is OFF, so the teacher visually confirms the screen is safe to mirror. */
 .reading-chip.projector-safe {
-  background: linear-gradient(135deg, rgba(99,102,241,0.20), rgba(167,139,250,0.16));
-  border-color: rgba(167,139,250,0.55);
-  color: #c4b5fd;
+  background: linear-gradient(135deg, rgba(37,99,235,0.20), rgba(96,165,250,0.16));
+  border-color: rgba(96,165,250,0.55);
+  color: var(--text-accent, #c4b5fd);
   font-weight: 700;
 }
 /* Eye-toggle button pressed state */
 #eyesToggleBtn[aria-pressed="true"] {
-  background: linear-gradient(135deg, rgba(34,197,94,0.16), rgba(56,189,248,0.10));
+  background: linear-gradient(135deg, rgba(34,197,94,0.16), rgba(96,165,250,0.10));
   border-color: rgba(34,197,94,0.45);
-  color: #86efac;
+  color: var(--text-success, #86efac);
 }
 
 /* Host answer-key reference (collapsible) */
@@ -325,7 +325,7 @@ body.reading {
   padding: 3px 6px;
   font-size: 0.88em;
 }
-.ak-row .ak-id { font-family: 'JetBrains Mono', monospace; color: var(--r-text-mut); }
+.ak-row .ak-id { font-family: var(--ll-mono); color: var(--r-text-mut); }
 .ak-row .ak-ans { color: var(--r-rose-2); font-weight: 700; }
 
 /* ─── Student exam view ─── */
@@ -353,7 +353,7 @@ body.reading {
   margin-top: 8px;
   font-size: 0.85em;
   color: var(--r-text-mut);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
 }
 .exam-sections {
   display: flex;
@@ -383,10 +383,10 @@ body.reading {
   transition: background 0.15s ease, padding 0.2s ease;
 }
 .exam-section-h:hover {
-  background: rgba(251, 113, 133, 0.06);
+  background: rgba(96, 165, 250, 0.06);
 }
 .exam-section-h:focus-visible {
-  outline: 2px solid rgba(251, 113, 133, 0.55);
+  outline: 2px solid rgba(96, 165, 250, 0.55);
   outline-offset: 2px;
 }
 .exam-section-label {
@@ -398,9 +398,9 @@ body.reading {
 .exam-section-type {
   font-size: 0.75em;
   color: var(--r-text-mut);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
 }
-/* Chevron — rendered as a real button-shaped chip at the right of
+/* Chevron - rendered as a real button-shaped chip at the right of
    the section header so it's clearly an interactive control, not a
    stray punctuation mark. Branded rose tint + glow on hover.
    Rotates -90° when the section collapses. */
@@ -413,8 +413,8 @@ body.reading {
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: rgba(251, 113, 133, 0.14);
-  border: 1.5px solid rgba(251, 113, 133, 0.45);
+  background: rgba(96, 165, 250, 0.14);
+  border: 1.5px solid rgba(96, 165, 250, 0.45);
   color: var(--r-rose-2);
   font-size: 1.15em;
   line-height: 1;
@@ -423,13 +423,13 @@ body.reading {
               background 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
 .exam-section-h:hover .exam-section-chevron {
-  background: rgba(251, 113, 133, 0.24);
+  background: rgba(96, 165, 250, 0.24);
   border-color: var(--r-rose-2);
-  box-shadow: 0 0 14px rgba(251, 113, 133, 0.4);
+  box-shadow: 0 0 14px rgba(96, 165, 250, 0.4);
 }
 .exam-section.is-collapsed .exam-section-chevron { transform: rotate(-90deg); }
 
-/* Accordion body — max-height + overflow: hidden. Universally
+/* Accordion body - max-height + overflow: hidden. Universally
    supported and guarantees a true 0-height collapse (the
    grid-template-rows trick had inconsistent browser support that
    left an empty rectangle below the header on some engines). */
@@ -481,7 +481,7 @@ body.reading {
   gap: 10px;
 }
 .exam-item-stem-text { flex: 1; min-width: 0; }
-/* Per-question chevron — bigger, branded, button-shaped so it's
+/* Per-question chevron - bigger, branded, button-shaped so it's
    obviously a control. Rotates -90° when the question collapses. */
 .exam-item-toggle {
   flex-shrink: 0;
@@ -491,8 +491,8 @@ body.reading {
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: rgba(251, 113, 133, 0.10);
-  border: 1.5px solid rgba(251, 113, 133, 0.35);
+  background: rgba(96, 165, 250, 0.10);
+  border: 1.5px solid rgba(96, 165, 250, 0.35);
   color: var(--r-rose-2);
   font-size: 1.05em;
   font-weight: 800;
@@ -504,9 +504,9 @@ body.reading {
   margin-top: 2px;
 }
 .exam-item-toggle:hover {
-  background: rgba(251, 113, 133, 0.22);
+  background: rgba(96, 165, 250, 0.22);
   border-color: var(--r-rose-2);
-  box-shadow: 0 0 10px rgba(251, 113, 133, 0.35);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.35);
 }
 .exam-item-toggle:focus-visible {
   outline: 2px solid var(--r-rose-2);
@@ -514,7 +514,7 @@ body.reading {
 }
 .exam-item.is-collapsed .exam-item-toggle { transform: rotate(-90deg); }
 
-/* Per-question accordion body — max-height-based, snappier. */
+/* Per-question accordion body - max-height-based, snappier. */
 .exam-item-body {
   max-height: 2000px;
   overflow: hidden;
@@ -561,13 +561,13 @@ body.reading {
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
 }
-.exam-opt:hover { border-color: rgba(167, 139, 250, 0.45); }
+.exam-opt:hover { border-color: rgba(96, 165, 250, 0.45); }
 .exam-opt input[type="radio"] {
   margin: 4px 0 0;
   accent-color: var(--r-violet);
 }
 .exam-opt-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-weight: 800;
   color: var(--r-text-mut);
   min-width: 22px;
@@ -577,7 +577,7 @@ body.reading {
   line-height: 1.4;
 }
 .exam-opt.is-selected {
-  background: linear-gradient(135deg, rgba(167, 139, 250, 0.18), rgba(99, 102, 241, 0.10));
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.18), rgba(37, 99, 235, 0.10));
   border-color: var(--r-violet);
 }
 .exam-opt.is-selected .exam-opt-label { color: var(--r-violet); }
@@ -594,7 +594,7 @@ body.reading {
   font-size: 1em;
   transition: border-color 0.15s;
 }
-.exam-select:hover  { border-color: rgba(167, 139, 250, 0.45); }
+.exam-select:hover  { border-color: rgba(96, 165, 250, 0.45); }
 .exam-select:focus  { outline: none; border-color: var(--r-violet); }
 
 /* Text input (find-word) */
@@ -609,7 +609,7 @@ body.reading {
   font-size: 1em;
   transition: border-color 0.15s;
 }
-.exam-text:hover { border-color: rgba(167, 139, 250, 0.45); }
+.exam-text:hover { border-color: rgba(96, 165, 250, 0.45); }
 .exam-text:focus { outline: none; border-color: var(--r-violet); }
 
 /* Exam footer */
@@ -640,7 +640,7 @@ body.reading {
   margin-bottom: 2px;
 }
 .score-value {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-weight: 800;
   font-size: 2.4em;
   line-height: 1;
@@ -659,7 +659,7 @@ body.reading {
   font-size: 1em;
   color: var(--r-rose-2);
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   margin-top: 4px;
 }
 
@@ -687,7 +687,7 @@ body.reading {
 .reveal-row.wrong { border-color: rgba(244, 63, 94, 0.45); }
 .reveal-row.empty { border-color: rgba(148, 163, 184, 0.35); opacity: 0.85; }
 .reveal-row-id {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-weight: 700;
   color: var(--r-text-mut);
   text-align: center;
@@ -704,7 +704,7 @@ body.reading {
   color: var(--r-text-mut);
   font-weight: 600;
 }
-.reveal-row.wrong .reveal-mine { color: #fca5a5; }
+.reveal-row.wrong .reveal-mine { color: var(--text-error, #fca5a5); }
 .reveal-row.right .reveal-mine { color: var(--r-emerald); }
 .reveal-correct { color: var(--r-emerald); }
 .reveal-row-mark {
@@ -731,7 +731,7 @@ body.reading {
   display: flex;
   align-items: center;
   gap: 20px;
-  background: linear-gradient(135deg, rgba(244, 63, 94, 0.16), rgba(167, 139, 250, 0.10));
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.16), rgba(96, 165, 250, 0.10));
   border: 1.5px solid rgba(244, 63, 94, 0.45);
   border-radius: 16px;
   padding: 22px 24px;
@@ -765,7 +765,7 @@ body.reading {
   text-align: center;
 }
 .stat-num {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-size: 1.8em;
   font-weight: 800;
   background: linear-gradient(135deg, var(--r-rose-2), var(--r-violet));
@@ -809,7 +809,7 @@ body.reading {
   padding: 6px 10px;
   font-size: 0.88em;
 }
-.per-q-id { font-family: 'JetBrains Mono', monospace; color: var(--r-text-mut); }
+.per-q-id { font-family: var(--ll-mono); color: var(--r-text-mut); }
 .per-q-ans strong { color: var(--r-rose-2); }
 .per-q-bar {
   height: 8px;
@@ -823,7 +823,7 @@ body.reading {
   transition: width 0.3s;
 }
 .per-q-pct {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-size: 0.85em;
   color: var(--r-text-mut);
   text-align: right;
@@ -888,7 +888,7 @@ body.reading {
   animation: toastUp 0.2s ease-out;
 }
 .reading-toast.success { border-color: rgba(52, 211, 153, 0.5); }
-.reading-toast.fail    { border-color: rgba(244, 63, 94, 0.5); color: #fca5a5; }
+.reading-toast.fail    { border-color: rgba(244, 63, 94, 0.5); color: var(--text-error, #fca5a5); }
 @keyframes toastUp {
   from { transform: translate(-50%, 10px); opacity: 0; }
   to   { transform: translate(-50%, 0);    opacity: 1; }
@@ -896,7 +896,7 @@ body.reading {
 
 /* ─── Responsive ─── */
 @media (max-width: 900px) {
-  /* Stack host's split-pane on tablets — passage above, host
+  /* Stack host's split-pane on tablets - passage above, host
      sidebar below. Important: this view is host-only, so it
      just needs to fit smaller projector-attached laptops. */
   #view-live > div[style*="grid-template-columns"] {
@@ -917,4 +917,40 @@ body.reading {
   .per-q-row .per-q-ans { grid-column: 2; }
   .per-q-row .per-q-bar,
   .per-q-row .per-q-pct { grid-column: 1 / -1; }
+}
+
+/* ============================================================
+   LIGHT MODE - emerald stays for correct answers.
+   ============================================================ */
+.light-mode body.reading,
+body.light-mode.reading {
+  --r-bg-0:      #f6f8fb;
+  --r-bg-1:      #eef3fa;
+  --r-surface:   rgba(255, 255, 255, 0.9);
+  --r-surface-2: rgba(242, 246, 252, 0.75);
+  --r-border:    #d8e1ee;
+  --r-text:      #0f172a;
+  --r-text-mut:  #556274;
+  --r-rose:      #b91c1c;
+  --r-rose-2:    #1d4ed8;
+  --r-violet:    #1d4ed8;
+  --r-emerald:   #166534;
+  --r-amber:     #1d4ed8;
+  background:
+    radial-gradient(1200px 700px at 80% 0%, rgba(37, 99, 235, 0.06), transparent 60%),
+    radial-gradient(900px 600px at 0% 100%, rgba(96, 165, 250, 0.06), transparent 60%),
+    linear-gradient(180deg, var(--r-bg-0) 0%, var(--r-bg-1) 100%);
+}
+
+/* ============================================================
+   LIGHT MODE - generated by tools/light-coverage.js findings
+   Each rule mirrors a real one above and flips only its SURFACE,
+   keeping the original alpha so translucent panels stay translucent
+   and nothing about the layering changes. Dark is untouched.
+   ============================================================ */
+.light-mode .progress-tile {
+  background: rgba(255, 255, 255, 0.5);
+}
+.light-mode .progress-tile.submitted {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.10), rgba(255, 255, 255, 0.5));
 }

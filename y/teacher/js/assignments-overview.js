@@ -1,8 +1,8 @@
 /* ============================================================
-   assignments-overview.js  —  Phase G follow-up
+   assignments-overview.js  -  Phase G follow-up
    Renders an "Assignments Overview" card into the Overview tab.
 
-   Scope-aware (the user's explicit ask — "teachers see what
+   Scope-aware (the user's explicit ask - "teachers see what
    they need to see"):
      • Non-admin teacher  → only their own assignments. Shows
        four KPIs + a per-skill mini-breakdown.
@@ -13,7 +13,7 @@
    Self-installs into #tab-overview right after the Level
    Distribution section. Re-renders on every Firestore snapshot
    change by patching teacher-assignments.js's renderAssignments
-   call (we don't add another listener — same data already
+   call (we don't add another listener - same data already
    streamed live).
 
    Reads (all already-loaded by teacher-assignments.js):
@@ -70,7 +70,7 @@
     return panel;
   }
 
-  // Per-assignment status panel — mounted on the Activity tab.
+  // Per-assignment status panel - mounted on the Activity tab.
   // Different from the Overview panel above (KPIs + per-skill + per-
   // teacher breakdown): this one is a flat list, one row per
   // assignment, so the teacher / admin can see at a glance "which
@@ -111,7 +111,7 @@
     return (a && a.skill) || 'vocabulary';
   }
 
-  // Build per-assignment stat — { writing only:
+  // Build per-assignment stat - { writing only:
   //   pendingGrading, graded, returned, totalSubs
   // }. For other skills, just counts completions among target roster.
   function _statsForAssignment(a) {
@@ -133,7 +133,7 @@
       // For writing, "completed" = graded.
       completedCount = graded;
     } else {
-      // Vocab / reading / listening — count assignmentCompletions
+      // Vocab / reading / listening - count assignmentCompletions
       // marked completed for this assignment id.
       const comps = (typeof allCompletions !== 'undefined') ? allCompletions : {};
       Object.keys(comps).forEach(k => {
@@ -155,10 +155,10 @@
     const am = (typeof isAdmin === 'function') ? isAdmin() : false;
     const me = (typeof auth !== 'undefined' && auth.currentUser) ? auth.currentUser.uid : null;
     // `allAssignments` is declared with `let` in teacher-assignments.js
-    // — which puts it in the shared script-scope record but NOT on
+    // - which puts it in the shared script-scope record but NOT on
     // window. Reading `window.allAssignments` would always be undefined
     // and the panel would render empty forever. Use the bare name with
-    // a typeof guard — same pattern used a few lines down for
+    // a typeof guard - same pattern used a few lines down for
     // allCompletions / allWritingSubs.
     const assignments = (typeof allAssignments !== 'undefined' && Array.isArray(allAssignments))
       ? allAssignments
@@ -172,8 +172,8 @@
     const scopeBadge = document.getElementById('aoScopeBadge');
     if (scopeBadge) {
       scopeBadge.textContent = am
-        ? `👑 Admin view — ${assignments.length} total across all teachers`
-        : `Your assignments only — ${visible.length}`;
+        ? `👑 Admin view - ${assignments.length} total across all teachers`
+        : `Your assignments only - ${visible.length}`;
     }
 
     if (visible.length === 0) {
@@ -228,8 +228,8 @@
                   gap: 10px; margin-bottom: 16px;">
         ${kpi('Assignments',     String(totalAssign),   '📋', '#a5b4fc')}
         ${kpi('Submissions',     String(totalSubs),     '📥', '#7dd3fc')}
-        ${kpi('Pending grading', String(pendingGrading), '⏳', pendingGrading > 0 ? '#fcd34d' : '#86efac')}
-        ${kpi('Returned',        String(returned),      '🔄', returned > 0 ? '#f59e0b' : '#94a3b8')}
+        ${kpi('Pending grading', String(pendingGrading), '⏳', pendingGrading > 0 ? '#93c5fd' : '#86efac')}
+        ${kpi('Returned',        String(returned),      '🔄', returned > 0 ? '#3b82f6' : '#94a3b8')}
       </div>
     `;
 
@@ -242,8 +242,8 @@
       .map(s => {
         const b = bySkill[s];
         const extras = [];
-        if (b.pendingGrading) extras.push(`<span style="color:#fcd34d;">⏳ ${b.pendingGrading}</span>`);
-        if (b.returned)       extras.push(`<span style="color:#f59e0b;">🔄 ${b.returned}</span>`);
+        if (b.pendingGrading) extras.push(`<span style="color:#93c5fd;">⏳ ${b.pendingGrading}</span>`);
+        if (b.returned)       extras.push(`<span style="color:#3b82f6;">🔄 ${b.returned}</span>`);
         if (b.completed)      extras.push(`<span style="color:#86efac;">✓ ${b.completed}</span>`);
         return `
           <div style="padding: 10px 12px; border-radius: 8px;
@@ -300,10 +300,10 @@
             </td>
             <td style="padding: 8px 12px; text-align: center;">${t.count}</td>
             <td style="padding: 8px 12px; text-align: center;">${t.totalSubs}</td>
-            <td style="padding: 8px 12px; text-align: center; color: ${t.pendingGrading > 0 ? '#fcd34d' : '#86efac'}; font-weight: 600;">
+            <td style="padding: 8px 12px; text-align: center; color: ${t.pendingGrading > 0 ? '#93c5fd' : '#86efac'}; font-weight: 600;">
               ${t.pendingGrading}
             </td>
-            <td style="padding: 8px 12px; text-align: center; color: ${t.returned > 0 ? '#f59e0b' : 'var(--text-muted)'};">
+            <td style="padding: 8px 12px; text-align: center; color: ${t.returned > 0 ? '#3b82f6' : 'var(--text-muted)'};">
               ${t.returned}
             </td>
           </tr>
@@ -354,7 +354,7 @@
 
     const am = (typeof isAdmin === 'function') ? isAdmin() : false;
     const me = (typeof auth !== 'undefined' && auth.currentUser) ? auth.currentUser.uid : null;
-    // Same `let` vs `window` issue as the overview render — read the
+    // Same `let` vs `window` issue as the overview render - read the
     // bare name from the shared script scope.
     const assignments = (typeof allAssignments !== 'undefined' && Array.isArray(allAssignments))
       ? allAssignments
@@ -364,12 +364,12 @@
     const scopeBadge = document.getElementById('asScopeBadge');
     if (scopeBadge) {
       scopeBadge.textContent = am
-        ? `👑 Admin view — every teacher's assignments`
+        ? `👑 Admin view - every teacher's assignments`
         : `Your assignments only`;
     }
 
     if (visible.length === 0) {
-      // Friendlier empty state — icon + headline + actionable guidance
+      // Friendlier empty state - icon + headline + actionable guidance
       // + a "Create one now" button that jumps to the Assignments tab.
       // The old bland "No assignments anywhere yet." left teachers
       // staring at a flat line of text.
@@ -381,8 +381,8 @@
         : "Once you create one from the Assignments tab, you'll be able to track student progress, pending submissions, and completion rates here.";
       body.innerHTML = `
         <div style="padding: 32px 24px; text-align: center;
-                    background: linear-gradient(135deg, rgba(99,102,241,0.05), rgba(59,130,246,0.03));
-                    border: 1px dashed rgba(99,102,241,0.25);
+                    background: linear-gradient(135deg, rgba(37,99,235,0.05), rgba(59,130,246,0.03));
+                    border: 1px dashed rgba(37,99,235,0.25);
                     border-radius: 14px;">
           <div style="font-size: 2.6em; margin-bottom: 8px; opacity: 0.8;">📋</div>
           <h3 style="margin: 0 0 8px; font-weight: 700; color: var(--text-primary, #f1f5f9); font-size: 1.05em;">
@@ -393,10 +393,10 @@
           </p>
           ${am ? '' : `
             <button type="button" onclick="switchTab('assignments')"
-                    style="background: linear-gradient(135deg, #6366f1, #a78bfa);
+                    style="background: linear-gradient(135deg, #2563eb, #60a5fa);
                            border: none; color: #fff; padding: 9px 18px; border-radius: 10px;
                            font-family: inherit; font-weight: 600; font-size: 0.9em; cursor: pointer;
-                           box-shadow: 0 8px 22px -10px rgba(99,102,241,0.6);
+                           box-shadow: 0 8px 22px -10px rgba(37,99,235,0.6);
                            transition: filter 0.15s, transform 0.1s;"
                     onmouseover="this.style.filter='brightness(1.1)'"
                     onmouseout="this.style.filter='brightness(1)'">
@@ -427,7 +427,7 @@
 
     const ownerHeader   = am ? '<th style="text-align: left; padding: 8px 12px; color: #94a3b8; font-weight: 600; font-size: 0.85em;">Owner</th>' : '';
     // Tablet fix: the wrapper needs proper touch scrolling AND the
-    // table needs a min-width — otherwise on tablet widths the table
+    // table needs a min-width - otherwise on tablet widths the table
     // squishes into unreadability instead of triggering the wrapper's
     // horizontal scroll. A subtle right-edge gradient hints that the
     // table is scrollable.
@@ -469,12 +469,12 @@
                   ${ownerCell}
                   <td style="padding: 8px 12px; text-align: center; color: #cbd5e1;">${stats.totalSubs}</td>
                   <td style="padding: 8px 12px; text-align: center;
-                             color: ${stats.pendingGrading > 0 ? '#fcd34d' : 'var(--text-muted)'};
+                             color: ${stats.pendingGrading > 0 ? '#93c5fd' : 'var(--text-muted)'};
                              font-weight: ${stats.pendingGrading > 0 ? '700' : '400'};">
                     ${stats.pendingGrading}
                   </td>
                   <td style="padding: 8px 12px; text-align: center;
-                             color: ${stats.returned > 0 ? '#f59e0b' : 'var(--text-muted)'};
+                             color: ${stats.returned > 0 ? '#3b82f6' : 'var(--text-muted)'};
                              font-weight: ${stats.returned > 0 ? '700' : '400'};">
                     ${stats.returned}
                   </td>
@@ -505,10 +505,10 @@
 
   // ── Hook into the existing render pipeline ─────────────────
   // teacher-assignments.js calls renderAssignments() on every
-  // Firestore snapshot tick — for the assignments collection AND
+  // Firestore snapshot tick - for the assignments collection AND
   // for completions. We wrap it so our card re-renders the same
   // moment those do. No new listeners → no extra Firestore cost.
-  // Combined renderer — call after every relevant data change so
+  // Combined renderer - call after every relevant data change so
   // BOTH panels stay in sync.
   function renderAll() {
     try { render(); }              catch (e) { console.warn('[assignments-overview] overview render failed:', e); }
@@ -518,7 +518,7 @@
   // Module-level guards (one per wrapped function). The previous
   // approach tagged the wrapper with `__aoPatched`, but once a SECOND
   // patcher (dashboard-extras.js) wraps over us, its wrapper hides our
-  // tag and we'd re-wrap on the next tick — escalating without bound.
+  // tag and we'd re-wrap on the next tick - escalating without bound.
   // A module-scoped boolean guarantees we wrap each target exactly once.
   const _aoWrapped = Object.create(null);
   function _patchRenderAssignments() {

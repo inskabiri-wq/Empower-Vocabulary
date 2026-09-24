@@ -20,7 +20,17 @@
      label      what the teacher sees
      criteria   [{ key, label, what }]  1..n - the ENGINE IS
                 CRITERIA-COUNT AGNOSTIC (holistic = one entry)
-     scale      { min, max, step, name } the exam's own score scale
+     scale      { min, max, step, name } the exam's own score scale.
+                `step` is the step of the REPORTED / overall score.
+                `criterionStep` (optional) is the step of a single
+                criterion, when the exam scores those more coarsely.
+                IELTS is the case that needs it: the published band
+                descriptors are defined at WHOLE bands, so a criterion
+                is 5, 6 or 7 and never 6.5. Only the overall score is a
+                half band, being the mean of the four criteria rounded
+                to the nearest 0.5. Without the distinction the AI was
+                free to report "Task Achievement 6.5", which is not a
+                score IELTS awards. Defaults to `step` when absent.
      anchors    { high, mid, low } plain-English band anchors
      wordTarget suggested length
      timeMin    exam time allowance
@@ -48,7 +58,7 @@
     'ielts-gt-t1': {
       exam: 'IELTS', task: 'General Training - Task 1 (letter)',
       label: 'IELTS GT Task 1 - Letter',
-      scale: { min: 0, max: 9, step: 0.5, name: 'IELTS band' },
+      scale: { min: 0, max: 9, step: 0.5, criterionStep: 1, name: 'IELTS band' },
       wordTarget: '150+ words', timeMin: 20,
       guidance: 'A letter written for a real purpose (asking, complaining, thanking, applying). Tone must match the reader, and every bullet in the prompt must be covered.',
       criteria: [
@@ -67,7 +77,7 @@
     'ielts-ac-t1': {
       exam: 'IELTS', task: 'Academic - Task 1 (report)',
       label: 'IELTS Academic Task 1 - Chart/Process report',
-      scale: { min: 0, max: 9, step: 0.5, name: 'IELTS band' },
+      scale: { min: 0, max: 9, step: 0.5, criterionStep: 1, name: 'IELTS band' },
       wordTarget: '150+ words', timeMin: 20,
       guidance: 'An objective report of visual data (graph, table, map or process). No opinions: select the key features and compare them.',
       criteria: [
@@ -86,7 +96,7 @@
     'ielts-t2': {
       exam: 'IELTS', task: 'Task 2 (essay)',
       label: 'IELTS Task 2 - Essay',
-      scale: { min: 0, max: 9, step: 0.5, name: 'IELTS band' },
+      scale: { min: 0, max: 9, step: 0.5, criterionStep: 1, name: 'IELTS band' },
       wordTarget: '250+ words', timeMin: 40,
       guidance: 'A discursive essay answering the exact question asked (agree/disagree, discuss both views, problem/solution, two-part question). A clear position must be held throughout.',
       criteria: [
@@ -268,12 +278,12 @@
   //   green = content/task   violet = organisation/structure
   //   sky   = grammar        amber  = vocabulary
   var COLORS = {
-    CC: '#34d399', TA: '#a78bfa', GR: '#38bdf8', VO: '#fbbf24',
-    TR: '#a78bfa', LR: '#fbbf24', GRA: '#38bdf8',
-    HOL: '#6366f1',
-    CON: '#34d399', VOC: '#fbbf24', RDB: '#38bdf8', TSK: '#a78bfa',
-    CONT: '#a78bfa', FORM: '#f472b6', DSC: '#34d399',
-    GRAM: '#38bdf8', RANGE: '#22d3ee', VOCAB: '#fbbf24', SPELL: '#fb7185'
+    CC: '#34d399', TA: '#60a5fa', GR: '#60a5fa', VO: '#60a5fa',
+    TR: '#60a5fa', LR: '#60a5fa', GRA: '#60a5fa',
+    HOL: '#2563eb',
+    CON: '#34d399', VOC: '#60a5fa', RDB: '#60a5fa', TSK: '#60a5fa',
+    CONT: '#60a5fa', FORM: '#f472b6', DSC: '#34d399',
+    GRAM: '#60a5fa', RANGE: '#60a5fa', VOCAB: '#60a5fa', SPELL: '#60a5fa'
   };
 
   return {
@@ -299,7 +309,14 @@
       for (var i = 0; i < r.criteria.length; i++) if (r.criteria[i].key === critKey) return r.criteria[i].label;
       return critKey;
     },
-    color: function (critKey) { return COLORS[critKey] || '#a78bfa'; },
+    color: function (critKey) { return COLORS[critKey] || '#60a5fa'; },
+    // The step a SINGLE criterion moves in, which is not always the step of
+    // the reported score. See the note on `scale` at the top of this file.
+    criterionStep: function (id) {
+      var r = RUBRICS[id];
+      if (!r || !r.scale) return 1;
+      return r.scale.criterionStep || r.scale.step || 1;
+    },
     // Toolbar hint line: "IELTS band 0-9 · 250+ words · 40 min".
     summary: function (id) {
       var r = RUBRICS[id];

@@ -6,19 +6,12 @@ function escapeHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-// Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-  authDomain: "empower-vocabulary-practice.firebaseapp.com",
-  projectId: "empower-vocabulary-practice",
-  storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-  messagingSenderId: "136270199832",
-  appId: "1:136270199832:web:174222066ef1cbdc8f576d",
-  measurementId: "G-1BBXBVEP5C"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Firebase is started by js/firebase-init.js, which reads the project
+// from js/tenant.js. This file used to name the project itself, which
+// would have pointed every deployment at that same project.
+if (!firebase.apps.length) {
+  throw new Error('student config: js/tenant.js + js/firebase-init.js must load first.');
+}
 const auth = firebase.auth();
 const db = firebase.firestore();
 
@@ -92,7 +85,7 @@ async function loadBookDataset(book) {
 }
 
 // Dataset-load gate. Before this flips true, activity buttons can't yield
-// words — the fetch is still in flight. startActivity() reads this flag
+// words - the fetch is still in flight. startActivity() reads this flag
 // so it can show a friendly "still loading" message instead of the
 // misleading "no words available" when someone clicks too fast, or when
 // a book switch is mid-swap.

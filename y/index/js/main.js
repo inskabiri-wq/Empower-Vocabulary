@@ -31,7 +31,7 @@ class Particle {
     this.speedX = (Math.random() - 0.5) * 0.4;
     this.speedY = (Math.random() - 0.5) * 0.4;
     this.opacity = Math.random() * 0.4 + 0.1;
-    this.color = Math.random() > 0.5 ? '#3b82f6' : '#06b6d4';
+    this.color = Math.random() > 0.5 ? '#3b82f6' : '#2563eb';
   }
   
   update() {
@@ -92,17 +92,14 @@ window.addEventListener('resize', resizeCanvas);
 // FIREBASE CONFIGURATION
 // ============================================
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-  authDomain: "empower-vocabulary-practice.firebaseapp.com",
-  projectId: "empower-vocabulary-practice",
-  storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-  messagingSenderId: "136270199832",
-  appId: "1:136270199832:web:174222066ef1cbdc8f576d",
-  measurementId: "G-1BBXBVEP5C"
-};
-
-firebase.initializeApp(firebaseConfig);
+// THE LOGIN PAGE. Firebase is started by js/firebase-init.js, which reads the
+// project from js/tenant.js. This file used to name one project directly,
+// and this page is the one that matters most: a second university deployed
+// with that line would have authenticated its students against the wrong
+// project's user list and read that project's data.
+if (!firebase.apps.length) {
+  throw new Error('login: js/tenant.js + js/firebase-init.js must load first.');
+}
 const auth = firebase.auth();
 const db = firebase.firestore();
 
@@ -243,6 +240,14 @@ let registrationInProgress = false;
 // AUTH STATE CHANGE HANDLER
 // ============================================
 auth.onAuthStateChanged(async (user) => {
+  // An ANONYMOUS session is a classroom game (the join screens sign phones in
+  // anonymously on this same site), not someone signing in. It used to fall
+  // through to the email check below, get signed out, and pop "University
+  // email required" at a student who had only opened the sign-in page -
+  // signing out the game in any other tab too. Leave it alone: a real sign-in
+  // replaces it, and "Contact us" works with it (firestore.rules allows the
+  // sign-in page message with no sign-in or an anonymous one).
+  if (user && user.isAnonymous) return;
   if (user) {
     if (registrationInProgress) return;
     // Check if this is a pending Google completion
@@ -251,7 +256,7 @@ auth.onAuthStateChanged(async (user) => {
     }
     
     const email = user.email || '';
-    // Phase H — dynamic via OrgRegistry. Falls back to hardcoded FSM
+    // Phase H - dynamic via OrgRegistry. Falls back to the built-in
     // if OrgRegistry hasn't loaded yet (race on first paint).
     const isAllowed = (typeof window.OrgRegistry !== 'undefined' && window.OrgRegistry.checkEmail)
       ? window.OrgRegistry.checkEmail(email).ok
@@ -297,8 +302,31 @@ auth.onAuthStateChanged(async (user) => {
     
     if (userDoc.exists) {
       const data = userDoc.data();
-      const role = data.role || 'student';
-      
+      let role = data.role || 'student';
+
+      // WHITELIST PROMOTION, on the password-login path too.
+      //
+      // Admin > Teachers promises teacher access on the next sign-in. Only
+      // the Google path ever consulted the whitelist, so without this a
+      // whitelisted teacher who signs in with a password stays a student for
+      // ever while the admin panel lists them as Pending. Checked BEFORE the
+      // student-fields gate below, because a teacher has no level / class /
+      // module and must not be sent to the student completion form.
+      //
+      // One extra read, only for accounts that are still students.
+      // firestore.rules permits exactly student -> teacher for a whitelisted
+      // owner; a refusal leaves them a student rather than blocking login.
+      if (role === 'student') {
+        try {
+          if ((await checkIfTeacher(data.email || user.email || '')) === 'teacher') {
+            await userRef.update({ role: 'teacher' });
+            role = 'teacher';
+          }
+        } catch (e) {
+          console.warn('Whitelist promotion refused, continuing as student:', e.message || e);
+        }
+      }
+
       // Check if student has required fields
       if (role === 'student' && (!data.level || !data.studentClass || !data.module || !data.academicYear)) {
         // Existing user but missing required fields - show completion form
@@ -313,7 +341,7 @@ auth.onAuthStateChanged(async (user) => {
       });
       
       // Redirect based on role. Use .replace() so /index.html does
-      // NOT linger in browser history — otherwise the system back
+      // NOT linger in browser history - otherwise the system back
       // button from the dashboard pops back into the login page,
       // then a second back press leaves the app (see back-nav.js).
       if (role === 'teacher') {
@@ -341,7 +369,7 @@ auth.onAuthStateChanged(async (user) => {
 async function checkUserRoleAndRedirect(user) {
   try {
     const email = user.email || '';
-    // Phase H — dynamic via OrgRegistry. Falls back to hardcoded FSM
+    // Phase H - dynamic via OrgRegistry. Falls back to the built-in
     // if OrgRegistry hasn't loaded yet (race on first paint).
     const isAllowed = (typeof window.OrgRegistry !== 'undefined' && window.OrgRegistry.checkEmail)
       ? window.OrgRegistry.checkEmail(email).ok
@@ -386,9 +414,9 @@ async function checkUserRoleAndRedirect(user) {
 }
 
 // ============================================
-// FSM EMAIL GATE (shared by login + register)
+// INSTITUTIONAL EMAIL GATE (shared by login + register)
 // ============================================
-// True when the email belongs to an allowed FSM / organization domain.
+// True when the email belongs to an allowed organization domain.
 function isFsmEmailAllowed(email) {
   email = (email || '').toLowerCase().trim();
   if (typeof window.OrgRegistry !== 'undefined' && window.OrgRegistry.checkEmail) {
@@ -396,17 +424,19 @@ function isFsmEmailAllowed(email) {
   }
   return email.endsWith('@fsm.edu.tr') || email.endsWith('@stu.fsm.edu.tr');
 }
-// Styled, app-themed popup explaining the FSM-email requirement. Falls back to
-// the inline message box if AppDialog ever fails to load.
+// Styled, app-themed popup explaining the institutional-email requirement.
+// Falls back to the inline message box if AppDialog ever fails to load.
+// The wording names no university: this text ships to every institution, and
+// the domains that are actually accepted live in settings/organizations.
 function showFsmEmailPopup() {
-  var msg = 'Please sign in with your FSM university email. Students use ' +
-    'name@stu.fsm.edu.tr and staff use name@fsm.edu.tr. Other addresses are not allowed.';
-  if (window.AppDialog && AppDialog.alert) { AppDialog.alert(msg, { title: '🎓 FSM email required' }); }
+  var msg = 'Please sign in with your university email address. ' +
+    'If you are not sure which address to use, ask your department.';
+  if (window.AppDialog && AppDialog.alert) { AppDialog.alert(msg, { title: '🎓 University email required' }); }
   else { showMessage(msg, 'error'); }
 }
 
 // Continue URL the verification email links back to. Must be an authorized
-// domain — the app's own origin is — so it sends the user to the login page.
+// domain - the app's own origin is - so it sends the user to the login page.
 function verifyActionSettings() {
   try { return { url: window.location.origin + '/index.html', handleCodeInApp: false }; }
   catch (_) { return undefined; }
@@ -493,12 +523,12 @@ async function register() {
   }
 
   const studentClass = classLetter + classNumber;
-  // Phase H — dynamic via OrgRegistry (with FSM fallback).
+  // Phase H - dynamic via OrgRegistry (with the built-in fallback).
   const _check = (typeof window.OrgRegistry !== 'undefined' && window.OrgRegistry.checkEmail)
     ? window.OrgRegistry.checkEmail(email)
     : { ok: ((email || '').toLowerCase().endsWith('@fsm.edu.tr') ||
              (email || '').toLowerCase().endsWith('@stu.fsm.edu.tr')),
-        reason: 'Only FSM email addresses (@fsm.edu.tr or @stu.fsm.edu.tr) can register.' };
+        reason: 'Only approved institutional email addresses can register.' };
 
   if (!_check.ok) {
     showMessage(_check.reason || 'This email domain is not authorized to register.', 'error');
@@ -527,7 +557,7 @@ async function register() {
       role: 'student',
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-      // Account lifecycle fields (added Phase J — student-managed
+      // Account lifecycle fields (added Phase J - student-managed
       // verification + yearly expiry).
       //   • active: false → blocked from logging in, must contact admin
       //   • registeredAt: anchor for the 1-year expiry check
@@ -608,7 +638,7 @@ async function signInWithGoogle() {
     const email = user.email;
     
     // Check for allowed domains
-    // Phase H — dynamic via OrgRegistry. Falls back to hardcoded FSM
+    // Phase H - dynamic via OrgRegistry. Falls back to the built-in
     // if OrgRegistry hasn't loaded yet (race on first paint).
     const isAllowed = (typeof window.OrgRegistry !== 'undefined' && window.OrgRegistry.checkEmail)
       ? window.OrgRegistry.checkEmail(email).ok
@@ -617,17 +647,51 @@ async function signInWithGoogle() {
 
     if (!isAllowed) {
       await auth.signOut();
-      showMessage('Access denied. Only FSM university emails (@fsm.edu.tr or @stu.fsm.edu.tr) are allowed.', 'error');
+      showMessage('Access denied. This account is not on an approved university email domain.', 'error');
       return;
     }
 
-    // Check if user is a teacher
-    const role = await checkIfTeacher(email);
-    
-    // Check if user document exists
+    // THE USER DOCUMENT IS THE SOURCE OF TRUTH FOR ROLE.
+    //
+    // This function used to write `role` on EVERY Google sign-in - 'teacher'
+    // when the whitelist said so, 'student' otherwise - and firestore.rules
+    // refused both, which surfaced as "Google sign-in failed: Missing or
+    // insufficient permissions" and read to the user as being denied
+    // permission to log in. Two separate live failures:
+    //
+    //   1. role:'teacher' on a NEW doc was refused because users/create
+    //      demanded role == 'student'. This is the one a freshly whitelisted
+    //      teacher hit. The rules now accept it when the admin-written
+    //      whitelist vouches for the address.
+    //   2. role:'student' written onto an EXISTING TEACHER's document was
+    //      refused by roleUnchanged(). That is a demotion attempt on every
+    //      single login, so a teacher promoted with the crown button could
+    //      not sign in with Google AT ALL. Nothing in the UI said why.
+    //
+    // Now the role is READ from the document, and only ever written when it
+    // is genuinely changing and the rules allow that change.
+    const whitelisted = (await checkIfTeacher(email)) === 'teacher';
+
     const userRef = db.collection('users').doc(user.uid);
     const userDoc = await userRef.get();
-    
+    let role = userDoc.exists
+      ? (userDoc.data().role || 'student')
+      : (whitelisted ? 'teacher' : 'student');
+
+    // An existing student who has since been whitelisted gets promoted here.
+    // firestore.rules permits exactly this transition. If it is refused we
+    // carry on as a student rather than failing the login - the admin can
+    // still use the crown button, and a refused promotion must never cost
+    // someone their access.
+    if (userDoc.exists && whitelisted && role === 'student') {
+      try {
+        await userRef.update({ role: 'teacher' });
+        role = 'teacher';
+      } catch (e) {
+        console.warn('Whitelist promotion refused, continuing as student:', e.message || e);
+      }
+    }
+
     if (role === 'teacher') {
       // Teachers don't need extra fields - create/update and redirect
       if (!userDoc.exists) {
@@ -639,9 +703,9 @@ async function signInWithGoogle() {
           lastLogin: firebase.firestore.FieldValue.serverTimestamp()
         });
       } else {
+        // role deliberately NOT written - see the note above.
         await userRef.update({
-          lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-          role: 'teacher'
+          lastLogin: firebase.firestore.FieldValue.serverTimestamp()
         });
       }
       showMessage('Login successful! Redirecting...', 'success');
@@ -653,10 +717,10 @@ async function signInWithGoogle() {
     if (userDoc.exists) {
       const data = userDoc.data();
       if (data.level && data.studentClass && data.module && data.academicYear) {
-        // Has all required fields - update and redirect
+        // Has all required fields - update and redirect.
+        // role deliberately NOT written - see the note above.
         await userRef.update({
-          lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-          role: 'student'
+          lastLogin: firebase.firestore.FieldValue.serverTimestamp()
         });
         // Account gate (yearly expiry + verification flag)
         if (window.AccountGate) {
@@ -818,7 +882,7 @@ async function completeGoogleRegistration() {
       role: 'student',
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-      // Account lifecycle (Phase J — see register() above for full notes).
+      // Account lifecycle (Phase J - see register() above for full notes).
       active: true,
       registeredAt: firebase.firestore.FieldValue.serverTimestamp(),
       lastVerifiedAt: firebase.firestore.FieldValue.serverTimestamp(),

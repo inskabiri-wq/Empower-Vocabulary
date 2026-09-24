@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Harness - do the result podiums actually render?</title>
+<link rel="stylesheet" href="../../css/brand.css">
+<link rel="stylesheet" href="../../classroom/css/styles.css">
+<link rel="stylesheet" href="../../classroom/css/minigames.css">
+<style>
+  body{padding:18px;font-family:system-ui,sans-serif}
+  h2{font-size:14px;margin:22px 0 6px;opacity:.75}
+</style>
+</head>
+<body>
+<h1 style="font-size:17px">Result podiums, as each game actually emits them</h1>
+
+<h2>bingo / scramble / tug  (class="podium-place first")</h2>
+<div class="podium" id="podiumGood"></div>
+
+<h2>AI Quiz, AFTER the fix (must look identical to the row above)</h2>
+<div class="podium" id="podiumAiq"></div>
+
+<h2>AI Quiz, BEFORE the fix (class="podium-place podium-first")</h2>
+<div class="podium" id="podiumOld"></div>
+
+<script>
+var P = [{name:'Yasin', score:1247}, {name:'Emir', score:1171}, {name:'azra', score:1004}];
+var MEDALS = ['🥇','🥈','🥉'], POS = ['first','second','third'];
+
+// exactly what bingo/scramble/tug emit
+document.getElementById('podiumGood').innerHTML = P.map(function (p, i) {
+  return '<div class="podium-place ' + POS[i] + '">' +
+    '<div class="podium-rank" style="font-size:2rem;">' + MEDALS[i] + '</div>' +
+    '<div class="podium-name" style="font-weight:600;margin-top:6px;">' + p.name + '</div>' +
+    '<div class="podium-score" style="font-weight:700;margin-top:4px;">' + p.score + ' pts</div></div>';
+}).join('');
+
+// exactly what the AI Quiz emits now
+document.getElementById('podiumAiq').innerHTML = P.map(function (p, i) {
+  return '<div class="podium-place ' + POS[i] + '">' +
+    '<div class="podium-rank">' + MEDALS[i] + '</div>' +
+    '<div class="podium-name">' + p.name + '</div>' +
+    '<div class="podium-score">' + p.score + '</div></div>';
+}).join('');
+
+// what it emitted before
+document.getElementById('podiumOld').innerHTML = P.map(function (p, i) {
+  return '<div class="podium-place podium-' + POS[i] + '">' +
+    '<div class="podium-name">' + p.name + '</div>' +
+    '<div class="podium-score">' + p.score + '</div>' +
+    '<div class="podium-block">' + (i + 1) + '</div></div>';
+}).join('');
+
+window.report = function () {
+  function read(id) {
+    return [...document.querySelectorAll('#' + id + ' .podium-place')].map(function (el) {
+      var cs = getComputedStyle(el);
+      return { cls: el.className, order: cs.order, paddingBottom: cs.paddingBottom,
+               hasGoldBg: /gradient/.test(cs.backgroundImage) };
+    });
+  }
+  return { fixed: read('podiumAiq'), reference: read('podiumGood'), broken: read('podiumOld') };
+};
+</script>
+</body>
+</html>

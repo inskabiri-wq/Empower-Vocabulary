@@ -54,6 +54,14 @@
   function loadProg() { try { return JSON.parse(localStorage.getItem(PROG_KEY) || '{}'); } catch (_) { return {}; } }
   function saveProg(p) { try { localStorage.setItem(PROG_KEY, JSON.stringify(p)); } catch (_) {} }
   function pkey(level, unit, game) { return level + '|u' + unit + '|' + game; }
+
+  // Read a challenge row's unit. The "All units" card carries data-unit="all",
+  // and parseInt('all') is NaN - which poolFor() would turn into an empty pool
+  // and a dead click. Everything downstream already understands 'all'.
+  function unitAttr(el) {
+    var u = el.getAttribute('data-unit');
+    return (u === 'all') ? 'all' : parseInt(u, 10);
+  }
   // Merge localStorage (this device) with the Firestore-backed remote cache.
   // A specific unit's progress ALSO counts the "all units" play for that game:
   // when you practise "all units", you do see that unit's questions, so its
@@ -107,11 +115,24 @@
   }
 
   // Load grammar sessions from Firestore once, then run `after` (re-render).
+  var grWaiters = [];
   function ensureGrammarProgress(after) {
     if (grLoaded) { if (after) after(); return; }
-    if (grLoading) return;   // a load is already in flight; its callback re-renders
+    // QUEUE, do not drop. This used to `return` when a load was already in
+    // flight, discarding `after` entirely: only the first caller's re-render
+    // ever ran, so anything that asked for progress a moment later never
+    // found out it had arrived.
+    if (after) grWaiters.push(after);
+    if (grLoading) return;
     grLoading = true;
-    function finish() { grLoading = false; if (after) after(); }
+    function finish() {
+      grLoading = false;
+      var ws = grWaiters; grWaiters = [];
+      ws.forEach(function (f) {
+        // One callback throwing must not stop the others running.
+        try { f(); } catch (e) { console.warn('[grammar] progress callback threw:', e); }
+      });
+    }
     try {
       if (typeof auth === 'undefined' || !auth.currentUser || typeof db === 'undefined') { buildRemote([]); finish(); return; }
       db.collection('sessions').where('userId', '==', auth.currentUser.uid).get()
@@ -161,7 +182,7 @@
 
   // The live profile avatar (the same one the vocab dashboard shows) so the
   // grammar screen mirrors it instead of a static book.
-  function liveAvatar() { var el = document.getElementById('avatarDisplayEmoji'); return (el && (el.textContent || '').trim()) || '📘'; }
+  // liveAvatar() was removed with the .gr-welcome band, its only caller.
   // Copy the live profile (avatar / name / level / XP) into the grammar header
   // chip so it matches the vocab dashboard header.
   function syncGrammarHeader() {
@@ -173,6 +194,19 @@
     DATA = window.GRAMMAR_PRACTICE || null;
     if (!body()) return;
     if (!DATA || !DATA.levels || !DATA.levels.length) { body().innerHTML = '<div class="gr-empty">Grammar content is not loaded yet.</div>'; return; }
+    // Only offer levels that actually HAVE units.
+    //
+    // grammar-content.js declares levels: ['A2','B1','B1+','B2','C1'] but its
+    // byLevel index only has A2 / B1 / B1+ / B2. So a C1 tab was rendered that
+    // could never contain anything, and clicking it said "No units yet for C1."
+    // That reads as a loading failure when it is really a level nobody has
+    // written content for. Deriving the list from byLevel means a level appears
+    // the moment its content does, and never before. Declared order is kept.
+    var present = DATA.levels.filter(function (lv) {
+      var u = DATA.byLevel && DATA.byLevel[lv];
+      return !!(u && u.length);
+    });
+    if (present.length) DATA = Object.assign({}, DATA, { levels: present });
     if (!state.level) state.level = DATA.levels[0];
     renderMenu();
   }
@@ -225,24 +259,112 @@
       '</div>';
     }).join('');
 
+    // ── The "All units" card ────────────────────────────────────────────────
+    // Practising with "all units" selected is real work, and getProg() already
+    // credits it to every unit at the level (see the note there). What was
+    // missing is anywhere to SEE that play as itself, or to start it from the
+    // board: the map only offered per-unit drills, so a student who practises
+    // whole levels had no entry point here at all.
+    //
+    // Deliberately NOT counted into mastered / gamesTotal / accSum below. It
+    // covers the same questions as the unit cards, so adding it would count
+    // the same play twice and inflate "Mastered N of M units".
+    var allDone = 0;
+    var allRows = games.map(function (g) {
+      var pr = getProg(level, 'all', g.id);
+      if (pr.done) allDone++;
+      return '<div class="qc-challenge ' + (pr.done ? 'done' : '') + '" data-unit="all" data-game="' + g.id + '">' +
+        '<span class="qc-challenge-icon">' + g.icon + '</span>' +
+        '<span class="qc-challenge-name">' + esc(g.name) + '</span>' +
+        '<span class="qc-challenge-score">' + (pr.best > 0 ? pr.best + '%' : '·') + '</span>' +
+        '<span class="qc-challenge-check">' + (pr.done ? '✅' : '⬜') + '</span>' +
+      '</div>';
+    }).join('');
+    var allPct = Math.round(allDone / gpu * 100);
+    var allColor = (games.length && allDone === games.length) ? '#10b981' : (allPct > 0 ? '#3b82f6' : '#334155');
+    var allStatus = (games.length && allDone === games.length) ? 'qc-complete' : (allDone > 0 ? 'qc-active' : 'qc-new');
+    var allLabel = (games.length && allDone === games.length) ? '🏆 Mastered' : (allDone > 0 ? '📖 In Progress' : '🆕 Not Started');
+    var aRad = 32, aCirc = 2 * Math.PI * aRad, aOff = aCirc - allPct / 100 * aCirc;
+    var allCard = units.length ? (
+      '<div class="qc-card qc-card-all ' + allStatus + '">' +
+        '<div class="qc-card-header">' +
+          '<div class="qc-donut"><svg width="76" height="76" viewBox="0 0 76 76">' +
+            '<circle cx="38" cy="38" r="' + aRad + '" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6"/>' +
+            '<circle cx="38" cy="38" r="' + aRad + '" fill="none" stroke="' + allColor + '" stroke-width="6" stroke-dasharray="' + aCirc + '" stroke-dashoffset="' + aOff + '" stroke-linecap="round" transform="rotate(-90 38 38)" style="transition:stroke-dashoffset .6s ease;"/>' +
+          '</svg><div class="qc-donut-label">' + allPct + '%</div></div>' +
+          '<div class="qc-unit-info">' +
+            '<div class="qc-unit-name">All units</div>' +
+            '<div class="qc-unit-words">' + totalQ + ' questions</div>' +
+            '<div class="qc-unit-topics">Every topic at ' + esc(level) + ', mixed together</div>' +
+            '<div class="qc-unit-status">' + allLabel + '</div>' +
+            '<div class="qc-quest-progress">' + allDone + '/' + games.length + ' games</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="qc-challenges">' + allRows + '</div>' +
+      '</div>'
+    ) : '';
+    cards = allCard + cards;
+
     // Prefer the Firestore-backed aggregate (grStats) for the headline numbers
     // so they reflect ALL grammar play (including "all units" sessions), not
     // just the per-unit cards. Falls back to the per-unit loop when no remote.
     var localBest = best, localAcc = accCount ? Math.round(accSum / accCount) : 0;
     return { cards: cards, units: units, gamesDone: gamesDone, gamesTotal: gamesTotal, totalQ: totalQ, mastered: mastered,
+      // How many questions the student has actually ANSWERED, from their own
+      // sessions. Kept separate from totalQ, which counts the questions that
+      // EXIST at this level and is still needed below for the unit picker.
+      // The two were being shown in the same stat row, so a bank of 2326
+      // unanswered questions sat beside four personal numbers, all styled
+      // identically. See the 'Answered' card in the summary.
+      answeredQ: (grStats && grStats.games) ? grStats.totalQ : 0,
       best: Math.max(localBest, (grStats && grStats.best) || 0),
       accuracy: (grStats && grStats.games) ? grStats.accuracy : localAcc,
       challengesDone: (grStats && grStats.games) ? grStats.challengesDone : gamesDone };
   }
 
+  // ── The five stat cards ──────────────────────────────────────────────────
+  // MODULE LEVEL, not inside renderMenu, so the Quest Board can rebuild them
+  // when the Firestore read lands. They used to be built only during
+  // renderMenu and replayed into the map as a cached string, which meant a map
+  // opened before the sessions arrived showed zeros for the rest of the
+  // session and had no way back.
+  var GR_SVG = {
+    trophy: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>',
+    star: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+    target: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#22c55e"/></svg>',
+    book: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+    pad: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'
+  };
+  function statCard(accent, svg, val, lbl) { return '<div class="gr-stat" data-accent="' + accent + '"><div class="gr-stat-ic">' + svg + '</div><div class="gr-stat-val">' + val + '</div><div class="gr-stat-lbl">' + lbl + '</div></div>'; }
+  function statsHTML(info) {
+    return '<div class="gr-stats">' +
+      statCard('best', GR_SVG.trophy, info.mastered, 'Mastered') + statCard('streak', GR_SVG.star, info.best + '%', 'Best') +
+      statCard('accuracy', GR_SVG.target, info.accuracy + '%', 'Accuracy') + statCard('words', GR_SVG.book, info.answeredQ, 'Answered') +
+      statCard('sessions', GR_SVG.pad, info.challengesDone, 'Challenges') + '</div>';
+  }
+
+  // Repaint handle for an open Quest Board. Set by openMap, cleared on close.
+  var grMapRepaint = null;
+
+  // Called once the Firestore session read lands. Refreshes whatever is on
+  // screen - the menu was the only thing it used to refresh, so an open map
+  // kept its pre-load zeros.
+  function refreshAfterProgress() {
+    if (state.view === 'menu') { try { renderMenu(); } catch (e) { console.warn('[grammar] menu refresh failed:', e); } }
+    if (typeof grMapRepaint === 'function') { try { grMapRepaint(); } catch (e) { console.warn('[grammar] map refresh failed:', e); } }
+  }
+
   // ── Menu: vocab layout (games in the centre; level/unit + map on the right) ──
+  // `lastSummary` used to be cached here for the Quest Board to replay. The
+  // board builds its own summary now, from the same data as its cards, so the
+  // cache is gone rather than left behind unread.
   function renderMenu() {
     var b = body(); if (!b) return;
     syncGrammarHeader();
     state.view = 'menu';
     // First view: pull cross-device progress from Firestore, then re-render so
     // the donuts + headline stats reflect real play (mirrors the vocab map).
-    if (!grLoaded && !grLoading) ensureGrammarProgress(function () { if (state.view === 'menu') renderMenu(); });
+    if (!grLoaded) ensureGrammarProgress(refreshAfterProgress);
     var asg = state.assignment;
     var level = asg ? asg.level : state.level;
     var info = buildUnitCards(level);
@@ -251,7 +373,7 @@
     if (asg) {
       b.innerHTML = '<div class="gr-asg-banner"><strong>📌 ' + esc(asg.title || (asg.level + ' grammar assignment')) + '</strong><div>Finish a game in any assigned unit to complete this assignment.</div></div>' +
         '<div class="qc-grid learning-map-container">' + (info.cards || '<div class="gr-empty">No units yet.</div>') + '</div>';
-      b.querySelectorAll('.qc-challenge').forEach(function (el) { el.onclick = function () { startGame(parseInt(el.getAttribute('data-unit'), 10), el.getAttribute('data-game')); }; });
+      b.querySelectorAll('.qc-challenge').forEach(function (el) { el.onclick = function () { startGame(unitAttr(el), el.getAttribute('data-game')); }; });
       return;
     }
 
@@ -260,10 +382,10 @@
     var RANKS = ['Beginner', 'Learner', 'Rising Star', 'Scholar', 'Expert', 'Master', 'Grandmaster'];
     var rank = RANKS[Math.min(glvl - 1, RANKS.length - 1)];
 
-    var welcome = '<div class="gr-welcome"><div class="gr-welcome-text">' +
-      '<h2>Grammar Quest</h2>' +
-      '<p>You have mastered <strong>' + info.mastered + '</strong> of <strong>' + info.units.length + '</strong> units at <strong>' + esc(level) + '</strong>. Keep going!</p>' +
-      '</div><div class="gr-welcome-ava">' + esc(liveAvatar()) + '</div></div>';
+    // The .gr-welcome band ("Grammar Quest / you have mastered N of M units")
+    // was built here and is gone, matching vocabulary's board. Removed rather
+    // than left unused, because an unrendered variable is a trap for whoever
+    // reads this next.
 
     // Vocabulary's XP block, class for class (.dash-xp-block / .xp-bar-*  /
     // .xp-milestone), not a grammar-shaped copy of it. The old .gr-xp markup
@@ -271,9 +393,6 @@
     // with no shine animation and no top sheen, and a grey "X / 100 XP" where
     // vocabulary shows amber. The milestone pips light up from the real XP
     // rather than always marking 0 as hit.
-    var xpMiles = [0, 25, 50, 75, 100].map(function (m) {
-      return '<span class="xp-milestone' + (xpIn >= m ? ' hit' : '') + '" data-xp="' + m + '">' + m + '</span>';
-    }).join('');
     var xpBlock = '<div class="dash-xp-block">' +
       '<div class="dash-xp-top">' +
         '<div class="xp-badge-pill">Level ' + glvl + ' · ' + esc(rank) + '</div>' +
@@ -283,21 +402,11 @@
         '<div class="xp-bar-fill" style="width:' + xpIn + '%"></div>' +
         '<div class="xp-bar-glow"></div>' +
       '</div>' +
-      '<div class="xp-milestones">' + xpMiles + '</div>' +
     '</div>';
 
-    var GR_SVG = {
-      trophy: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>',
-      star: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
-      target: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#22c55e"/></svg>',
-      book: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
-      pad: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'
-    };
-    function statCard(accent, svg, val, lbl) { return '<div class="gr-stat" data-accent="' + accent + '"><div class="gr-stat-ic">' + svg + '</div><div class="gr-stat-val">' + val + '</div><div class="gr-stat-lbl">' + lbl + '</div></div>'; }
-    var stats = '<div class="gr-stats">' +
-      statCard('best', GR_SVG.trophy, info.mastered, 'Mastered') + statCard('streak', GR_SVG.star, info.best + '%', 'Best') +
-      statCard('accuracy', GR_SVG.target, info.accuracy + '%', 'Accuracy') + statCard('words', GR_SVG.book, info.totalQ, 'Questions') +
-      statCard('sessions', GR_SVG.pad, info.challengesDone, 'Challenges') + '</div>';
+    // No stat cards here: they live on the Quest Board, which now builds them
+    // itself via statsHTML(). The menu used to build them only to hand the
+    // string to the board, which is what let the board go stale.
 
     var unitLabel = state.selectedUnit === 'all' ? 'all units' : ('Unit ' + state.selectedUnit);
     var unitDesc;
@@ -316,14 +425,36 @@
     var levelPills = DATA.levels.map(function (lv) { return '<button type="button" class="gr-pill' + (lv === level ? ' active' : '') + '" data-lv="' + esc(lv) + '">' + esc(lv) + '</button>'; }).join('');
     var unitPills = '<button type="button" class="gr-pill gr-pill-u' + (state.selectedUnit === 'all' ? ' active' : '') + '" data-unit="all">All</button>' +
       info.units.map(function (u) { return '<button type="button" class="gr-pill gr-pill-u' + (String(state.selectedUnit) === String(u) ? ' active' : '') + '" data-unit="' + u + '">U' + u + '</button>'; }).join('');
+    // The count under the unit pills follows the SELECTION. It used to print
+    // info.totalQ, which is the sum across every unit at the level, with the
+    // label "questions at A2" - so picking U1 changed the pills, the games and
+    // the description, but this number sat there unchanged and looked stuck.
+    var selCount, selLabel;
+    if (state.selectedUnit === 'all') {
+      selCount = info.totalQ;
+      selLabel = 'questions at ' + esc(level);
+    } else {
+      selCount = unitTopics(level, state.selectedUnit)
+        .reduce(function (s, t) { return s + ((t.questions || []).length); }, 0);
+      selLabel = 'questions in Unit ' + esc(String(state.selectedUnit));
+    }
+
     var side = '<div class="gr-side">' +
       '<div class="gr-side-card"><div class="gr-side-title">📚 Level</div><div class="gr-level-pills">' + levelPills + '</div></div>' +
       '<div class="gr-side-card"><div class="gr-side-title">📖 Unit</div><div class="gr-level-pills gr-unit-pills">' + unitPills + '</div>' +
-        '<div class="gr-count"><div class="gr-count-num">' + info.totalQ + '</div><div class="gr-count-lbl">questions at ' + esc(level) + '</div></div></div>' +
+        '<div class="gr-count"><div class="gr-count-num">' + selCount + '</div><div class="gr-count-lbl">' + selLabel + '</div></div></div>' +
       '<button type="button" class="map-btn-gamified" id="grMapBtn"><span class="map-btn-icon">🗺️</span><span class="map-btn-text">Explore Grammar Map</span><span class="map-btn-arrow">→</span></button>' +
     '</div>';
 
-    b.innerHTML = '<div class="gr-dash"><div class="gr-main">' + welcome + xpBlock + stats + gameCards + '</div>' + side + '</div>';
+    // The 5 stat cards live in the Quest Board, not here. They were 186px of
+    // report card above the thing you came to do: the games started 402px down
+    // a 540px column. The XP row stays - that is the reward loop, and hiding
+    // progress behind a click is how you kill it.
+    //
+    // The "Grammar Quest / you have mastered N of M units" greeting is gone
+    // too, matching vocabulary's board: both are opened deliberately, so a
+    // greeting above the content is preamble.
+    b.innerHTML ='<div class="gr-dash"><div class="gr-main">' + xpBlock + gameCards + '</div>' + side + '</div>';
     b.querySelectorAll('.gr-pill[data-lv]').forEach(function (el) { el.onclick = function () { state.level = el.getAttribute('data-lv'); state.selectedUnit = 'all'; renderMenu(); }; });
     b.querySelectorAll('.gr-pill[data-unit]').forEach(function (el) { el.onclick = function () { var u = el.getAttribute('data-unit'); state.selectedUnit = (u === 'all') ? 'all' : parseInt(u, 10); renderMenu(); }; });
     b.querySelectorAll('.gr-game-card').forEach(function (el) { el.onclick = function () { startGame(state.selectedUnit, el.getAttribute('data-game')); }; });
@@ -349,6 +480,7 @@
         '<button type="button" class="modal-close-btn" id="grMapClose" aria-label="Close">&times;</button>' +
         '<h2 class="modal-title">🗺️ Grammar Quest Board</h2>' +
         '<p class="qc-board-sub">Complete challenges to master each unit</p>' +
+        '<div class="qc-summary" id="grMapSummary"></div>' +
         '<div class="level-tabs" id="grMapTabs"></div>' +
         '<div class="learning-map-container" id="grMapContainer"></div>' +
       '</div>';
@@ -356,7 +488,14 @@
 
     var tabs = ov.querySelector('#grMapTabs');
     var box  = ov.querySelector('#grMapContainer');
+    var sum  = ov.querySelector('#grMapSummary');
 
+    // The summary is painted INSIDE paint() now, from the same `info` the unit
+    // cards are built from, so the two can never disagree. It used to be set
+    // once here from `lastSummary`, a string built during the last
+    // renderMenu - if that ran before the Firestore read landed, the board
+    // showed 0% accuracy and 0 challenges for an account with real sessions,
+    // and nothing ever recomputed it.
     function paint(level) {
       browseLevel = level;
       tabs.innerHTML = (DATA.levels || []).map(function (lv) {
@@ -368,6 +507,7 @@
       });
 
       var info = buildUnitCards(level);
+      if (sum) sum.innerHTML = statsHTML(info);
       box.innerHTML = '<div class="qc-grid">'
         + (info.cards || '<div class="gr-empty">No units yet for ' + esc(level) + '.</div>')
         + '</div>';
@@ -378,15 +518,26 @@
           state.level = level;
           state.selectedUnit = 'all';
           close();
-          startGame(parseInt(el.getAttribute('data-unit'), 10), el.getAttribute('data-game'));
+          startGame(unitAttr(el), el.getAttribute('data-game'));
         };
       });
     }
 
-    function close() { ov.remove(); }
+    function close() { grMapRepaint = null; ov.remove(); }
     ov.querySelector('#grMapClose').onclick = close;
     ov.onclick = function (e) { if (e.target === ov) close(); };
     paint(browseLevel);
+
+    // Let refreshAfterProgress() repaint this board at whatever level the
+    // student is currently looking at. Cleared in close() so a stale handle
+    // can never write into a removed node.
+    grMapRepaint = function () { paint(browseLevel); };
+
+    // The map can be opened before the session read has finished, or without
+    // the menu ever having started one. Either way, ask - and repaint when it
+    // lands. ensureGrammarProgress queues the callback if a load is already
+    // running, and calls it straight back if the data is already here.
+    if (!grLoaded) ensureGrammarProgress(refreshAfterProgress);
   }
 
   // ── Start a unit's game ────────────────────────────────────
@@ -549,6 +700,7 @@
         var i = parseInt(el.getAttribute('data-i'), 10);
         b.querySelectorAll('.gr-opt').forEach(function (o, idx) { o.disabled = true; if (idx === q.answer) o.classList.add('is-correct'); else if (idx === i) o.classList.add('is-wrong'); });
         if (i === q.answer) state.score++;
+        sfx(i === q.answer);
         state.answers.push({ q: q.stem, picked: q.options[i], correct: correctText(q), ok: i === q.answer });
         document.getElementById('grTail').innerHTML = footFeedback(i === q.answer, q.explain); wireNext();
       };
@@ -572,6 +724,7 @@
       var ok = norm(val) === norm(correctText(q));
       input.disabled = true; input.classList.add(ok ? 'gr-fill-ok' : 'gr-fill-no');
       if (ok) state.score++;
+      sfx(ok);
       state.answers.push({ q: q.stem, picked: val, correct: correctText(q), ok: ok });
       var ex = (q.explain || '') + (ok ? '' : ' Answer: "' + correctText(q) + '".');
       var ch = document.getElementById('grCheck'); if (ch) ch.style.display = 'none';
@@ -654,6 +807,7 @@
       state.answered = true;
       var ok = builtToks.join(' ') === toks.join(' ');
       if (ok) state.score++;
+      sfx(ok);
       state.answers.push({ q: q.stem, picked: naturalJoin(builtToks), correct: sentenceOf(q), ok: ok });
       var ex = (q.explain || '') + (ok ? '' : ' Correct: "' + sentenceOf(q) + '".');
       document.getElementById('grCheck').style.display = 'none';
@@ -664,6 +818,14 @@
   // Record this game's result (with per-question detail) to Firestore so the
   // teacher can see what was practised + which items were missed. Cross-device.
   // Wrapped so a write failure can NEVER break the game.
+  // Answer feedback, the same two cues vocabulary has used all along.
+  // Grammar simply never called them: the engine used to live in
+  // student/js/ui.js and this file never asked. Goes through playSound() so
+  // it obeys the one Sound Effects switch like everything else.
+  function sfx(ok) {
+    if (typeof playSound === 'function') playSound(ok ? 'correct' : 'incorrect');
+  }
+
   function logGrammarAttempt(pct, total) {
     try {
       if (typeof db === 'undefined' || typeof auth === 'undefined' || !auth.currentUser) return;
@@ -688,12 +850,17 @@
       var scope = (typeof studentScopeFields === 'function') ? studentScopeFields() : null;
       if (scope) { for (var k in scope) { if (Object.prototype.hasOwnProperty.call(scope, k)) doc[k] = scope[k]; } }
       db.collection('sessions').add(doc)                   // same collection the teacher dashboard reads
-        .then(function () { console.log('[grammar] session saved ->', doc.activity, doc.percentage + '%'); })
+        .then(function () {
+          console.log('[grammar] session saved ->', doc.activity, doc.percentage + '%');
+          if (window.LLRollup) LLRollup.record(db, u.uid, doc.percentage);
+        })
         .catch(function (e) { console.warn('[grammar] session write REJECTED:', e && e.code, e && e.message); });
     } catch (e) { console.warn('[grammar] session log failed (non-fatal):', e); }
   }
 
   function renderResult() {
+    // The drill is over. Same flourish vocabulary plays at the end of a set.
+    if (typeof playSound === 'function') playSound('complete');
     var b = body(); var total = state.pool.length;
     var pct = total ? Math.round(state.score / total * 100) : 0;
     recordProg(state.level, state.unit, state.game, pct);

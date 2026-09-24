@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey stats priming</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1040px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;vertical-align:top;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:84ch;line-height:1.55;}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:3px;}
+  iframe{position:absolute;left:-99999px;width:900px;height:700px;border:0;}
+  #errs{margin-top:10px;font-size:12px;color:#b91c1c;white-space:pre-wrap;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">The fix: journeyStats primed before the first paint</h3>
+<p class="lede">
+  Loads the REAL <code>config.js</code>, <code>progress.js</code> and
+  <code>hub.js</code> in the dashboard's own order, then performs the exact
+  write <code>progress.js</code> makes when the Firestore read lands (setting
+  <code>journeyStats</code>, then writing <code>#journeyAccuracy</code>). With a
+  cached copy present the grid must not be rebuilt at all. Without one it still
+  must, because on a first-ever visit the numbers genuinely do arrive late.
+  <br><br>
+  Only the Firebase SDK is stubbed - <code>config.js:12</code> refuses to run
+  without it. Nothing under test is stubbed: the priming block, the real
+  <code>let journeyStats</code> declaration and the real grid signature all run
+  as shipped.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+<div id="errs"></div>
+
+<script>
+const rows = [];
+const frameErrors = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+const REAL = {
+  totalSessions: 809, totalWordsLearned: 964, totalCorrect: 3470,
+  totalQuestions: 8022, averageScore: 43, activitiesCompleted: {},
+  recentActivity: null,
+  bySkill: {
+    vocabulary:{pct:43}, grammar:{pct:61}, reading:{pct:12}, listening:{pct:30},
+    writing:{pct:5}, speaking:{pct:0}, classroom:{pct:0}, courses:{pct:22}
+  }
+};
+
+function fakeFirebase() {
+  const never = () => new Promise(() => {});
+  const q = { where(){return q;}, orderBy(){return q;}, limit(){return q;}, get: never,
+              doc(){ return { get: never, set: never, update: never }; } };
+  const fs = () => ({ collection(){ return q; }, useEmulator(){}, settings(){} });
+  fs.FieldValue = { serverTimestamp: () => null };
+  return {
+    apps: [{}],
+    auth: () => ({ currentUser: null, onAuthStateChanged(){}, useEmulator(){} }),
+    firestore: fs
+  };
+}
+
+function frame(cached) {
+  return new Promise(resolve => {
+    const f = document.createElement('iframe');
+    document.body.appendChild(f);
+    const d = f.contentDocument;
+    d.open();
+    d.write('<!DOCTYPE html><html><head><meta charset="utf-8"><base href="/"></head><body>' +
+            '<div id="hubScreen"><div id="hubGrid"></div></div>' +
+            '<div id="menuScreen"><span id="journeyAccuracy">0%</span></div>' +
+            '</body></html>');
+    d.close();
+    const w = f.contentWindow;
+    w.onerror = (msg, src, line) => {
+      frameErrors.push(String(msg) + ' @ ' + String(src).split('/').pop().split('?')[0] + ':' + line);
+    };
+    try {
+      if (cached === null) w.localStorage.removeItem('journeyStats');
+      else w.localStorage.setItem('journeyStats',
+             typeof cached === 'string' ? cached : JSON.stringify(cached));
+    } catch (e) {}
+    w.firebase = fakeFirebase();
+    w.featureToggles = { vocabulary:true, grammar:true, reading:true, listening:true,
+                         writing:true, speaking:true, classroom:true, courses:true };
+
+    const files = ['/student/js/config.js', '/student/js/progress.js', '/student/js/hub.js'];
+    const cb = '?cb=' + Math.random();
+    let left = files.length;
+    files.forEach(src => {
+      const s = d.createElement('script');
+      s.src = src + cb; s.async = false;
+      s.onload = s.onerror = () => { if (--left === 0) resolve({ f, w, d }); };
+      d.head.appendChild(s);
+    });
+  });
+}
+
+const pcts = g => [...g.querySelectorAll('.hub-pct')].map(n => n.textContent.trim()).filter(t => /%$/.test(t));
+
+// `journeyStats` is a top-level `let` in config.js. In a classic script that
+// binding lives in the global DECLARATIVE environment and NEVER appears on
+// `window`, so w.journeyStats reads undefined even when the value is correct.
+// Reach it by name through the frame's own eval. (A first attempt at this
+// harness read w.journeyStats and reported 12 false failures.)
+const JS = w => {
+  try { return w.eval('typeof journeyStats === "undefined" ? null : journeyStats') || {}; }
+  catch (e) { return { __err: String(e.message) }; }
+};
+const setJS = (w, v) => { try { w.eval('journeyStats = ' + JSON.stringify(v)); } catch (e) {} };
+
+(async function(){
+  // ── A. returning student: a cached copy exists ────────────────────────────
+  {
+    const { w, d } = await frame(REAL);
+    check('1. priming ran at parse time', 43, JS(w).averageScore);
+    check('2. bySkill survived the prime', 61, ((JS(w).bySkill)||{}).grammar &&
+          ((JS(w).bySkill)||{}).grammar.pct);
+
+    d.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true }));
+    await wait(150);
+    const grid = d.getElementById('hubGrid');
+    const first = pcts(grid);
+    check('3. FIRST paint already shows the real numbers', true,
+          first.length > 0 && first.indexOf('43%') !== -1 && first.indexOf('0%') === -1);
+
+    let rebuilds = 0;
+    new w.MutationObserver(() => { rebuilds++; }).observe(grid, { childList: true });
+
+    setJS(w, REAL);                                    // Firestore read resolves
+    d.getElementById('journeyAccuracy').textContent = '43%';   // progress.js:165
+    await wait(250);
+    check('4. the real numbers arriving rebuilds NOTHING', 0, rebuilds);
+    check('5. the grid still shows the right numbers', true,
+          pcts(grid).indexOf('43%') !== -1);
+  }
+
+  // ── B. first-ever visit: no cache, the rebuild is CORRECT ─────────────────
+  {
+    const { w, d } = await frame(null);
+    check('6. nothing primed when there is no cache', 0, JS(w).averageScore);
+    d.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true }));
+    await wait(150);
+    const grid = d.getElementById('hubGrid');
+    check('7. first paint shows zeros, as it must', true, pcts(grid).indexOf('0%') !== -1);
+
+    let rebuilds = 0;
+    new w.MutationObserver(() => { rebuilds++; }).observe(grid, { childList: true });
+    setJS(w, REAL);
+    d.getElementById('journeyAccuracy').textContent = '43%';
+    await wait(250);
+    check('8. it still rebuilds once, which is right', true, rebuilds > 0);
+    check('9. and lands on the real numbers', true, pcts(grid).indexOf('43%') !== -1);
+  }
+
+  // ── C. a STALE cache must still correct itself ────────────────────────────
+  {
+    const stale = JSON.parse(JSON.stringify(REAL));
+    stale.bySkill.grammar.pct = 10;
+    const { w, d } = await frame(stale);
+    d.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true }));
+    await wait(150);
+    const grid = d.getElementById('hubGrid');
+    check('10. stale value is shown first', true, pcts(grid).indexOf('10%') !== -1);
+    let rebuilds = 0;
+    new w.MutationObserver(() => { rebuilds++; }).observe(grid, { childList: true });
+    setJS(w, REAL);
+    d.getElementById('journeyAccuracy').textContent = '43%';
+    await wait(250);
+    check('11. a stale cache is corrected by exactly one rebuild', true,
+          rebuilds > 0 && pcts(grid).indexOf('61%') !== -1);
+  }
+
+  // ── D. a bad cache must never poison the grid ────────────────────────────
+  {
+    const { w, d } = await frame('not json at all');
+    check('12. corrupt cache is ignored', 0, JS(w).averageScore);
+    d.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true }));
+    await wait(150);
+    check('13. grid still renders', true, d.getElementById('hubGrid').children.length > 0);
+  }
+  {
+    const { w } = await frame({ averageScore: 99 });        // no bySkill
+    check('14. object without bySkill is rejected', 0, JS(w).averageScore);
+  }
+  {
+    const { w } = await frame([1,2,3]);
+    check('15. an array is rejected', 0, JS(w).averageScore);
+  }
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  if (frameErrors.length) {
+    document.getElementById('errs').textContent =
+      'errors thrown inside the test frames:\n' + [...new Set(frameErrors)].join('\n');
+  }
+  window.__primeTrace = {
+    pass, total: rows.length,
+    failed: rows.filter(r=>!r.ok).map(r=>r.name+' -> '+r.actual),
+    frameErrors: [...new Set(frameErrors)]
+  };
+})();
+</script>
+</body>
+</html>

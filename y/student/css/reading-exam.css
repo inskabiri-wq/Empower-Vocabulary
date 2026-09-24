@@ -1,5 +1,5 @@
 /* ============================================================
-   READING EXAM — split-pane (passage left | questions right)
+   READING EXAM - split-pane (passage left | questions right)
    Both panes scroll independently; mobile collapses to tabs.
    ============================================================ */
 
@@ -7,7 +7,7 @@
    Our .rd-tracker / .rd-highlight-bar / #rd-note-popover all use
    `display: flex` (or grid). The user-agent default for `[hidden]` is
    `display: none`, but explicit display rules in stylesheets win the
-   specificity tie — so without this override, `el.hidden = true` has
+   specificity tie - so without this override, `el.hidden = true` has
    no visible effect. !important keeps the rule in force regardless of
    inline styles applied by the JS positioning code. */
 #readingExamScreen [hidden],
@@ -23,7 +23,7 @@
    highlighter. Native callout / tap-highlight are still suppressed
    so the OS Define/Translate menu doesn't hijack the highlighter.
 
-   Lockdown state (data-lockdown="1" — set automatically when a TIMED
+   Lockdown state (data-lockdown="1" - set automatically when a TIMED
    exam opens): all text selection, copy, drag, and right-click are
    blocked. Form inputs (input/textarea/select) are exceptions so
    students can type/paste their answers. The app highlighter still
@@ -62,15 +62,15 @@
   user-select: text;
 }
 
-/* Lockdown indicator pill in the header — small, calm, just visible
+/* Lockdown indicator pill in the header - small, calm, just visible
    enough that the student knows they're in a locked session. */
 .rd-lockdown-pill {
   display: none;
   align-items: center;
   gap: 5px;
   padding: 4px 10px;
-  background: rgba(245, 158, 11, 0.16);
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: rgba(59, 130, 246, 0.16);
+  border: 1px solid rgba(59, 130, 246, 0.4);
   color: var(--rd-warning);
   border-radius: 999px;
   font-size: 0.6875rem;
@@ -81,28 +81,31 @@
 .rd-shell[data-lockdown="1"] .rd-lockdown-pill { display: inline-flex; }
 
 #readingExamScreen {
-  /* Reuse the dashboard's dark tokens so the exam doesn't feel
-     like a different app. Falls back if not present. */
-  --rd-bg:           #0d1226;
-  --rd-surface:      #131a30;
-  --rd-surface-2:    #1a2240;
-  --rd-border:       rgba(255,255,255,0.08);
-  --rd-border-soft:  rgba(255,255,255,0.05);
-  --rd-text:         #e8edf7;
-  --rd-text-muted:   #8b96b3;
-  --rd-text-dim:     #5a6585;
-  --rd-accent:       #2dd4bf;
-  --rd-accent-2:     #38bdf8;
+  /* LIGHT is the base, so the exam opens white even before the JS has read the
+     saved preference and set data-theme. It used to be the other way round:
+     these were the dark values and light was an opt-in attribute, so every exam
+     flashed - or stayed - dark on a white app. Dark is now an explicit
+     [data-theme="dark"] block below with exactly the old values. */
+  --rd-bg:           #f6f8fb;
+  --rd-surface:      #ffffff;
+  --rd-surface-2:    #f2f6fc;
+  --rd-border:       #e3e9f2;
+  --rd-border-soft:  rgba(15,23,42,0.05);
+  --rd-text:         #0f172a;
+  --rd-text-muted:   #5b6b7f;
+  --rd-text-dim:     #94a3b8;
+  --rd-accent:       #2563eb;
+  --rd-accent-2:     #1d4ed8;
   --rd-warning:      #f59e0b;
   --rd-error:        #ef4444;
   --rd-success:      #22c55e;
-  /* Score-low tone — replaces the previous red/coral with a warm
+  /* Score-low tone - replaces the previous red/coral with a warm
      amber that matches --rd-warning. Scores never use red anywhere
      in the UI; only the timer (which legitimately needs urgency)
      keeps --rd-error. */
-  --rd-score-low:    #fbbf24;
+  --rd-score-low:    #60a5fa;
 
-  /* Reading preferences — text scale and theme.
+  /* Reading preferences - text scale and theme.
      --rd-text-scale multiplies the base font-size of all reading
      text (passage, question stem, MCQ options, gap labels). The
      default 1 = "Medium". Other sizes set this on
@@ -114,10 +117,20 @@
   position: fixed; inset: 0;
   overflow: hidden;
   z-index: 5;
-  font-family: 'Poppins', -apple-system, system-ui, sans-serif;
+  font-family: var(--ll-font);
 }
 
 #readingExamScreen.active { display: block; }
+
+/* While an exam owns the screen, the shared app chrome stands down.
+   .ll-header is sticky at z-index 99964 (css/app-settings.css) and this
+   overlay is z-index 5, so on any page that mounts the header - placement.html
+   does - the header painted over the exam and swallowed the Submit button.
+   Raising the exam instead would put it above AppDialog (100000, used by the
+   exam's own "Submit with unanswered questions?" prompt) and above the
+   placement Continue button (99999), so hiding the chrome is the safe fix.
+   The class is added in buildAndShow() and removed in closeReadingExam(). */
+body.ll-exam-open .ll-header { display: none; }
 
 /* ── Text size presets (data-size on the exam screen) ─────────
    Scales every "reading" font via --rd-text-scale. Picked
@@ -130,19 +143,35 @@
 /* ── Theme presets (data-theme on the exam screen) ────────────
    Override the surface/text/border tokens. The default (no attr
    or data-theme="dark") keeps the original values declared above.
-   Variables propagate to all descendants — header, panes, sections,
-   tracker, modals — so themes apply across the entire exam. */
+   Variables propagate to all descendants - header, panes, sections,
+   tracker, modals - so themes apply across the entire exam. */
+/* Dark, restated as an explicit choice. These are the exact values that used to
+   be the unconditional default. */
+#readingExamScreen[data-theme="dark"] {
+  --rd-bg:           #0d1226;
+  --rd-surface:      #131a30;
+  --rd-surface-2:    #1a2240;
+  --rd-border:       rgba(255,255,255,0.08);
+  --rd-border-soft:  rgba(255,255,255,0.05);
+  --rd-text:         #e8edf7;
+  --rd-text-muted:   #8b96b3;
+  --rd-text-dim:     #5a6585;
+  --rd-accent:       #93c5fd;
+  --rd-accent-2:     #60a5fa;
+}
+/* Light restated too, so picking it explicitly is not a no-op that silently
+   depends on the base block staying light. Same values as the base. */
 #readingExamScreen[data-theme="light"] {
-  --rd-bg:           #fdfbf6;
+  --rd-bg:           #f6f8fb;
   --rd-surface:      #ffffff;
-  --rd-surface-2:    #f5efe5;
-  --rd-text:         #1f2937;
-  --rd-text-muted:   #6b7280;
-  --rd-text-dim:     #9ca3af;
-  --rd-border:       rgba(0,0,0,0.10);
-  --rd-border-soft:  rgba(0,0,0,0.05);
-  --rd-accent:       #0d9488;   /* darker teal so it reads on white */
-  --rd-accent-2:     #0284c7;
+  --rd-surface-2:    #f2f6fc;
+  --rd-text:         #0f172a;
+  --rd-text-muted:   #5b6b7f;
+  --rd-text-dim:     #94a3b8;
+  --rd-border:       #e3e9f2;
+  --rd-border-soft:  rgba(15,23,42,0.05);
+  --rd-accent:       #2563eb;
+  --rd-accent-2:     #1d4ed8;
 }
 #readingExamScreen[data-theme="sepia"] {
   --rd-bg:           #f4ecd8;
@@ -165,7 +194,7 @@
   --rd-text-dim:     #9ca3af;
   --rd-border:       rgba(255,255,255,0.30);
   --rd-border-soft:  rgba(255,255,255,0.18);
-  --rd-accent:       #5eead4;
+  --rd-accent:       #bfdbfe;
   --rd-accent-2:     #7dd3fc;
 }
 
@@ -223,14 +252,14 @@
   color: var(--rd-text-muted);
 }
 .rd-timer {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
   font-weight: 700;
   font-size: 1rem;
   padding: 7px 14px;
   border-radius: 8px;
-  background: rgba(45, 212, 191, 0.12);
+  background: rgba(147, 197, 253, 0.12);
   color: var(--rd-accent);
-  border: 1px solid rgba(45, 212, 191, 0.3);
+  border: 1px solid rgba(147, 197, 253, 0.3);
   letter-spacing: 0.06em;
 }
 .rd-timer-untimed {
@@ -241,9 +270,9 @@
   letter-spacing: 0.12em;
 }
 .rd-timer-warning {
-  background: rgba(245, 158, 11, 0.16);
+  background: rgba(59, 130, 246, 0.16);
   color: var(--rd-warning);
-  border-color: rgba(245, 158, 11, 0.4);
+  border-color: rgba(59, 130, 246, 0.4);
 }
 .rd-timer-critical {
   background: rgba(239, 68, 68, 0.18);
@@ -334,7 +363,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.05));
   font-size: 0.6875rem;
   font-weight: 700;
 }
@@ -348,15 +377,15 @@
   text-overflow: ellipsis;
 }
 /* Hide the tab strip on single-passage exams (the new 20-min single-
-   reading sets). One tab is just visual noise — the title is already
+   reading sets). One tab is just visual noise - the title is already
    shown in the header. The tab DOM stays so the progress-badge code
    keeps working without conditional branching. */
 .rd-tabs.is-single { display: none; }
 .rd-tab-progress {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
   font-size: 0.6563rem;
   color: var(--rd-text-dim);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.03));
   padding: 2px 6px;
   border-radius: 4px;
   font-weight: 600;
@@ -391,8 +420,8 @@
 
 /* ── Passage text (left pane) ───────────────────────────────── */
 .rd-intro {
-  background: rgba(56, 189, 248, 0.06);
-  border: 1px solid rgba(56, 189, 248, 0.18);
+  background: rgba(96, 165, 250, 0.06);
+  border: 1px solid rgba(96, 165, 250, 0.18);
   border-radius: 10px;
   padding: 12px 14px;
   margin-bottom: 16px;
@@ -433,7 +462,7 @@
   font-size: calc(15.5px * var(--rd-text-scale, 1));
   line-height: 1.75;
   color: var(--rd-text);
-  /* Justify so every line hits the same right edge — the previous
+  /* Justify so every line hits the same right edge - the previous
      ragged-right was making line endings form an uneven column.
      hyphens:auto prevents oversized word gaps when an unbreakable
      long word lands near the line break. */
@@ -450,7 +479,7 @@
   padding-left: 32px;
   counter-increment: rd-paranum;
 }
-/* Paragraph numbers — show whatever's in data-para; falls back to counter */
+/* Paragraph numbers - show whatever's in data-para; falls back to counter */
 .rd-passage .rd-para::before {
   content: attr(data-para);
   position: absolute;
@@ -462,16 +491,16 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(45, 212, 191, 0.14);
+  background: rgba(147, 197, 253, 0.14);
   color: var(--rd-accent);
   font-size: 0.6875rem;
   font-weight: 700;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
 }
 .rd-passage strong {
   color: var(--rd-text);
   font-weight: 700;
-  background: rgba(45, 212, 191, 0.10);
+  background: rgba(147, 197, 253, 0.10);
   padding: 0 3px;
   border-radius: 3px;
 }
@@ -488,7 +517,7 @@
   gap: 4px;
   padding: 1px 10px;
   margin: 0 2px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.06));
   border: 1.5px dashed rgba(139, 150, 179, 0.4);
   border-radius: 999px;
   font-size: 0.8125rem;
@@ -500,12 +529,12 @@
   cursor: help;
 }
 .rd-passage .rd-gap.is-filled {
-  background: rgba(45, 212, 191, 0.16);
+  background: rgba(147, 197, 253, 0.16);
   border-style: solid;
   border-color: var(--rd-accent);
   color: var(--rd-accent);
 }
-.rd-passage .rd-gap-num { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+.rd-passage .rd-gap-num { font-family: var(--ll-mono); }
 .rd-passage .rd-gap-letter {
   display: inline-block;
   width: 18px;
@@ -540,9 +569,9 @@
 .rd-section:last-child { margin-bottom: 0; }
 .rd-section-head {
   padding: 12px 14px;
-  background: rgba(45, 212, 191, 0.06);
+  background: rgba(147, 197, 253, 0.06);
   border-bottom: 1px solid var(--rd-border);
-  /* Accordion affordance — head is now a tab-reachable button-style
+  /* Accordion affordance - head is now a tab-reachable button-style
      element. cursor:pointer telegraphs the click; hover deepens the
      tint so the surface invites interaction. transition keeps the
      change subtle so it doesn't flicker on hover. */
@@ -554,7 +583,7 @@
   transition: background 0.15s ease, padding 0.2s ease, border-color 0.2s ease;
 }
 .rd-section-head:hover {
-  background: rgba(45, 212, 191, 0.11);
+  background: rgba(147, 197, 253, 0.11);
 }
 .rd-section-head:focus-visible {
   outline: 2px solid var(--rd-accent);
@@ -572,10 +601,10 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--rd-accent);
-  background: rgba(45, 212, 191, 0.12);
+  background: rgba(147, 197, 253, 0.12);
   padding: 3px 8px;
   border-radius: 4px;
-  /* (No margin-right — the parent's flex `gap: 10px` handles the
+  /* (No margin-right - the parent's flex `gap: 10px` handles the
      space between the label, instructions, and chevron now.) */
   flex-shrink: 0;
 }
@@ -586,7 +615,7 @@
   line-height: 1.5;
   flex: 1;
 }
-/* Chevron — button-shaped chip in the brand teal accent. Bigger
+/* Chevron - button-shaped chip in the brand teal accent. Bigger
    and obviously interactive, not a stray punctuation. */
 .rd-section-chevron {
   flex-shrink: 0;
@@ -597,8 +626,8 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: rgba(45, 212, 191, 0.14);
-  border: 1.5px solid rgba(45, 212, 191, 0.45);
+  background: rgba(147, 197, 253, 0.14);
+  border: 1.5px solid rgba(147, 197, 253, 0.45);
   color: var(--rd-accent);
   font-size: 0.875rem;
   font-weight: 800;
@@ -608,13 +637,13 @@
   align-self: center;
 }
 .rd-section-head:hover .rd-section-chevron {
-  background: rgba(45, 212, 191, 0.24);
+  background: rgba(147, 197, 253, 0.24);
   border-color: var(--rd-accent);
-  box-shadow: 0 0 12px rgba(45, 212, 191, 0.45);
+  box-shadow: 0 0 12px rgba(147, 197, 253, 0.45);
 }
 .rd-section.is-collapsed .rd-section-chevron { transform: rotate(-90deg); }
 
-/* Accordion body — max-height + overflow: hidden is the universally
+/* Accordion body - max-height + overflow: hidden is the universally
    supported way to guarantee a true 0-height collapse. The
    grid-template-rows: 0fr trick we tried earlier was unreliable
    across browser engines (some quietly fall back to 1fr leaving an
@@ -664,9 +693,9 @@
    tracker. The outline + colour-fill fades out so the eye can find
    the target instantly without lasting visual noise. */
 @keyframes rd-jump-pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.55); background: rgba(45,212,191,0.10); }
-  60%  { box-shadow: 0 0 0 6px rgba(45, 212, 191, 0.0);  background: rgba(45,212,191,0.06); }
-  100% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.0);  background: transparent; }
+  0%   { box-shadow: 0 0 0 0 rgba(147, 197, 253, 0.55); background: rgba(147,197,253,0.10); }
+  60%  { box-shadow: 0 0 0 6px rgba(147, 197, 253, 0.0);  background: rgba(147,197,253,0.06); }
+  100% { box-shadow: 0 0 0 0 rgba(147, 197, 253, 0.0);  background: transparent; }
 }
 .rd-q.is-jumped {
   animation: rd-jump-pulse 1.6s ease-out;
@@ -711,14 +740,14 @@
   font-size: 0.6875rem;
   color: var(--rd-text-dim);
   margin-left: 6px;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
 }
 
 /* Per-question side tools (flag + note). Two layouts:
-   • Row questions (heading / gap match) — tools sit INLINE as the
+   • Row questions (heading / gap match) - tools sit INLINE as the
      third flex item via `order: 3`. No absolute positioning, so the
      select can never overlap the icons regardless of viewport width.
-   • Block questions (MCQ / find-word / free-text / writing) — tools
+   • Block questions (MCQ / find-word / free-text / writing) - tools
      are absolute at the top-right corner of the question card,
      above the question stem. */
 .rd-q-tools {
@@ -750,7 +779,7 @@
   top: 10px;
   right: 10px;
 }
-/* Per-question chevron — sits in the .rd-q-tools cluster next to
+/* Per-question chevron - sits in the .rd-q-tools cluster next to
    flag + note. Branded teal, button-shaped, obviously interactive. */
 .rd-q-toggle {
   display: inline-flex;
@@ -759,8 +788,8 @@
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: rgba(45, 212, 191, 0.12);
-  border: 1.5px solid rgba(45, 212, 191, 0.4);
+  background: rgba(147, 197, 253, 0.12);
+  border: 1.5px solid rgba(147, 197, 253, 0.4);
   color: var(--rd-accent);
   font-size: 1.05em;
   font-weight: 800;
@@ -772,9 +801,9 @@
               background 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
 .rd-q-toggle:hover {
-  background: rgba(45, 212, 191, 0.22);
+  background: rgba(147, 197, 253, 0.22);
   border-color: var(--rd-accent);
-  box-shadow: 0 0 10px rgba(45, 212, 191, 0.4);
+  box-shadow: 0 0 10px rgba(147, 197, 253, 0.4);
 }
 .rd-q-toggle:focus-visible {
   outline: 2px solid var(--rd-accent);
@@ -782,7 +811,7 @@
 }
 .rd-q-block.is-collapsed .rd-q-toggle { transform: rotate(-90deg); }
 
-/* Per-question accordion body — max-height-based, snappier. */
+/* Per-question accordion body - max-height-based, snappier. */
 .rd-q-body {
   max-height: 2000px;
   overflow: hidden;
@@ -810,7 +839,7 @@
 }
 
 .rd-flag, .rd-note {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.04));
   border: 1px solid var(--rd-border);
   color: var(--rd-text-muted);
   width: 26px;
@@ -838,12 +867,12 @@
 }
 .rd-flag.is-on {
   color: var(--rd-warning);
-  background: rgba(245, 158, 11, 0.12);
+  background: rgba(59, 130, 246, 0.12);
   border-color: var(--rd-warning);
 }
 .rd-note.is-on {
   color: var(--rd-accent-2);
-  background: rgba(56, 189, 248, 0.1);
+  background: rgba(96, 165, 250, 0.1);
   border-color: var(--rd-accent-2);
 }
 
@@ -911,7 +940,7 @@
   flex-shrink: 0;
 }
 .rd-mcq-opt:has(input:checked) {
-  background: rgba(45, 212, 191, 0.10);
+  background: rgba(147, 197, 253, 0.10);
   border-color: var(--rd-accent);
 }
 .rd-mcq-letter {
@@ -1038,7 +1067,7 @@
   border: 1px solid var(--rd-border);
   color: var(--rd-text-muted);
   border-radius: 6px;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
   font-size: 0.6875rem;
   font-weight: 700;
   cursor: pointer;
@@ -1052,16 +1081,16 @@
   color: var(--rd-text);
 }
 .rd-track-cell.is-answered {
-  background: rgba(45, 212, 191, 0.18);
+  background: rgba(147, 197, 253, 0.18);
   color: var(--rd-accent);
-  border-color: rgba(45, 212, 191, 0.5);
+  border-color: rgba(147, 197, 253, 0.5);
 }
 .rd-track-cell.is-flagged {
   border-color: var(--rd-warning);
   box-shadow: inset 0 0 0 1px var(--rd-warning);
 }
 .rd-track-cell.is-answered.is-flagged {
-  background: rgba(245, 158, 11, 0.16);
+  background: rgba(59, 130, 246, 0.16);
   color: var(--rd-warning);
 }
 
@@ -1141,18 +1170,18 @@
 .rd-pref-btn.is-active {
   border-color: var(--rd-accent);
   color: var(--rd-accent);
-  background: rgba(45, 212, 191, 0.08);
+  background: rgba(147, 197, 253, 0.08);
 }
 .rd-pref-name {
   font-size: 0.6563rem;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
-/* Aa preview — visually shows the size step so users can pick
+/* Aa preview - visually shows the size step so users can pick
    without reading the label. */
 .rd-pref-aa {
   font-weight: 700;
-  font-family: 'Outfit', 'Poppins', sans-serif;
+  font-family: var(--ll-font);
   line-height: 1;
   color: inherit;
 }
@@ -1161,7 +1190,7 @@
 .rd-pref-aa-l  { font-size: 1.0625rem; }
 .rd-pref-aa-xl { font-size: 1.25rem; }
 
-/* Theme swatch — a small pill that previews the bg + text combo for
+/* Theme swatch - a small pill that previews the bg + text combo for
    each theme so users can see the choice without applying it. */
 .rd-pref-theme .rd-pref-swatch {
   width: 28px;
@@ -1181,9 +1210,13 @@
   letter-spacing: 0.02em;
 }
 .rd-pref-theme-dark  .rd-pref-swatch { background: #0d1226; }
+/* LITERALS ON PURPOSE. Each swatch is a preview OF a theme, so it has to render
+   in that theme's colours whatever the active one is. Tokenising these made the
+   light swatch draw near-white text on its own near-white ground once light
+   became the default - an empty box where the preview should be. */
 .rd-pref-theme-dark  .rd-pref-swatch::after { color: #e8edf7; }
-.rd-pref-theme-light .rd-pref-swatch { background: #fdfbf6; }
-.rd-pref-theme-light .rd-pref-swatch::after { color: var(--bg-item, #1f2937); }
+.rd-pref-theme-light .rd-pref-swatch { background: #f6f8fb; }
+.rd-pref-theme-light .rd-pref-swatch::after { color: #0f172a; }
 .rd-pref-theme-sepia .rd-pref-swatch { background: #f4ecd8; }
 .rd-pref-theme-sepia .rd-pref-swatch::after { color: #3d2e1a; }
 .rd-pref-theme-hc    .rd-pref-swatch { background: #000000; }
@@ -1256,36 +1289,37 @@
 .rd-confirm-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(8, 12, 26, 0.72);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  /* Backdrop matched to the shared .modal-overlay in css/brand.css. It was
+     rgba(8,12,26,.72) with blur(4px) and a 0.15s fade, against 0.7/blur(8px)
+     elsewhere, so this dialog dimmed the page less than every other one. */
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 300;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: rd-confirm-fade 0.15s ease-out;
+  animation: rd-confirm-fade var(--ll-dlg-dur, 0.3s) ease-out;
 }
 @keyframes rd-confirm-fade { from { opacity: 0 } to { opacity: 1 } }
+/* Shape and motion come from .ll-dialog / .ll-dialog-pop in css/brand.css, so
+   this box matches the logout modals and the AppDialog sheets. It used to be
+   14px radius, 24px 22px 18px padding and its own 0.2s curve - the smallest
+   and quickest of the four. Only colour is left here.
+   `pop` rather than `toggle`: this element is created at the moment it opens,
+   so it animates with a keyframe rather than a class transition. */
 .rd-confirm {
-  width: min(420px, calc(100vw - 32px));
   background: var(--rd-surface, #131a30);
   border: 1px solid var(--rd-border, rgba(255, 255, 255, 0.08));
-  border-radius: 14px;
-  padding: 24px 22px 18px;
   text-align: center;
   box-shadow: 0 24px 60px rgba(0,0,0,0.6);
-  animation: rd-confirm-pop 0.2s cubic-bezier(.2,.9,.3,1);
-}
-@keyframes rd-confirm-pop {
-  from { transform: translateY(8px) scale(0.96); opacity: 0; }
-  to   { transform: translateY(0) scale(1); opacity: 1; }
 }
 .rd-confirm-icon {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: rgba(45, 212, 191, 0.14);
-  color: var(--rd-accent, #2dd4bf);
+  background: rgba(147, 197, 253, 0.14);
+  color: var(--rd-accent, var(--text-accent, #93c5fd));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1294,13 +1328,13 @@
   margin-bottom: 12px;
 }
 .rd-confirm-icon.is-danger {
-  background: rgba(245, 158, 11, 0.16);
+  background: rgba(59, 130, 246, 0.16);
   color: var(--rd-warning, #f59e0b);
 }
 .rd-confirm-title {
   font-size: 1.0625rem;
   font-weight: 700;
-  color: var(--rd-text, #e8edf7);
+  color: var(--rd-text, var(--text-primary, #e8edf7));
   margin: 0 0 6px;
 }
 .rd-confirm-message {
@@ -1331,11 +1365,11 @@
   color: var(--rd-text-muted, #8b96b3);
 }
 .rd-confirm-cancel:hover {
-  color: var(--rd-text, #e8edf7);
+  color: var(--rd-text, var(--text-primary, #e8edf7));
   border-color: var(--rd-text-muted, #8b96b3);
 }
 .rd-confirm-ok {
-  background: var(--rd-accent, #2dd4bf);
+  background: var(--rd-accent, #93c5fd);
   border: 1px solid transparent;
   color: #06231f;
 }
@@ -1358,12 +1392,12 @@
 #rd-note-popover textarea {
   width: 100%;
   min-height: 90px;
-  /* Hard-coded fallbacks alongside the variables — if the popover ever
+  /* Hard-coded fallbacks alongside the variables - if the popover ever
      ends up outside #readingExamScreen the variables are undefined and
      the text would render black on dark. */
   background: var(--rd-bg, #0d1226);
   border: 1px solid var(--rd-border, rgba(255, 255, 255, 0.08));
-  color: var(--rd-text, #e8edf7);
+  color: var(--rd-text, var(--text-primary, #e8edf7));
   border-radius: 6px;
   padding: 8px;
   font-family: inherit;
@@ -1418,7 +1452,7 @@
   font-weight: 800;
   letter-spacing: -0.02em;
   margin-bottom: 4px;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
 }
 .rd-pct-good { color: var(--rd-success); }
 .rd-pct-mid  { color: var(--rd-warning); }
@@ -1470,12 +1504,12 @@
   color: var(--rd-text);
 }
 .rd-result-pct {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
   font-weight: 700;
   font-size: 0.8125rem;
   padding: 4px 10px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.04));
 }
 .rd-result-sections {
   display: flex;
@@ -1522,7 +1556,7 @@
   font-size: 0.7813rem;
   padding: 5px 8px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.02));
   flex-wrap: wrap;
 }
 .rd-result-item.is-right .rd-result-mark { color: var(--rd-success); }
@@ -1565,7 +1599,7 @@
 }
 .rd-view-btn:hover { color: var(--rd-text); }
 .rd-view-btn.is-active {
-  background: rgba(45, 212, 191, 0.16);
+  background: rgba(147, 197, 253, 0.16);
   border-color: var(--rd-accent);
   color: var(--rd-accent);
 }
@@ -1580,7 +1614,7 @@
 
   .rd-shell { height: 100dvh; height: 100vh; }
 
-  /* Header — two rows on phones so the title doesn't get squashed
+  /* Header - two rows on phones so the title doesn't get squashed
      between exit + tools. */
   .rd-header {
     padding: 8px 10px;
@@ -1598,7 +1632,7 @@
   .rd-submit   { padding: 9px 16px; font-size: 0.875rem; }
   .rd-view-btn { font-size: 0.875rem; padding: 10px 12px; }
 
-  /* Tabs — horizontal scroll with snap so one passage fills the
+  /* Tabs - horizontal scroll with snap so one passage fills the
      viewport at a time. */
   .rd-tabs {
     overflow-x: auto;
@@ -1639,7 +1673,7 @@
   .rd-shell[data-view="reading"]   .rd-pane-right { display: none; }
   .rd-shell[data-view="questions"] .rd-pane-left  { display: none; }
 
-  /* Typography on phones — bumped up so reading at arm's length is
+  /* Typography on phones - bumped up so reading at arm's length is
      comfortable. Pure body text at 17px / 1.7 hits ~52ch on a 360px
      viewport which is the sweet spot for sustained reading. All sizes
      are multiplied by --rd-text-scale so the user's preset (S/M/L/XL)
@@ -1653,7 +1687,7 @@
   .rd-intro         { font-size: calc(14.5px * var(--rd-text-scale, 1)); line-height: 1.55; padding: 12px 14px; }
   .rd-passage-subtitle { font-size: calc(15px * var(--rd-text-scale, 1)); }
 
-  /* Question side-tools become inline controls on phones — keeping
+  /* Question side-tools become inline controls on phones - keeping
      them absolute meant they overlapped the question stem on narrow
      widths. Both selectors below match the specificity (0,2,0) of
      the desktop `.rd-q-block .rd-q-tools` rule, so this @media
@@ -1695,7 +1729,7 @@
   .rd-q-stem,
   .rd-q-label,
   .rd-mcq-text { overflow-wrap: anywhere; }
-  /* MCQ option rows on phones — pin radio + letter so they don't
+  /* MCQ option rows on phones - pin radio + letter so they don't
      wrap to their own lines when the text is long, and let the text
      span flex-shrink so a multi-line option stays inside its label.
      The label is already display: flex on desktop; here we just
@@ -1715,7 +1749,7 @@
     flex: 1 1 0;
     min-width: 0;
   }
-  /* Settings panel — header is taller on mobile (title row wraps),
+  /* Settings panel - header is taller on mobile (title row wraps),
      so push the panel below it. */
   .rd-settings { top: 110px; right: 8px; }
 
@@ -1727,7 +1761,7 @@
   .rd-mcq-letter { font-size: 0.8438rem; }
   .rd-input { font-size: calc(14.5px * var(--rd-text-scale, 1)); padding: 10px 12px; }
 
-  /* Tracker — full-bleed bottom sheet that takes most of the
+  /* Tracker - full-bleed bottom sheet that takes most of the
      viewport, not just 45vh, so the long question lists fit. */
   .rd-tracker {
     max-height: 70vh;
@@ -1736,13 +1770,13 @@
   .rd-tracker-header { padding: 14px 16px; font-size: 0.9375rem; }
   .rd-tracker-close  { font-size: 1.625rem; padding: 0 8px; }
   .rd-tracker-body {
-    /* On phones a single column is fine — passages stack. */
+    /* On phones a single column is fine - passages stack. */
     grid-template-columns: 1fr;
     gap: 14px;
     padding: 14px 16px 18px;
   }
   .rd-track-cell {
-    /* Bigger tap targets — Apple's HIG and Material both recommend
+    /* Bigger tap targets - Apple's HIG and Material both recommend
        ≥ 44 px for primary tap targets. Slightly relaxed here at 36
        so we still fit a fair number of cells per row. */
     width: 36px;
@@ -1752,7 +1786,7 @@
   .rd-track-grid { grid-template-columns: repeat(auto-fill, 36px); gap: 6px; }
   .rd-track-section { grid-template-columns: 28px 1fr; gap: 8px; }
 
-  /* Confirm modal — takes nearly the full width on narrow screens. */
+  /* Confirm modal - takes nearly the full width on narrow screens. */
   .rd-confirm { width: calc(100vw - 24px); padding: 22px 20px 18px; }
   .rd-confirm-title   { font-size: 1.125rem; }
   .rd-confirm-message { font-size: 0.9063rem; line-height: 1.5; }
@@ -1780,7 +1814,7 @@
   .rd-result-sections  { flex-wrap: wrap; }
 }
 
-/* Reading skill home — exam cards already had a 600px breakpoint in
+/* Reading skill home - exam cards already had a 600px breakpoint in
    their dedicated section; tighten the level pill row a bit on phones. */
 @media (max-width: 720px) {
   #readingScreen .rd-home,
@@ -1817,9 +1851,9 @@
 }
 #readingScreen .rd-level-tab,
 #listeningScreen .rd-level-tab {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(232, 237, 247, 0.65);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--tint-line, rgba(255, 255, 255, 0.08));
+  color: var(--text-muted, rgba(232, 237, 247, 0.65));
   padding: 8px 16px;
   border-radius: 999px;
   font-size: 0.7813rem;
@@ -1831,14 +1865,19 @@
 }
 #readingScreen .rd-level-tab:hover,
 #listeningScreen .rd-level-tab:hover {
-  color: #e8edf7;
-  border-color: #2dd4bf;
+  color: var(--text-primary, #e8edf7);
+  border-color: #93c5fd;
 }
+/* The selected level is a SOLID blue chip with white text, matching the Quest
+   Board's level tabs. It used to be a pale tint with a pale border, which on a
+   row of five already-boxed pills did not read as "this one is chosen" - every
+   pill looked like a box and none of them looked picked. */
 #readingScreen .rd-level-tab.is-active,
 #listeningScreen .rd-level-tab.is-active {
-  background: rgba(45, 212, 191, 0.16);
-  border-color: #2dd4bf;
-  color: #2dd4bf;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(37,99,235,0.30);
 }
 #readingScreen .rd-exam-list,
 #listeningScreen .rd-exam-list {
@@ -1851,8 +1890,8 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  background: linear-gradient(135deg, rgba(45,212,191,0.08), rgba(56,189,248,0.04));
-  border: 1px solid rgba(45,212,191,0.22);
+  background: linear-gradient(135deg, rgba(147,197,253,0.08), rgba(96,165,250,0.04));
+  border: 1px solid rgba(147,197,253,0.22);
   border-radius: 14px;
   padding: 18px 20px;
   text-decoration: none;
@@ -1863,7 +1902,7 @@
 #readingScreen .rd-exam-card:hover,
 #listeningScreen .rd-exam-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(45,212,191,0.55);
+  border-color: rgba(147,197,253,0.55);
   box-shadow: 0 10px 26px rgba(2,6,23,0.38);
 }
 #readingScreen .rd-exam-icon,
@@ -1874,7 +1913,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(45,212,191,0.15);
+  background: rgba(147,197,253,0.15);
   border-radius: 12px;
   flex-shrink: 0;
   transition: box-shadow 0.2s ease, background 0.2s ease;
@@ -1901,8 +1940,8 @@
 #readingScreen .rd-exam-card:hover .rd-exam-icon,
 #listeningScreen .rd-exam-card:hover .rd-exam-icon {
   animation: rd-book-pop 0.55s ease-in-out infinite alternate;
-  background: rgba(45,212,191,0.28);
-  box-shadow: 0 4px 16px rgba(45,212,191,0.35);
+  background: rgba(147,197,253,0.28);
+  box-shadow: 0 4px 16px rgba(147,197,253,0.35);
 }
 #readingScreen .rd-exam-meta,
 #listeningScreen .rd-exam-meta { flex: 1; min-width: 0; }
@@ -1910,13 +1949,13 @@
 #listeningScreen .rd-exam-title {
   font-size: 0.9375rem;
   font-weight: 700;
-  color: #e8edf7;
+  color: var(--text-primary, #e8edf7);
   margin: 0 0 4px;
 }
 #readingScreen .rd-exam-sub,
 #listeningScreen .rd-exam-sub {
   font-size: 0.7813rem;
-  color: rgba(232, 237, 247, 0.55);
+  color: var(--text-muted, rgba(232, 237, 247, 0.55));
 }
 #readingScreen .rd-exam-modes,
 #listeningScreen .rd-exam-modes {
@@ -1927,8 +1966,8 @@
 #readingScreen .rd-exam-mode-btn,
 #listeningScreen .rd-exam-mode-btn {
   background: transparent;
-  border: 1px solid rgba(45,212,191,0.45);
-  color: #2dd4bf;
+  border: 1px solid rgba(147,197,253,0.45);
+  color: var(--text-accent, #93c5fd);
   padding: 8px 14px;
   border-radius: 8px;
   font-size: 0.7813rem;
@@ -1940,11 +1979,11 @@
 }
 #readingScreen .rd-exam-mode-btn:hover,
 #listeningScreen .rd-exam-mode-btn:hover {
-  background: rgba(45,212,191,0.18);
+  background: rgba(147,197,253,0.18);
 }
 #readingScreen .rd-exam-mode-btn.timed,
 #listeningScreen .rd-exam-mode-btn.timed {
-  background: #2dd4bf;
+  background: #93c5fd;
   color: #06231f;
   border-color: transparent;
 }
@@ -1953,10 +1992,10 @@
 #readingScreen .rd-exam-empty,
 #listeningScreen .rd-exam-empty {
   padding: 28px 20px;
-  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border: 1px dashed var(--tint-line, rgba(255, 255, 255, 0.12));
   border-radius: 14px;
   text-align: center;
-  color: rgba(232, 237, 247, 0.55);
+  color: var(--text-muted, rgba(232, 237, 247, 0.55));
   font-size: 0.8438rem;
 }
 @media (max-width: 600px) {
@@ -1987,4 +2026,26 @@
   #listeningScreen .rd-exam-icon,
   #readingScreen .rd-exam-card:hover .rd-exam-icon,
   #listeningScreen .rd-exam-card:hover .rd-exam-icon { animation: none; transform: none; }
+}
+
+/* ============================================================
+   LIGHT MODE - generated by tools/light-coverage.js findings
+   Each rule mirrors a real one above and flips only its SURFACE,
+   keeping the original alpha so translucent panels stay translucent
+   and nothing about the layering changes. Dark is untouched.
+   ============================================================ */
+.light-mode .rd-pref-theme-dark .rd-pref-swatch {
+  background: rgb(255, 255, 255);
+}
+.light-mode .rd-pref-theme-dark .rd-pref-swatch::after {
+  color: var(--text-primary, #0f172a);
+}
+.light-mode .rd-pref-theme-hc .rd-pref-swatch {
+  background: rgb(246, 248, 251);
+}
+.light-mode .rd-pref-theme-hc .rd-pref-swatch::after {
+  color: var(--text-primary, #0f172a);
+}
+.light-mode .rd-confirm-overlay {
+  background: rgba(246, 248, 251, 0.72);
 }

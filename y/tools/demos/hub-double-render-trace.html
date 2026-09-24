@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hub double render - diagnosis</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1040px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;vertical-align:top;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:84ch;line-height:1.55;}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:3px;}
+  iframe{position:absolute;left:-99999px;width:900px;height:700px;border:0;}
+  pre{background:#0f172a;color:#e2e8f0;padding:10px;border-radius:8px;font-size:12px;overflow:auto;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">Why the hub still renders twice</h3>
+<p class="lede">
+  This is a DIAGNOSIS harness, not a fix. It reproduces the reported second
+  refresh against the real <code>student/js/hub.js</code> to confirm the chain
+  before anything is changed:
+</p>
+<pre>1. journeyStats starts as a zero default (config.js:132)
+2. gridSignature() INCLUDES getSkillProgress() -- the % -- (hub.js:186)
+3. first renderHub() therefore draws every tile at 0%
+4. auth.js:153 -> loadJourneyStats() -> Firestore
+5. progress.js:144 -> updateJourneyCard() -> writes #journeyAccuracy (:165)
+6. hub.js:372  new MutationObserver(renderHub)  FIRES
+7. signature now differs -> grid.innerHTML='' (hub.js:212) -> full rebuild</pre>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script>
+const rows = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+function frame() {
+  return new Promise(resolve => {
+    const f = document.createElement('iframe');
+    document.body.appendChild(f);
+    const d = f.contentDocument;
+    d.open();
+    d.write(
+      '<!DOCTYPE html><html><head><meta charset="utf-8"><base href="/">' +
+      '<link rel="stylesheet" href="/student/css/hub.css"></head><body>' +
+      '<div id="hubScreen"><div id="hubGrid"></div></div>' +
+      '<div id="menuScreen"><span id="journeyAccuracy">0%</span></div>' +
+      '</body></html>');
+    d.close();
+    const w = f.contentWindow;
+    // Pre-Firestore state: journeyStats genuinely absent, exactly as on a real
+    // page load before loadJourneyStats() resolves.
+    w.featureToggles = { vocabulary: true, grammar: true, reading: true,
+                         listening: true, writing: true, speaking: true,
+                         classroom: true, courses: true };
+    const s = d.createElement('script');
+    s.src = '/student/js/hub.js?cb=' + Math.random();
+    s.onload = () => resolve({ f, w, d });
+    d.body.appendChild(s);
+  });
+}
+
+const pcts = el => [...el.querySelectorAll('.hub-pct')].map(n => n.textContent.trim());
+
+(async function(){
+  const { w, d } = await frame();
+
+  // hub.js registers everything on DOMContentLoaded, already past in a
+  // document.write frame, so fire it by hand.
+  d.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true }));
+  await wait(150);
+
+  const grid = d.getElementById('hubGrid');
+  check('1. hub.js rendered the grid', true, grid.children.length > 0);
+
+  // Count rebuilds from here on, the same way the shipped boot tracer does.
+  let rebuilds = 0;
+  new w.MutationObserver(() => { rebuilds++; })
+    .observe(grid, { childList: true });
+
+  const before = grid.innerHTML;
+  const pctBefore = pcts(grid);
+  // Only the progress-bearing tiles carry a number. Writing and Speaking show
+  // "-", Classroom shows "LIVE" and Courses shows "CERT", so requiring EVERY
+  // badge to read 0% failed on tiles that never show a percentage at all.
+  const numeric = arr => arr.filter(p => /%$/.test(p));
+  check('2. every progress tile starts at 0% (journeyStats not loaded yet)', true,
+        numeric(pctBefore).length > 0 && numeric(pctBefore).every(p => p === '0%'));
+
+  // ── Nothing changed: the guard must hold ─────────────────────────────────
+  w.renderHub();
+  await wait(60);
+  check('3. renderHub() with no data change rebuilds nothing', 0, rebuilds);
+  check('4. grid untouched', true, grid.innerHTML === before);
+
+  // ── STEP 4-7: the Firestore read lands ───────────────────────────────────
+  // progress.js sets journeyStats, then writes #journeyAccuracy. We do exactly
+  // that and touch NOTHING else - no direct renderHub() call.
+  w.journeyStats = {
+    averageScore: 43,
+    totalWordsLearned: 964,
+    bySkill: {
+      vocabulary: { pct: 43 }, grammar: { pct: 61 }, reading: { pct: 12 },
+      listening: { pct: 30 }, writing: { pct: 5 }, speaking: { pct: 0 },
+      classroom: { pct: 0 }, courses: { pct: 22 }
+    }
+  };
+  const rebuildsBeforeMutation = rebuilds;
+  d.getElementById('journeyAccuracy').textContent = '43%';   // progress.js:165
+  await wait(200);
+
+  check('5. writing #journeyAccuracy rebuilt the WHOLE grid', true,
+        rebuilds > rebuildsBeforeMutation);
+  check('6. it was a full teardown, not an in-place update', true,
+        grid.innerHTML !== before);
+
+  const pctAfter = pcts(grid);
+  check('7. percentages changed 0 -> real', true,
+        pctAfter.join(',') !== pctBefore.join(',') && pctAfter.some(p => /43/.test(p)));
+
+  // ── Is it a LOOP or a single extra render? ───────────────────────────────
+  // renderHub does not write #journeyAccuracy, so it should settle. Confirm,
+  // because an observer that retriggers itself would be far worse.
+  const settled = rebuilds;
+  await wait(500);
+  check('8. it settles - one extra rebuild, not a loop', settled, rebuilds);
+
+  // ── Would priming from cache have avoided it? ────────────────────────────
+  // progress.js:141 DOES write journeyStats to localStorage, but :152 only
+  // reads it back inside the catch block. If the first render had the cached
+  // numbers the signature would already match and step 5 would be a no-op.
+  const { w: w2, d: d2 } = await frame();
+  w2.journeyStats = {
+    averageScore: 43, totalWordsLearned: 964,
+    bySkill: {
+      vocabulary: { pct: 43 }, grammar: { pct: 61 }, reading: { pct: 12 },
+      listening: { pct: 30 }, writing: { pct: 5 }, speaking: { pct: 0 },
+      classroom: { pct: 0 }, courses: { pct: 22 }
+    }
+  };
+  d2.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true }));
+  await wait(150);
+  const grid2 = d2.getElementById('hubGrid');
+  let rebuilds2 = 0;
+  new w2.MutationObserver(() => { rebuilds2++; }).observe(grid2, { childList: true });
+  d2.getElementById('journeyAccuracy').textContent = '43%';
+  await wait(200);
+  check('9. WITH the stats present at first paint, the same write rebuilds nothing',
+        0, rebuilds2);
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  reproduced':'  inconclusive');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__hubTrace = {
+    pass, total: rows.length,
+    failed: rows.filter(r=>!r.ok).map(r=>r.name+' -> '+r.actual),
+    pctBefore, pctAfter
+  };
+})();
+</script>
+</body>
+</html>

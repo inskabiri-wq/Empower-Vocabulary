@@ -40,7 +40,7 @@ try {
 }
 
 // ============================================================
-// CUTOFF — only users whose Firestore doc was created before this
+// CUTOFF - only users whose Firestore doc was created before this
 // date are auto-verified. Set it to roughly when today's deploy
 // happened, so that any NEW registrations after that still have
 // to go through the normal email-verification flow.
@@ -48,7 +48,7 @@ try {
 const VERIFY_USERS_CREATED_BEFORE = new Date('2026-05-11T23:59:59Z');
 
 // Domains we'll auto-verify. Anything outside this list is skipped
-// (defensive — we don't auto-verify random emails).
+// (defensive - we don't auto-verify random emails).
 const ALLOWED_DOMAINS = ['@fsm.edu.tr', '@stu.fsm.edu.tr'];
 
 function isAllowedDomain(email) {
@@ -100,7 +100,7 @@ async function main() {
 
     if (createdAt && createdAt > VERIFY_USERS_CREATED_BEFORE) {
       counters.skippedAfterCutoff++;
-      // No log line — new accounts are expected to go through the
+      // No log line - new accounts are expected to go through the
       // normal verification flow.
       continue;
     }

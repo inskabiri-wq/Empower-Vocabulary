@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- REQUIRED, and it is not decoration. student-dashboard.html carries this
+     tag; without it a phone uses a 980px layout viewport, so every
+     narrow-width measurement taken here reports the DESKTOP layout while
+     appearing to succeed. Asking for 601px and being told 980px is how this
+     was caught. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quest Board alignment probe</title>
+<!-- ALL NINE stylesheets student-dashboard.html loads, in its order.
+     Loading a subset is not "close enough": source order decides which of two
+     equal-specificity rules wins, so a missing sheet can invent a bug that
+     does not exist in the real page, or hide one that does. -->
+<link rel="stylesheet" href="/css/brand.css">
+<link rel="stylesheet" href="/student/css/styles.css">
+<link rel="stylesheet" href="/student/css/extra.css">
+<link rel="stylesheet" href="/student/css/hub.css">
+<link rel="stylesheet" href="/student/css/skills.css">
+<link rel="stylesheet" href="/student/css/grammar.css">
+<link rel="stylesheet" href="/student/css/reading-exam.css">
+<link rel="stylesheet" href="/assignments/css/assignments.css">
+<link rel="stylesheet" href="/css/app-settings.css">
+<style>
+  /* Probe chrome only. Nothing here touches .qc-* or .learning-map-*. */
+  body { margin: 0; background: #0b1220; }
+  #stage { border: 0; display: block; }
+</style>
+</head>
+<body>
+
+<!-- The Quest Board, marked up exactly as student-dashboard.html declares it
+     and as student/js/progress.js fills it. Grammar's openMap() builds the
+     same chrome, so measuring this measures both boards. -->
+<div id="learningMapModal" class="modal-overlay active">
+  <div class="modal-content learning-map-modal">
+    <button class="modal-close-btn">&times;</button>
+    <h2 class="modal-title">&#128506; Quest Board</h2>
+    <p class="qc-board-sub">Complete challenges to master each unit</p>
+
+    <div class="level-tabs">
+      <button class="level-tab active" data-level="A2">A2</button>
+      <button class="level-tab" data-level="B1">B1</button>
+      <button class="level-tab" data-level="B1+">B1+</button>
+      <button class="level-tab" data-level="B2">B2</button>
+      <button class="level-tab" data-level="C1">C1</button>
+    </div>
+
+    <div class="learning-map-container" id="learningMapContainer"></div>
+  </div>
+</div>
+
+<script>
+// Rebuilds exactly what showMapLevel() emits: a .qc-level-summary followed by
+// .qc-grid of .qc-card. Kept in sync with student/js/progress.js by shape,
+// not by copy: only the classes and nesting matter for layout.
+function card(name, words, pct, status, cls) {
+  var rows = [
+    ['✏️', 'Flashcards', '90%'],
+    ['❓', 'Quiz', '80%'],
+    ['\u{1F3AF}', 'Matching', '-'],
+    ['\u{1F5E3}️', 'Spelling', '-']
+  ].map(function (r, i) {
+    return '<div class="qc-challenge ' + (i < 2 ? 'done' : '') + '">' +
+      '<span class="qc-challenge-icon">' + r[0] + '</span>' +
+      '<span class="qc-challenge-name">' + r[1] + '</span>' +
+      '<span class="qc-challenge-score">' + r[2] + '</span>' +
+      '<span class="qc-challenge-check">' + (i < 2 ? '✅' : '⬜') + '</span>' +
+      '</div>';
+  }).join('');
+
+  return '<div class="qc-card ' + cls + '">' +
+    '<div class="qc-card-header">' +
+      '<div class="qc-donut">' +
+        '<svg width="80" height="80" viewBox="0 0 80 80">' +
+          '<circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="8"></circle>' +
+          '<circle cx="40" cy="40" r="32" fill="none" stroke="#3b82f6" stroke-width="8" ' +
+            'stroke-dasharray="201" stroke-dashoffset="' + (201 - 201 * pct / 100) + '" ' +
+            'transform="rotate(-90 40 40)"></circle>' +
+        '</svg>' +
+        '<div class="qc-donut-label">' + pct + '%</div>' +
+      '</div>' +
+      '<div class="qc-unit-info">' +
+        '<div class="qc-unit-name">' + name + '</div>' +
+        '<div class="qc-unit-words">' + words + ' words</div>' +
+        '<div class="qc-unit-status">' + status + '</div>' +
+        '<div class="qc-quest-progress">2/4 challenges</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="qc-challenges">' + rows + '</div>' +
+  '</div>';
+}
+
+var summary =
+  '<div class="qc-level-summary">' +
+    '<div class="qc-summary-stat"><div class="qc-summary-value">72%</div><div class="qc-summary-label">Accuracy</div></div>' +
+    '<div class="qc-summary-stat"><div class="qc-summary-value">18</div><div class="qc-summary-label">Challenges Done</div></div>' +
+    '<div class="qc-summary-stat"><div class="qc-summary-value">9</div><div class="qc-summary-label">Units</div></div>' +
+    '<div class="qc-summary-stat"><div class="qc-summary-value">2326</div><div class="qc-summary-label">Total Words</div></div>' +
+  '</div>';
+
+var cards = [
+  card('Unit 1', 48, 100, 'Complete', 'qc-complete'),
+  card('Unit 2', 52, 60, 'In progress', 'qc-active'),
+  card('Unit 3', 44, 0, 'Not started', 'qc-new'),
+  card('Bonus Words', 121, 0, 'Not started', 'qc-new')
+].join('');
+
+document.getElementById('learningMapContainer').innerHTML =
+  summary + '<div class="qc-grid">' + cards + '</div>';
+
+/* THE STYLESHEET GATE.
+   Measuring before the sheets have parsed reports the UNSTYLED layout, which
+   always looks broken. This has produced two phantom findings before now, so
+   the probe refuses to report until every <link> has a .sheet AND the grid has
+   actually become a grid. No fixed delays anywhere. */
+window.qcReady = (async function () {
+  var links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
+  await Promise.all(links.map(function (l) {
+    if (l.sheet) return Promise.resolve();
+    return new Promise(function (res) {
+      l.addEventListener('load', res, { once: true });
+      l.addEventListener('error', res, { once: true });
+    });
+  }));
+  // Poll for a value only the real CSS can produce.
+  var grid = document.querySelector('.qc-grid');
+  for (var i = 0; i < 200; i++) {
+    if (getComputedStyle(grid).display === 'grid') break;
+    await new Promise(function (r) { requestAnimationFrame(r); });
+  }
+  return {
+    sheets: links.map(function (l) { return (l.href.split('/').pop()) + (l.sheet ? ' ok' : ' FAILED'); }),
+    gridDisplay: getComputedStyle(grid).display
+  };
+})();
+
+// Geometry the probe reports back.
+window.qcMeasure = function () {
+  var modal = document.querySelector('.learning-map-modal');
+  var grid  = document.querySelector('.qc-grid');
+  var cards = Array.from(document.querySelectorAll('.qc-card'));
+  var gcs   = getComputedStyle(grid);
+  var mcs   = getComputedStyle(modal);
+  var mb    = modal.getBoundingClientRect();
+  var gb    = grid.getBoundingClientRect();
+  var boxes = cards.map(function (c) { var r = c.getBoundingClientRect(); return { l: Math.round(r.left), w: Math.round(r.width), t: Math.round(r.top) }; });
+  var lefts = Array.from(new Set(boxes.map(function (b) { return b.l; })));
+  var widths = Array.from(new Set(boxes.map(function (b) { return b.w; })));
+  var rows  = Array.from(new Set(boxes.map(function (b) { return b.t; }))).length;
+
+  // Does anything stick out past the modal's content box?
+  var padL = parseFloat(mcs.paddingLeft), padR = parseFloat(mcs.paddingRight);
+  var innerL = mb.left + padL, innerR = mb.right - padR;
+  var overflowing = boxes.filter(function (b) { return b.l < innerL - 1 || (b.l + b.w) > innerR + 1; }).length;
+
+  // The challenge rows are the thing that actually squashes.
+  var chal = Array.from(document.querySelectorAll('.qc-challenge')).map(function (e) {
+    var r = e.getBoundingClientRect(); return Math.round(r.height);
+  });
+
+  return {
+    viewport: window.innerWidth,
+    modalW: Math.round(mb.width),
+    modalPad: padL + '/' + padR,
+    gridW: Math.round(gb.width),
+    gridCols: gcs.gridTemplateColumns,
+    columns: lefts.length,
+    rows: rows,
+    cardWidths: widths,
+    cardsOverflowingModal: overflowing,
+    tallestChallengeRow: Math.max.apply(null, chal),
+    docScrollsSideways: document.documentElement.scrollWidth > document.documentElement.clientWidth
+  };
+};
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════
-   TRUST NO ONE — visual layer
+   TRUST NO ONE - visual layer
    ----------------------------------------------------------------
    Loaded AFTER classroom/css/styles.css so it overrides the lighter
    classroom palette where needed. The lobby DOM (.session-code-display,
@@ -7,21 +7,21 @@
    so the layout is identical to Vocab Race + Heist. Trust-specific
    bits (briefing, role badges, meeting screen, ghost view) live here.
 
-   Palette: deep-space indigo + cyan + amber. Crewmate = cyan (#06b6d4).
-   Impostor = amber (#f59e0b). Background gradient = deep space.
+   Palette: deep-space indigo + cyan + amber. Crewmate = cyan (#2563eb).
+   Impostor = amber (#3b82f6). Background gradient = deep space.
    ════════════════════════════════════════════════════════════════ */
 
 :root {
-  --t-cyan: #06b6d4;
-  --t-cyan-2: #67e8f9;
-  --t-amber: #f59e0b;
-  --t-amber-2: #fcd34d;
-  --t-indigo: #6366f1;
-  --t-violet: #a78bfa;
+  --t-cyan: #60a5fa;
+  --t-cyan-2: #93c5fd;
+  --t-amber: #3b82f6;
+  --t-amber-2: #93c5fd;
+  --t-indigo: #2563eb;
+  --t-violet: #60a5fa;
   --t-bg: #0a0e1f;
   --t-surface: rgba(15, 23, 42, 0.92);
   --t-surface-2: rgba(30, 41, 59, 0.92);
-  --t-border: rgba(99, 102, 241, 0.22);
+  --t-border: rgba(37, 99, 235, 0.22);
   --t-text: #f1f5f9;
   --t-text-mut: #94a3b8;
   --t-red: #ef4444;
@@ -29,15 +29,15 @@
 
 body.trust {
   background:
-    radial-gradient(ellipse at 20% 0%, rgba(99, 102, 241, 0.18), transparent 55%),
-    radial-gradient(ellipse at 80% 100%, rgba(6, 182, 212, 0.16), transparent 55%),
-    radial-gradient(ellipse at 50% 50%, rgba(167, 139, 250, 0.08), transparent 60%),
+    radial-gradient(ellipse at 20% 0%, rgba(37, 99, 235, 0.18), transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(37, 99, 235, 0.16), transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(96, 165, 250, 0.08), transparent 60%),
     var(--t-bg);
   color: var(--t-text);
-  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  font-family: var(--ll-font);
   margin: 0;
   min-height: 100vh;
-  /* Subtle starfield via a tiled gradient overlay — looks like the
+  /* Subtle starfield via a tiled gradient overlay - looks like the
      Gimkit Trust No One background but in our palette. */
   position: relative;
 }
@@ -96,7 +96,7 @@ body.trust::before {
   align-items: center;
   justify-content: center;
   font-size: 1.125rem;
-  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
 }
 
 /* ── Buttons (Trust-flavoured) ────────────────────────────────── */
@@ -117,7 +117,7 @@ body.trust::before {
   transition: transform 0.1s, background 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
 .trust-btn:hover:not(:disabled) {
-  background: rgba(99, 102, 241, 0.12);
+  background: rgba(37, 99, 235, 0.12);
   border-color: var(--t-indigo);
 }
 .trust-btn:active:not(:disabled) { transform: translateY(1px); }
@@ -127,11 +127,11 @@ body.trust::before {
   border-color: transparent;
   color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
 }
 .trust-btn.primary:hover:not(:disabled) {
   filter: brightness(1.06);
-  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.45);
+  box-shadow: 0 12px 32px rgba(37, 99, 235, 0.45);
 }
 .trust-btn.danger {
   background: rgba(239, 68, 68, 0.14);
@@ -158,7 +158,7 @@ body.trust::before {
   50%      { transform: translateY(-6px) scale(1.06); opacity: 1; }
 }
 
-/* ── Liftoff briefing — full-screen role reveal ─────────────── */
+/* ── Liftoff briefing - full-screen role reveal ─────────────── */
 .trust-liftoff {
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(10, 14, 31, 0.98));
   border: 2px solid var(--t-border);
@@ -173,7 +173,7 @@ body.trust::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 100%, rgba(99, 102, 241, 0.20), transparent 60%);
+  background: radial-gradient(circle at 50% 100%, rgba(37, 99, 235, 0.20), transparent 60%);
   pointer-events: none;
 }
 .trust-liftoff h1 {
@@ -199,14 +199,14 @@ body.trust::before {
   to   { transform: scale(1); opacity: 1; }
 }
 .role-card.crewmate {
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(99, 102, 241, 0.12));
-  border: 2px solid rgba(6, 182, 212, 0.6);
-  box-shadow: 0 12px 40px rgba(6, 182, 212, 0.30);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(37, 99, 235, 0.12));
+  border: 2px solid rgba(37, 99, 235, 0.6);
+  box-shadow: 0 12px 40px rgba(37, 99, 235, 0.30);
 }
 .role-card.impostor {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(239, 68, 68, 0.14));
-  border: 2px solid rgba(245, 158, 11, 0.6);
-  box-shadow: 0 12px 40px rgba(245, 158, 11, 0.30);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(239, 68, 68, 0.14));
+  border: 2px solid rgba(59, 130, 246, 0.6);
+  box-shadow: 0 12px 40px rgba(59, 130, 246, 0.30);
 }
 .role-card .role-emoji { font-size: 3em; line-height: 1; }
 .role-card .role-name {
@@ -231,8 +231,8 @@ body.trust::before {
   margin: 16px auto 0;
   max-width: 480px;
   padding: 10px 14px;
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.32);
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.32);
   border-radius: 10px;
   font-size: 0.92em;
   color: var(--t-amber-2);
@@ -242,14 +242,14 @@ body.trust::before {
 .trust-liftoff .impostor-buddies strong { color: #ffffff; }
 .trust-countdown {
   margin-top: 22px;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
   font-size: 1.05em;
   color: var(--t-text-mut);
   position: relative;
   z-index: 1;
 }
 
-/* ── Play view — two-column on desktop, stack on mobile ─────── */
+/* ── Play view - two-column on desktop, stack on mobile ─────── */
 .trust-play {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
@@ -293,25 +293,25 @@ body.trust::before {
   font-size: 0.82em;
   font-weight: 700;
   border: 1px solid var(--t-border);
-  background: rgba(99, 102, 241, 0.10);
+  background: rgba(37, 99, 235, 0.10);
 }
 .trust-chip.crewmate {
-  border-color: rgba(6, 182, 212, 0.45);
-  background: rgba(6, 182, 212, 0.12);
+  border-color: rgba(37, 99, 235, 0.45);
+  background: rgba(37, 99, 235, 0.12);
   color: var(--t-cyan-2);
 }
 .trust-chip.impostor {
-  border-color: rgba(245, 158, 11, 0.45);
-  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(59, 130, 246, 0.45);
+  background: rgba(59, 130, 246, 0.12);
   color: var(--t-amber-2);
 }
 .trust-chip.coins {
-  border-color: rgba(245, 158, 11, 0.4);
-  background: rgba(245, 158, 11, 0.10);
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.10);
   color: var(--t-amber-2);
 }
 
-/* Investigation question (MCQ) — mirrors Heist earn panel */
+/* Investigation question (MCQ) - mirrors Heist earn panel */
 .trust-q-stem {
   font-size: 1.16em;
   font-weight: 600;
@@ -333,9 +333,9 @@ body.trust::before {
 }
 .trust-q-opt:hover:not(:disabled) {
   border-color: var(--t-cyan);
-  background: rgba(6, 182, 212, 0.10);
+  background: rgba(37, 99, 235, 0.10);
 }
-.trust-q-opt.correct { border-color: var(--t-cyan); background: rgba(6, 182, 212, 0.18); }
+.trust-q-opt.correct { border-color: #22c55e; background: rgba(34, 197, 94, 0.18); }
 .trust-q-opt.wrong   { border-color: var(--t-red);  background: rgba(239, 68, 68, 0.14); }
 .trust-q-feedback {
   margin-top: 10px;
@@ -343,8 +343,8 @@ body.trust::before {
   border-radius: 8px;
   font-size: 0.9em;
 }
-.trust-q-feedback.ok { background: rgba(6, 182, 212, 0.10); color: var(--t-cyan-2); }
-.trust-q-feedback.no { background: rgba(239, 68, 68, 0.10); color: #fca5a5; }
+.trust-q-feedback.ok { background: rgba(37, 99, 235, 0.10); color: var(--t-cyan-2); }
+.trust-q-feedback.no { background: rgba(239, 68, 68, 0.10); color: var(--text-error, #fca5a5); }
 
 /* Side roster (alive players) */
 .trust-roster-list {
@@ -427,8 +427,8 @@ body.trust::before {
 .trust-phase-note {
   margin-top: 18px;
   padding: 10px 14px;
-  background: rgba(99, 102, 241, 0.08);
-  border: 1px dashed rgba(99, 102, 241, 0.35);
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px dashed rgba(37, 99, 235, 0.35);
   border-radius: 10px;
   font-size: 0.85em;
   color: var(--t-text-mut);
@@ -437,7 +437,7 @@ body.trust::before {
 
 
 /* ════════════════════════════════════════════════════════════════
-   PHASE 3 — MEETING / EJECT / GHOST views
+   PHASE 3 - MEETING / EJECT / GHOST views
    ════════════════════════════════════════════════════════════════ */
 
 /* Full-screen takeover during a meeting. Same dark-glass aesthetic
@@ -470,7 +470,7 @@ body.trust::before {
   margin: 0;
   font-size: 1.8em;
   letter-spacing: -0.01em;
-  background: linear-gradient(135deg, #fca5a5, #fcd34d);
+  background: linear-gradient(135deg, #fca5a5, #93c5fd);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -481,14 +481,14 @@ body.trust::before {
   font-size: 0.95em;
 }
 .meeting-timer {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
   font-size: 3em;
   font-weight: 800;
   margin-top: 14px;
   color: var(--t-amber-2);
-  text-shadow: 0 0 32px rgba(245, 158, 11, 0.3);
+  text-shadow: 0 0 32px rgba(59, 130, 246, 0.3);
 }
-.meeting-timer.warn { color: #fca5a5; }
+.meeting-timer.warn { color: var(--text-error, #fca5a5); }
 .meeting-instruction {
   text-align: center;
   color: var(--t-text-mut);
@@ -519,7 +519,7 @@ body.trust::before {
 }
 .meeting-tile:hover:not(:disabled):not(.voted) {
   border-color: var(--t-indigo);
-  background: rgba(99, 102, 241, 0.10);
+  background: rgba(37, 99, 235, 0.10);
   transform: translateY(-2px);
 }
 .meeting-tile .ava {
@@ -539,7 +539,7 @@ body.trust::before {
 .meeting-tile.me:hover { transform: none; background: var(--t-surface-2); border-color: var(--t-border); }
 .meeting-tile.voted {
   border-color: var(--t-amber);
-  background: rgba(245, 158, 11, 0.12);
+  background: rgba(59, 130, 246, 0.12);
 }
 .meeting-tile.skip {
   border-color: rgba(148, 163, 184, 0.45);
@@ -547,9 +547,9 @@ body.trust::before {
 .meeting-tile .vote-count {
   position: absolute;
   top: 4px; right: 8px;
-  background: rgba(245, 158, 11, 0.18);
+  background: rgba(59, 130, 246, 0.18);
   color: var(--t-amber-2);
-  border: 1px solid rgba(245, 158, 11, 0.45);
+  border: 1px solid rgba(59, 130, 246, 0.45);
   padding: 1px 7px;
   border-radius: 999px;
   font-size: 0.6875rem;
@@ -568,7 +568,7 @@ body.trust::before {
   gap: 12px;
 }
 
-/* Eject reveal — same role-card shape as the liftoff card, but with
+/* Eject reveal - same role-card shape as the liftoff card, but with
    an extra "was a …" subline. */
 .trust-eject {
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(10, 14, 31, 0.99));
@@ -606,7 +606,7 @@ body.trust::before {
 .trust-ghost .ghost-icon {
   font-size: 4em;
   margin-bottom: 12px;
-  filter: drop-shadow(0 0 18px rgba(99, 102, 241, 0.4));
+  filter: drop-shadow(0 0 18px rgba(37, 99, 235, 0.4));
   animation: ghostFloat 2.4s ease-in-out infinite;
 }
 @keyframes ghostFloat {
@@ -620,18 +620,18 @@ body.trust::before {
 }
 
 /* ═════════════════════════════════════════════════════════════
-   PHASE 4 — Ghost continue-play header + donation modal +
+   PHASE 4 - Ghost continue-play header + donation modal +
    results screen banner + podium + stats grid.
    ═════════════════════════════════════════════════════════════ */
 
 /* Ghost banner above the question pane. Slim, full-width, evokes
-   "you're sidelined but still here" — dashed border + violet accent. */
+   "you're sidelined but still here" - dashed border + violet accent. */
 .trust-ghost-head {
   display: flex;
   align-items: center;
   gap: 14px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.10), rgba(167, 139, 250, 0.06));
-  border: 1px dashed rgba(167, 139, 250, 0.45);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.10), rgba(96, 165, 250, 0.06));
+  border: 1px dashed rgba(96, 165, 250, 0.45);
   border-radius: 14px;
   padding: 12px 16px;
   margin-bottom: 14px;
@@ -641,12 +641,12 @@ body.trust::before {
   content: '';
   position: absolute; inset: 0;
   border-radius: 14px;
-  background: radial-gradient(circle at top right, rgba(167, 139, 250, 0.10), transparent 60%);
+  background: radial-gradient(circle at top right, rgba(96, 165, 250, 0.10), transparent 60%);
   pointer-events: none;
 }
 .ghost-icon-mini {
   font-size: 2em;
-  filter: drop-shadow(0 0 12px rgba(167, 139, 250, 0.5));
+  filter: drop-shadow(0 0 12px rgba(96, 165, 250, 0.5));
   animation: ghostFloat 2.4s ease-in-out infinite;
   flex-shrink: 0;
 }
@@ -661,7 +661,7 @@ body.trust::before {
   margin: 0 auto;
 }
 
-/* Winning team banner — gradient changes per team. */
+/* Winning team banner - gradient changes per team. */
 .trust-win-banner {
   display: flex;
   align-items: center;
@@ -676,22 +676,22 @@ body.trust::before {
 .trust-win-banner::before {
   content: '';
   position: absolute; inset: 0;
-  background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.06), transparent 70%);
+  background: radial-gradient(circle at top right, var(--tint-surface, rgba(255, 255, 255, 0.06)), transparent 70%);
   pointer-events: none;
 }
 .trust-win-banner.win-crewmates {
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(99, 102, 241, 0.10));
-  border-color: rgba(6, 182, 212, 0.55);
-  box-shadow: 0 0 40px rgba(6, 182, 212, 0.20);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(37, 99, 235, 0.10));
+  border-color: rgba(37, 99, 235, 0.55);
+  box-shadow: 0 0 40px rgba(37, 99, 235, 0.20);
 }
 .trust-win-banner.win-impostors {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.20), rgba(239, 68, 68, 0.12));
-  border-color: rgba(245, 158, 11, 0.55);
-  box-shadow: 0 0 40px rgba(245, 158, 11, 0.20);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.20), rgba(239, 68, 68, 0.12));
+  border-color: rgba(59, 130, 246, 0.55);
+  box-shadow: 0 0 40px rgba(59, 130, 246, 0.20);
 }
 .trust-win-banner.win-stalemate {
-  background: linear-gradient(135deg, rgba(167, 139, 250, 0.16), rgba(99, 102, 241, 0.10));
-  border-color: rgba(167, 139, 250, 0.50);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.16), rgba(37, 99, 235, 0.10));
+  border-color: rgba(96, 165, 250, 0.50);
 }
 .trust-win-banner.win-aborted {
   background: linear-gradient(135deg, rgba(148, 163, 184, 0.10), rgba(71, 85, 105, 0.06));
@@ -739,8 +739,8 @@ body.trust::before {
   border-radius: 14px;
   padding: 16px 18px;
 }
-.trust-podium.crewmate { border-color: rgba(6, 182, 212, 0.35); }
-.trust-podium.impostor { border-color: rgba(245, 158, 11, 0.35); }
+.trust-podium.crewmate { border-color: rgba(37, 99, 235, 0.35); }
+.trust-podium.impostor { border-color: rgba(59, 130, 246, 0.35); }
 .trust-podium h3 {
   margin: 0 0 12px;
   font-size: 0.85em;
@@ -764,7 +764,7 @@ body.trust::before {
   border-radius: 10px;
   padding: 10px 12px;
 }
-.podium-row.place-1 { border-color: rgba(251, 191, 36, 0.5); }
+.podium-row.place-1 { border-color: rgba(96, 165, 250, 0.5); }
 .podium-row.place-2 { border-color: rgba(148, 163, 184, 0.4); }
 .podium-row.place-3 { border-color: rgba(180, 83, 9, 0.4); }
 .podium-row.ghost { opacity: 0.65; }
@@ -806,7 +806,7 @@ body.trust::before {
   text-align: center;
 }
 .stat-num {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-size: 1.8em;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -872,3 +872,55 @@ body.trust::before {
 .trust-results-table tr.ghost { opacity: 0.65; }
 .trust-results-table td.role-cell.crewmate { color: var(--t-cyan-2); }
 .trust-results-table td.role-cell.impostor { color: var(--t-amber-2); }
+
+/* ============================================================
+   LIGHT MODE - see the note in heist.css. Correct stays green, red stays red.
+   ============================================================ */
+.light-mode body.trust,
+body.light-mode.trust {
+  --t-cyan:     #2563eb;
+  --t-cyan-2:   #1d4ed8;
+  --t-amber:    #2563eb;
+  --t-amber-2:  #1d4ed8;
+  --t-indigo:   #1d4ed8;
+  --t-violet:   #1d4ed8;
+  --t-bg:       #f6f8fb;
+  --t-surface:  rgba(255, 255, 255, 0.92);
+  --t-surface-2: rgba(242, 246, 252, 0.92);
+  --t-border:   #d8e1ee;
+  --t-text:     #0f172a;
+  --t-text-mut: #556274;
+  --t-red:      #b91c1c;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(37, 99, 235, 0.07), transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(37, 99, 235, 0.06), transparent 55%),
+    var(--t-bg);
+}
+
+/* ============================================================
+   LIGHT MODE - generated by tools/light-coverage.js findings
+   Each rule mirrors a real one above and flips only its SURFACE,
+   keeping the original alpha so translucent panels stay translucent
+   and nothing about the layering changes. Dark is untouched.
+   ============================================================ */
+.light-mode .trust-liftoff {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(246, 248, 251, 0.98));
+}
+.light-mode .trust-liftoff .impostor-buddies strong {
+  color: var(--text-primary, #0f172a);
+}
+.light-mode .trust-meeting {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 248, 251, 0.99));
+}
+.light-mode .trust-eject {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 248, 251, 0.99));
+}
+.light-mode .trust-ghost {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 248, 251, 0.99));
+}
+.light-mode .trust-results {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 248, 251, 0.99));
+}
+.light-mode .podium-row {
+  background: rgba(255, 255, 255, 0.5);
+}

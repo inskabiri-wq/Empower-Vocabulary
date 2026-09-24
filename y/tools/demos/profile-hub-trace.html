@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile hub</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1080px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;vertical-align:top;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:84ch;line-height:1.55;}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:3px;}
+  iframe{position:absolute;left:-99999px;width:1100px;height:800px;border:0;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">js/profile-hub.js</h3>
+<p class="lede">
+  The avatar picture is the only way in, so everything that used to be a header
+  button has to be reachable from it: avatar chooser, achievements, display
+  settings, save, password, logout, and the teacher link. Each sub-popup opens
+  ON TOP with its own X. The teacher row must never exist for a student.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script>
+const rows = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const cb = '?cb=' + Math.random();
+
+function frame(bodyHtml, userData, opts) {
+  opts = opts || {};
+  try { localStorage.removeItem('ll-profile'); } catch (e) {}
+  return new Promise(resolve => {
+    const f = document.createElement('iframe');
+    document.body.appendChild(f);
+    const d = f.contentDocument, w = f.contentWindow;
+    d.open();
+    d.write('<!DOCTYPE html><html><head><meta charset="utf-8"><base href="/">' +
+      '<link rel="stylesheet" href="/css/brand.css' + cb + '"></head><body>' + bodyHtml);
+    if (userData !== undefined) w.currentStudentData = userData;
+    // Stand-ins for the page-level globals the module talks to.
+    w.AppSettings = { open: function () { w.__settingsOpened = (w.__settingsOpened || 0) + 1; }, close: function () {} };
+    if (opts.logoutModal) w.openLogoutModal = function () { w.__logoutCalled = true; };
+    if (opts.changePw) w.openChangePassword = function () { w.__pwCalled = true; };
+    const s = d.createElement('script');
+    s.src = '/js/profile-hub.js' + cb;
+    s.onload = s.onerror = () => { d.write('</body></html>'); d.close(); setTimeout(() => resolve({ f, w, d }), 250); };
+    d.body.appendChild(s);
+  });
+}
+const q  = (d, s) => d.querySelector(s);
+const qa = (d, s) => d.querySelectorAll(s);
+const rowBtn = (d, name) => q(d, '[data-ph="' + name + '"]');
+// Assert on STATE, not on computed visibility. .modal-overlay transitions
+// visibility over 0.3s and this preview pane does not composite reliably, so
+// a correctly closed layer can still report visibility:visible and read as a
+// failure. The .active class is what open/close actually toggles.
+const visible = (w, el) => !!el && el.classList.contains('active');
+
+(async function(){
+  const STUDENT = { name: 'Alireza', role: 'student', class: 'B1-A', level: 'B1', module: 'Module 2',
+                    profile: { avatar: 'star' } };
+
+  // ── Badge mounts, one per header ─────────────────────────────────────────
+  {
+    const { f, w, d } = await frame(
+      '<div class="hdr"><span data-profile-hub-mount></span></div>'.repeat(7), STUDENT);
+    check('1. a badge in every mount point', 7, qa(d, '[data-ph-badge]').length);
+    check('2. the badge shows the avatar picture', '⭐', q(d, '[data-ph-pic]').textContent);
+    check('3. it shows the name', 'Alireza', q(d, '[data-ph-name]').textContent);
+    // The whole point of the badge text change.
+    const sub = q(d, '[data-ph-sub]').textContent;
+    check('4. subtitle is module and class, not Level/XP', 'Module 2 · B1-A', sub);
+    check('5. no XP anywhere on the badge', false, /XP|Level \d/.test(q(d, '[data-ph-badge]').textContent));
+    f.remove();
+  }
+
+  // ── Floating fallback for pages with no header ───────────────────────────
+  {
+    const { f, d } = await frame('<div>no header here</div>', STUDENT);
+    check('6. pages with no mount get a floating badge', 1, qa(d, '[data-ph-badge]').length);
+    check('7. and it is the floating variant', true,
+          q(d, '[data-ph-badge]').classList.contains('ph-float'));
+    f.remove();
+  }
+
+  // ── The panel ────────────────────────────────────────────────────────────
+  {
+    const { f, w, d } = await frame('<span data-profile-hub-mount></span>', STUDENT,
+      { logoutModal: true, changePw: true });
+    q(d, '[data-ph-badge]').click();
+    await wait(200);
+    const panel = d.getElementById('phPanel');
+    check('8. clicking the picture opens the panel', true, visible(w, panel));
+    for (const [n, label] of [['avatar','Choose avatar'],['ach','Your achievements'],
+                              ['display','Display settings'],['logout','Log out']]) {
+      check('9. panel has "' + label + '"', true, !!rowBtn(d, n));
+    }
+    check('9b. the Save profile row is gone', null, rowBtn(d, 'save'));
+    check('10. panel has an X', true, !!panel.querySelector('.ph-x'));
+    check('11. Change password shows when the page provides it', true, !!rowBtn(d, 'pw'));
+
+    // THE CHECK THAT MATTERED AND WAS WRONG.
+    // This used to read rowBtn(...).hidden, which was true - while the row was
+    // plainly on screen, because .ph-row sets display:flex and an author rule
+    // beats the browser's own [hidden]{display:none}. Assert on the DOM and on
+    // what actually renders, never on the attribute.
+    check('12. STUDENT: the teacher row does not exist at all', null, rowBtn(d, 'teacher'));
+    check('12b. STUDENT: no link to the teacher dashboard anywhere', 0,
+          qa(d, 'a[href*="teacher-dashboard"]').length);
+    check('12c. STUDENT: the panel never says "Teacher"', false, /teacher/i.test(panel.textContent));
+
+    // The panel must be opaque. With no background of its own the blurred page
+    // showed straight through it and the edges were hard to find.
+    const bg = w.getComputedStyle(panel.querySelector('.ph-panel')).backgroundColor;
+    check('12d. the panel has a solid background', false,
+          bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent');
+
+    // Level / XP / module / class / year came back after the first version
+    // showed only the name.
+    check('12e. class and module are shown', true,
+          /B1-A/.test(panel.textContent) && /Module 2/.test(panel.textContent));
+    check('12f. level and XP are shown', true, /Level/.test(panel.textContent));
+
+    // Display opens the shared panel ON TOP rather than replacing anything.
+    rowBtn(d, 'display').click();
+    await wait(120);
+    check('13. Display calls the shared settings panel', 1, w.__settingsOpened);
+    check('14. the profile panel stays open underneath', true, visible(w, panel));
+
+    // Avatar chooser, on top, with its own X.
+    rowBtn(d, 'avatar').click();
+    await wait(200);
+    const av = d.getElementById('phAvatar');
+    check('15. avatar chooser opens', true, visible(w, av));
+    check('16. it has an X of its own', true, !!av.querySelector('.ph-x'));
+    check('17. all 16 avatars are offered', 16, qa(d, '#avatarGrid .avatar-option').length);
+    check('18. it sits ON TOP of the panel', true,
+          Number(av.style.zIndex) > Number(panel.style.zIndex));
+    check('19. the current avatar is marked selected', 'star',
+          (q(d, '#avatarGrid .avatar-option.selected') || {}).getAttribute
+            ? q(d, '#avatarGrid .avatar-option.selected').getAttribute('data-avatar') : null);
+    // Locked avatars must not be selectable at 0 XP.
+    check('20. high-XP avatars are locked', true, qa(d, '#avatarGrid .avatar-option.locked').length >= 4);
+    // Clicking one must actually choose it. It did nothing before: selection
+    // was delegated wholly to avatar.js, and when that threw nothing happened.
+    const pick = [...qa(d, '#avatarGrid .avatar-option')].find(o =>
+      o.getAttribute('data-avatar') === 'panda');
+    pick.click();
+    await wait(150);
+    check('20b. clicking an avatar selects it', true, pick.classList.contains('selected'));
+    check('20c. and only that one is selected', 1, qa(d, '#avatarGrid .avatar-option.selected').length);
+    check('20d. the badge picture updates', '🐼', q(d, '[data-ph-pic]').textContent);
+
+    // Esc closes only the top layer.
+    d.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await wait(200);
+    check('21. Esc closes the top pop-up only', false, visible(w, av));
+    check('22. and leaves the panel open', true, visible(w, panel));
+
+    // Achievements.
+    rowBtn(d, 'ach').click();
+    await wait(200);
+    const ach = d.getElementById('phAch');
+    check('23. achievements opens on top', true, visible(w, ach));
+    check('24. all four are listed', 4, qa(d, '#achievementsGrid .ph-ach').length);
+    check('25. it has an X', true, !!ach.querySelector('.ph-x'));
+
+    // Logout reuses the page's own confirm where there is one.
+    rowBtn(d, 'logout').click();
+    await wait(120);
+    check('26. logout reuses the page dialog when present', true, w.__logoutCalled === true);
+    rowBtn(d, 'pw').click();
+    await wait(80);
+    check('27. change password calls the page handler', true, w.__pwCalled === true);
+    f.remove();
+  }
+
+  // ── Teacher ──────────────────────────────────────────────────────────────
+  {
+    const { f, w, d } = await frame('<span data-profile-hub-mount></span>',
+      { name: 'T', role: 'teacher', studentClass: '', module: '', profile: {} });
+    q(d, '[data-ph-badge]').click();
+    await wait(200);
+    check('28. TEACHER: the teacher row exists', true, !!rowBtn(d, 'teacher'));
+
+    // "are you sure the buttons are the same?" - one row is an <a> and the rest
+    // are <button>s, which disagree by default on box model, font and margin,
+    // so the teacher row rendered wider with different padding. Measure them.
+    const all = [...qa(d, '#phPanel .ph-row')];
+    const geo = all.map(r => {
+      const c = w.getComputedStyle(r);
+      const b = r.getBoundingClientRect();
+      return { tag: r.tagName, w: Math.round(b.width), h: Math.round(b.height),
+               pad: c.paddingTop + '/' + c.paddingLeft, font: c.fontSize,
+               radius: c.borderTopLeftRadius, box: c.boxSizing };
+    });
+    const same = k => new Set(geo.map(g => String(g[k]))).size === 1;
+    check('28a. a link and buttons are both present', true,
+          new Set(geo.map(g => g.tag)).size > 1);
+    check('28b. every row is the same width', true, same('w'));
+    check('28c. every row is the same height', true, same('h'));
+    check('28d. every row has the same padding', true, same('pad'));
+    check('28e. every row has the same font size', true, same('font'));
+    check('28f. every row has the same corner radius', true, same('radius'));
+    check('29. and it links to the teacher dashboard', 'teacher-dashboard.html',
+          rowBtn(d, 'teacher').getAttribute('href'));
+    f.remove();
+  }
+
+  // ── Pages that provide neither logout modal nor password handler ─────────
+  {
+    const { f, d } = await frame('<span data-profile-hub-mount></span>', STUDENT);
+    q(d, '[data-ph-badge]').click();
+    await wait(200);
+    check('30. change password is absent where the page cannot do it', null, rowBtn(d, 'pw'));
+    check('31. logout is still offered', true, !!rowBtn(d, 'logout'));
+    f.remove();
+  }
+
+  // ── The floating wheel must be suppressed ────────────────────────────────
+  {
+    const { f, w, d } = await frame(
+      '<span data-profile-hub-mount></span><button id="appSettingsLaunch">gear</button>', STUDENT);
+    check('32. the old floating wheel is hidden', 'none',
+          w.getComputedStyle(d.getElementById('appSettingsLaunch')).display);
+  }
+  {
+    // app-settings.js builds a wheel AND places it in the header when a page
+    // gives it no opener. The module supplies a hidden one at parse time so it
+    // builds nothing at all.
+    const { f, d } = await frame('<span data-profile-hub-mount></span>', STUDENT);
+    const op = d.getElementById('phSettingsOpener');
+    check('33. a hidden settings opener is provided', true, !!op);
+    check('34. it is invisible', 'none', op.style.display);
+    check('35. and marked plain so no gear box is painted on it', true,
+          op.hasAttribute('data-app-settings-plain'));
+    f.remove();
+  }
+
+  try { localStorage.removeItem('ll-profile'); } catch (e) {}
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__phTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok).map(r=>r.name+' -> '+r.actual) };
+})();
+</script>
+</body>
+</html>

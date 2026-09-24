@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════
-   LISTENING CLASSROOM — theme overlay
-   Same brand language as Reading Classroom — dark glass, gradient
-   headlines, JetBrains Mono accents — but with sky-blue as the
+   LISTENING CLASSROOM - theme overlay
+   Same brand language as Reading Classroom - dark glass, gradient
+   headlines, JetBrains Mono accents - but with sky-blue as the
    dominant hue (matches the Listening skill tile on the hub).
    Adds an audio-player block + Q-marker highlight ring.
 
@@ -18,18 +18,18 @@ body.listening {
   --l-border:    rgba(148, 163, 184, 0.18);
   --l-text:      #f1f5f9;
   --l-text-mut:  #94a3b8;
-  --l-sky:       #0ea5e9;
-  --l-sky-2:     #38bdf8;
-  --l-violet:    #a78bfa;
+  --l-sky:       #60a5fa;
+  --l-sky-2:     #60a5fa;
+  --l-violet:    #60a5fa;
   --l-emerald:   #34d399;
   --l-rose:      #f43f5e;
   background:
-    radial-gradient(1200px 700px at 80% 0%, rgba(14, 165, 233, 0.10), transparent 60%),
-    radial-gradient(900px 600px at 0% 100%, rgba(167, 139, 250, 0.10), transparent 60%),
+    radial-gradient(1200px 700px at 80% 0%, rgba(37, 99, 235, 0.10), transparent 60%),
+    radial-gradient(900px 600px at 0% 100%, rgba(96, 165, 250, 0.10), transparent 60%),
     linear-gradient(180deg, var(--l-bg-0) 0%, var(--l-bg-1) 100%);
   background-attachment: fixed;
   color: var(--l-text);
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--ll-font);
   min-height: 100vh;
 }
 
@@ -60,7 +60,7 @@ body.listening {
 }
 .listening-brand .logo {
   font-size: 1.4em;
-  filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.5));
+  filter: drop-shadow(0 0 12px rgba(96, 165, 250, 0.5));
 }
 
 /* Buttons */
@@ -79,7 +79,7 @@ body.listening {
   gap: 8px;
   text-decoration: none;
 }
-.listening-btn:hover  { filter: brightness(1.1); border-color: rgba(56, 189, 248, 0.35); }
+.listening-btn:hover  { filter: brightness(1.1); border-color: rgba(96, 165, 250, 0.35); }
 .listening-btn:active { transform: translateY(1px); }
 .listening-btn.primary {
   background: linear-gradient(135deg, var(--l-sky), var(--l-sky-2));
@@ -90,7 +90,7 @@ body.listening {
 .listening-btn.danger {
   background: rgba(239, 68, 68, 0.14);
   border-color: rgba(239, 68, 68, 0.4);
-  color: #fca5a5;
+  color: var(--text-error, #fca5a5);
 }
 .listening-btn:disabled {
   opacity: 0.55;
@@ -108,7 +108,7 @@ body.listening {
   border-radius: 999px;
   padding: 4px 10px;
   font-size: 0.85em;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   letter-spacing: 0.04em;
 }
 
@@ -135,7 +135,7 @@ body.listening {
 }
 .listening-placeholder .headphones-glyph {
   font-size: 4em;
-  filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.4));
+  filter: drop-shadow(0 0 18px rgba(96, 165, 250, 0.4));
   animation: headphonesBob 2.4s ease-in-out infinite;
   margin-bottom: 14px;
 }
@@ -176,14 +176,14 @@ body.listening {
   font-size: 1.6em;
   cursor: pointer;
   flex-shrink: 0;
-  box-shadow: 0 12px 32px -10px rgba(56, 189, 248, 0.5);
+  box-shadow: 0 12px 32px -10px rgba(96, 165, 250, 0.5);
   transition: transform 0.1s, filter 0.15s;
 }
 .big-play-btn:hover  { filter: brightness(1.06); }
 .big-play-btn:active { transform: scale(0.97); }
 .audio-meta { flex: 1; min-width: 0; }
 .audio-time {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-size: 0.9em;
   color: var(--l-text-mut);
   margin-bottom: 6px;
@@ -231,7 +231,7 @@ body.listening {
 .qmarker-label {
   flex: 1;
   text-align: center;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-size: 0.85em;
   color: var(--l-text-mut);
   background: var(--l-surface-2);
@@ -317,21 +317,21 @@ body.listening {
 .ak-dot.empty { background: rgba(148, 163, 184, 0.1); }
 .ak-dot.right { background: var(--l-emerald); border-color: var(--l-emerald); }
 .ak-dot.wrong { background: var(--l-rose); border-color: var(--l-rose); }
-/* Projector-safe neutral dot — visible when eye-toggle is OFF. */
-.ak-dot.answered { background: rgba(167,139,250,0.85); border-color: rgba(167,139,250,1); }
+/* Projector-safe neutral dot - visible when eye-toggle is OFF. */
+.ak-dot.answered { background: rgba(96,165,250,0.85); border-color: rgba(96,165,250,1); }
 
 /* Projector-safe chip */
 .listening-chip.projector-safe {
-  background: linear-gradient(135deg, rgba(99,102,241,0.20), rgba(167,139,250,0.16));
-  border-color: rgba(167,139,250,0.55);
-  color: #c4b5fd;
+  background: linear-gradient(135deg, rgba(37,99,235,0.20), rgba(96,165,250,0.16));
+  border-color: rgba(96,165,250,0.55);
+  color: var(--text-accent, #c4b5fd);
   font-weight: 700;
 }
 /* Eye-toggle pressed state */
 #eyesToggleBtn[aria-pressed="true"] {
-  background: linear-gradient(135deg, rgba(34,197,94,0.16), rgba(56,189,248,0.10));
+  background: linear-gradient(135deg, rgba(34,197,94,0.16), rgba(96,165,250,0.10));
   border-color: rgba(34,197,94,0.45);
-  color: #86efac;
+  color: var(--text-success, #86efac);
 }
 
 .listening-answer-key summary {
@@ -367,7 +367,7 @@ body.listening {
   padding: 3px 6px;
   font-size: 0.88em;
 }
-.ak-row .ak-id  { font-family: 'JetBrains Mono', monospace; color: var(--l-text-mut); }
+.ak-row .ak-id  { font-family: var(--ll-mono); color: var(--l-text-mut); }
 .ak-row .ak-ans { color: var(--l-sky-2); font-weight: 700; }
 
 /* ─── Student exam view ─── */
@@ -392,10 +392,10 @@ body.listening {
   margin-top: 8px;
   font-size: 0.85em;
   color: var(--l-text-mut);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
 }
 
-/* Audio status row — under the title on the student's exam. The
+/* Audio status row - under the title on the student's exam. The
    dot pulses while the host is playing, so students get a calm
    "is this thing on?" check without any answer leak. */
 .audio-status-row {
@@ -444,10 +444,10 @@ body.listening {
   transition: background 0.15s ease;
 }
 .exam-section-h:hover {
-  background: rgba(56, 189, 248, 0.06);
+  background: rgba(96, 165, 250, 0.06);
 }
 .exam-section-h:focus-visible {
-  outline: 2px solid rgba(56, 189, 248, 0.55);
+  outline: 2px solid rgba(96, 165, 250, 0.55);
   outline-offset: 2px;
 }
 .exam-section-label {
@@ -459,9 +459,9 @@ body.listening {
 .exam-section-type {
   font-size: 0.75em;
   color: var(--l-text-mut);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
 }
-/* Chevron — button-shaped chip in sky-blue. Clearly a control. */
+/* Chevron - button-shaped chip in sky-blue. Clearly a control. */
 .exam-section-chevron {
   margin-left: auto;
   flex-shrink: 0;
@@ -471,8 +471,8 @@ body.listening {
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: rgba(56, 189, 248, 0.14);
-  border: 1.5px solid rgba(56, 189, 248, 0.45);
+  background: rgba(96, 165, 250, 0.14);
+  border: 1.5px solid rgba(96, 165, 250, 0.45);
   color: var(--l-sky-2);
   font-size: 1.15em;
   line-height: 1;
@@ -481,13 +481,13 @@ body.listening {
               background 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
 .exam-section-h:hover .exam-section-chevron {
-  background: rgba(56, 189, 248, 0.24);
+  background: rgba(96, 165, 250, 0.24);
   border-color: var(--l-sky-2);
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 14px rgba(96, 165, 250, 0.4);
 }
 .exam-section.is-collapsed .exam-section-chevron { transform: rotate(-90deg); }
 
-/* Accordion body — max-height-based, guaranteed-collapse. */
+/* Accordion body - max-height-based, guaranteed-collapse. */
 .exam-section-body {
   max-height: 4000px;
   overflow: hidden;
@@ -527,7 +527,7 @@ body.listening {
   border-radius: 8px;
 }
 .exam-item:last-child { border-bottom: none; }
-/* Per-question header — flex row with the stem text on the left
+/* Per-question header - flex row with the stem text on the left
    and a sky-blue chevron button on the right. */
 .exam-item-stem {
   margin-bottom: 10px;
@@ -545,8 +545,8 @@ body.listening {
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: rgba(56, 189, 248, 0.10);
-  border: 1.5px solid rgba(56, 189, 248, 0.35);
+  background: rgba(96, 165, 250, 0.10);
+  border: 1.5px solid rgba(96, 165, 250, 0.35);
   color: var(--l-sky-2);
   font-size: 1.05em;
   font-weight: 800;
@@ -558,9 +558,9 @@ body.listening {
   margin-top: 2px;
 }
 .exam-item-toggle:hover {
-  background: rgba(56, 189, 248, 0.22);
+  background: rgba(96, 165, 250, 0.22);
   border-color: var(--l-sky-2);
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.35);
 }
 .exam-item-toggle:focus-visible {
   outline: 2px solid var(--l-sky-2);
@@ -594,17 +594,17 @@ body.listening {
               transform 0.2s ease;
 }
 
-/* Q-marker highlight ring — applied to .exam-item when the host
+/* Q-marker highlight ring - applied to .exam-item when the host
    broadcasts that this question is the focus. Sky-blue glow,
    never green/red, so it doesn't reveal correctness. */
 .exam-item.is-active-q {
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.10), rgba(167, 139, 250, 0.06));
-  box-shadow: 0 0 0 2px var(--l-sky-2), 0 12px 32px -16px rgba(56, 189, 248, 0.6);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.10), rgba(96, 165, 250, 0.06));
+  box-shadow: 0 0 0 2px var(--l-sky-2), 0 12px 32px -16px rgba(96, 165, 250, 0.6);
   padding: 14px 14px;
   border-bottom-color: transparent;
 }
 
-/* MCQ / T-F options — same selected-violet rule as reading. */
+/* MCQ / T-F options - same selected-violet rule as reading. */
 .exam-options {
   display: flex;
   flex-direction: column;
@@ -626,20 +626,20 @@ body.listening {
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
 }
-.exam-opt:hover { border-color: rgba(167, 139, 250, 0.45); }
+.exam-opt:hover { border-color: rgba(96, 165, 250, 0.45); }
 .exam-opt input[type="radio"] {
   margin: 4px 0 0;
   accent-color: var(--l-violet);
 }
 .exam-opt-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-weight: 800;
   color: var(--l-text-mut);
   min-width: 22px;
 }
 .exam-opt-text { flex: 1; line-height: 1.4; }
 .exam-opt.is-selected {
-  background: linear-gradient(135deg, rgba(167, 139, 250, 0.18), rgba(99, 102, 241, 0.10));
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.18), rgba(37, 99, 235, 0.10));
   border-color: var(--l-violet);
 }
 .exam-opt.is-selected .exam-opt-label { color: var(--l-violet); }
@@ -655,7 +655,7 @@ body.listening {
   font-size: 1em;
   transition: border-color 0.15s;
 }
-.exam-text:hover { border-color: rgba(167, 139, 250, 0.45); }
+.exam-text:hover { border-color: rgba(96, 165, 250, 0.45); }
 .exam-text:focus { outline: none; border-color: var(--l-violet); }
 
 .exam-footer {
@@ -664,7 +664,7 @@ body.listening {
   border-top: 1px dashed var(--l-border);
 }
 
-/* Score / revealed cards — same pattern as reading */
+/* Score / revealed cards - same pattern as reading */
 .score-card {
   display: inline-flex;
   align-items: center;
@@ -685,7 +685,7 @@ body.listening {
   margin-bottom: 2px;
 }
 .score-value {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-weight: 800;
   font-size: 2.4em;
   line-height: 1;
@@ -704,7 +704,7 @@ body.listening {
   font-size: 1em;
   color: var(--l-sky-2);
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   margin-top: 4px;
 }
 
@@ -731,7 +731,7 @@ body.listening {
 .reveal-row.wrong { border-color: rgba(244, 63, 94, 0.45); }
 .reveal-row.empty { border-color: rgba(148, 163, 184, 0.35); opacity: 0.85; }
 .reveal-row-id {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-weight: 700;
   color: var(--l-text-mut);
   text-align: center;
@@ -748,7 +748,7 @@ body.listening {
   color: var(--l-text-mut);
   font-weight: 600;
 }
-.reveal-row.wrong .reveal-mine { color: #fca5a5; }
+.reveal-row.wrong .reveal-mine { color: var(--text-error, #fca5a5); }
 .reveal-row.right .reveal-mine { color: var(--l-emerald); }
 .reveal-correct { color: var(--l-emerald); }
 .reveal-row-mark {
@@ -775,15 +775,15 @@ body.listening {
   display: flex;
   align-items: center;
   gap: 20px;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.16), rgba(167, 139, 250, 0.10));
-  border: 1.5px solid rgba(56, 189, 248, 0.45);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.16), rgba(96, 165, 250, 0.10));
+  border: 1.5px solid rgba(96, 165, 250, 0.45);
   border-radius: 16px;
   padding: 22px 24px;
   margin-bottom: 24px;
 }
 .listening-win-banner .win-icon {
   font-size: 3em;
-  filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.4));
+  filter: drop-shadow(0 0 18px rgba(96, 165, 250, 0.4));
 }
 .listening-win-banner .win-text h1 {
   margin: 0 0 4px;
@@ -809,7 +809,7 @@ body.listening {
   text-align: center;
 }
 .stat-num {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-size: 1.8em;
   font-weight: 800;
   background: linear-gradient(135deg, var(--l-sky-2), var(--l-violet));
@@ -853,7 +853,7 @@ body.listening {
   padding: 6px 10px;
   font-size: 0.88em;
 }
-.per-q-id { font-family: 'JetBrains Mono', monospace; color: var(--l-text-mut); }
+.per-q-id { font-family: var(--ll-mono); color: var(--l-text-mut); }
 .per-q-ans strong { color: var(--l-sky-2); }
 .per-q-bar {
   height: 8px;
@@ -867,7 +867,7 @@ body.listening {
   transition: width 0.3s;
 }
 .per-q-pct {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--ll-mono);
   font-size: 0.85em;
   color: var(--l-text-mut);
   text-align: right;
@@ -931,7 +931,7 @@ body.listening {
   animation: toastUp 0.2s ease-out;
 }
 .listening-toast.success { border-color: rgba(52, 211, 153, 0.5); }
-.listening-toast.fail    { border-color: rgba(244, 63, 94, 0.5); color: #fca5a5; }
+.listening-toast.fail    { border-color: rgba(244, 63, 94, 0.5); color: var(--text-error, #fca5a5); }
 @keyframes toastUp {
   from { transform: translate(-50%, 10px); opacity: 0; }
   to   { transform: translate(-50%, 0);    opacity: 1; }
@@ -957,4 +957,40 @@ body.listening {
   .per-q-row .per-q-ans { grid-column: 2; }
   .per-q-row .per-q-bar,
   .per-q-row .per-q-pct { grid-column: 1 / -1; }
+}
+
+/* ============================================================
+   LIGHT MODE - emerald and rose stay: they mark right and wrong answers.
+   ============================================================ */
+.light-mode body.listening,
+body.light-mode.listening {
+  --l-bg-0:      #f6f8fb;
+  --l-bg-1:      #eef3fa;
+  --l-surface:   rgba(255, 255, 255, 0.9);
+  --l-surface-2: rgba(242, 246, 252, 0.75);
+  --l-border:    #d8e1ee;
+  --l-text:      #0f172a;
+  --l-text-mut:  #556274;
+  --l-sky:       #1d4ed8;
+  --l-sky-2:     #1d4ed8;
+  --l-violet:    #1d4ed8;
+  --l-emerald:   #166534;
+  --l-rose:      #b91c1c;
+  background:
+    radial-gradient(1200px 700px at 80% 0%, rgba(37, 99, 235, 0.06), transparent 60%),
+    radial-gradient(900px 600px at 0% 100%, rgba(96, 165, 250, 0.06), transparent 60%),
+    linear-gradient(180deg, var(--l-bg-0) 0%, var(--l-bg-1) 100%);
+}
+
+/* ============================================================
+   LIGHT MODE - generated by tools/light-coverage.js findings
+   Each rule mirrors a real one above and flips only its SURFACE,
+   keeping the original alpha so translucent panels stay translucent
+   and nothing about the layering changes. Dark is untouched.
+   ============================================================ */
+.light-mode .progress-tile {
+  background: rgba(255, 255, 255, 0.5);
+}
+.light-mode .progress-tile.submitted {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.10), rgba(255, 255, 255, 0.5));
 }

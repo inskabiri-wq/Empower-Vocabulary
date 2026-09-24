@@ -6,6 +6,12 @@ document.addEventListener('keydown', (e) => {
   if (!activeScreen) return;
   
   if (e.key === 'Escape') {
+    // Not while something is layered over the page. Escape belongs to the
+    // topmost thing on screen, and this handler is page-level: with the profile
+    // panel open it was closing the panel AND navigating, so Escape inside the
+    // profile dropped the student into the Vocabulary screen. The same applied
+    // to the logout confirm and the settings panel.
+    if (document.querySelector('.modal-overlay.active, .modal-overlay.open, .as-panel.open, .appdlg-overlay')) return;
     backToMenu();
     return;
   }
@@ -89,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
   //   • window.__previewMode = true (exam runners skip session writes)
   //   • Purple banner pinned to the top with a Close button
   //   • Auto-call the matching open-exam function once it's ready
-  // The teacher is logged in as themselves — their dashboard data may
+  // The teacher is logged in as themselves - their dashboard data may
   // look odd because they're not a student, but the EXAM itself
   // renders fine (it doesn't need student-profile fields).
   _previewModeBoot();
@@ -147,7 +153,7 @@ function _injectPreviewBanner() {
   b.id = 'previewModeBanner';
   b.style.cssText = `
     position: fixed; top: 0; left: 0; right: 0; z-index: 99999;
-    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    background: linear-gradient(135deg, #1d4ed8, #6d28d9);
     color: white; padding: 10px 16px;
     text-align: center; font-weight: 700;
     font-size: 0.88em; letter-spacing: 0.05em;
@@ -168,7 +174,7 @@ function _injectPreviewBanner() {
   // Push everything below the banner so it doesn't overlap content.
   document.body.style.paddingTop = (b.offsetHeight + 4) + 'px';
   b.querySelector('#previewModeCloseBtn').addEventListener('click', () => {
-    // Same pattern as the writing-exam preview close — try window.close()
+    // Same pattern as the writing-exam preview close - try window.close()
     // (works for tabs we opened ourselves), fall back to history back.
     try { window.close(); } catch (_) {}
     if (!window.closed) window.history.back();

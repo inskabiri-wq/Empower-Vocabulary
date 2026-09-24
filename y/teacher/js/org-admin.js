@@ -3,8 +3,13 @@
    ------------------------------------------------------------
    Manage which email domains may register and which may host
    teacher accounts. Stored in settings/organizations as:
-     { list: [{ name, domain, active, teacherEligible }],
+     { list: [{ name, domain, active, teacherEligible, logo }],
        activeDomains: [...], teacherEligibleDomains: [...] }
+
+   `logo` is the filename shown in the page header for that university
+   (js/org-brand.js). It MUST be carried through load() below: this panel
+   rewrites the whole `list` on every toggle, so any field it forgets to read
+   back is silently deleted the next time an admin clicks anything here.
    The sign-up gate (org-registry.js) reads this live. Writes are
    admin-only (general /settings rule). FSM domains are protected
    (can't be removed) because org-registry + the rules grandfather
@@ -22,7 +27,19 @@
   function deriveAndSave() {
     var u = (typeof auth !== 'undefined' && auth.currentUser) || null;
     if (!u) return Promise.resolve();
-    var clean = orgs.filter(function (o) { return o.domain; });
+    // Written out field by field so the stored shape is exactly the one
+    // documented at the top of this file. An empty logo is omitted rather
+    // than stored as "", so "no logo" reads the same as it always has.
+    var clean = orgs.filter(function (o) { return o.domain; }).map(function (o) {
+      var e = {
+        name: o.name || o.domain,
+        domain: o.domain,
+        active: o.active !== false,
+        teacherEligible: o.teacherEligible === true
+      };
+      if (o.logo) e.logo = o.logo;
+      return e;
+    });
     return db.collection('settings').doc('organizations').set({
       list: clean,
       activeDomains: clean.filter(function (o) { return o.active !== false; }).map(function (o) { return o.domain; }),
@@ -48,11 +65,20 @@
     return '<div style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--t2-surface,#161b22); border:1px solid var(--t2-border,#30363d); border-radius:12px; margin-bottom:10px; flex-wrap:wrap;">' +
       '<div style="flex:1; min-width:150px;">' +
         '<div style="font-weight:800; font-size:14px; color:var(--t2-text,#e6edf3);">' + esc(o.name || o.domain) + '</div>' +
-        '<div style="font-size:12px; color:var(--t2-text-muted,#7d8590);">@' + esc(o.domain) + (locked ? ' &middot; FSM (protected)' : '') + '</div>' +
+        '<div style="font-size:12px; color:var(--t2-text-muted,#7d8590);">@' + esc(o.domain) + (locked ? ' &middot; protected' : '') + '</div>' +
       '</div>' +
       toggleBtn('active', i, o.active !== false, 'Active', 'Inactive') +
       toggleBtn('teacher', i, o.teacherEligible === true, 'Can host teachers', 'Students only') +
       (locked ? '' : '<button type="button" class="org-del" data-i="' + i + '" style="cursor:pointer; font-family:inherit; font-size:12px; font-weight:600; color:#f87171; background:transparent; border:1px solid rgba(248,113,113,0.4); border-radius:20px; padding:5px 12px;">Remove</button>') +
+      // Header logo. Saved on change, not on keystroke - each save is a write.
+      '<div style="flex:1 1 100%; display:flex; align-items:center; gap:8px; padding-top:4px;">' +
+        (o.logo
+          ? '<img src="' + esc(o.logo.indexOf('/') === 0 || /^https?:/i.test(o.logo) ? o.logo : '/' + o.logo) + '" alt="" style="width:22px; height:22px; object-fit:contain; border-radius:4px;" onerror="this.style.display=\'none\'">'
+          : '') +
+        '<input type="text" class="org-logo" data-i="' + i + '" value="' + esc(o.logo || '') + '" ' +
+          'placeholder="header logo file, e.g. fsmvu-seal.png (blank = no logo)" autocomplete="off" ' +
+          'style="flex:1; min-width:150px; padding:6px 10px; border-radius:8px; border:1px solid var(--t2-border,#30363d); background:var(--t2-bg,#0d1117); color:var(--t2-text,#e6edf3); font-size:12px;">' +
+      '</div>' +
     '</div>';
   }
 
@@ -72,6 +98,10 @@
     box.innerHTML = rows + addForm();
     box.querySelectorAll('.org-toggle').forEach(function (b) { b.addEventListener('click', function () { toggle(b.getAttribute('data-kind'), parseInt(b.getAttribute('data-i'), 10)); }); });
     box.querySelectorAll('.org-del').forEach(function (b) { b.addEventListener('click', function () { removeOrg(parseInt(b.getAttribute('data-i'), 10)); }); });
+    // 'change' fires on blur / Enter, so one write per edit rather than per key.
+    box.querySelectorAll('.org-logo').forEach(function (inp) {
+      inp.addEventListener('change', function () { setLogo(parseInt(inp.getAttribute('data-i'), 10), inp.value); });
+    });
     var addBtn = $('orgAddBtn');
     if (addBtn) addBtn.addEventListener('click', addOrg);
   }
@@ -81,6 +111,18 @@
     if (!o) return;
     if (kind === 'active') o.active = !(o.active !== false);
     else if (kind === 'teacher') o.teacherEligible = !(o.teacherEligible === true);
+    deriveAndSave();
+    render();
+  }
+
+  // A bare filename is what org-brand.js expects ("fsmvu-seal.png"); it roots
+  // it itself. A full URL or an absolute path is passed through untouched.
+  function setLogo(i, value) {
+    var o = orgs[i];
+    if (!o) return;
+    var v = String(value || '').trim().replace(/^\.?\//, function (m) { return m === '/' ? '/' : ''; });
+    if (o.logo === v) return;
+    o.logo = v;
     deriveAndSave();
     render();
   }
@@ -114,7 +156,13 @@
       var d = snap.exists ? (snap.data() || {}) : {};
       if (Array.isArray(d.list) && d.list.length) {
         orgs = d.list.filter(function (o) { return o && o.domain; }).map(function (o) {
-          return { name: o.name || o.domain, domain: String(o.domain).toLowerCase(), active: o.active !== false, teacherEligible: o.teacherEligible === true };
+          return {
+            name: o.name || o.domain,
+            domain: String(o.domain).toLowerCase(),
+            active: o.active !== false,
+            teacherEligible: o.teacherEligible === true,
+            logo: o.logo || ''
+          };
         });
       } else if (typeof window.OrgRegistry !== 'undefined' && window.OrgRegistry.FALLBACK && Array.isArray(window.OrgRegistry.FALLBACK.list)) {
         orgs = window.OrgRegistry.FALLBACK.list.map(function (o) {
@@ -122,8 +170,8 @@
         });
       } else {
         orgs = [
-          { name: 'FSM University (Staff)', domain: 'fsm.edu.tr', active: true, teacherEligible: true },
-          { name: 'FSM University (Students)', domain: 'stu.fsm.edu.tr', active: true, teacherEligible: false }
+          { name: 'Staff', domain: 'fsm.edu.tr', active: true, teacherEligible: true },
+          { name: 'Students', domain: 'stu.fsm.edu.tr', active: true, teacherEligible: false }
         ];
       }
       render();

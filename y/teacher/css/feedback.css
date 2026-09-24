@@ -1,0 +1,73 @@
+/* ============================================================
+   ADMIN > FEEDBACK - teacher/js/feedback-admin.js
+   ------------------------------------------------------------
+   Written on the --t2-* tokens only (dashboard-v2.css defines them with
+   light-mode values; the Admin tab re-points some to its gray palette), so
+   it matches the rest of Admin in both themes. Body text 14px, nothing
+   below 12px - the "admin fonts ran too small" correction.
+   ============================================================ */
+
+#feedbackPanel .fb-panel { border: 1px solid var(--t2-border, #30363d); border-radius: 14px;
+  padding: 18px 20px; background: var(--t2-bg-inset, rgba(255,255,255,.02)); }
+#feedbackPanel .fb-title { margin: 0; font-size: 16px; font-weight: 800; color: var(--t2-text, #e6edf3); }
+#feedbackPanel .fb-note { margin: 8px 0 14px; font-size: 13px; color: var(--t2-text-muted, #7d8590); }
+
+[data-feedback-admin] { color: var(--t2-text, #e6edf3); font-size: 14px; }
+[data-feedback-admin] .fb-empty { padding: 22px; text-align: center; color: var(--t2-text-muted, #7d8590); }
+
+/* ── summary ── */
+[data-feedback-admin] .fb-summary { display: grid; grid-template-columns: auto 1fr auto; gap: 22px; align-items: center;
+  padding: 14px 16px; border: 1px solid var(--t2-border, #30363d); border-radius: 12px; background: var(--t2-surface, #161b22); }
+[data-feedback-admin] .fb-avg { text-align: center; min-width: 110px; }
+[data-feedback-admin] .fb-avg-n { font-size: 40px; font-weight: 800; line-height: 1; }
+[data-feedback-admin] .fb-avg-sub { font-size: 12.5px; color: var(--t2-text-muted, #7d8590); margin-top: 4px; }
+[data-feedback-admin] .fb-stars { color: #f59e0b; letter-spacing: 1px; font-size: 15px; }
+[data-feedback-admin] .fb-stars .fb-off { color: var(--t2-border, #30363d); }
+[data-feedback-admin] .fb-dist { display: flex; flex-direction: column; gap: 5px; }
+[data-feedback-admin] .fb-row { display: grid; grid-template-columns: 40px 1fr 32px; gap: 8px; align-items: center; font-size: 13px; }
+[data-feedback-admin] .fb-row-l { color: var(--t2-text-muted, #7d8590); }
+[data-feedback-admin] .fb-row-n { text-align: right; font-variant-numeric: tabular-nums; }
+[data-feedback-admin] .fb-bar { height: 9px; border-radius: 999px; background: var(--t2-surface2, rgba(148,163,184,.18)); overflow: hidden; }
+[data-feedback-admin] .fb-bar span { display: block; height: 100%; background: #f59e0b; border-radius: 999px; }
+[data-feedback-admin] .fb-split { display: flex; flex-direction: column; gap: 10px; font-size: 13px; min-width: 150px; }
+[data-feedback-admin] .fb-split div { display: flex; flex-direction: column; }
+[data-feedback-admin] .fb-split span { color: var(--t2-text-muted, #7d8590); }
+
+/* ── what people value ── */
+[data-feedback-admin] .fb-valued { margin-top: 14px; }
+[data-feedback-admin] .fb-h { font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--t2-text-muted, #7d8590); margin-bottom: 8px; }
+[data-feedback-admin] .fb-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+[data-feedback-admin] .fb-chip { font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px;
+  border: 1px solid var(--t2-border, #30363d); }
+[data-feedback-admin] .fb-chip b { margin-left: 3px; font-variant-numeric: tabular-nums; }
+
+/* ── filters ── */
+[data-feedback-admin] .fb-bar-f { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 16px 0 12px; }
+[data-feedback-admin] .ll-select { min-width: 150px; }
+[data-feedback-admin] .fb-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; cursor: pointer; }
+[data-feedback-admin] .fb-count { margin-left: auto; font-size: 13px; color: var(--t2-text-muted, #7d8590); }
+
+/* ── ratings ── */
+[data-feedback-admin] .fb-list { display: flex; flex-direction: column; gap: 10px; }
+[data-feedback-admin] .fb-card { border: 1px solid var(--t2-border, #30363d); border-radius: 12px; padding: 12px 15px;
+  background: var(--t2-surface, #161b22); }
+[data-feedback-admin] .fb-top { display: flex; align-items: center; gap: 10px; }
+[data-feedback-admin] .fb-word { font-weight: 700; font-size: 13.5px; }
+[data-feedback-admin] .fb-when { margin-left: auto; font-size: 12.5px; color: var(--t2-text-muted, #7d8590); }
+[data-feedback-admin] .fb-who { margin: 7px 0 0; font-size: 13.5px; }
+[data-feedback-admin] .fb-who small { color: var(--t2-text-muted, #7d8590); font-size: 12.5px; }
+[data-feedback-admin] .fb-role { display: inline-block; margin-left: 8px; font-size: 12px; font-weight: 700; padding: 1px 8px;
+  border-radius: 999px; border: 1px solid var(--t2-border, #30363d); }
+[data-feedback-admin] .fb-role-teacher { color: var(--t2-amber, #f59e0b); }
+[data-feedback-admin] .fb-role-student { color: var(--t2-blue, #3b82f6); }
+[data-feedback-admin] .fb-card .fb-chips { margin-top: 8px; }
+/* pre-wrap: the writer's line breaks are part of what they wrote. */
+[data-feedback-admin] .fb-comment { margin-top: 9px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+
+@media (max-width: 720px) {
+  [data-feedback-admin] .fb-summary { grid-template-columns: 1fr; gap: 14px; }
+  [data-feedback-admin] .fb-avg { text-align: left; }
+  [data-feedback-admin] .fb-count { margin-left: 0; width: 100%; }
+  [data-feedback-admin] .ll-select { flex: 1 1 140px; min-width: 0; }
+}

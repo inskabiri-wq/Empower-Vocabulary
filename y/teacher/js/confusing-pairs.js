@@ -1,20 +1,20 @@
 /* ============================================================
-   Teacher Dashboard — Confusing Word Pairs (shared module)
+   Teacher Dashboard - Confusing Word Pairs (shared module)
    Lets teachers flag word pairs that students confuse (delete/remove,
    exercise/workout, etc.). The flagged pairs are stored at
    settings/confusingPairs in Firestore and read by student/js/games.js
    so those words stop appearing as distractors of each other.
 
    Public API:
-     ConfusingPairs.mount(containerId)   — render the card into the
+     ConfusingPairs.mount(containerId)   - render the card into the
                                           DOM element with that id
-     ConfusingPairs.reload()             — re-fetch from Firestore
+     ConfusingPairs.reload()             - re-fetch from Firestore
                                           and re-render every mount
 
    Permissions (intentionally split so teachers can crowdsource but
    only admins can prune):
-     • addPair    — any signed-in teacher (or admin)
-     • removePair — admins only
+     • addPair    - any signed-in teacher (or admin)
+     • removePair - admins only
    ============================================================ */
 
 (function () {
@@ -39,7 +39,7 @@
   }
 
   // Use the existing toast modals from teacher/js/modals.js. They're
-  // global functions; this module is a thin shim — if those are not
+  // global functions; this module is a thin shim - if those are not
   // available (very early in load), fall back to console / alert.
   function ok(title, msg)   { if (typeof showSuccess === 'function') showSuccess(title, msg); else console.log(title, msg); }
   function err(title, msg)  { if (typeof showError   === 'function') showError(title, msg);   else alert(title + ': ' + msg); }
@@ -66,7 +66,7 @@
     const pairs = State.pairs;
     const admin = userIsAdmin();
     const rows = pairs.length === 0
-      ? `<div class="av-empty">No flagged pairs yet. Add the first one below — the system will stop offering these as wrong-answer options to each other.</div>`
+      ? `<div class="av-empty">No flagged pairs yet. Add the first one below - the system will stop offering these as wrong-answer options to each other.</div>`
       : `<table class="av-table av-cp-table">
            <thead>
              <tr>
@@ -82,7 +82,7 @@
                <tr>
                  <td><span class="av-cp-word">${esc(p.a)}</span></td>
                  <td><span class="av-cp-word">${esc(p.b)}</span></td>
-                 <td><span class="av-row-text">${esc(p.byName || p.by || '—')}</span></td>
+                 <td><span class="av-row-text">${esc(p.byName || p.by || '-')}</span></td>
                  <td><span class="av-row-text">${esc(p.note || '')}</span></td>
                  ${admin ? `<td class="av-th-narrow">
                    <button class="av-class-remove"
@@ -117,8 +117,8 @@
           <button class="av-btn av-btn--solid" data-cp-action="add">+ Flag pair</button>
         </div>
         <div class="av-cp-hint">${admin
-          ? "Order doesn't matter — the pair is bidirectional. Already-flagged pairs are ignored on duplicate submit."
-          : "Order doesn't matter — the pair is bidirectional. Only admins can remove a flagged pair."
+          ? "Order doesn't matter - the pair is bidirectional. Already-flagged pairs are ignored on duplicate submit."
+          : "Order doesn't matter - the pair is bidirectional. Only admins can remove a flagged pair."
         }</div>
       </div>
     `;
@@ -153,7 +153,7 @@
   function reload() { return load(); }
 
   async function addPair(cardEl) {
-    // Any teacher can flag a pair — no admin gate here.
+    // Any teacher can flag a pair - no admin gate here.
     const user = currentUser();
     if (!user) return err('Sign In Required', 'Please sign in before flagging pairs.');
 
@@ -262,7 +262,7 @@
     if (State.loaded) {
       renderInto(containerId);
     } else {
-      // First mount triggers the load — initial render is the empty
+      // First mount triggers the load - initial render is the empty
       // (loading) state, then renderAll() fires once data arrives.
       renderInto(containerId);
       load();

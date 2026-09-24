@@ -1,0 +1,240 @@
+﻿1
+00:00:00,000 --> 00:00:04,000
+Okay, everyone, if you'd like to come over here to our next exhibit.
+
+2
+00:00:04,000 --> 00:00:09,000
+Okay, so we're continuing to learn about the history of the home computer.
+
+3
+00:00:09,000 --> 00:00:12,000
+Now, does anyone recognize this amazing machine?
+
+4
+00:00:12,000 --> 00:00:17,000
+No? Well, anyone who grew up in Britain in the 1980s would immediately recognize this.
+
+5
+00:00:17,000 --> 00:00:22,000
+It's the famous BBC microcomputer. You've all heard of the BBC, right?
+
+6
+00:00:22,000 --> 00:00:25,000
+Well, of course. It's the television company in England.
+
+7
+00:00:25,000 --> 00:00:32,000
+The British Broadcasting Corporation, or BBC, is Britain's national, state-run television and radio network.
+
+8
+00:00:32,000 --> 00:00:34,000
+So why did a TV station make a computer?
+
+9
+00:00:34,000 --> 00:00:39,000
+That's a really interesting story. It starts in the early 1980s.
+
+10
+00:00:39,000 --> 00:00:46,000
+BBC television showed a program called The Mighty Micro, in which a professor, his name was Dr. Christopher Evans,
+
+11
+00:00:46,000 --> 00:00:53,000
+he predicted the importance of the microcomputer, what we today just call the computer or the personal computer.
+
+12
+00:00:53,000 --> 00:00:59,000
+Now, you have to remember that in 1980, there were no computers in homes, in schools, in libraries.
+
+13
+00:00:59,000 --> 00:01:05,000
+Computers were big and expensive, so they still weren't something that a family or a student would go out and buy.
+
+14
+00:01:05,000 --> 00:01:09,000
+But Dr. Evans made a prediction, a guess about the future.
+
+15
+00:01:09,000 --> 00:01:12,000
+He predicted that computers were going to get smaller.
+
+16
+00:01:12,000 --> 00:01:18,000
+Technology was making it possible to build a whole computer in a box that could fit on your desk.
+
+17
+00:01:18,000 --> 00:01:22,000
+That's why the first home computers were called microcomputers.
+
+18
+00:01:22,000 --> 00:01:24,000
+Micro meaning small.
+
+19
+00:01:24,000 --> 00:01:29,000
+Okay, so, um, Evans argued that the microcomputer was going to change everything,
+
+20
+00:01:29,000 --> 00:01:35,000
+and that Britain's children needed to learn how to use a computer in order to be prepared for the future.
+
+21
+00:01:35,000 --> 00:01:39,000
+Now, it just so happened that a lot of important people watched that program,
+
+22
+00:01:39,000 --> 00:01:43,000
+and Evans' predictions caught the attention of many people in Britain.
+
+23
+00:01:43,000 --> 00:01:50,000
+In fact, even the British Parliament, the government, ended up discussing the program and Evans' predictions.
+
+24
+00:01:50,000 --> 00:01:57,000
+So the BBC decided to start a new project to build a computer that was affordable, but that had lots of functions.
+
+25
+00:01:57,000 --> 00:02:04,000
+Text, graphics, sound, music, programming, even artificial intelligence.
+
+26
+00:02:04,000 --> 00:02:10,000
+The BBC planned to sell its microcomputer to homes and especially schools around the country.
+
+27
+00:02:10,000 --> 00:02:13,000
+So the BBC made the actual computer?
+
+28
+00:02:13,000 --> 00:02:14,000
+No, actually they didn't.
+
+29
+00:02:14,000 --> 00:02:22,000
+The BBC was, and still is, in the business of making television and radio programs, not computers.
+
+30
+00:02:22,000 --> 00:02:28,000
+So they wanted to find a computer company that could make the computer and put the BBC's name on it.
+
+31
+00:02:28,000 --> 00:02:35,000
+In Cambridge, England, home to the famous old university, a small company called Acorn heard about the project.
+
+32
+00:02:35,000 --> 00:02:42,000
+It just so happened that Acorn was already making its first computer, but it wasn't quite finished yet.
+
+33
+00:02:42,000 --> 00:02:46,000
+The Acorn employees worked through the night and finished that first computer.
+
+34
+00:02:46,000 --> 00:02:48,000
+It was called the Proton.
+
+35
+00:02:48,000 --> 00:02:53,000
+They showed their brand new creation to the BBC and won the contract.
+
+36
+00:02:53,000 --> 00:02:58,000
+It's really an amazing story of a small company beating all the bigger corporations.
+
+37
+00:02:58,000 --> 00:03:04,000
+The first BBC computer, they called it the Model A, came out in 1981.
+
+38
+00:03:04,000 --> 00:03:08,000
+And the Model B came out not too long afterward.
+
+39
+00:03:08,000 --> 00:03:10,000
+And that's the computer you can see here.
+
+40
+00:03:10,000 --> 00:03:13,000
+The BBC Model B microcomputer.
+
+41
+00:03:13,000 --> 00:03:21,000
+The computer was an immediate success, mainly because schools in Britain bought many of them to teach computer skills to students.
+
+42
+00:03:21,000 --> 00:03:24,000
+Excuse me, what could you do with a computer like this?
+
+43
+00:03:24,000 --> 00:03:26,000
+I mean, what was it capable of?
+
+44
+00:03:26,000 --> 00:03:34,000
+Well, the B, that's the nickname for the BBC Model B microcomputer, was an amazing computer for its time.
+
+45
+00:03:34,000 --> 00:03:39,000
+You could write programs, draw pictures in eight colors, write music.
+
+46
+00:03:39,000 --> 00:03:42,000
+The computer could even speak words in English.
+
+47
+00:03:42,000 --> 00:03:44,000
+And you could play games.
+
+48
+00:03:44,000 --> 00:03:49,000
+Today you would find them very simple, but they were pretty cool in the early 80s.
+
+49
+00:03:49,000 --> 00:03:52,000
+There was also a lot of educational software.
+
+50
+00:03:52,000 --> 00:03:57,000
+Programs that taught children English, math, science, and history.
+
+51
+00:03:57,000 --> 00:04:03,000
+Math teachers loved the BBC Buggy, a robot that you could control using a BBC computer.
+
+52
+00:04:03,000 --> 00:04:07,000
+And of course you could use the computer for word processing.
+
+53
+00:04:07,000 --> 00:04:11,000
+It was really new for most kids to type their essays and then print them.
+
+54
+00:04:11,000 --> 00:04:13,000
+It was very exciting.
+
+55
+00:04:13,000 --> 00:04:16,000
+Was the BBC computer used in elementary schools?
+
+56
+00:04:16,000 --> 00:04:19,000
+Eventually, yes, but not at first.
+
+57
+00:04:19,000 --> 00:04:24,000
+I have British friends who first used this computer when they were in middle or high school.
+
+58
+00:04:24,000 --> 00:04:26,000
+Things have certainly changed, right?
+
+59
+00:04:26,000 --> 00:04:31,000
+I mean, nowadays some children are using computers even before they go to elementary school.
+
+60
+00:04:31,000 --> 00:04:38,000
+Okay, any more questions before we move on to the next exhibit?
+

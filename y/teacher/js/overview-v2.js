@@ -31,16 +31,16 @@
   }
   const THEME_COLORS = {
     blue:   _read('--t2-blue',   '#3b82f6'),
-    cyan:   _read('--t2-cyan',   '#22d3ee'),
+    cyan:   _read('--t2-cyan',   '#60a5fa'),
     green:  _read('--t2-green',  '#22c55e'),
     amber:  _read('--t2-amber',  '#f59e0b'),
     red:    _read('--t2-red',    '#ef4444'),
-    purple: _read('--t2-purple', '#a855f7'),
+    purple: _read('--t2-purple', '#1d4ed8'),
     // Extras for activity-popularity color coding only:
-    orange: _read('--t2-orange', '#fb923c'),
-    sky:    _read('--t2-sky',    '#0ea5e9'),
-    indigo: _read('--t2-indigo', '#6366f1'),
-    rose:   _read('--t2-rose',   '#fb7185'),
+    orange: _read('--t2-orange', '#60a5fa'),
+    sky:    _read('--t2-sky',    '#2563eb'),
+    indigo: _read('--t2-indigo', '#2563eb'),
+    rose:   _read('--t2-rose',   '#60a5fa'),
     muted:  _read('--t2-text-muted', '#7d8590'),
   };
 
@@ -85,6 +85,12 @@
       '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>',
     'activity':
       '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+    // "Rate Lingualab" in the sidebar (js/app-rating.js).
+    'star':
+      '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+    // The Overview card for messages from students (teacher/js/messages-admin.js).
+    'inbox':
+      '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
     'crown':
       '<path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zM5 20h14"/>',
     'flask':
@@ -93,6 +99,15 @@
       '<line x1="6" x2="10" y1="11" y2="11"/><line x1="8" x2="8" y1="9" y2="13"/><line x1="15" x2="15.01" y1="12" y2="12"/><line x1="18" x2="18.01" y1="10" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258A4 4 0 0 0 17.32 5z"/>',
     'download':
       '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+    // Used by the sidebar's Display row. It lives here, with the other sidebar
+    // icons, rather than coming from js/app-settings.js: that one paints a
+    // 44x44 icon-button gear, which is right for a header button and wrong for
+    // a nav row, and it lands late because app-settings runs its whole mount
+    // first. Drawn from this set, the Display icon is the same 18px, the same
+    // stroke and the same currentColor as Widgets and Lingualab, and it appears
+    // in the same hydrate pass as they do.
+    'settings':
+      '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
     'log-out':
       '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>',
     'alert-triangle':
@@ -237,6 +252,8 @@
     renderStatCards();
     renderActivityPopularity();
     refreshActivityPopularitySubtitle();
+    // "done in Nd" is windowed by this same period, so it has to redraw too.
+    renderEssaysBand();
   }
   window.t2SetPeriod = t2SetPeriod;
 
@@ -441,13 +458,14 @@
     });
   }
 
-  // Color per stat card - keeps the design's accent mapping.
-  // Sourced from THEME_COLORS so changing --t2-* re-themes here too.
+  // Color per stat card. These are four CATEGORIES, not four states, so they
+  // step through blue rather than reusing amber and green - a card tinted amber
+  // reads as "needs attention" when it only means "active students".
   const CARD_ACCENTS = {
-    students: THEME_COLORS.cyan,
-    sessions: THEME_COLORS.purple,
-    active:   THEME_COLORS.amber,
-    score:    THEME_COLORS.green
+    students: '#1d4ed8',
+    sessions: '#2563eb',
+    active:   '#0284c7',
+    score:    '#3b82f6'
   };
 
   function fillCard(id, data) {
@@ -483,11 +501,15 @@
   // Render - Level Distribution mini-bar chart
   // ============================================================
   const LEVELS_ORDER = ['A2', 'B1', 'B1+', 'B2', 'C1'];
+  // CEFR level is ORDINAL, so the ramp runs light to dark as the level rises.
+  // C1 is in LEVELS_ORDER but was missing here, so a C1 bar drew with no
+  // colour at all.
   const LEVEL_COLORS = {
-    'A2':  THEME_COLORS.blue,
-    'B1':  THEME_COLORS.cyan,
-    'B1+': THEME_COLORS.purple,
-    'B2':  THEME_COLORS.green
+    'A2':  '#93c5fd',
+    'B1':  '#60a5fa',
+    'B1+': '#3b82f6',
+    'B2':  '#2563eb',
+    'C1':  '#1e40af'
   };
 
   // Count STUDENTS per level (their assigned profile level), not
@@ -498,7 +520,17 @@
   // Weekly Activity. Distinct concerns, distinct panels.
   function renderLevelDistribution() {
     const students = (typeof allStudents !== 'undefined' && Array.isArray(allStudents)) ? allStudents : [];
-    const counts = { 'A2': 0, 'B1': 0, 'B1+': 0, 'B2': 0 };
+    // Seeded FROM LEVELS_ORDER, so the two lists cannot drift apart.
+    //
+    // This was a hand-written literal missing 'C1', and the damage went well
+    // past the missing label. `counts['C1']` was undefined, so the legend
+    // printed "C1 undefined" AND `Math.max` over the counts returned NaN.
+    // `NaN || 1` then quietly made max 1 on every render, which meant every
+    // bar was drawn as a percentage of 1 rather than of the real maximum: any
+    // level with more than one student rendered full height. The chart has
+    // been mis-scaled, not just mislabelled.
+    const counts = {};
+    LEVELS_ORDER.forEach(l => { counts[l] = 0; });
     students.forEach(s => {
       if (s && counts.hasOwnProperty(s.level)) counts[s.level] += 1;
     });
@@ -540,25 +572,38 @@
   //   actionable for content / curriculum decisions in a way the
   //   day-by-hour heatmap was not.
   // ============================================================
+  // Popularity-chart scale. The bars need to be told apart, so this is a
+  // SEQUENTIAL blue ramp rather than one flat blue: dark to light, ordered so
+  // neighbouring rows differ.
+  //
+  // It is deliberately its own scale and not THEME_COLORS. The chart used to
+  // borrow --t2-green, --t2-red and --t2-amber as category colours, which meant
+  // "Word Order" was drawn in the same green as a passed state and "Unscramble"
+  // in the same red as a failure - colours that mean something specific
+  // everywhere else on this dashboard. Categories now own a palette that
+  // carries no status meaning.
+  const POP_SCALE = [
+    '#1e3a8a', '#1d4ed8', '#2563eb', '#3b82f6', '#0369a1', '#0284c7',
+    '#60a5fa', '#075985', '#1e40af', '#60a5fa', '#93c5fd', '#0c4a6e', '#7dd3fc'
+  ];
+
   // Canonical activity meta - icon set must match activity.js
   // activityIcons. Each activity has ONE icon used everywhere in the
-  // teacher dashboard. Colors are intentionally varied per activity to
-  // make the popularity chart readable; they pull from THEME_COLORS at
-  // the top of this file (no more inline hex literals here).
+  // teacher dashboard.
   const ACTIVITY_META = {
-    'grammar-choice':     { name: 'Grammar · Multiple Choice',  icon: '🎯', color: THEME_COLORS.amber },
-    'grammar-fill':       { name: 'Grammar · Fill in the Blank', icon: '📝', color: THEME_COLORS.amber },
-    'grammar-unscramble': { name: 'Grammar · Unscramble',        icon: '🧩', color: THEME_COLORS.amber },
-    'match':           { name: 'Match',            icon: '🔗', color: THEME_COLORS.purple },
-    'choice':          { name: 'Multiple Choice',  icon: '🎯', color: THEME_COLORS.blue   },
-    'fillblank':       { name: 'Fill in Blank',    icon: '📝', color: THEME_COLORS.amber  },
-    'spelling':        { name: 'Spelling',         icon: '⌨️', color: THEME_COLORS.cyan   },
-    'reverse':         { name: 'Listening Mode',   icon: '🔄', color: THEME_COLORS.orange },
-    'order':           { name: 'Word Order',       icon: '🔀', color: THEME_COLORS.green  },
-    'pronunciation':   { name: 'Pronunciation',    icon: '🗣️', color: THEME_COLORS.sky    },
-    'unscramble':      { name: 'Unscramble',       icon: '🧩', color: THEME_COLORS.red    },
-    'listening-exam':  { name: 'Listening Exam',   icon: '🎧', color: THEME_COLORS.indigo },
-    'reading-exam':    { name: 'Reading Exam',     icon: '📖', color: THEME_COLORS.rose   }
+    'grammar-choice':     { name: 'Grammar · Multiple Choice',   icon: '🎯', color: POP_SCALE[0]  },
+    'grammar-fill':       { name: 'Grammar · Fill in the Blank', icon: '📝', color: POP_SCALE[1]  },
+    'grammar-unscramble': { name: 'Grammar · Unscramble',        icon: '🧩', color: POP_SCALE[2]  },
+    'match':           { name: 'Match',            icon: '🔗', color: POP_SCALE[3]  },
+    'choice':          { name: 'Multiple Choice',  icon: '🎯', color: POP_SCALE[4]  },
+    'fillblank':       { name: 'Fill in Blank',    icon: '📝', color: POP_SCALE[5]  },
+    'spelling':        { name: 'Spelling',         icon: '⌨️', color: POP_SCALE[6]  },
+    'reverse':         { name: 'Listening Mode',   icon: '🔄', color: POP_SCALE[7]  },
+    'order':           { name: 'Word Order',       icon: '🔀', color: POP_SCALE[8]  },
+    'pronunciation':   { name: 'Pronunciation',    icon: '🗣️', color: POP_SCALE[9]  },
+    'unscramble':      { name: 'Unscramble',       icon: '🧩', color: POP_SCALE[10] },
+    'listening-exam':  { name: 'Listening Exam',   icon: '🎧', color: POP_SCALE[11] },
+    'reading-exam':    { name: 'Reading Exam',     icon: '📖', color: POP_SCALE[12] }
   };
 
   function renderActivityPopularity() {
@@ -674,7 +719,109 @@
     return rows;
   }
 
+  // Essays waiting to be graded, drawn as a band above the student rows.
+  // The count comes from LLEssaysWaiting() in teacher/js/activity.js so this
+  // panel and the Grading tab can never disagree. No Firestore reads: it
+  // reads the writingSubmissions snapshot the dashboard already holds.
+  // Expanded state survives a re-render, so a snapshot landing while the
+  // teacher has the list open does not fold it shut under them.
+  let essaysOpen = false;
+
+  function ageText(h) {
+    if (h == null) return null;
+    return h < 24 ? h + 'h' : Math.floor(h / 24) + 'd';
+  }
+
+  function renderEssaysBand() {
+    const band = $('t2essaysBand');
+    if (!band) return;
+    const e = window.LLEssaysWaiting
+      ? window.LLEssaysWaiting({ doneWindowDays: t2Period })
+      : { count: 0, list: [], overdue: 0, done: 0, doneWindowDays: 7, byAssignment: [] };
+
+    // Submissions whose assignment was deleted. They are excluded from the
+    // marking queue - there is nothing left to grade against - but they are
+    // NOT hidden: silently dropping student work is how you stop trusting the
+    // number. Shown as a note so the orphan is visible and explained.
+    const orphanNote = e.orphaned
+      ? '<div class="t2-essays-orphan">' +
+          '<strong>' + e.orphaned + '</strong> submission' + (e.orphaned === 1 ? '' : 's') +
+          ' belong' + (e.orphaned === 1 ? 's' : '') + ' to a deleted assignment, so ' +
+          (e.orphaned === 1 ? 'it is' : 'they are') + ' not counted above. ' +
+          'There is nothing left to grade ' + (e.orphaned === 1 ? 'it' : 'them') + ' against.' +
+        '</div>'
+      : '';
+
+    // Nothing waiting: still worth showing if work was marked recently, or if
+    // there are orphans to explain. Otherwise hide.
+    if (!e.count) {
+      if (e.done > 0 || e.orphaned > 0) {
+        band.innerHTML =
+          '<div class="t2-essays-head">' +
+            '<div class="t2-essays-main">' +
+              '<span class="t2-essays-ico">&#9989;</span>' +
+              '<span class="t2-essays-lbl">Nothing waiting to be graded.' +
+                (e.done > 0 ? ' <strong>' + e.done + '</strong> marked in the last ' + e.doneWindowDays + ' days.' : '') +
+              '</span>' +
+            '</div>' +
+          '</div>' + orphanNote;
+        band.style.display = 'block';
+      } else {
+        band.style.display = 'none';
+        band.innerHTML = '';
+      }
+      return;
+    }
+
+    const waited = ageText(e.list[0] && e.list[0].hours);
+
+    // Facts, in the order a teacher triages by: how many, how many late,
+    // how many cleared recently, how long the oldest has sat.
+    const facts = [];
+    if (e.overdue > 0) facts.push('<span class="t2-essays-overdue">' + e.overdue + ' overdue</span>');
+    if (e.done > 0)    facts.push(e.done + ' done in ' + e.doneWindowDays + 'd');
+    if (waited)        facts.push('oldest ' + waited);
+
+    // Which assignments the pile belongs to.
+    const perAsg = e.byAssignment.slice(0, 3)
+      .map((a) => escapeHtml(a.title) + ' (' + a.n + ')').join(' &middot; ') +
+      (e.byAssignment.length > 3 ? ' &middot; +' + (e.byAssignment.length - 3) + ' more' : '');
+
+    const rows = e.list.map((s) => {
+      const a = ageText(s.hours);
+      return '<div class="t2-essays-row' + (s.overdue ? ' is-overdue' : '') + '">' +
+        '<span class="t2-essays-who">' + escapeHtml(s.name) + '</span>' +
+        '<span class="t2-essays-meta">' + escapeHtml(s.cls) + ' &middot; ' + escapeHtml(s.title) + '</span>' +
+        '<span class="t2-essays-age">' + (s.overdue ? 'overdue &middot; ' : '') + (a ? a : 'waiting') + '</span>' +
+      '</div>';
+    }).join('');
+
+    band.innerHTML =
+      '<div class="t2-essays-head">' +
+        '<button type="button" class="t2-essays-toggle" id="t2essaysToggle" ' +
+                'aria-expanded="' + (essaysOpen ? 'true' : 'false') + '">' +
+          '<span class="t2-essays-ico">&#9997;&#65039;</span>' +
+          '<span class="t2-essays-n">' + e.count + '</span>' +
+          '<span class="t2-essays-lbl">' +
+            (e.count === 1 ? 'essay waiting' : 'essays waiting') +
+            (facts.length ? ' &middot; ' + facts.join(' &middot; ') : '') +
+          '</span>' +
+          '<span class="t2-essays-caret">' + (essaysOpen ? '&#9652;' : '&#9662;') + '</span>' +
+        '</button>' +
+        '<button type="button" class="t2-btn" onclick="switchTab(\'assignments\')">Grade now</button>' +
+      '</div>' +
+      (perAsg ? '<div class="t2-essays-asg">' + perAsg + '</div>' : '') +
+      orphanNote +
+      '<div class="t2-essays-rows"' + (essaysOpen ? '' : ' hidden') + '>' + rows + '</div>';
+
+    const t = band.querySelector('#t2essaysToggle');
+    if (t) t.onclick = function () { essaysOpen = !essaysOpen; renderEssaysBand(); };
+
+    band.style.display = 'block';
+  }
+
   function renderNeedsAttention() {
+    renderEssaysBand();
     const listEl  = $('t2attnList');
     const countEl = $('t2attnCount');
     if (!listEl) return;
@@ -915,7 +1062,11 @@
     assignments: () => ({ title: '📋 Assignments',  sub: 'Manage and track student assignments' }),
     courses:     () => ({ title: '🎓 Courses',      sub: 'Activate mini courses and track certificates' }),
     activity:    () => ({ title: '📈 Activity',     sub: 'View recent session and practice activity' }),
-    admin:       () => ({ title: '👑 Admin',        sub: 'Manage teacher accounts and class assignments' })
+    admin:       () => ({ title: '👑 Admin',        sub: 'Manage teacher accounts and class assignments' }),
+    // Without this the Placement tab fell through to TAB_HEADERS.overview and
+    // wore the Overview's greeting and period selector, which made it look as
+    // though the wrong tab had opened.
+    placement:   () => ({ title: '🎯 Placement Test', sub: 'Configure the test and review student results' })
   };
 
   function renderHeaderForTab(tabName) {
@@ -1021,6 +1172,13 @@
   // Expose
   window.renderOverviewV2     = renderOverviewV2;
   window.t2RenderHeaderForTab = renderHeaderForTab;
+
+  // Exposed so the writingSubmissions listener can refresh the band when its
+  // snapshot lands. renderOverviewV2() runs ONCE, after loadDashboard, and the
+  // submissions arrive later on their own listener - so the band was drawn
+  // against an empty map, hid itself, and nothing ever drew it again. Same
+  // race the grammar Quest Board had.
+  window.LLRefreshEssaysBand  = renderEssaysBand;
 
   // Bootstrap sidebar wiring SYNCHRONOUSLY (not on DOMContentLoaded).
   // Reasoning: the inline <script> in teacher-dashboard.html (a) defines

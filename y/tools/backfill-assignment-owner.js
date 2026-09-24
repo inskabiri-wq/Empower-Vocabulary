@@ -9,7 +9,7 @@
      editor's uid on update/delete. Legacy docs without teacherId
      are grandfathered (anyone can edit them) for backward compat.
      This script stamps teacherId on those legacy docs so the
-     grandfather clause becomes a no-op in practice — every doc
+     grandfather clause becomes a no-op in practice - every doc
      is owned by someone after we run this.
 
    Resolution order for each legacy doc:
@@ -22,7 +22,7 @@
      node tools/backfill-assignment-owner.js
 
    Requires tools/.serviceAccount.json (same as the other admin
-   scripts). Re-runnable safely — skips docs already stamped.
+   scripts). Re-runnable safely - skips docs already stamped.
    ============================================================ */
 
 const path = require('path');
@@ -66,7 +66,7 @@ async function uidFromName(name) {
   if (!name) return null;
   const key = String(name).trim();
   if (nameCache.has(key)) return nameCache.get(key);
-  // Auth has no direct "find user by displayName" — search the users
+  // Auth has no direct "find user by displayName" - search the users
   // collection by `name` field instead. Only takes the first match
   // (displayName isn't guaranteed unique).
   try {
@@ -87,7 +87,7 @@ async function main() {
   console.log('Backfilling assignment ownership (teacherId)...');
   console.log('');
 
-  // Resolve admin uid up front — used as the fallback owner.
+  // Resolve admin uid up front - used as the fallback owner.
   let adminUid = null;
   try {
     const adminRec = await auth.getUserByEmail(ADMIN_EMAIL);
@@ -95,7 +95,7 @@ async function main() {
     console.log(`  Admin uid: ${adminUid}`);
   } catch (err) {
     console.error(`  Could not resolve admin email ${ADMIN_EMAIL}: ${err.message}`);
-    console.error('  Aborting — backfill requires a fallback owner.');
+    console.error('  Aborting - backfill requires a fallback owner.');
     process.exit(1);
   }
 
@@ -124,7 +124,7 @@ async function main() {
       const data = doc.data() || {};
       cursor = doc;
 
-      // Already owned — nothing to do. Treat empty string / null as
+      // Already owned - nothing to do. Treat empty string / null as
       // "not stamped" so old half-migrations get cleaned up.
       if (data.teacherId && String(data.teacherId).trim()) {
         counters.alreadyStamped++;

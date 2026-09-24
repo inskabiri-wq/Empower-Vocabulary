@@ -15,42 +15,18 @@
    never to the page basics.
    ============================================================ */
 
-body.tug      { --game-accent: #f59e0b; --game-accent-2: #ef4444; }
-body.bingo    { --game-accent: #a855f7; --game-accent-2: #ec4899; }
-body.scramble { --game-accent: #10b981; --game-accent-2: #06b6d4; }
+body.tug      { --game-accent: #3b82f6; --game-accent-2: #ef4444; }
+body.bingo    { --game-accent: #1d4ed8; --game-accent-2: #ec4899; }
+body.scramble { --game-accent: #10b981; --game-accent-2: #2563eb; }
 
-/* ── Session QR card - identical to the one in classroom-teacher.html
-   (copied so every game lobby shows the exact same QR block). ── */
-.session-qr-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0 24px;
-  padding: 18px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-}
-.session-qr-tile {
-  background: #ffffff;
-  padding: 10px;
-  border-radius: 12px;
-  line-height: 0;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
-}
-.session-qr-tile img { display: block; width: 220px; height: 220px; }
-.session-qr-label {
-  font-size: 0.9em;
-  font-weight: 600;
-  color: var(--text-secondary, #94a3b8);
-  text-align: center;
-}
-.session-qr-small {
-  border-radius: 8px;
-  background: #fff;
-  padding: 3px;
-}
+/* ── Session QR card ──────────────────────────────────────────
+   Moved to classroom/css/styles.css. The note here used to say it was
+   "copied so every game lobby shows the exact same QR block", and that was
+   the right intention, but a copy in THIS file only reaches the games that
+   load it. The Heist, Trust, Reading and Listening load neither this file nor
+   the inline copy that was in classroom-teacher.html, so they showed a bare
+   unstyled QR. styles.css is loaded by every classroom page, so it lives
+   there now and there is nothing to keep in step. ── */
 
 /* ── Shared layout helper for host live views ── */
 .mg-live-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; }
@@ -154,7 +130,7 @@ body.scramble { --game-accent: #10b981; --game-accent-2: #06b6d4; }
 }
 .bingo-cell:hover { border-color: var(--accent-primary); }
 .bingo-cell.marked {
-  background: linear-gradient(135deg, var(--game-accent, #a855f7), var(--game-accent-2, #ec4899));
+  background: linear-gradient(135deg, var(--game-accent, #1d4ed8), var(--game-accent-2, #ec4899));
   border-color: transparent;
   color: #fff;
   text-decoration: line-through;
@@ -202,4 +178,243 @@ body.scramble { --game-accent: #10b981; --game-accent-2: #06b6d4; }
 
 @media (max-width: 640px) {
   .bingo-call-text { font-size: 1.25rem; }
+}
+
+/* ============================================================
+   AI QUIZ
+   ------------------------------------------------------------
+   Everything here is built from the shared theme tokens rather
+   than colour literals, so the game follows light and dark
+   without needing a second set of rules. That is the lesson from
+   the repaint: the games that hardcoded dark values are the ones
+   that had to be fixed twice.
+   ============================================================ */
+
+/* Setup: which modules of the course this game asks about. */
+.mg-module-checks { display: grid; gap: 8px; }
+.mg-module-check {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px;
+  background: var(--bg-item); border: 1px solid var(--border-color);
+  cursor: pointer; font-size: 0.92rem;
+}
+.mg-module-check input { width: 18px; height: 18px; cursor: pointer; }
+.mg-module-check span:first-of-type { flex: 1; min-width: 0; }
+.mg-module-n { color: var(--text-muted); font-size: 0.82rem; font-weight: 700; }
+
+/* The lobby shows a COUNT. A card per student is what makes a big
+   room unusable, and on a projector the number is the useful part. */
+.mg-player-count {
+  grid-column: 1 / -1; text-align: center;
+  font-size: 3.2rem; font-weight: 800; line-height: 1.1;
+  color: var(--accent-primary);
+}
+.mg-player-count span {
+  display: block; font-size: 0.9rem; font-weight: 600;
+  color: var(--text-secondary); margin-top: 4px;
+}
+
+.mg-quiet { color: var(--text-muted); font-size: 0.9rem; padding: 10px 0; }
+
+/* Host screen: the question and its options, for the projector. */
+.aiq-options { display: grid; gap: 8px; margin-top: 14px; }
+.aiq-option {
+  display: flex; align-items: center; gap: 10px; text-align: left;
+  padding: 12px 14px; border-radius: 10px;
+  background: var(--bg-item); border: 1px solid var(--border-color);
+  color: var(--text-primary); font-size: 1rem;
+}
+
+/* Student screen: the same options as tap targets. */
+.aiq-answers { display: grid; gap: 10px; }
+.aiq-answer {
+  display: flex; align-items: center; gap: 10px; text-align: left;
+  width: 100%; padding: 14px; border-radius: 12px;
+  background: var(--bg-item); border: 1px solid var(--border-color);
+  color: var(--text-primary); font: inherit; font-size: 1rem;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  /* A phone tap target, and no text selection flash on tap. */
+  min-height: 56px;
+  -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.aiq-answer:hover:not(:disabled) { border-color: var(--accent-primary); }
+.aiq-answer:disabled { cursor: default; opacity: 0.85; }
+
+.aiq-key {
+  flex: none; width: 26px; height: 26px; border-radius: 7px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--tint-surface, rgba(127, 127, 127, 0.14));
+  font-weight: 800; font-size: 0.85rem;
+}
+
+/* Marking, once the question closes. */
+.aiq-option.is-correct,
+.aiq-answer.is-correct {
+  border-color: var(--success);
+  background: color-mix(in srgb, var(--success) 14%, transparent);
+}
+.aiq-answer.is-wrong {
+  border-color: var(--error);
+  background: color-mix(in srgb, var(--error) 12%, transparent);
+}
+
+.aiq-feedback { margin-top: 14px; font-weight: 700; min-height: 1.4em; }
+.aiq-feedback.is-correct { color: var(--success); }
+.aiq-feedback.is-wrong { color: var(--error); }
+
+/* TWO LANGUAGES. With "English + Türkçe" the Turkish sits on its own quieter
+   line under the English - in the question and in every option, on the
+   projector and on the phones. The label wraps as a block so the A/B/C/D key
+   stays aligned with the first line. */
+.aiq-label { flex: 1; min-width: 0; }
+.aiq-tr {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.86em;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+#qText .aiq-tr { font-size: 0.8em; margin-top: 6px; }
+
+/* The phone's EN / EN+TR / TR switch, in the header beside the score. */
+.aiq-lang {
+  display: inline-flex;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-right: 10px;
+}
+.aiq-lang button {
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 9px;
+  min-height: 32px;
+  cursor: pointer;
+}
+.aiq-lang button[aria-pressed="true"] { background: var(--accent-primary); color: #fff; }
+
+@media (max-width: 640px) {
+  .aiq-answer { font-size: 0.95rem; padding: 12px; }
+  .mg-player-count { font-size: 2.6rem; }
+}
+
+/* ============================================================
+   AI QUIZ - "your last room is still open" bar
+   ------------------------------------------------------------
+   Sits above the setup form when a previous room of this teacher's
+   has not been ended. It is an OFFER, never an interruption: the
+   setup form underneath stays usable, which is the whole point.
+   Resuming used to happen automatically and left no way back to
+   setup, so the page read as broken.
+   ============================================================ */
+.aiq-resume {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--accent-primary);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.aiq-resume-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.aiq-resume-btns .btn { padding: 8px 16px; font-size: 0.85rem; }
+
+@media (max-width: 620px) {
+  .aiq-resume { flex-direction: column; align-items: stretch; }
+  .aiq-resume-btns .btn { flex: 1; }
+}
+
+/* The explanation line under the resume bar's headline. Quieter than the
+   sentence above it, because it is instructions rather than news. */
+.aiq-resume-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.aiq-resume > div:first-child { max-width: 62ch; }
+
+/* ============================================================
+   AI QUIZ FINAL LEADERBOARD - scrolls, because it now lists everyone
+   ------------------------------------------------------------
+   The results list used to be capped at 20 names, so it always fitted. It now
+   shows every player in the room (up to 300), which on a 99-student
+   orientation is 99 rows and would run straight off the bottom of the
+   projector.
+
+   Scoped to #perPlayerBody on purpose: `.leaderboard-list` is shared with the
+   other seven games, which still render short lists and must keep their
+   `overflow: hidden` and rounded corners. An id beats a class, so this wins
+   here and nowhere else.
+   ============================================================ */
+#perPlayerBody {
+  max-height: min(52vh, 560px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* ============================================================
+   SENTENCE SCRAMBLE - per-sentence results
+   ------------------------------------------------------------
+   The review list used to be sentence text only, so the screen a teacher
+   discusses the round from could not show which sentence the class struggled
+   with. These are the bars for that, built from the per-round results
+   students now record. Same idea as Reading and Listening's .per-q-* bars,
+   but those live in reading.css / listening.css which this page does not
+   load, so they get their own names here rather than a cross-page import.
+   ============================================================ */
+.sr-row {
+  display: grid;
+  /* 96px: the count's second line, "N no answer", fits on one line up to
+     "99 no answer" (at 74px a class-sized "10 no answer" broke in two). */
+  grid-template-columns: 30px 1fr 110px 46px 96px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+.sr-row:last-child { border-bottom: none; }
+.sr-n { color: var(--text-muted); font-weight: 700; text-align: center; }
+.sr-sentence { font-weight: 600; line-height: 1.35; }
+.sr-word { color: var(--text-muted); font-size: 0.8rem; margin-top: 2px; }
+.sr-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.10);
+  overflow: hidden;
+}
+.sr-fill { height: 100%; border-radius: 999px; transition: width .4s ease; }
+/* Colour AND position both carry the meaning, so the bar still reads for a
+   colour-blind teacher: a short bar is a hard sentence whatever its hue. */
+.sr-good { background: #10b981; }
+.sr-mid  { background: #f59e0b; }
+.sr-bad  { background: #ef4444; }
+.sr-none { background: transparent; }
+.sr-pct { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.sr-good-text { color: #10b981; }
+.sr-mid-text  { color: #f59e0b; }
+.sr-bad-text  { color: #ef4444; }
+.sr-none-text { color: var(--text-muted); }
+.sr-count { color: var(--text-muted); font-size: 0.8rem; text-align: right; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 640px) {
+  .sr-row { grid-template-columns: 26px 1fr 52px; row-gap: 6px; }
+  /* The percentage goes on the sentence's own line, at the right. Left to
+     auto-placement it dropped into the 26px number column under the bar and
+     ran into the count ("100%12/12"). */
+  .sr-pct { grid-row: 1; grid-column: 3; }
+  .sr-bar { grid-column: 2 / -1; }
+  .sr-count { grid-column: 2 / -1; text-align: left; }
 }

@@ -74,7 +74,7 @@
   }
   function skillOf(sess) {
     try {
-      return (typeof activityToSkill === 'function') ? activityToSkill(sess.activity) : 'vocabulary';
+      return (typeof activityToSkill === 'function') ? activityToSkill(sess) : 'vocabulary';
     } catch (_) { return 'vocabulary'; }
   }
 
@@ -268,6 +268,32 @@
   // unique words (global / per student), per-student averages (distribution),
   // engagement (last login buckets), module / year splits, top units, weekly
   // score trend.
+  // ── Marked-work helpers ──────────────────────────────────────────────
+  // Every bucket in this file carries `n` (attempts) and, once a marked
+  // session lands in it, `sn` (how many of those carried a score). The
+  // average divides by `sn`; the count column still shows `n`.
+
+  // The session's mark, or null. Falls back to the old behaviour only if
+  // score-utils failed to load, so a missing script degrades rather than
+  // throws.
+  function scoreOf(sess) {
+    if (window.LLScore) return LLScore.isScored(sess) ? sess.percentage : null;
+    return (typeof sess.percentage === 'number') ? sess.percentage : null;
+  }
+
+  function addScore(bucket, pct) {
+    if (pct === null) return;
+    bucket.sn = (bucket.sn || 0) + 1;
+    bucket.sum += pct;
+  }
+
+  // Rounded average of a bucket, or null when nothing in it was marked.
+  function bucketAvg(b) {
+    if (!b) return null;
+    var d = (b.sn === undefined) ? b.n : b.sn;
+    return d ? Math.round(b.sum / d) : null;
+  }
+
   function aggregate(students, sessions) {
     var activeIds = {}, byDay = {}, bySkill = {}, byClass = {}, byLevelStu = {};
     var byUnit = {}, byWeek = {}, byStudent = {}, wordsByStudent = {}, allWords = {};
@@ -275,6 +301,11 @@
     var scoreSum = 0, scoreN = 0;
     sessions.forEach(function (sess) {
       activeIds[sess.userId] = 1;
+      // The mark, or null when there is not one yet. `sess.percentage || 0`
+      // used to turn "awaiting marking" into a zero and count it in the
+      // divisor, so an un-marked essay pulled every sheet in this workbook
+      // down twice over. See teacher/js/score-utils.js.
+      var pct = scoreOf(sess);
       var d = toDate(sess.createdAt);
       if (d) {
         var k = dayKey(d);
@@ -284,15 +315,15 @@
         wk.setDate(wk.getDate() - ((wk.getDay() + 6) % 7));
         var wkKey = dayKey(wk);
         if (!byWeek[wkKey]) byWeek[wkKey] = { n: 0, sum: 0 };
-        byWeek[wkKey].n++; byWeek[wkKey].sum += (sess.percentage || 0);
+        byWeek[wkKey].n++; addScore(byWeek[wkKey], pct);
       }
       var sk = skillOf(sess);
       if (!bySkill[sk]) bySkill[sk] = { n: 0, sum: 0 };
-      bySkill[sk].n++; bySkill[sk].sum += (sess.percentage || 0);
-      scoreSum += (sess.percentage || 0); scoreN++;
+      bySkill[sk].n++; addScore(bySkill[sk], pct);
+      if (pct !== null) { scoreSum += pct; scoreN++; }
       var cls = String(sess.studentClass || '').toUpperCase() || '(none)';
       if (!byClass[cls]) byClass[cls] = { n: 0, sum: 0 };
-      byClass[cls].n++; byClass[cls].sum += (sess.percentage || 0);
+      byClass[cls].n++; addScore(byClass[cls], pct);
       // Units are LEVEL-QUALIFIED ("B1 · Unit 2") because unit numbers repeat
       // across levels, and restricted to vocab + grammar (reading/listening
       // sessions put exam ids in the unit field). Tracks the vocab/grammar
@@ -305,7 +336,7 @@
         if (sk === 'grammar') byUnit[uKey].grammar++; else byUnit[uKey].vocab++;
       }
       if (!byStudent[sess.userId]) byStudent[sess.userId] = { n: 0, sum: 0 };
-      byStudent[sess.userId].n++; byStudent[sess.userId].sum += (sess.percentage || 0);
+      byStudent[sess.userId].n++; addScore(byStudent[sess.userId], pct);
       if (Array.isArray(sess.wordsLearned)) {
         if (!wordsByStudent[sess.userId]) wordsByStudent[sess.userId] = {};
         sess.wordsLearned.forEach(function (w) { wordsByStudent[sess.userId][w] = 1; allWords[w] = 1; });
@@ -333,7 +364,11 @@
     var dist = { '0-49': 0, '50-69': 0, '70-84': 0, '85-100': 0 };
     Object.keys(byStudent).forEach(function (id) {
       var b = byStudent[id];
-      var avg = b.n ? b.sum / b.n : 0;
+      // A student with nothing marked yet belongs in NO band. Bucketing them
+      // at 0 put people who had only submitted essays into "0-49", which is
+      // the band a teacher reads as "failing".
+      var avg = bucketAvg(b);
+      if (avg === null) return;
       if (avg < 50) dist['0-49']++;
       else if (avg < 70) dist['50-69']++;
       else if (avg < 85) dist['70-84']++;
@@ -415,26 +450,26 @@
       kpi('Students (filtered)', students.length) +
       kpi('Active in period', agg.activeCount, 'var(--t2-green,#22c55e)') +
       kpi('Practice sessions', sessions.length, '#60a5fa') +
-      kpi('Average score', agg.avg + '%', agg.avg >= 70 ? 'var(--t2-green,#22c55e)' : '#f59e0b') +
-      kpi('Unique words practiced', agg.totalUniqueWords, '#f59e0b') +
-      kpi('Games played', games.length, '#a78bfa') +
-      kpi('Assignment completion', asg.overallPct + '%', asg.overallPct >= 70 ? 'var(--t2-green,#22c55e)' : '#f59e0b') +
-      kpi('AI writing analyses', ai.length, '#22d3ee') +
-      kpi('Placement tests', pl.length, '#a78bfa') +
+      kpi('Average score', agg.avg + '%', agg.avg >= 70 ? 'var(--t2-green,#22c55e)' : '#3b82f6') +
+      kpi('Unique words practiced', agg.totalUniqueWords, '#3b82f6') +
+      kpi('Games played', games.length, '#60a5fa') +
+      kpi('Assignment completion', asg.overallPct + '%', asg.overallPct >= 70 ? 'var(--t2-green,#22c55e)' : '#3b82f6') +
+      kpi('AI writing analyses', ai.length, '#60a5fa') +
+      kpi('Placement tests', pl.length, '#60a5fa') +
       '</div>';
 
     // Charts - one graph per data family of the old Export Report CSV.
     var cap = function (s) { return s.charAt(0).toUpperCase() + s.slice(1, 5); };
     var skillAvgItems = SKILLS.map(function (k) {
       var b = agg.bySkill[k];
-      return { label: cap(k), value: b.n ? Math.round(b.sum / b.n) : 0 };
+      return { label: cap(k), value: bucketAvg(b) === null ? 0 : bucketAvg(b) };
     });
     var skillNItems = SKILLS.map(function (k) { return { label: cap(k), value: agg.bySkill[k].n }; });
     var classKeys = Object.keys(agg.byClass).sort(function (a, b) { return agg.byClass[b].n - agg.byClass[a].n; }).slice(0, 10);
     var classItems = classKeys.map(function (c) { return { label: c, value: agg.byClass[c].n }; });
     var classAvgItems = classKeys.map(function (c) {
       var b = agg.byClass[c];
-      return { label: c, value: b.n ? Math.round(b.sum / b.n) : 0 };
+      return { label: c, value: bucketAvg(b) === null ? 0 : bucketAvg(b) };
     });
     var levelItems = Object.keys(agg.byLevelStu).sort().map(function (l) { return { label: l, value: agg.byLevelStu[l] }; });
     var moduleItems = Object.keys(agg.byModule).sort().map(function (m) { return { label: m.replace(/^Module\s*/i, 'M'), value: agg.byModule[m] }; });
@@ -443,7 +478,7 @@
     var distItems = ['0-49', '50-69', '70-84', '85-100'].map(function (k) { return { label: k + '%', value: agg.dist[k] || 0 }; });
     var weekItems = Object.keys(agg.byWeek).sort().slice(-12).map(function (w) {
       var b = agg.byWeek[w];
-      return { label: w.slice(5), value: b.n ? Math.round(b.sum / b.n) : 0 };
+      return { label: w.slice(5), value: bucketAvg(b) === null ? 0 : bucketAvg(b) };
     });
     // Vocab and grammar units get SEPARATE charts (a unit's vocab practice and
     // its grammar practice are different things - do not lump them).
@@ -478,28 +513,31 @@
       .map(function (l) { return { label: l, value: plByLevel[l] }; });
 
     chartRegistry = [];   // rebuilt every render; indices match data-zoom
-    var grid = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:14px;">';
+    // min(430px,100%) rather than a bare 430px: auto-fit drops to one column on a
+    // phone, but the track keeps its 430px minimum and overflows a 362px content
+    // box by 68px. The min() lets that single column shrink to the screen.
+    var grid = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(430px,100%),1fr));gap:14px;">';
     var charts = '<div style="display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px;">' +
       chartCard('📅 Practice sessions per day', daySeries(agg.byDay), 'var(--t2-blue,#3b82f6)', { maxLabels: 10 }) +
       grid +
         chartCard('🎯 Average score per skill (%)', skillAvgItems, 'var(--t2-green,#22c55e)', { suffix: '%' }) +
         chartCard('📚 Sessions per skill', skillNItems, '#60a5fa', {}) +
         chartCard('📈 Average score per week (%)', weekItems, 'var(--t2-green,#22c55e)', { suffix: '%' }) +
-        chartCard('🧮 Score distribution (students)', distItems, '#f59e0b', {}) +
+        chartCard('🧮 Score distribution (students)', distItems, '#3b82f6', {}) +
         chartCard('🏫 Sessions per class', classItems, '#60a5fa', {}) +
         chartCard('🏆 Average score per class (%)', classAvgItems, 'var(--t2-green,#22c55e)', { suffix: '%' }) +
-        chartCard('📖 Top vocabulary units (level · unit)', vocabUnitItems, '#a78bfa', {}) +
-        chartCard('✏️ Top grammar units (level · unit)', grammarUnitItems, '#f59e0b', {}) +
-        chartCard('🔤 Top students by unique words', wordItems, '#f59e0b', {}) +
-        chartCard('📊 Students per level', levelItems, '#a78bfa', {}) +
+        chartCard('📖 Top vocabulary units (level · unit)', vocabUnitItems, '#60a5fa', {}) +
+        chartCard('✏️ Top grammar units (level · unit)', grammarUnitItems, '#3b82f6', {}) +
+        chartCard('🔤 Top students by unique words', wordItems, '#3b82f6', {}) +
+        chartCard('📊 Students per level', levelItems, '#60a5fa', {}) +
         chartCard('🗂 Students per module', moduleItems, '#60a5fa', {}) +
         chartCard('📆 Students per academic year', yearItems, '#60a5fa', {}) +
         chartCard('💤 Engagement (last login)', engItems, '#f87171', {}) +
-        chartCard('🎮 Games by type', gameItems, '#a78bfa', {}) +
+        chartCard('🎮 Games by type', gameItems, '#60a5fa', {}) +
         chartCard('📋 Assignments by skill', asgSkillItems, '#60a5fa', {}) +
         chartCard('✅ Assignment completion % (10 most recent)', asgPctItems, 'var(--t2-green,#22c55e)', { suffix: '%' }) +
-        chartCard('✍️ Writing AI analyses by teacher', aiTeacherItems, '#22d3ee', {}) +
-        chartCard('🎯 Placement recommendations by level', plLevelItems, '#a78bfa', {}) +
+        chartCard('✍️ Writing AI analyses by teacher', aiTeacherItems, '#60a5fa', {}) +
+        chartCard('🎯 Placement recommendations by level', plLevelItems, '#60a5fa', {}) +
       '</div></div>';
     if (aiUsage === null) loadAiUsage();
     if (placements === null) loadPlacements();
@@ -550,7 +588,7 @@
       gameReports.forEach(function (g) { var d = toDate(g.endedAt) || toDate(g.day); if (d && d.getTime() < cut180) oldCount++; });
     }
     var banner = oldCount
-      ? '<div style="font-size:12px;color:#f59e0b;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.35);border-radius:9px;padding:8px 12px;margin-bottom:10px;">You have ' + oldCount + ' game report(s) older than 6 months. Use the cleanup button if you no longer need them.</div>'
+      ? '<div style="font-size:12px;color:#3b82f6;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.35);border-radius:9px;padding:8px 12px;margin-bottom:10px;">You have ' + oldCount + ' game report(s) older than 6 months. Use the cleanup button if you no longer need them.</div>'
       : '';
 
     var cleanup = '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:4px 0 12px;">' +
@@ -570,7 +608,9 @@
     $('repClass').addEventListener('change', function () { fClass = this.value; render(); });
     $('repModule').addEventListener('change', function () { fModule = this.value; render(); });
     $('repYear').addEventListener('change', function () { fYear = this.value; render(); });
-    $('repExcelBtn').addEventListener('click', function () { exportWorkbook(students, sessions, agg, games, asg, ai); });
+    $('repExcelBtn').addEventListener('click', function () {
+      withXlsx(function () { exportWorkbook(students, sessions, agg, games, asg, ai); });
+    });
     if ($('repCleanBtn')) $('repCleanBtn').addEventListener('click', cleanupOld);
     // HOVER opens the big chart (short 120ms intent delay so scrolling past
     // does not trigger it, but it feels near-instant); moving the mouse away
@@ -672,7 +712,41 @@
     } else if (window.confirm('Delete ' + victims.length + ' old game report(s)?')) { go(); }
   }
 
+  // ── SheetJS, loaded only when an export is actually asked for ──
+  //
+  // MEASURED: vendor/xlsx/xlsx.full.min.js is 861 KB raw, 308 KB gzipped, and
+  // teacher-dashboard.html loaded it as a plain blocking <script> on every
+  // visit. It is used by exactly one file, this one, and only when a teacher
+  // clicks Export. Teachers are on mobile data.
+  //
+  // Same shape as teacher/js/roster-import.js, which has always lazy-loaded
+  // its own copy correctly. Path differs: this is the root vendor copy the
+  // dashboard used to pull eagerly.
+  var XLSX_SRC = 'vendor/xlsx/xlsx.full.min.js?v=1';
+  var xlsxLoading = null;
+  function ensureXlsx() {
+    if (window.XLSX) return Promise.resolve();
+    if (xlsxLoading) return xlsxLoading;
+    xlsxLoading = new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = XLSX_SRC;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { xlsxLoading = null; reject(new Error('Could not load the spreadsheet library.')); };
+      document.head.appendChild(s);
+    });
+    return xlsxLoading;
+  }
+  function withXlsx(run) {
+    return ensureXlsx().then(run).catch(function (e) {
+      if (window.AppDialog) AppDialog.alert((e && e.message) || 'Could not load the spreadsheet library.');
+    });
+  }
+
   function downloadGame(g) {
+    if (!g) return;
+    withXlsx(function () { downloadGameNow(g); });
+  }
+  function downloadGameNow(g) {
     if (!g || typeof XLSX === 'undefined') return;
     var rows = [
       ['Game', GAME_NAME[g.game] || g.game],
@@ -695,6 +769,27 @@
   // Sheets: Summary (filters + KPIs), Students (full old-CSV parity), Skills,
   // Classes, Levels, Modules, Years, Word lists, Weekly, By day, Engagement,
   // Sessions (raw rows), Games, Game players. Everything the panel knows.
+  //
+  // DELIBERATELY ABSENT: the activity logs.
+  //
+  // Reports is the single home for reporting, and the activity logs look like
+  // they belong here. They do not, and the reason is a safety one rather than
+  // a tidiness one.
+  //
+  // The Download button on the Activity Logs tab is NOT a report. It is the
+  // enforced first step of deleting those logs: pruneOlderThan() refuses to
+  // delete anything that has not been downloaded in the same session. That
+  // guard only means something while downloading and deleting sit together,
+  // in that order, in one place.
+  //
+  // Add an "Activity logs" sheet here and an admin can export them from a
+  // screen that has no delete button, then delete from a screen whose export
+  // they skipped, and the interlock becomes theatre - it would still pass its
+  // own check while no longer protecting anything.
+  //
+  // If activity logs are ever genuinely needed in this workbook, move the
+  // export-first guard to a persisted flag first, then add the sheet.
+  // tools/live-markup-check.js asserts this stays true.
   function exportWorkbook(students, sessions, agg, games, asg, ai) {
     asg = asg || assignmentStats();
     ai = ai || filteredAiUsage();
@@ -739,19 +834,22 @@
     var sRows = [head];
     students.forEach(function (s) {
       var mine = sessions.filter(function (x) { return x.userId === s.id; });
-      var avg = mine.length ? Math.round(mine.reduce(function (t, x) { return t + (x.percentage || 0); }, 0) / mine.length) : 0;
+      // Per-student average over MARKED sessions only; blank rather than 0
+      // when nothing has been marked, so the column reads honestly.
+      var _sa = window.LLScore ? LLScore.avgRounded(mine) : null;
+      var avg = _sa === null ? '' : _sa;
       var words = agg.wordsByStudent[s.id] ? Object.keys(agg.wordsByStudent[s.id]).length : 0;
       var bySkill = {};
       SKILLS.forEach(function (k) { bySkill[k] = { n: 0, sum: 0 }; });
       mine.forEach(function (x) {
         var sk = skillOf(x);
         if (!bySkill[sk]) bySkill[sk] = { n: 0, sum: 0 };
-        bySkill[sk].n++; bySkill[sk].sum += (x.percentage || 0);
+        bySkill[sk].n++; addScore(bySkill[sk], scoreOf(x));
       });
       var row = [s.name || '', s.email || '', s.level || '', s.studentClass || '', s.module || '', s.academicYear || '', mine.length, words, avg];
       SKILLS.forEach(function (k) {
         var b = bySkill[k];
-        row.push(b.n, b.n ? Math.round(b.sum / b.n) : '');
+        row.push(b.n, bucketAvg(b) === null ? '' : bucketAvg(b));
       });
       var ll = toDate(s.lastLogin);
       var daysSince = ll ? Math.floor((Date.now() - ll.getTime()) / 86400000) : '';
@@ -766,7 +864,7 @@
     var kRows = [['Skill', 'Sessions', 'Avg Score (%)']];
     SKILLS.forEach(function (k) {
       var b = agg.bySkill[k];
-      kRows.push([k, b.n, b.n ? Math.round(b.sum / b.n) : '']);
+      kRows.push([k, b.n, bucketAvg(b) === null ? '' : bucketAvg(b)]);
     });
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(kRows), 'Skills');
 
@@ -774,7 +872,7 @@
     var cRows = [['Class', 'Sessions', 'Avg Score (%)']];
     Object.keys(agg.byClass).sort().forEach(function (c) {
       var b = agg.byClass[c];
-      cRows.push([c, b.n, b.n ? Math.round(b.sum / b.n) : '']);
+      cRows.push([c, b.n, bucketAvg(b) === null ? '' : bucketAvg(b)]);
     });
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(cRows), 'Classes');
 
@@ -791,12 +889,12 @@
         var s = stuById[x.userId];
         var k = (s && s[field]) || '(none)';
         if (!m[k]) m[k] = { students: 0, n: 0, sum: 0 };
-        m[k].n++; m[k].sum += (x.percentage || 0);
+        m[k].n++; addScore(m[k], scoreOf(x));
       });
       var rows = [[name, 'Students', 'Sessions', 'Avg Score (%)']];
       Object.keys(m).sort().forEach(function (k) {
         var b = m[k];
-        rows.push([k, b.students, b.n, b.n ? Math.round(b.sum / b.n) : '']);
+        rows.push([k, b.students, b.n, bucketAvg(b) === null ? '' : bucketAvg(b)]);
       });
       return rows;
     }
@@ -814,13 +912,14 @@
       if (sk !== 'vocabulary' && sk !== 'grammar') return;
       var k = (x.level ? x.level + '|' : '|') + u;
       if (!uAgg[k]) uAgg[k] = { level: x.level || '', unit: u, n: 0, vocab: 0, grammar: 0, sum: 0 };
-      uAgg[k].n++; uAgg[k].sum += (x.percentage || 0);
+      uAgg[k].n++; addScore(uAgg[k], scoreOf(x));
       if (sk === 'grammar') uAgg[k].grammar++; else uAgg[k].vocab++;
     });
     var uRows = [['Level', 'Unit', 'Sessions', 'Vocabulary', 'Grammar', 'Avg Score (%)']];
     Object.keys(uAgg).sort(function (a, b) { return uAgg[b].n - uAgg[a].n; }).forEach(function (k) {
       var b = uAgg[k];
-      uRows.push([b.level, b.unit, b.n, b.vocab, b.grammar, Math.round(b.sum / b.n)]);
+      uRows.push([b.level, b.unit, b.n, b.vocab, b.grammar,
+                  bucketAvg(b) === null ? '' : bucketAvg(b)]);
     });
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(uRows), 'Word lists');
 
@@ -828,7 +927,7 @@
     var wRows = [['Week of', 'Sessions', 'Avg Score (%)']];
     Object.keys(agg.byWeek).sort().forEach(function (w) {
       var b = agg.byWeek[w];
-      wRows.push([w, b.n, b.n ? Math.round(b.sum / b.n) : '']);
+      wRows.push([w, b.n, bucketAvg(b) === null ? '' : bucketAvg(b)]);
     });
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wRows), 'Weekly');
 

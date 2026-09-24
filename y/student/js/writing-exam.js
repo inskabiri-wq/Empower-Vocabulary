@@ -1,5 +1,5 @@
 /* ============================================================
-   WRITING EXAM — Phase 3 (student side, page-level controller)
+   WRITING EXAM - Phase 3 (student side, page-level controller)
 
    Loaded by /writing-exam.html. Reads ?assignmentId=... from the URL,
    pulls the assignment from Firestore, displays the prompt in the
@@ -7,7 +7,7 @@
    countdown timer, auto-saves the draft every 5 seconds, and
    submits on click or on timeout.
 
-   Security model — see HARDENING section below.
+   Security model - see HARDENING section below.
    ============================================================ */
 
 (function () {
@@ -25,10 +25,14 @@
     submitted:    false,
     wordCount:    0,
     // Phase C: preview mode (?preview=1 in the URL). Teachers can open
-    // the writing exam to see what a student sees — security lockdown
+    // the writing exam to see what a student sees - security lockdown
     // is still in effect (so they can test it), but nothing is saved
     // and no draft is restored / persisted.
-    preview:      false
+    preview:      false,
+    // Set just before the app navigates on purpose, so the browser's own
+    // "Leave site?" prompt does not fire on top of a decision the user has
+    // already made in the app's own Leave / Stay dialog.
+    leaving:      false
   };
 
   // ── DOM refs ────────────────────────────────────────────────
@@ -54,13 +58,13 @@
     // Auth gate. Redirect to login if not signed in.
     auth.onAuthStateChanged(async (user) => {
       if (!user) {
-        window.location.href = 'index.html';
+        window.location.replace('index.html');
         return;
       }
       // Verified-email gate (same logic as student-dashboard.html).
       if (!user.emailVerified) {
         await auth.signOut();
-        window.location.href = 'index.html';
+        window.location.replace('index.html');
         return;
       }
       state.user = user;
@@ -99,7 +103,7 @@
         return;
       }
       state.assignmentId = id;
-      // Preview mode flag — set by teachers opening the page from the
+      // Preview mode flag - set by teachers opening the page from the
       // dashboard's Preview button. Disables save, restores no draft,
       // shows a banner so the user can't mistake it for the real exam.
       state.preview = (params.get('preview') === '1');
@@ -136,7 +140,7 @@
     splash.innerHTML = `
       <div style="font-size: 3em;">⚠️</div>
       <div style="color: var(--wr-text); font-weight: 700; margin-top: 8px;">${escapeHtml(msg)}</div>
-      <a href="student-dashboard.html" style="color: var(--wr-accent); margin-top: 14px; text-decoration: underline;">Back to dashboard</a>
+      <a href="student-dashboard.html" class="ll-navbtn" style="margin-top: 14px;">← Back to dashboard</a>
     `;
     splash.classList.remove('hidden');
   }
@@ -169,7 +173,7 @@
       els.wrWordTarget.textContent = ` / ${a.targetWords}`;
     }
 
-    // Phase G.4 — surface the rubric (if attached) below the prompt
+    // Phase G.4 - surface the rubric (if attached) below the prompt
     // so students know what they're being graded on BEFORE they write.
     // Two sources: free-form text on the assignment OR a link to an
     // external PDF/Doc. Show either or both. Collapsible so it
@@ -182,7 +186,7 @@
   }
 
   function injectRubricPanel(rubricText, rubricUrl) {
-    // Idempotent — only inject once per session.
+    // Idempotent - only inject once per session.
     if (document.getElementById('wrRubricPanel')) return;
     const anchor = els.wrPromptMeta?.parentElement || els.wrPromptBody?.parentElement;
     if (!anchor) return;
@@ -190,8 +194,8 @@
     panel.id = 'wrRubricPanel';
     panel.open = true;
     panel.style.cssText = [
-      'background: rgba(45, 212, 191, 0.08)',
-      'border: 1px solid rgba(45, 212, 191, 0.30)',
+      'background: rgba(147, 197, 253, 0.08)',
+      'border: 1px solid rgba(147, 197, 253, 0.30)',
       'border-radius: 10px',
       'padding: 10px 14px',
       'margin-top: 10px'
@@ -200,8 +204,8 @@
       <div style="margin-top: 10px;">
         <a href="${escapeHtml(rubricUrl)}" target="_blank" rel="noopener"
            style="display: inline-flex; align-items: center; gap: 6px;
-                  background: rgba(45, 212, 191, 0.18); color: #99f6e4;
-                  border: 1px solid rgba(45, 212, 191, 0.40);
+                  background: rgba(147, 197, 253, 0.18); color: #99f6e4;
+                  border: 1px solid rgba(147, 197, 253, 0.40);
                   padding: 6px 12px; border-radius: 8px;
                   text-decoration: none; font-weight: 600; font-size: 0.88em;">
           📎 Open rubric file →
@@ -214,10 +218,10 @@
                   font-size: 0.92em;">${escapeHtml(rubricText)}</div>
     ` : '';
     panel.innerHTML = `
-      <summary style="cursor: pointer; font-weight: 700; color: #5eead4;
+      <summary style="cursor: pointer; font-weight: 700; color: #bfdbfe;
                       font-size: 0.78em; letter-spacing: 0.06em;
                       text-transform: uppercase;">
-        📋 Rubric — what you'll be graded on
+        📋 Rubric - what you'll be graded on
       </summary>
       ${textBlock}
       ${urlLink}
@@ -237,13 +241,13 @@
 
     if (state.preview) {
       injectPreviewBanner();
-      // No draft restore in preview — teachers shouldn't pick up a
+      // No draft restore in preview - teachers shouldn't pick up a
       // student's in-flight draft, and we don't want their typing
       // to overwrite anyone else's.
     } else {
       // Three modes, chosen by the prior writingSubmissions status:
       //   • no submission yet           → blank editor + draft restore
-      //   • status 'submitted'/'graded' → READ-ONLY LOCK — student has
+      //   • status 'submitted'/'graded' → READ-ONLY LOCK - student has
       //     already turned this in and the timer must not reset.
       //     They wait until the teacher returns or grades.
       //   • status 'returned'           → editable + revision banner
@@ -252,7 +256,7 @@
         const prevStatus = prevSubmission?.status || null;
 
         if (prevStatus === 'submitted' || prevStatus === 'graded') {
-          // Hard-lock — bail before wiring the editor / timer.
+          // Hard-lock - bail before wiring the editor / timer.
           renderAlreadySubmitted(prevSubmission);
           return;
         }
@@ -272,7 +276,7 @@
     setTimeout(() => els.wrEditor.focus(), 50);
   }
 
-  // Phase G fix — When a student opens an assignment they've already
+  // Phase G fix - When a student opens an assignment they've already
   // submitted (and that hasn't been returned), we DON'T want them to
   // see a fresh editor with their text auto-loaded and a new timer.
   // Instead, render a polite read-only screen that explains the state
@@ -293,7 +297,7 @@
     // Hide the active workspace + topbar.
     if (els.wrStage)   els.wrStage.style.display = 'none';
     if (els.wrTopbar)  els.wrTopbar.style.display = 'none';
-    // Tear down the unload warning — the student has nothing to lose now.
+    // Tear down the unload warning - the student has nothing to lose now.
     state.submitted = true;
 
     const status = submission?.status || 'submitted';
@@ -322,7 +326,7 @@
         <h2 style="margin: 12px 0 6px;">You've already submitted this.</h2>
         <div style="color: var(--wr-text-muted, #94a3b8); font-size: 0.95em; line-height: 1.55; margin-bottom: 18px;">
           ${status === 'graded'
-            ? 'Your teacher has graded it. The essay is final — you can\'t edit it.'
+            ? 'Your teacher has graded it. The essay is final - you can\'t edit it.'
             : 'Your essay is with your teacher. You\'ll see a notification on your dashboard when they grade or return it.'}
         </div>
 
@@ -340,8 +344,8 @@
 
         ${comment ? `
           <div style="margin-top: 14px; text-align: left;
-                      background: rgba(168, 85, 247, 0.08);
-                      border-left: 3px solid #a855f7; border-radius: 8px;
+                      background: rgba(29, 78, 216, 0.08);
+                      border-left: 3px solid #1d4ed8; border-radius: 8px;
                       padding: 12px 16px; line-height: 1.55;
                       white-space: pre-wrap; font-size: 0.95em;">
             <div style="font-weight: 700; color: #c4b5fd; font-size: 0.8em;
@@ -351,11 +355,7 @@
           </div>
         ` : ''}
 
-        <a href="student-dashboard.html"
-           style="display: inline-block; margin-top: 22px;
-                  background: linear-gradient(135deg, #6366f1, #4f46e5);
-                  color: white; padding: 10px 22px; border-radius: 10px;
-                  text-decoration: none; font-weight: 600;">
+        <a href="student-dashboard.html" class="ll-navbtn" style="margin-top: 22px;">
           ← Back to dashboard
         </a>
       </div>
@@ -363,7 +363,7 @@
     splash.classList.remove('hidden');
   }
 
-  // Phase F.4 — fetch the existing writingSubmissions doc (if any) so
+  // Phase F.4 - fetch the existing writingSubmissions doc (if any) so
   // the editor can pre-load the previous text on a revision.
   async function loadPreviousSubmission() {
     if (!state.user || !state.assignmentId) return null;
@@ -378,7 +378,7 @@
     }
   }
 
-  // Phase F.4 — visible "your teacher returned this" banner shown at
+  // Phase F.4 - visible "your teacher returned this" banner shown at
   // the top of the editor when the student is revising. Surfaces the
   // teacher's comment prominently so the student knows what to fix.
   function showRevisionBanner(submission) {
@@ -386,7 +386,7 @@
     const banner = document.createElement('div');
     banner.id = 'wrRevisionBanner';
     banner.style.cssText = [
-      'background: linear-gradient(135deg, #f59e0b, #d97706)',
+      'background: linear-gradient(135deg, #3b82f6, #d97706)',
       'color: white', 'padding: 14px 18px', 'margin: 0 0 14px 0',
       'border-radius: 10px', 'font-size: 0.92em', 'line-height: 1.5',
       'box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25)'
@@ -422,18 +422,22 @@
     const banner = document.createElement('div');
     banner.id = 'wrPreviewBanner';
     banner.style.cssText = [
-      'background:linear-gradient(135deg,#a78bfa,#7c3aed)',
+      'background:linear-gradient(135deg,#60a5fa,#1d4ed8)',
       'color:#fff', 'font-weight:700', 'text-align:center',
       'padding:6px 12px', 'font-size:0.9em',
       'box-shadow:0 2px 6px rgba(0,0,0,0.2)'
     ].join(';');
-    banner.textContent = '👁️ PREVIEW MODE — teacher view. Nothing is saved.';
+    banner.textContent = '👁️ PREVIEW MODE - teacher view. Nothing is saved.';
     document.body.insertBefore(banner, document.body.firstChild);
 
     // Replace submit handler with a close-window handler.
     if (els.wrSubmitBtn) {
       els.wrSubmitBtn.textContent = '✕ Close Preview';
       els.wrSubmitBtn.onclick = () => {
+        // Deliberate exit: disarm the unload guard before either route, so
+        // the browser does not ask about unsaved changes on a preview that
+        // saves nothing.
+        state.leaving = true;
         try { window.close(); } catch (_) {}
         // If the page wasn't opened by script, window.close() is a no-op.
         // Fall back to navigating away.
@@ -445,7 +449,7 @@
   }
 
   // ============================================================
-  // HARDENING — secure-exam lockdown.
+  // HARDENING - secure-exam lockdown.
   //
   // This is defense-in-depth: each layer alone won't stop every
   // cheating attempt, but combined they make casual copy/paste,
@@ -528,7 +532,7 @@
     // catches IME / mobile-keyboard edge cases that bypass beforeinput.)
     ed.addEventListener('input', () => {
       // contenteditable can introduce <br>, <div>, <span> from various
-      // sources. We only care that the visible text is plain — runtime
+      // sources. We only care that the visible text is plain - runtime
       // styling comes from CSS, not inline tags.
       // Word-count update on every input.
       updateWordCount();
@@ -562,13 +566,13 @@
       }
     }, true);
 
-    // Selection guard — clear any non-collapsed selection while typing.
+    // Selection guard - clear any non-collapsed selection while typing.
     // The cursor (collapsed selection) is fine; an actual highlighted
     // range is not. This prevents "select all → drag out" workflows.
     document.addEventListener('selectionchange', () => {
       const sel = window.getSelection();
       if (!sel || sel.isCollapsed) return;
-      // Only enforce when the selection is INSIDE the editor — selecting
+      // Only enforce when the selection is INSIDE the editor - selecting
       // text in the prompt pane (read-only) is fine.
       const anchor = sel.anchorNode;
       if (!anchor) return;
@@ -577,7 +581,7 @@
         // Allow short selection for cursor placement / delete; clear
         // anything longer.
         if (sel.toString().length > 0) {
-          // Don't fight every selection — only clear when explicitly
+          // Don't fight every selection - only clear when explicitly
           // long. Letting users select a single character for replace
           // is OK; large selections are not.
           if (sel.toString().length > 5) {
@@ -593,7 +597,7 @@
       e.stopPropagation();
     }, true);
 
-    // Tab visibility / blur — track for the session record.
+    // Tab visibility / blur - track for the session record.
     state.focusLog = { switches: 0, blurMs: 0, lastBlur: 0 };
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
@@ -605,9 +609,23 @@
       }
     });
 
-    // beforeunload warning — student leaves before submit → confirm.
+    // beforeunload warning - student leaves before submit → confirm.
+    //
+    // Three cases must NOT trigger it:
+    //   submitted  the work is in, there is nothing to lose
+    //   preview    a teacher looking at the page; the banner says outright
+    //              that nothing is saved, so warning about unsaved changes is
+    //              simply untrue, and it fired every time they hit
+    //              "Close Preview"
+    //   leaving    the app is navigating because the user already chose Leave
+    //              in our own dialog; the browser's prompt on top of that is
+    //              the same question asked twice, in a box we cannot style
+    //
+    // Worth knowing: the dialog this raises is the BROWSER'S. Its wording
+    // cannot be changed and it cannot be replaced with the app's Leave / Stay
+    // dialog. The only control we have is whether it fires at all.
     window.addEventListener('beforeunload', (e) => {
-      if (state.submitted) return;
+      if (state.submitted || state.preview || state.leaving) return;
       e.preventDefault();
       e.returnValue = '';
       return '';
@@ -615,25 +633,55 @@
 
     // Phone back-button trap. The browser's default behaviour from
     // this standalone page is "go back to whatever was before in
-    // history" — which on a fresh visit is the previous external
+    // history" - which on a fresh visit is the previous external
     // page (not the dashboard). Push a sentinel so popstate fires,
     // then intercept: if the student is mid-essay (state.submitted
     // is false) we ask them; if they confirm OR they've already
     // submitted, send them to the dashboard explicitly.
-    history.pushState({ wrSentinel: true }, '', window.location.href);
+    // ARMED ON A USER GESTURE, not at setup, and re-armed after every pop.
+    //
+    // Both pushes here used to happen with no user activation: one at setup
+    // and one inside the popstate handler. Chromium (Samsung Internet included)
+    // marks an entry pushed without activation as SKIPPABLE and Back walks
+    // straight past it, so the trap silently did nothing on exactly the phones
+    // that need it. Same defect, same fix as student/js/back-nav.js - see the
+    // long note there. Kept inline rather than shared because that module is
+    // built around the dashboard's showScreen stack, which this page has not.
+    let wrSentinel = false;
+    const wrArm = () => {
+      if (wrSentinel) return;
+      history.pushState({ wrSentinel: true }, '', window.location.href);
+      wrSentinel = true;
+    };
+    ['pointerdown', 'touchstart', 'mousedown', 'keydown'].forEach(
+      (e) => window.addEventListener(e, wrArm, true)
+    );
+
     window.addEventListener('popstate', (ev) => {
-      // Re-push the sentinel so a SECOND back press still fires
-      // popstate (otherwise after one pop the browser leaves).
+      // The sentinel just got consumed; clear the flag so the next real tap or
+      // keypress can push a properly activated replacement. The immediate
+      // re-push below is belt and braces for two Backs with nothing in between,
+      // and deliberately does NOT set the flag, since it may be skipped.
+      wrSentinel = false;
       history.pushState({ wrSentinel: true }, '', window.location.href);
       if (state.submitted) {
+        state.leaving = true;
         window.location.href = 'student-dashboard.html';
         return;
       }
       AppDialog.confirm(
         "Your draft is auto-saved.",
-        { title: "You haven't submitted yet — leave anyway?", okLabel: 'Leave', icon: '✍️' }
+        // Leave / Stay, the app-wide wording. This was the last dialog still
+        // offering "Cancel", which reads as cancelling the exam rather than
+        // cancelling the leaving.
+        { title: "You haven't submitted yet - leave anyway?", okLabel: 'Leave',
+          cancelLabel: 'Stay', icon: '✍️' }
       ).then(function (ok) {
-        if (ok) window.location.href = 'student-dashboard.html';
+        if (!ok) return;
+        // They answered Leave here, so the browser must not ask again in a
+        // box we cannot style.
+        state.leaving = true;
+        window.location.href = 'student-dashboard.html';
       });
     });
   }
@@ -694,7 +742,7 @@
     try { localStorage.removeItem(draftKey()); } catch (_) {}
   }
   function installAutoSaveAndRestoreDraft() {
-    // Preview mode never saves a draft — teacher's typing isn't a
+    // Preview mode never saves a draft - teacher's typing isn't a
     // student's work-in-progress.
     if (state.preview) return;
     state.saveHandle = setInterval(saveDraft, 5000);
@@ -703,8 +751,8 @@
   // ── UI wiring ──────────────────────────────────────────────
   // Two-step submit confirmation (Phase G fix). A single click on
   // Submit takes you through:
-  //   1. First confirm — context-aware warning (word count, time, etc.)
-  //   2. Final confirm — "Are you absolutely sure? This is final."
+  //   1. First confirm - context-aware warning (word count, time, etc.)
+  //   2. Final confirm - "Are you absolutely sure? This is final."
   // Only after the SECOND OK does the network request fire. The
   // confirmStep state machine lives on `state.confirmStep`.
   function wireUI() {
@@ -736,7 +784,7 @@
     if (opts.secondStep) {
       // Stronger second-step language so the student understands
       // there's no going back without teacher intervention.
-      msg = "FINAL CHECK — once you submit, you can't edit this essay again unless your teacher returns it for revision. Are you absolutely sure?";
+      msg = "FINAL CHECK - once you submit, you can't edit this essay again unless your teacher returns it for revision. Are you absolutely sure?";
       // Visually tighten the dialog by changing the confirm button text.
       if (els.wrSubmitConfirmBtn) els.wrSubmitConfirmBtn.textContent = '✅ Yes, submit it';
     } else {
@@ -782,12 +830,12 @@
     setupRowHandler(els.wrFontRow,    'font',    (v) => applyFont(v));
 
     els.wrSettingsResetBtn.addEventListener('click', () => {
-      applyTheme('dark');
+      applyTheme('light');
       applyScale('1');
       applySpacing('1.7');
       applyFont('serif');
       try { localStorage.removeItem('wr-prefs'); } catch (_) {}
-      markActive(els.wrThemeRow,   'data-theme',   'dark');
+      markActive(els.wrThemeRow,   'data-theme',   'light');
       markActive(els.wrScaleRow,   'data-scale',   '1');
       markActive(els.wrSpacingRow, 'data-spacing', '1.7');
       markActive(els.wrFontRow,    'data-font',    'serif');
@@ -833,10 +881,10 @@
   // ── Submit ──────────────────────────────────────────────────
   async function submit(opts) {
     if (state.submitted) return;
-    // Preview mode safety net — even if something triggers submit()
+    // Preview mode safety net - even if something triggers submit()
     // (e.g. an Enter-key shortcut on the confirm dialog), refuse.
     if (state.preview) {
-      AppDialog.alert('Preview mode — submissions are disabled.');
+      AppDialog.alert('Preview mode - submissions are disabled.');
       return;
     }
     state.submitted = true;
@@ -853,7 +901,7 @@
     const elapsedSec = Math.max(0, Math.round((Date.now() - state.startedAt) / 1000));
     const a = state.assignment || {};
 
-    // Build session doc — mirrors reading-exam shape so the teacher
+    // Build session doc - mirrors reading-exam shape so the teacher
     // dashboard's existing session pipeline picks it up.
     const scope = (typeof studentScopeFields === 'function')
       ? studentScopeFields()
@@ -883,12 +931,16 @@
 
     try {
       await db.collection('sessions').add(sessionDoc);
+      // Running total for the dashboard average; see student/js/score-rollup.js.
+      // A writing exam that has not been graded yet carries no percentage,
+      // and the helper ignores anything that is not a number.
+      if (window.LLRollup) LLRollup.record(db, state.user.uid, sessionDoc.percentage);
 
       // Write the assignmentCompletion record so the teacher dashboard's
       // completion percentage updates. Doc id pattern matches what the
       // rules require: `<uid>_<assignmentId>`.
       const completionId = `${state.user.uid}_${state.assignmentId}`;
-      // BUG FIX — writing was writing `userId` here but every loader in
+      // BUG FIX - writing was writing `userId` here but every loader in
       // the codebase queries `assignmentCompletions` by `odUserId`
       // (vocab path uses odUserId; the assignments-tab teacher view +
       // student dashboard both .where('odUserId','==',uid)). Without
@@ -902,7 +954,7 @@
         odUserId:     state.user.uid,
         assignmentId: state.assignmentId,
         skill:        'writing',
-        // Writing is "completed" the moment the student submits —
+        // Writing is "completed" the moment the student submits -
         // there's no auto-graded score gate like vocab's 100%-rule.
         // The teacher grades it later; the row goes green now.
         completed:    true,
@@ -914,13 +966,13 @@
         completedAt:  firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
 
-      // Dedicated writingSubmissions collection — the canonical home for
+      // Dedicated writingSubmissions collection - the canonical home for
       // the essay text. Lets the grading UI list submissions per
       // assignment without spelunking through /sessions. Doc id mirrors
       // assignmentCompletions so each (student, assignment) pair has
       // exactly one row that resubmissions overwrite.
       //
-      // Resubmit semantics (Phase F.4 — 'Returned' workflow):
+      // Resubmit semantics (Phase F.4 - 'Returned' workflow):
       //   • Initial submission: write all fields including null grade fields.
       //   • Resubmit (doc exists): OMIT score / teacherComment / gradedBy /
       //     gradedAt from the payload so set({merge:true}) PRESERVES the
@@ -953,19 +1005,19 @@
         submittedAt:     firebase.firestore.FieldValue.serverTimestamp()
       };
       if (!isResubmit) {
-        // Initial creation — pin the grade fields to null so the rule's
+        // Initial creation - pin the grade fields to null so the rule's
         // create-time guard passes.
         wsPayload.score          = null;
         wsPayload.teacherComment = null;
         wsPayload.gradedBy       = null;
         wsPayload.gradedAt       = null;
       }
-      // On resubmit we deliberately do NOT include those four fields —
+      // On resubmit we deliberately do NOT include those four fields -
       // omitting them from a merge-write preserves whatever the teacher
       // wrote on the previous grading pass.
       await wsRef.set(wsPayload, { merge: true });
 
-      // Activity-log entry — the writing flow used to be silent here,
+      // Activity-log entry - the writing flow used to be silent here,
       // so the teacher's log never saw "Alireza submitted Hi essay."
       // We emit `assignment_submitted` carrying enough context for
       // the log row to be useful at a glance.

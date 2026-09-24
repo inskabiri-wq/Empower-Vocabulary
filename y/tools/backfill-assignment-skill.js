@@ -2,7 +2,7 @@
    backfill-assignment-skill.js
    ONE-TIME migration for Phase 1 of the skill-based assignment
    system. Stamps every existing /assignments doc that lacks a
-   `skill` field with `skill: 'vocabulary'` — because every
+   `skill` field with `skill: 'vocabulary'` - because every
    assignment created before this phase was a vocabulary one.
 
    Run once:

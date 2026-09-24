@@ -15,7 +15,7 @@ html, body {
 }
 
 body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--ll-font);
   background: var(--bg-primary);
   min-height: 100vh;
   display: flex;
@@ -36,8 +36,8 @@ body::before {
   height: 200%;
   background: 
     radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(14, 165, 233, 0.12) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
+    radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(37, 99, 235, 0.08) 0%, transparent 40%);
   animation: float 20s ease-in-out infinite;
   z-index: 0;
 }

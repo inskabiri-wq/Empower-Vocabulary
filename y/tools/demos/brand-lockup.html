@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand lockup alignment</title>
+<link rel="stylesheet" href="../../css/brand.css">
+<link rel="stylesheet" href="../../css/app-settings.css">
+<style>
+  body{margin:0;padding:22px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;}
+  *,*::before,*::after{animation:none !important;transition:none !important;}
+  .case{background:#fff;border:1px solid #cbd5e1;border-radius:10px;padding:14px;margin:0 0 14px;}
+  .case h4{margin:0 0 10px;font-size:12px;color:#64748b;font-weight:600;}
+  #out{background:#fff;border:1px solid #cbd5e1;border-radius:10px;padding:12px;
+       font:12px/1.6 'Segoe UI',Arial,sans-serif;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+</style>
+</head>
+<body class="light-mode">
+
+<!-- The three title shapes the injector actually meets in the app. Markup is
+     copied from the real pages, including the INLINE font-size the classroom
+     pages set on their emoji. -->
+<div class="case" id="c1"><h4>classroom-teacher.html shape</h4>
+  <div class="ll-brand">
+    <span class="ll-brand-name"><svg class="ll-brand-cap" viewBox="0 0 100 100" aria-hidden="true"><defs><clipPath id="m1"><path d="M40,10 H60 V36 L86,80 c2.4,4.2 -0.6,9 -5.4,9 H36 l-11,11 V89 H19.4 c-4.8,0 -7.8,-4.8 -5.4,-9 L40,36 Z"/></clipPath></defs><path d="M40,10 H60 V36 L86,80 c2.4,4.2 -0.6,9 -5.4,9 H36 l-11,11 V89 H19.4 c-4.8,0 -7.8,-4.8 -5.4,-9 L40,36 Z" fill="#1e3a8a"/><g clip-path="url(#m1)"><rect x="0" y="66" width="100" height="34" fill="#ee3342"/></g><rect x="34" y="7" width="32" height="7" rx="3.5" fill="#1e3a8a"/></svg>Lingualab</span>
+    <div class="header-title ll-brand-sub"><span style="font-size: 1.5rem;">&#128104;&#8205;&#127979;</span><h1>Classroom Mode</h1></div>
+  </div>
+</div>
+
+<div class="case" id="c2"><h4>heist shape (span.logo + span label)</h4>
+  <div class="ll-brand">
+    <span class="ll-brand-name"><svg class="ll-brand-cap" viewBox="0 0 100 100" aria-hidden="true"><path d="M40,10 H60 V36 L86,80 c2.4,4.2 -0.6,9 -5.4,9 H36 l-11,11 V89 H19.4 c-4.8,0 -7.8,-4.8 -5.4,-9 L40,36 Z" fill="#1e3a8a"/></svg>Lingualab</span>
+    <div class="heist-brand ll-brand-sub"><span class="logo">&#129399;</span><span>The Heist</span></div>
+  </div>
+</div>
+
+<div class="case" id="c3"><h4>title with NO icon (lone span) - must NOT be shrunk</h4>
+  <div class="ll-brand">
+    <span class="ll-brand-name"><svg class="ll-brand-cap" viewBox="0 0 100 100" aria-hidden="true"><path d="M40,10 H60 V36 L86,80 c2.4,4.2 -0.6,9 -5.4,9 H36 l-11,11 V89 H19.4 c-4.8,0 -7.8,-4.8 -5.4,-9 L40,36 Z" fill="#1e3a8a"/></svg>Lingualab</span>
+    <div class="ll-brand-sub"><span>Just A Title</span></div>
+  </div>
+</div>
+
+<div id="out">measuring...</div>
+<script>
+// x of the LABEL text, skipping any leading icon.
+// The emoji is itself a text node, so a naive "first text node" walk returns
+// the icon's position and every case looks misaligned by exactly the icon slot.
+function textLeftOf(el, skipFirstElement){
+  const r = document.createRange();
+  const first = el.firstElementChild;
+  const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  let n;
+  while ((n = walk.nextNode())) {
+    if (!n.textContent.trim()) continue;
+    if (skipFirstElement && first && first.contains(n)) continue;   // that is the icon
+    r.selectNodeContents(n);
+    const rect = r.getBoundingClientRect();
+    if (rect.width > 0) return rect.left;
+  }
+  return null;
+}
+window.addEventListener('load', () => setTimeout(() => {
+  const rows = [];
+  ['c1','c2','c3'].forEach(id => {
+    const box = document.getElementById(id);
+    const name = box.querySelector('.ll-brand-name');
+    const sub  = box.querySelector('.ll-brand-sub');
+    const icon = sub.querySelector('span:first-child');
+    // c3's lone span IS the label, so nothing to skip there.
+    const hasIcon = !!(icon && sub.children.length > 1);
+    const nameX = textLeftOf(name, true);        // skip the <svg> mark
+    const subX  = textLeftOf(sub, hasIcon);
+    const iconCS = icon ? getComputedStyle(icon) : null;
+    rows.push({
+      id,
+      wordmarkTextX: Math.round(nameX),
+      subtitleTextX: Math.round(subX),
+      deltaPx: Math.round(Math.abs(nameX - subX)),
+      subIconFontSize: iconCS ? iconCS.fontSize : '-',
+      subIconWidth: icon ? Math.round(icon.getBoundingClientRect().width) : '-',
+      aligned: Math.abs(nameX - subX) <= 1.5
+    });
+  });
+  // case 3 has no icon: its text should still align under the wordmark text?
+  // No - it has no icon slot, so it is expected NOT to align. Recorded, not asserted.
+  const asserted = rows.filter(r => r.id !== 'c3');
+  const ok = asserted.every(r => r.aligned)
+          && rows[2].subIconWidth > 40;          // lone text span not shrunk
+  document.getElementById('out').innerHTML =
+    rows.map(r => '<b>' + r.id + '</b> wordmarkTextX=' + r.wordmarkTextX
+      + ' subtitleTextX=' + r.subtitleTextX + ' delta=' + r.deltaPx
+      + ' iconFont=' + r.subIconFontSize + ' iconW=' + r.subIconWidth
+      + ' <span class="' + (r.aligned ? 'pass">aligned' : 'fail">RAGGED') + '</span>').join('<br>')
+    + '<br><br><b>result:</b> <span class="' + (ok ? 'pass">PASS' : 'fail">FAIL') + '</span>';
+  window.__lockup = { rows, ok };
+}, 200));
+</script>
+</body>
+</html>

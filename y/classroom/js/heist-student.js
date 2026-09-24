@@ -1,5 +1,5 @@
 /* ============================================================
-   THE HEIST — Student client
+   THE HEIST - Student client
    ----------------------------------------------------------------
    Flow:
      1. Land on page (optionally with ?code= prefilled)
@@ -23,23 +23,20 @@
   'use strict';
 
   // ── Firebase ───────────────────────────────────────────────
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-    authDomain: "empower-vocabulary-practice.firebaseapp.com",
-    projectId: "empower-vocabulary-practice",
-    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-    messagingSenderId: "136270199832",
-    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // Firebase is started by js/firebase-init.js, which reads the project
+  // from js/tenant.js. This file used to name one university directly, which would
+  // have pointed every deployment at that same project.
+  if (!firebase.apps.length) {
+    throw new Error('heist-student: js/tenant.js + js/firebase-init.js must load first.');
+  }
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
   // ── Background music ───────────────────────────────────────
   // Same track list / wiring as the Vocab Race classroom. Exposed on
   // window because the music-control buttons in the HTML use inline
-  // onclick — and the rest of this file lives inside an IIFE.
-  // Heist-flavoured track set — different SoundHelix songs from the
+  // onclick - and the rest of this file lives inside an IIFE.
+  // Heist-flavoured track set - different SoundHelix songs from the
   // ones the Vocab Race / Trust classrooms use, so each game has its
   // own sonic personality. Picked for tempo + minor-key tension that
   // matches "vault-cracking heist movie".
@@ -101,7 +98,7 @@
   let unsubs          = [];
 
   // Avatars to pick from for guest joins (signed-in users still
-  // get a randomized one for now — keeps things simple in v1).
+  // get a randomized one for now - keeps things simple in v1).
   const AVATARS = ['🦊','🐯','🐼','🐧','🦁','🐸','🐙','🦉','🐢','🐝','🐳','🦄','🐺','🐰','🦝'];
   function randomAvatar() { return AVATARS[Math.floor(Math.random() * AVATARS.length)]; }
 
@@ -133,11 +130,11 @@
   }
 
   // ── Auth: anonymous sign-in is fine for v1 ─────────────────
-  // Heist lets students join without an FSM account so visitors can
+  // Heist lets students join without an institutional account so visitors can
   // try a demo round and so younger classes don't need email logins.
   // If the project hasn't enabled Anonymous Auth in Firebase Console
   // (Authentication → Sign-in method → Anonymous → Enable) the call
-  // throws `auth/operation-not-allowed` — surface a clear message
+  // throws `auth/operation-not-allowed` - surface a clear message
   // instead of a generic toast so the teacher knows where to look.
   async function ensureAuth() {
     if (auth.currentUser) { user = auth.currentUser; myUid = user.uid; return; }
@@ -242,7 +239,7 @@
     try {
       const sref = db.collection('heist_sessions').doc(sessionCode);
       // Write the actual password into the restricted subcollection
-      // (read-protected by Firestore rules — only owner + host).
+      // (read-protected by Firestore rules - only owner + host).
       await sref.collection('passwords').doc(myUid).set({ word });
       // Publish the HINT to the player's public doc so attackers can see
       // it. The hint evokes the word without naming it (Taboo style),
@@ -253,7 +250,7 @@
       // student could open devtools and read the JSON to reverse the
       // hint. Hardening v1.1: load only public fields (word/def/example)
       // on the student side, and let the host write vaultHints via a
-      // /passwords listener. For a real classroom this is good enough —
+      // /passwords listener. For a real classroom this is good enough -
       // teacher is present and cheating is visible.
       await sref.collection('players').doc(myUid).update({
         passwordSet: true,
@@ -262,7 +259,7 @@
       // Late-join branch: if the host already pressed Start while we
       // were picking, skip the "Waiting…" screen and jump straight
       // into play. enterPlay() now relies on myPlayer.passwordSet,
-      // but the local copy of myPlayer may be a tick stale — we
+      // but the local copy of myPlayer may be a tick stale - we
       // know we just set it, so trust ourselves and pass through.
       if (session && session.status === 'playing') {
         if (!myPlayer) myPlayer = {};
@@ -285,7 +282,7 @@
       if (!d) return;
       session = d;
       // Status guard: if the game is already 'playing' (late joiner),
-      // DO NOT auto-bump them to the play view — they still need to
+      // DO NOT auto-bump them to the play view - they still need to
       // pick a password first. enterPlay() guards on passwordSet so
       // it's a no-op until the player has locked their vault. Once
       // confirmPassword() flips passwordSet=true, that same player-doc
@@ -321,7 +318,7 @@
     });
     unsubs.push(u);
   }
-  // Listen to /hacks involving me — show toasts for results.
+  // Listen to /hacks involving me - show toasts for results.
   function subscribeMyHacks() {
     const ref = db.collection('heist_sessions').doc(sessionCode).collection('hacks');
     // attacker side: my resolved attempts
@@ -336,14 +333,14 @@
           lastHackResolvedAt = t;
           if (d.success) {
             toast(`✅ Cracked ${d.targetName}! Stole 💸${d.amountStolen}`, 'success');
-            // Big win — coin shower raining into the balance chip +
+            // Big win - coin shower raining into the balance chip +
             // a green edge flash + a floating "+💸N".
             coinShower(18);
             screenFlash('gain');
             floatCoinLabel(d.amountStolen || 0, 'gain');
           } else {
             toast(`❌ Wrong password. Lost 💸${d.feeBurned}.`, 'fail');
-            // Lost the fee — small red loss label.
+            // Lost the fee - small red loss label.
             floatCoinLabel(d.feeBurned || 0, 'loss');
           }
         });
@@ -357,7 +354,7 @@
           if (!d.resolvedAt) return;
           if (d.success) {
             toast(`🚨 ${d.attackerName} hacked you and took 💸${d.amountStolen}`, 'attack');
-            // Got robbed — coins burst away from the balance chip +
+            // Got robbed - coins burst away from the balance chip +
             // a red edge flash + a floating "−💸N".
             coinBurst(document.getElementById('coinsBadge'), 8);
             screenFlash('loss');
@@ -426,7 +423,7 @@
     subscribeMyHacks();
     subscribeMyPassword();
   }
-  // Spinning 💸 glyph is provided by the .heist-coins::before pseudo —
+  // Spinning 💸 glyph is provided by the .heist-coins::before pseudo -
   // we only render the numeric balance here. Trigger the bump animation
   // whenever the value changes so a successful crack feels rewarding.
   let _lastShownBalance = null;
@@ -501,7 +498,7 @@
     }
   }
 
-  // Heist win — a shower of coins raining toward the balance chip.
+  // Heist win - a shower of coins raining toward the balance chip.
   function coinShower(count) {
     if (_reduceMotion) return;
     const target = _coinChipCenter();
@@ -521,7 +518,7 @@
     }
   }
 
-  // Brief full-screen edge flash — green for a win, red for a loss.
+  // Brief full-screen edge flash - green for a win, red for a loss.
   function screenFlash(kind) {
     if (_reduceMotion) return;
     const fl = document.createElement('div');
@@ -595,7 +592,7 @@
     if (isRight) {
       fb.className = 'earn-feedback ok';
       fb.textContent = `+ 💸${session.questionReward} coins`;
-      // Money FX — a little burst of coins from the answer button +
+      // Money FX - a little burst of coins from the answer button +
       // a floating "+💸N" so earning feels rewarding.
       coinBurst(btn, 6);
       floatCoinLabel(session.questionReward, 'gain', btn);
@@ -618,7 +615,7 @@
     setTimeout(nextEarnQuestion, 1200);
   }
 
-  // ── Heist panel — vault list ───────────────────────────────
+  // ── Heist panel - vault list ───────────────────────────────
   function renderVaultList() {
     const el = document.getElementById('vaultList');
     if (!el) return;
@@ -639,7 +636,7 @@
     });
   }
 
-  // ── Heist modal — pick the guess word ──────────────────────
+  // ── Heist modal - pick the guess word ──────────────────────
   function openHeistModal(targetUid) {
     if (!myPlayer || (myPlayer.balance || 0) < (session.heistFee || 0)) {
       toast(`Need at least 💸${session.heistFee} to attempt a hack.`, 'fail');
@@ -647,15 +644,15 @@
     }
     const target = allPlayers.find(p => p.uid === targetUid);
     if (!target) return;
-    // Pick the Taboo hint for that target — we don't know their password,
+    // Pick the Taboo hint for that target - we don't know their password,
     // but we DO know that whatever it is, it's one of the pack's words.
-    // The hint shown is... random? No — it must match the target's word.
+    // The hint shown is... random? No - it must match the target's word.
     // Since we can't read their password, we can't know which hint to show.
     //
     // SOLUTION: every student set a password that is ONE of the pack words.
     // When they joined, the host (in v1.5) could write a public targetHintId
     // to their player doc so attackers can read which hint to display.
-    // For v1: students show all hints they could be — no, that gives it
+    // For v1: students show all hints they could be - no, that gives it
     // away. We need a deterministic hint per target.
     //
     // FIX for v1: when the student saves their password (confirmPassword
@@ -722,7 +719,7 @@
         await db.collection('heist_sessions').doc(sessionCode).collection('players').doc(myUid).update({
           balance: firebase.firestore.FieldValue.increment(-session.heistFee)
         });
-        // Submit the hack request — host's tab will resolve it.
+        // Submit the hack request - host's tab will resolve it.
         await db.collection('heist_sessions').doc(sessionCode).collection('hacks').add({
           attackerUid: myUid,
           attackerName: myName,
@@ -765,7 +762,7 @@
 
   // ── Wire DOM ───────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
-    // Music init — match the Vocab Race classroom behaviour.
+    // Music init - match the Vocab Race classroom behaviour.
     const audio = document.getElementById('bgMusic');
     if (audio) {
       audio.volume = 0.3;
@@ -782,7 +779,7 @@
     document.getElementById('pwConfirmBtn').addEventListener('click', confirmPassword);
   });
 
-  // refresh-guard.js predicate — themed double-confirm on F5 / Ctrl+R
+  // refresh-guard.js predicate - themed double-confirm on F5 / Ctrl+R
   // active while the game is live (post-lobby, pre-done).
   window.refreshGuardShouldProtect = () => {
     if (!session) return false;
@@ -790,7 +787,7 @@
     return false;
   };
 
-  // beforeunload guard — if a student tries to close the tab or hit
+  // beforeunload guard - if a student tries to close the tab or hit
   // browser-back while a game is in progress (status === 'playing'),
   // browsers will show their generic "Leave site?" dialog so they
   // can't accidentally trash their vault by swiping back. Only kicks

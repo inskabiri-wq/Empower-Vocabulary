@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher sidebar - visual</title>
+<link rel="stylesheet" href="/css/app-settings.css">
+<link rel="stylesheet" href="/teacher/css/dashboard-v2.css">
+<style>
+  body { margin:0; background:#f1f5f9; font-family:'Segoe UI',Roboto,Arial,sans-serif; }
+  .wrap { display:flex; }
+  .note { padding:18px 22px; font-size:13px; color:#475569; max-width:60ch; line-height:1.6; }
+  .t2-sidebar { min-height:100vh; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="t2-sidebar">
+    <div class="t2-sidebar-section-lbl">ACCOUNT</div>
+    <button type="button" class="t2-nav-item" id="wtSidebarBtn" title="Classroom widgets">
+      <span class="ico" style="font-size:18px;line-height:1;">🧰</span><span class="label">Widgets</span>
+    </button>
+    <button type="button" class="t2-nav-item" data-app-settings-open data-app-settings-plain title="Display settings">
+      <span class="ico" data-icon="settings"></span><span class="label">Display</span>
+    </button>
+    <a class="t2-nav-item" href="#" style="text-decoration:none">
+      <span class="ico" data-icon="flask"></span><span class="label">Lingualab</span>
+    </a>
+    <a class="t2-nav-item" href="#" style="text-decoration:none">
+      <span class="ico" data-icon="gamepad"></span><span class="label">Classroom</span>
+    </a>
+    <button type="button" class="t2-nav-item">
+      <span class="ico" data-icon="log-out"></span><span class="label">Logout</span>
+    </button>
+  </nav>
+  <div class="note">
+    <p><strong>Display should look like every other row.</strong> Same 18px icon,
+    same stroke, label on the same baseline, no 44px square, no border box.</p>
+    <p>Before this fix, app-settings.js and app-settings.css both forced
+    <code>44x44 !important</code> onto the row, so it became a square with the
+    word "Display" hanging outside it.</p>
+    <p id="measure" style="font-family:ui-monospace,Consolas,monospace;font-size:12px;color:#0f172a"></p>
+  </div>
+</div>
+
+<script src="/js/app-settings.js"></script>
+<script src="/teacher/js/overview-v2.js"></script>
+<script>
+setTimeout(function () {
+  var rows = document.querySelectorAll('.t2-nav-item');
+  var out = [];
+  Array.prototype.forEach.call(rows, function (r) {
+    var b = r.getBoundingClientRect();
+    var svg = r.querySelector('.ico svg');
+    var label = (r.querySelector('.label') || {}).textContent || '?';
+    out.push(label.padEnd(11) + Math.round(b.width) + 'x' + Math.round(b.height) +
+             '   icon ' + (svg ? Math.round(svg.getBoundingClientRect().width) + 'px' : 'emoji'));
+  });
+  document.getElementById('measure').textContent = out.join('\n');
+  document.getElementById('measure').style.whiteSpace = 'pre';
+}, 600);
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<base href="/">
+<title>auth boot frame</title>
+</head>
+<body>
+<!-- student/js/auth.js writes into these. -->
+<div id="studentInfoChips"></div>
+<span id="infoClass"></span><span id="infoLevel"></span>
+<span id="infoModule"></span><span id="infoYear"></span>
+
+<script>
+// A fake auth + Firestore, installed BEFORE the module under test.
+// __reads counts user-document reads, which is the cheapest honest proxy for
+// "the boot body ran" - it is the first thing the boot does.
+window.__reads = 0;
+window.__cbs = [];
+window.USER1 = { uid: 'u1', emailVerified: true, email: 'a@b.c' };
+window.USER2 = { uid: 'u2', emailVerified: true, email: 'd@e.f' };
+
+var auth = {
+  currentUser: window.USER1,
+  onAuthStateChanged: function (cb) { window.__cbs.push(cb); },
+  signOut: function () { return Promise.resolve(); }
+};
+var db = {
+  collection: function () {
+    return {
+      doc: function () {
+        return {
+          get: function () {
+            window.__reads++;
+            return Promise.resolve({
+              exists: true,
+              data: function () { return { role: 'student', studentClass: 'B125', level: 'B1' }; }
+            });
+          },
+          set: function () { return Promise.resolve(); },
+          update: function () { return Promise.resolve(); }
+        };
+      }
+    };
+  }
+};
+window.auth = auth;
+window.db = db;
+window.firebase = { firestore: { FieldValue: { delete: function () { return 'D'; } } } };
+
+// Drive the callbacks the way Firebase does: same user twice (persisted, then
+// token-refreshed), optionally a genuine account switch afterwards.
+window.__fire = function (times, alsoSwitch) {
+  for (var i = 0; i < times; i++) {
+    window.__cbs.forEach(function (cb) { try { cb(window.USER1); } catch (e) {} });
+  }
+  if (alsoSwitch) {
+    window.__cbs.forEach(function (cb) { try { cb(window.USER2); } catch (e) {} });
+  }
+};
+</script>
+<script>
+// Load whichever implementation the parent asked for.
+(function () {
+  var impl = new URLSearchParams(location.search).get('impl') || '/student/js/auth.js';
+  var s = document.createElement('script');
+  s.src = impl;
+  document.body.appendChild(s);
+})();
+</script>
+</body>
+</html>

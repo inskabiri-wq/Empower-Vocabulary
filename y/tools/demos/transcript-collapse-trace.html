@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transcript collapse trace</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1080px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:80ch;line-height:1.55;}
+  iframe{position:absolute;left:-99999px;top:0;border:0;}
+</style>
+</head>
+<body class="light-mode">
+<h3 style="margin:0 0 4px;font-size:16px;">Listening transcript - can you close it?</h3>
+<p class="lede">
+  Loads transcript-collapse-frame.html (the real markup and the real
+  stylesheets) in an iframe at each width, with the transcript OPEN, and asks
+  one question: is there a visible control that closes it, and can a real tap
+  reach that control? Media queries inside an iframe respond to the iframe's
+  own width, which is what makes per-width testing possible.
+</p>
+<table id="t"><thead><tr>
+  <th>Width</th><th>Tab bar</th><th>Close X</th><th>Toggle tab</th>
+  <th>Any way out?</th><th>Tap reaches it</th><th>Target size</th><th></th>
+</tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script>
+const WIDTHS = [390, 600, 601, 768, 834, 1024, 1280];
+const got = {};
+
+window.addEventListener('message', e => {
+  if (e.data && typeof e.data.w === 'number') { got[e.data.w] = e.data; render(); }
+});
+
+function render(){
+  const tb = document.querySelector('#t tbody');
+  let done = 0, pass = 0;
+  const y = b => b ? 'yes' : '<span style="color:#b91c1c">no</span>';
+  tb.innerHTML = WIDTHS.map(w => {
+    const g = got[w];
+    let v = '<span style="color:#64748b">...</span>';
+    if (g) {
+      done++;
+      // A 44px target is required for a THUMB. A mouse is precise, so on a
+      // non-touch viewport the 30px button is fine and only reachability matters.
+      const ok = g.anyOut && g.reachable && (g.coarse ? g.meets44 : true);
+      if (ok) pass++;
+      v = ok ? '<span class="pass">PASS</span>' : '<span class="fail">STUCK</span>';
+    }
+    return '<tr><td>'+w+'px</td>'
+      + '<td>'+(g?y(g.outs.tabBar):'-')+'</td>'
+      + '<td>'+(g?y(g.outs.closeX):'-')+'</td>'
+      + '<td>'+(g?y(g.outs.toggle):'-')+'</td>'
+      + '<td>'+(g?y(g.anyOut):'-')+'</td>'
+      + '<td>'+(g?y(g.reachable):'-')+'</td>'
+      + '<td>'+(g?((g.offeredSize||'-')+(g.meets44?'':' <span style="color:#b91c1c">&lt;44px</span>')):'-')+'</td>'
+      + '<td>'+v+'</td></tr>';
+  }).join('');
+  const el = document.getElementById('sum');
+  if (done < WIDTHS.length) { el.textContent = 'running... '+done+'/'+WIDTHS.length; return; }
+  el.textContent = pass+' / '+WIDTHS.length+(pass===WIDTHS.length?'  PASS':'  FAIL');
+  el.className = pass===WIDTHS.length?'pass':'fail';
+  window.__trTrace = { pass, total: WIDTHS.length, rows: WIDTHS.map(w => {
+    const g = got[w] || {};
+    return { w, coarse: g.coarse, offeredSize: g.offeredSize, meets44: g.meets44,
+             tabBar: g.outs && g.outs.tabBar, closeX: g.outs && g.outs.closeX,
+             toggle: g.outs && g.outs.toggle, anyOut: g.anyOut, reachable: g.reachable };
+  }) };
+}
+render();
+
+(async function(){
+  for (const w of WIDTHS) {
+    const f = document.createElement('iframe');
+    f.width = w; f.height = 700;
+    const done = new Promise(res => {
+      const h = e => {
+        if (e.data && e.data.w === w) { window.removeEventListener('message', h); res(); }
+      };
+      window.addEventListener('message', h);
+      setTimeout(res, 9000);
+    });
+    // cache-bust so an edited stylesheet is not served from the previous run
+    f.src = 'transcript-collapse-frame.html?w=' + w + '&cb=' + Math.random();
+    document.body.appendChild(f);
+    await done;
+  }
+})();
+</script>
+</body>
+</html>

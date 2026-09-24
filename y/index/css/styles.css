@@ -5,11 +5,14 @@
 
 :root {
   --bg-primary: #0a0f1a;
+  --bg-secondary: #0f1729;
+  --bg-deep: #0c1220;
   --bg-card: linear-gradient(145deg, #0f1729 0%, #0c1220 100%);
+  /* One blue family. The gradient used to run blue -> sky -> cyan. */
   --accent-primary: #3b82f6;
-  --accent-secondary: #0ea5e9;
-  --accent-tertiary: #06b6d4;
-  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 50%, #06b6d4 100%);
+  --accent-secondary: #60a5fa;
+  --accent-tertiary: #93c5fd;
+  --accent-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
   --success: #10b981;
   --error: #ef4444;
   --warning: #f59e0b;
@@ -17,6 +20,29 @@
   --text-secondary: #9ca3af;
   --text-muted: #6b7280;
   --border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* The login page is the FIRST screen anyone sees, so it has to match the app
+   it opens. It carries its own complete token set (it does not load the shared
+   app-settings stylesheet), so light mode is restated here in full. The class
+   comes from js/app-settings.js, which index.html loads with the panel opted
+   out - the theme is applied, no settings wheel appears on the login screen. */
+.light-mode {
+  --bg-primary: #f6f8fb;
+  --bg-secondary: #ffffff;
+  --bg-deep: #f2f6fc;
+  --bg-card: linear-gradient(145deg, #ffffff 0%, #f7faff 100%);
+  --accent-primary: #2563eb;
+  --accent-secondary: #2563eb;
+  --accent-tertiary: #1d4ed8;
+  --accent-gradient: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
+  --success: #15803d;
+  --error: #b91c1c;
+  --warning: #b45309;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #5b6b7f;
+  --border-color: rgba(15, 23, 42, 0.10);
 }
 
 * {
@@ -31,7 +57,7 @@ html, body {
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--ll-font);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -62,7 +88,7 @@ body {
   height: 100%;
   background: 
     radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom right, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+    radial-gradient(ellipse at bottom right, rgba(96, 165, 250, 0.1) 0%, transparent 50%);
   z-index: 1;
   pointer-events: none;
 }
@@ -111,7 +137,7 @@ body {
   justify-content: center;
   gap: 10px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(6, 182, 212, 0.15));
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(96, 165, 250, 0.15));
   border-radius: 50px;
   margin-bottom: 16px;
   border: 1px solid rgba(59, 130, 246, 0.15);
@@ -171,7 +197,7 @@ body {
 
 .tab.active {
   color: var(--text-primary);
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(6, 182, 212, 0.25));
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(96, 165, 250, 0.25));
 }
 
 .tab.active::after {
@@ -188,7 +214,7 @@ body {
 
 .tab:hover:not(.active) {
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.03));
 }
 
 /* ============================================
@@ -243,7 +269,7 @@ body {
 .form-input {
   width: 100%;
   padding: 14px 14px 14px 42px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.03));
   border: 2px solid var(--border-color);
   border-radius: 14px;
   color: var(--text-primary);
@@ -271,7 +297,7 @@ body {
 .form-select {
   width: 100%;
   padding: 14px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.03));
   border: 2px solid var(--border-color);
   border-radius: 14px;
   color: var(--text-primary);
@@ -411,7 +437,7 @@ body {
 .btn-google {
   width: 100%;
   padding: 14px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.03));
   border: 2px solid var(--border-color);
   border-radius: 14px;
   color: var(--text-secondary);
@@ -427,8 +453,8 @@ body {
 }
 
 .btn-google:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.06));
+  border-color: var(--tint-line-strong, rgba(255, 255, 255, 0.15));
   transform: translateY(-2px);
   color: var(--text-primary);
 }
@@ -455,14 +481,14 @@ body {
   display: block;
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  color: var(--text-error, #fca5a5);
 }
 
 .message.success {
   display: block;
   background: rgba(16, 185, 129, 0.1);
   border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #6ee7b7;
+  color: var(--text-success, #6ee7b7);
 }
 
 /* ============================================
@@ -493,7 +519,7 @@ body {
   display: inline-block;
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 2px solid var(--tint-line-strong, rgba(255,255,255,0.3));
   border-radius: 50%;
   border-top-color: white;
   animation: spin 0.8s linear infinite;
@@ -528,7 +554,7 @@ body {
 }
 
 .modal-card {
-  background: linear-gradient(145deg, var(--bg-secondary, #0f1729) 0%, #0c1220 100%);
+  background: linear-gradient(145deg, var(--bg-secondary, #0f1729) 0%, var(--bg-deep, #0c1220) 100%);
   border-radius: 20px;
   padding: 28px;
   max-width: 700px;
@@ -670,7 +696,7 @@ body {
   background: rgba(59, 130, 246, 0.25) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid var(--tint-line-strong, rgba(255, 255, 255, 0.18)) !important;
   box-shadow:
     0 8px 32px rgba(59, 130, 246, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
@@ -705,7 +731,7 @@ body {
 
 .btn-liquid:hover {
   background: rgba(59, 130, 246, 0.4) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  border-color: var(--tint-line-strong, rgba(255, 255, 255, 0.3)) !important;
   box-shadow:
     0 14px 40px rgba(59, 130, 246, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.25),
@@ -783,4 +809,155 @@ body {
   .form-row .form-select-small {
     width: 100%;
   }
+}
+
+/* ============================================
+   LIGHT MODE - surfaces that were written for a dark card
+   The rules above use white-on-black idioms: a heavy black drop shadow, a
+   white inset highlight, and translucent-white fills for inputs and hover.
+   On white paper the shadow reads as grime and the white fills are invisible.
+   ============================================ */
+.light-mode .login-card {
+  box-shadow:
+    0 24px 48px rgba(15, 23, 42, 0.10),
+    0 2px 8px rgba(15, 23, 42, 0.04),
+    0 0 0 1px rgba(15, 23, 42, 0.03) inset;
+}
+.light-mode .form-input,
+.light-mode .form-select {
+  background: #ffffff;
+  border-color: #dbe3ef;
+}
+.light-mode .form-input:focus,
+.light-mode .form-select:focus {
+  background: #ffffff;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+.light-mode .tab:hover:not(.active) {
+  background: rgba(15, 23, 42, 0.04);
+}
+/* The seal tile behind the wordmark: a pale blue chip rather than a dark one. */
+.light-mode .logo-container {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(96, 165, 250, 0.10));
+  border-color: rgba(37, 99, 235, 0.16);
+}
+
+/* ============================================================
+   LIGHT MODE - generated by tools/light-coverage.js findings
+   Each rule mirrors a real one above and flips only its SURFACE,
+   keeping the original alpha so translucent panels stay translucent
+   and nothing about the layering changes. Dark is untouched.
+   ============================================================ */
+.light-mode .modal-overlay {
+  background: rgba(246, 248, 251, 0.85);
+}
+
+/* ============================================================
+   LOGIN HERO PHOTO
+   ------------------------------------------------------------
+   Full-bleed, and purely ADDITIVE. Nothing that was on this page moves: the
+   .login-card stays centred exactly where it was, #particles keeps drifting,
+   and .gradient-overlay stays. This slots in underneath all of them.
+
+   Final stacking, bottom to top:
+     body::before  -1   the photograph
+     body::after   -1   a scrim over it, so the photo never competes with the card
+     #particles     0   (unchanged)
+     .gradient-overlay 1 (unchanged)
+     .container    10   the login card (unchanged)
+
+   Every visible word on this page lives inside .login-card, which has a solid
+   --bg-card background, so no text ever sits on the photograph. The scrim is
+   therefore about composition, not legibility - it keeps a bright sunset from
+   pulling the eye off the form.
+
+   image-set() lets the browser pick: AVIF 136 KB, WebP 203 KB, JPEG 277 KB.
+   Below 760px the -sm pair is used instead (AVIF 50 KB), because a full-bleed
+   background is cropped hard on a narrow screen and shipping the desktop file
+   to a phone wastes bandwidth on the connection least able to spare it.
+
+   Photo: free-tier Unsplash, Pang Yuhao. Fixed attachment is deliberately NOT
+   used - it is a known jank source on mobile Safari.
+   ============================================================ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--bg-primary);
+  background-image: image-set(
+    url('/img/login-hero.avif') type('image/avif'),
+    url('/img/login-hero.webp') type('image/webp'),
+    url('/img/login-hero.jpg')  type('image/jpeg')
+  );
+  background-image: -webkit-image-set(
+    url('/img/login-hero.avif') type('image/avif'),
+    url('/img/login-hero.webp') type('image/webp'),
+    url('/img/login-hero.jpg')  type('image/jpeg')
+  );
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* The scrim. Dark theme sinks the photo so the card reads as the lit object;
+   light theme lifts it instead, because the same veil that helps on navy
+   turns a white card muddy. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 15, 26, 0.42) 0%,
+    rgba(10, 15, 26, 0.56) 55%,
+    rgba(10, 15, 26, 0.72) 100%
+  );
+}
+
+.light-mode body::after,
+body.light-mode::after {
+  /* Deliberately light. The card carries its own opaque gradient, so nothing
+     here is load-bearing for legibility - this only stops the photograph
+     competing with the form. Started at 0.62-0.88 and the picture washed out
+     to almost nothing, which defeats the point of having one. */
+  background: linear-gradient(
+    180deg,
+    rgba(246, 248, 251, 0.30) 0%,
+    rgba(246, 248, 251, 0.42) 55%,
+    rgba(246, 248, 251, 0.58) 100%
+  );
+}
+
+@media (max-width: 760px) {
+  body::before {
+    background-image: image-set(
+      url('/img/login-hero-sm.avif') type('image/avif'),
+      url('/img/login-hero-sm.webp') type('image/webp'),
+      url('/img/login-hero-sm.jpg')  type('image/jpeg')
+    );
+    background-image: -webkit-image-set(
+      url('/img/login-hero-sm.avif') type('image/avif'),
+      url('/img/login-hero-sm.webp') type('image/webp'),
+      url('/img/login-hero-sm.jpg')  type('image/jpeg')
+    );
+  }
+}
+
+/* The "Can't sign in?" line. Slightly stronger than the terms line beneath
+   it, because someone who is locked out needs to find it, but still quiet
+   enough that it is not competing with the Sign In button. */
+.footer-help {
+  margin-bottom: 6px;
+}
+.footer-help a {
+  font-weight: 600;
+  text-decoration: none;
+}
+.footer-help a:hover {
+  text-decoration: underline;
 }

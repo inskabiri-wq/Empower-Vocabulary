@@ -1,9 +1,9 @@
 /* ============================================================
-   smoke-test.js  —  data-integrity smoke test
+   smoke-test.js  -  data-integrity smoke test
    Read-only checks against the live Firestore. Uses the same
    service-account pattern as the other admin scripts.
 
-   What it covers (data layer only — rules + UI need eyes):
+   What it covers (data layer only - rules + UI need eyes):
      • Schema integrity of /settings/organizations
      • Denormalized arrays match `list`
      • Assignment ownership (teacherId backfill complete?)
@@ -34,7 +34,7 @@ const path  = require('path');
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, '.serviceAccount.json');
 const ADMIN_EMAIL = 'akabiriaslifar@fsm.edu.tr';
 
-// Hardcoded fallback list from firestore.rules — keep in sync.
+// Hardcoded fallback list from firestore.rules - keep in sync.
 const RULE_FALLBACK_DOMAINS         = ['fsm.edu.tr', 'stu.fsm.edu.tr'];
 const RULE_FALLBACK_TEACHER_DOMAINS = ['fsm.edu.tr'];
 
@@ -61,11 +61,11 @@ function header(s) { console.log('\n\x1b[1m' + s + '\x1b[0m'); }
 function ok(name)            { passed++; console.log('  \x1b[32m✅\x1b[0m ' + name); }
 function bad(name, details)  {
   failed++; failures.push(name);
-  console.log('  \x1b[31m❌\x1b[0m ' + name + (details ? ' — ' + details : ''));
+  console.log('  \x1b[31m❌\x1b[0m ' + name + (details ? ' - ' + details : ''));
 }
 function warn(name, details) {
   warnings++;
-  console.log('  \x1b[33m⚠\x1b[0m  ' + name + (details ? ' — ' + details : ''));
+  console.log('  \x1b[33m⚠\x1b[0m  ' + name + (details ? ' - ' + details : ''));
 }
 function info(s) { console.log('  \x1b[90m·\x1b[0m  ' + s); }
 
@@ -81,7 +81,7 @@ async function testOrgRegistry() {
   const snap = await db.collection('settings').doc('organizations').get();
   if (!snap.exists) {
     warn('settings/organizations doc missing',
-         'rule fallback covers FSM only — admin should seed via UI');
+         'rule fallback covers FSM only - admin should seed via UI');
     return;
   }
   ok('Doc exists');
@@ -98,7 +98,7 @@ async function testOrgRegistry() {
         'got ' + typeof data.teacherEligibleDomains);
 
   // Denormalized arrays should match the list. The admin UI rebuilds
-  // them on every save — any drift indicates a manual / broken write.
+  // them on every save - any drift indicates a manual / broken write.
   if (Array.isArray(data.list) && Array.isArray(data.activeDomains)) {
     const expectedActive = data.list
       .filter(o => o && o.active !== false)
@@ -255,7 +255,7 @@ async function testWritingSubmissions() {
   if (submittedHasScore > 0) warn('Submitted (ungraded) submissions with a score set',
                                   submittedHasScore + ' found (unusual)');
 
-  // Orphan cross-check — every assignmentId should resolve to a doc.
+  // Orphan cross-check - every assignmentId should resolve to a doc.
   // Sampled to avoid N+1 on huge collections.
   const aIds = Array.from(assignmentIds);
   const sample = aIds.slice(0, 100);
@@ -359,7 +359,7 @@ async function testAssignmentCompletions() {
 
 // ── Main ──────────────────────────────────────────────────────
 async function main() {
-  console.log('\x1b[1m🚀 Lingualab — Smoke Test\x1b[0m');
+  console.log('\x1b[1m🚀 Lingualab - Smoke Test\x1b[0m');
   console.log('   Project: ' + (admin.app().options.projectId || '(unknown)'));
   console.log('   Started: ' + new Date().toISOString());
 
@@ -380,7 +380,7 @@ async function main() {
   }
   console.log('\n\x1b[32m✅ All hard checks passed.\x1b[0m');
   if (warnings > 0) {
-    console.log('\x1b[33m   Review warnings above — they may be intentional but worth a look.\x1b[0m');
+    console.log('\x1b[33m   Review warnings above - they may be intentional but worth a look.\x1b[0m');
   }
   process.exit(0);
 }

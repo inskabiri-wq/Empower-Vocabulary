@@ -43,6 +43,6 @@
   // Fallback criterion colours (kept identical to writing-annotations.js
   // CRIT_COLORS) in case that file is opened before this one.
   window.CORRECTOR_CRIT_COLORS = {
-    CC: '#34d399', TA: '#a78bfa', GR: '#38bdf8', VO: '#fbbf24'
+    CC: '#34d399', TA: '#60a5fa', GR: '#60a5fa', VO: '#60a5fa'
   };
 })();

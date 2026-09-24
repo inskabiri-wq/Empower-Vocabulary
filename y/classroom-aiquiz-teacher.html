@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Quiz - Host | Lingualab</title>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css?v=30">
+<!-- UNIVERSAL classroom look; the game only adds its own widgets. -->
+<link rel="stylesheet" href="classroom/css/styles.css?v=60">
+<link rel="stylesheet" href="classroom/css/minigames.css?v=14">
+  <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-dialog.js?v=8"></script>
+  <script src="js/sound.js?v=4"></script>
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body class="aiquiz">
+
+<!-- Animated Background - same as every classroom page -->
+<div class="gradient-bg"></div>
+<div class="floating-shapes">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <div class="shape shape-4"></div>
+</div>
+<canvas id="particles-bg"></canvas>
+
+<!-- Music Control -->
+<div class="music-control">
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
+  <button class="music-btn" onclick="nextTrack()" title="Next Track">🎶</button>
+  <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" onchange="setVolume(this.value)">
+</div>
+<audio id="bgMusic" preload="none"></audio>
+
+<!-- Header - identical to every other classroom game page. -->
+<header class="header">
+  <div class="header-title">
+    <span style="font-size: 1.5rem;">🤖</span>
+    <h1>AI Quiz</h1>
+  </div>
+  <div class="header-actions">
+    <span style="color: var(--text-secondary); margin-right: 12px;">Hello, <span id="teacherName"></span></span>
+    <a id="backToClassroom" href="classroom-teacher.html" class="btn btn-secondary ll-navbtn">🎮<span class="ll-navtext"> Pick a different game</span></a>
+    <a id="backToDashboard" href="teacher-dashboard.html" class="btn btn-secondary ll-navbtn">🏠<span class="ll-navtext"> Dashboard</span></a>
+  </div>
+</header>
+
+<!-- Setup: which parts of the course to ask about. This is the "module in
+     the content" control: every question carries the module it came from,
+     so a module can be left out without editing the question bank. -->
+<div id="view-setup" class="container">
+  <!-- Filled in only when a previous room of this teacher's is still open.
+       Offering the choice here, above the form, is what keeps the setup
+       screen reachable: resuming used to happen automatically and there was
+       no way back. -->
+  <div id="resumeBar" style="display:none;"></div>
+  <div class="card">
+    <h2 class="card-title">🤖 AI Quiz · Setup</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 18px;">
+      Questions come from the AI Use Guidelines course. Everyone answers the
+      same question at the same time, and the ladder appears after each one.
+    </p>
+
+    <div class="assignment-form-group" style="margin-bottom: 18px;">
+      <label style="display:block; margin-bottom:8px; font-weight:600;">Modules</label>
+      <div id="moduleChecks" class="mg-module-checks"></div>
+    </div>
+
+    <div class="assignment-form-group" style="margin-bottom: 18px;">
+      <label for="qCount" style="display:block; margin-bottom:8px; font-weight:600;">Questions</label>
+      <select id="qCount" class="ll-select">
+        <option value="10">10 questions</option>
+        <option value="15">15 questions</option>
+        <option value="20" selected>20 questions</option>
+      </select>
+    </div>
+
+    <!-- Every question and answer is written in both languages in
+         classroom/js/ai-quiz-questions.js. This decides what the projector
+         shows and what the phones start in; each student can still switch on
+         their own phone. -->
+    <div class="assignment-form-group" style="margin-bottom: 18px;">
+      <label for="qLang" style="display:block; margin-bottom:8px; font-weight:600;">Language</label>
+      <select id="qLang" class="ll-select">
+        <option value="both" selected>English + Türkçe (both)</option>
+        <option value="en">English only</option>
+        <option value="tr">Türkçe only</option>
+      </select>
+    </div>
+
+    <div class="assignment-form-group" style="margin-bottom: 22px;">
+      <label for="qSeconds" style="display:block; margin-bottom:8px; font-weight:600;">Seconds per question</label>
+      <select id="qSeconds" class="ll-select">
+        <option value="20">20 seconds</option>
+        <option value="30" selected>30 seconds</option>
+        <option value="45">45 seconds</option>
+        <option value="60">60 seconds</option>
+      </select>
+    </div>
+
+    <button type="button" id="createBtn" class="btn btn-success btn-large" style="width: 100%;">▶️ Create room</button>
+  </div>
+</div>
+
+<!-- Lobby -->
+<div id="view-lobby" class="container" style="display: none;">
+  <div class="card">
+    <div class="session-code-display">
+      <div class="session-code-label">Session Code</div>
+      <div class="session-code" id="roomCode">-----</div>
+      <div class="session-code-hint">Share this code with your students</div>
+    </div>
+
+    <div class="session-qr-card">
+      <div class="session-qr-tile">
+        <img id="qrImg" alt="Scan to join this session" width="220" height="220">
+      </div>
+      <div class="session-qr-label">📱 Scan with phone camera to join</div>
+      <a id="joinUrl" href="#" style="color: var(--text-muted); font-size: 0.8rem; word-break: break-all;"></a>
+    </div>
+
+    <div id="lobbyMeta" style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;"></div>
+
+    <div class="players-section">
+      <div class="players-header">
+        <h3 class="players-count">👥 Players: <span id="rosterCount">0</span></h3>
+      </div>
+      <!-- A COUNT, not a card per student.
+           This room is built for a whole cohort, and drawing one card per
+           player is what makes a big room unusable: the list is rebuilt on
+           every single join. Names are not what the projector needs anyway. -->
+      <div class="players-grid" id="roster"></div>
+    </div>
+
+    <div style="margin-top: 24px;">
+      <button type="button" id="startBtn" class="btn btn-success btn-large" style="width: 100%;" disabled>▶️ Waiting for players...</button>
+    </div>
+  </div>
+</div>
+
+<!-- Live: one question at a time, everyone together -->
+<div id="view-live" class="container" style="display: none;">
+  <div class="card">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+      <div class="session-code" style="font-size: 1.4rem; letter-spacing: 4px;" id="liveCode"></div>
+      <div class="game-timer" id="timer">⏱ --</div>
+      <img id="liveQrImg" class="session-qr-small" alt="QR" width="72" height="72">
+    </div>
+
+    <div class="bingo-call-card" style="margin-top: 14px;">
+      <div class="bingo-call-count" id="qProgress">Question 1</div>
+      <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 6px;" id="qModule"></div>
+      <div class="bingo-call-text" id="qText" style="font-size: 1.35rem; margin-top: 10px;"></div>
+      <div class="aiq-options" id="qOptions"></div>
+    </div>
+
+    <div class="mg-live-grid">
+      <div>
+        <h3 style="margin-bottom: 12px;">🏆 Ladder <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 400;" id="answeredNote"></span></h3>
+        <div class="leaderboard-list" id="liveBoard"></div>
+      </div>
+      <div>
+        <h3 style="margin-bottom: 12px;">Controls</h3>
+        <button type="button" id="revealBtn" class="btn btn-primary btn-large" style="width: 100%;">🔒 Close question</button>
+        <button type="button" id="nextBtn" class="btn btn-success btn-large" style="width: 100%; margin-top: 10px;" disabled>⏭️ Next question</button>
+        <button type="button" id="endBtn" class="btn btn-danger btn-large" style="width: 100%; margin-top: 10px;">🏳️ End Game</button>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 12px;">The question closes by itself when the timer runs out.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Results -->
+<div id="view-results" class="container" style="display: none;">
+  <div class="card">
+    <h2 class="card-title" style="text-align: center; justify-content: center; font-size: 1.5rem;">🏆 Final Results</h2>
+    <div class="podium" id="podium" style="margin: 32px 0;"></div>
+    <!-- Filled by endGame: "All 99 players", or "Top 300 of 512" if the room
+         is bigger than the render cap. It used to be a hardcoded "Top 20". -->
+    <h3 style="margin-bottom: 16px;" id="resultsHeading">Final standings</h3>
+    <div class="leaderboard-list" id="perPlayerBody"></div>
+    <div style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;">
+      <button type="button" id="newGameBtn" class="btn btn-primary btn-large" style="flex: 1;">🔄 New Session</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<!-- Which university, then start Firebase for it. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
+<script src="classroom/js/bg-particles.js?v=2"></script>
+<script src="classroom/js/minigame-core.js?v=5"></script>
+<!-- The question bank. THIS is the file to edit when questions change. -->
+<script src="classroom/js/game-report.js?v=1"></script>
+<script src="classroom/js/ai-quiz-questions.js?v=3"></script>
+<script src="classroom/js/aiquiz-teacher.js?v=12"></script>
+
+</body>
+</html>

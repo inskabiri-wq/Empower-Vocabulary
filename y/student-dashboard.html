@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Lingualab</title>
 <!-- PWA -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="/manifest.json?v=2">
+<meta name="theme-color" content="#f6f8fb">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Lingualab">
@@ -15,38 +17,136 @@
 <!-- Crystal-design assignment cards use Outfit (display) + JetBrains Mono
      (level chips, progress label). Loaded with display=swap so the rest
      of the dashboard renders immediately while these fetch. -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <!-- Nunito: the dashboard font. The @import in extra.css is buried mid-file
      (invalid - @import must be first), so it never loaded. Load it here. -->
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
 <!-- Modular CSS -->
-<!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css?v=17">
-<!-- Shared themed dialog (alert/confirm/prompt) — replaces native browser popups app-wide. -->
-<script src="js/app-dialog.js"></script>
-<link rel="stylesheet" href="student/css/styles.css?v=7">
-<link rel="stylesheet" href="student/css/extra.css?v=8">
-<link rel="stylesheet" href="student/css/hub.css?v=20">
-<link rel="stylesheet" href="student/css/skills.css?v=6">
-<link rel="stylesheet" href="student/css/grammar.css?v=27">
-<link rel="stylesheet" href="student/css/reading-exam.css?v=6">
-<link rel="stylesheet" href="assignments/css/assignments.css?v=4">
+<!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css?v=30">
+<!-- Shared themed dialog (alert/confirm/prompt) - replaces native browser popups app-wide. -->
+<script src="js/app-dialog.js?v=8"></script>
+  <script src="js/sound.js?v=4"></script>
+<link rel="stylesheet" href="student/css/styles.css?v=60">
+<link rel="stylesheet" href="student/css/extra.css?v=38">
+<link rel="stylesheet" href="student/css/hub.css?v=31">
+<link rel="stylesheet" href="student/css/skills.css?v=17">
+<link rel="stylesheet" href="student/css/grammar.css?v=34">
+<link rel="stylesheet" href="student/css/reading-exam.css?v=19">
+<link rel="stylesheet" href="assignments/css/assignments.css?v=21">
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-settings.js?v=40"></script>
+  <!-- HUB BOOT HOLD START. The hub's pieces arrive on separate network
+       timelines: the tiles at once, the placement card a read later, the seal
+       after the user document, the assignments after three or four reads and
+       the tile percentages after the sessions query. Shown as they came, the
+       page visibly assembled itself. This keeps #hubScreen invisible until
+       every piece has reported in (LLHubBoot.ready), shows one small loader if
+       that takes longer than 150ms, and reveals the page at 2.5s whatever
+       happens, so a slow or failed read can only ever bring back the old
+       staggered load, never a blank page.
+       visibility, not display: the hidden hub keeps its layout, so org-brand.js
+       can still measure where the seal goes and nothing moves when it shows.
+       Plain timers only: no requestAnimationFrame and no transition to wait on,
+       so a background tab or a test pane that never paints still reveals.
+       tools/harness/hub-boot.html cuts everything between the START and END
+       markers out of this file and tests it, so keep both markers. -->
+  <style>
+    html.ll-hub-hold #hubScreen { visibility: hidden; }
+    html.ll-hub-hold.ll-hub-slow body::after {
+      content: ''; position: fixed; left: 50%; top: 45%; z-index: 5;
+      width: 56px; height: 56px; margin: -28px 0 0 -28px;
+      background: url('/lingualab-mark.svg') center / contain no-repeat;
+      pointer-events: none;
+      animation: llHubWait 1.2s ease-in-out infinite;
+    }
+    /* The mark is navy, drawn for a white page. On the Dark and Contrast
+       themes (neither light-mode nor theme-sepia on <html>) it is drawn white,
+       as css/fsmvu-loader.css does for its own mark. */
+    html.ll-hub-hold.ll-hub-slow:not(.light-mode):not(.theme-sepia) body::after {
+      filter: brightness(0) invert(1);
+    }
+    /* opacity only, so the compositor runs it (tools/anim-cost-check.js) */
+    @keyframes llHubWait { 0%, 100% { opacity: .35; } 50% { opacity: .9; } }
+    @media (prefers-reduced-motion: reduce) {
+      html.ll-hub-hold.ll-hub-slow body::after { animation: none; opacity: .6; }
+    }
+  </style>
+  <script>
+  (function () {
+    'use strict';
+    // Who sends each signal:
+    //   tiles        student/js/hub.js            real tiles drawn, not skeletons
+    //   placement    student/js/placement-tile.js card added or ruled out
+    //   user         student/js/auth.js           user document read, or failed
+    //   logo         js/org-brand.js              seal loaded and placed, or none
+    //                (auth.js sends it too when there is no user document)
+    //   stats        student/js/progress.js loadJourneyStats ONLY: fresh numbers,
+    //                or this student's saved copy when the read fails. Never the
+    //                auth.js cache prime (it can be stale; revealing on it made
+    //                a tile jump).
+    //   assignments  'assignments:updated' from assignments/js/student-assignments.js
+    var NEED = ['tiles', 'placement', 'user', 'logo', 'stats', 'assignments'];
+    var root = document.documentElement;
+    var t0 = Date.now();
+    var got = {}, done = false, slowT = null, capT = null;
+
+    function release(why) {
+      if (done) return;
+      done = true;
+      clearTimeout(slowT); clearTimeout(capT);
+      root.classList.remove('ll-hub-hold', 'll-hub-slow');
+      root.setAttribute('data-hub-boot', why + ':' + (Date.now() - t0));
+      try { document.dispatchEvent(new CustomEvent('ll-hub-revealed', { detail: { why: why, ms: Date.now() - t0 } })); } catch (_) {}
+    }
+    function ready(name) {
+      if (got[name] != null) return;
+      got[name] = Date.now() - t0;          // kept for ?boot=1, even after release
+      if (done) return;
+      for (var i = 0; i < NEED.length; i++) if (got[NEED[i]] == null) return;
+      release('ready');
+    }
+    window.LLHubBoot = {
+      ready: ready,
+      release: release,
+      pending: function () { return NEED.filter(function (n) { return got[n] == null; }); },
+      timings: function () { return JSON.parse(JSON.stringify(got)); }
+    };
+    window.addEventListener('assignments:updated', function () { ready('assignments'); });
+
+    // Hold only when the HUB is what this load shows. A deep link that
+    // hub.js routes to another screen (routeFromHash) or a teacher's exam
+    // preview (?preview=1, student.js) must never wait on the hub.
+    var hash = (location.hash || '').toLowerCase();
+    if (/^#(vocabulary|grammar|listening|reading|writing|speaking)$/.test(hash) ||
+        /[?&]preview=1(&|$)/.test(location.search)) { done = true; return; }
+
+    root.classList.add('ll-hub-hold');
+    slowT = setTimeout(function () { if (!done) root.classList.add('ll-hub-slow'); }, 150);
+    capT = setTimeout(function () { release('cap'); }, 2500);
+    // A module that throws may never send its signal. Show the page now
+    // instead of making the student sit out the cap. Script errors only: an
+    // image or stylesheet that fails to load also raises 'error', and one
+    // missing file must never defeat the hold. A runtime error arrives as an
+    // ErrorEvent carrying a message; a resource failure does not.
+    window.addEventListener('error', function (e) {
+      if (typeof ErrorEvent !== 'undefined' && e instanceof ErrorEvent && e.message) release('error');
+    });
+  })();
+  </script>
+  <!-- HUB BOOT HOLD END -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 <!-- Custom Logout Modal -->
 <!-- ════════════════════════════════════════════════════════════════
-     VERIFY GATE MODAL — bi-monthly academic info verification.
+     VERIFY GATE MODAL - bi-monthly academic info verification.
      Uses the app's dark-glass modal pattern (.modal-overlay) but
      overrides the inner card with verify-gate-specific styling
      (.vg-* classes) so the form fields, focus rings, and accents
-     match the wider design language. Cyan/blue accent — this is
+     match the wider design language. Cyan/blue accent - this is
      an informational prompt, not a danger action.
      ════════════════════════════════════════════════════════════════ -->
 <div id="verifyGateModal" class="modal-overlay" style="display:none;">
@@ -62,11 +162,11 @@
       </div>
       <div class="vg-head-text">
         <h2 class="vg-title">Quick check-in</h2>
-        <p class="vg-subtitle">It's been about two months — confirm your class so the app gives you the right practice material.</p>
+        <p class="vg-subtitle">It's been about two months - confirm your class so the app gives you the right practice material.</p>
       </div>
     </div>
 
-    <!-- Inline error banner — only shown if the submit fails. -->
+    <!-- Inline error banner - only shown if the submit fails. -->
     <div id="verifyGateError" class="vg-error" role="alert"></div>
 
     <form id="verifyGateForm" class="vg-form" novalidate>
@@ -75,10 +175,10 @@
         <label class="vg-label" for="verifyLevel">Level</label>
         <div class="vg-select-wrap">
           <select id="verifyLevel" class="vg-select ll-select" required>
-            <option value="A2">A2 — Elementary</option>
-            <option value="B1">B1 — Intermediate</option>
-            <option value="B1+">B1+ — Upper Intermediate</option>
-            <option value="B2">B2 — Advanced</option>
+            <option value="A2">A2 - Elementary</option>
+            <option value="B1">B1 - Intermediate</option>
+            <option value="B1+">B1+ - Upper Intermediate</option>
+            <option value="B2">B2 - Advanced</option>
             <option value="C1">C1 - Proficiency</option>
           </select>
           <span class="vg-chev" aria-hidden="true">▾</span>
@@ -101,7 +201,7 @@
         </div>
       </div>
 
-      <!-- Module — emphasized because it must change -->
+      <!-- Module - emphasized because it must change -->
       <div class="vg-field vg-field-key">
         <label class="vg-label" for="verifyModule">
           Module
@@ -137,146 +237,38 @@
   </div>
 </div>
 
+<!-- ll-dialog / ll-dialog-toggle: shared dialog shape and motion from
+     css/brand.css. `toggle` rather than `pop` because this card is in the
+     markup from page load and is revealed by .active - a keyframe would run
+     itself out while the modal was still hidden. -->
 <div id="logoutModal" class="modal-overlay">
-  <div class="modal-content">
-    <div class="modal-icon">🚪</div>
+  <div class="modal-content ll-dialog ll-dialog-toggle">
+    <div class="modal-icon ll-dialog-icon">🚪</div>
     <h2 class="modal-title">Leaving So Soon?</h2>
-    <p class="modal-message">Are you sure you want to log out? Your progress will be saved, but you'll need to sign in again to continue practicing.</p>
+    <!-- Same sentence, word for word, as the teacher dashboard's logout
+         dialog. Two different sentences cannot produce the same box however
+         the CSS is written: this one ran to 119 characters and the teacher's
+         to 87, which alone made the student card 71px taller. -->
+    <p class="modal-message">Are you sure you want to log out? You'll need to sign in again to continue.</p>
     <div class="modal-buttons">
-      <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">Cancel</button>
-      <button class="modal-btn modal-btn-confirm" onclick="confirmLogout()">Yes, Logout</button>
+      <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">Stay</button>
+      <button class="modal-btn modal-btn-confirm" onclick="confirmLogout()">Log out</button>
     </div>
   </div>
 </div>
 
-<!-- Settings: there is no dashboard-specific settings modal any more.
-     The gear buttons below carry data-app-settings-open, so they open the SAME
-     panel (js/app-settings.js) that classroom, placement and courses open.
-     Sound effects and Turkish hints are sections in that panel now; they still
-     call this page's toggleSound() / toggleTurkish() in student/js/ui.js. -->
+<!-- Settings: there is no dashboard-specific settings modal any more, and no
+     gear button either. Display settings are a row inside the panel the avatar
+     picture opens, which calls AppSettings.open() on the SAME shared panel
+     (js/app-settings.js) that classroom, placement and courses use. Sound
+     effects and Turkish hints are sections in that panel and still call this
+     page's toggleSound() / toggleTurkish() in student/js/ui.js. -->
 
-<!-- Profile Avatar Modal -->
-<div id="profileModal" class="modal-overlay">
-  <div class="modal-content profile-modal">
-    <button class="modal-close-btn" onclick="closeProfileModal()">×</button>
-    <h2 class="modal-title">👤 Customize Your Profile</h2>
-    
-    <div class="profile-preview">
-      <div class="avatar-large" id="avatarPreview">
-        <span class="avatar-emoji" id="avatarPreviewEmoji">🦊</span>
-      </div>
-      <div class="profile-preview-name" id="previewName">Student</div>
-      <div class="profile-xp-bar">
-        <div class="xp-fill" id="xpFill" style="width: 30%"></div>
-      </div>
-      <div class="profile-xp-text">Level <span id="previewLevel">1</span> • <span id="previewXP">0</span>/<span id="previewXPMax">100</span> XP</div>
-    </div>
-    
-    <div class="avatar-section">
-      <h3>Choose Your Avatar</h3>
-      <div class="avatar-grid" id="avatarGrid">
-        <!-- Emoji Avatars — zero API, zero loading, always works -->
-        <div class="avatar-option selected" data-avatar="fox" data-emoji="🦊" data-color="#ff6b35">
-          <div class="avatar-img-wrap" style="background:#fff3e0"><span class="avatar-emoji">🦊</span></div>
-          <span class="avatar-name">Fox</span>
-        </div>
-        <div class="avatar-option" data-avatar="panda" data-emoji="🐼" data-color="#4caf50">
-          <div class="avatar-img-wrap" style="background:#e8f5e9"><span class="avatar-emoji">🐼</span></div>
-          <span class="avatar-name">Panda</span>
-        </div>
-        <div class="avatar-option" data-avatar="lion" data-emoji="🦁" data-color="#ff9800">
-          <div class="avatar-img-wrap" style="background:#fff8e1"><span class="avatar-emoji">🦁</span></div>
-          <span class="avatar-name">Lion</span>
-        </div>
-        <div class="avatar-option" data-avatar="owl" data-emoji="🦉" data-color="#795548">
-          <div class="avatar-img-wrap" style="background:#efebe9"><span class="avatar-emoji">🦉</span></div>
-          <span class="avatar-name">Owl</span>
-        </div>
-        <div class="avatar-option" data-avatar="butterfly" data-emoji="🦋" data-color="#9c27b0">
-          <div class="avatar-img-wrap" style="background:#f3e5f5"><span class="avatar-emoji">🦋</span></div>
-          <span class="avatar-name">Butterfly</span>
-        </div>
-        <div class="avatar-option" data-avatar="dolphin" data-emoji="🐬" data-color="#0288d1">
-          <div class="avatar-img-wrap" style="background:#e1f5fe"><span class="avatar-emoji">🐬</span></div>
-          <span class="avatar-name">Dolphin</span>
-        </div>
-        <div class="avatar-option" data-avatar="unicorn" data-emoji="🦄" data-color="#e91e63">
-          <div class="avatar-img-wrap" style="background:#fce4ec"><span class="avatar-emoji">🦄</span></div>
-          <span class="avatar-name">Unicorn</span>
-        </div>
-        <div class="avatar-option" data-avatar="rocket" data-emoji="🚀" data-color="#3f51b5">
-          <div class="avatar-img-wrap" style="background:#e8eaf6"><span class="avatar-emoji">🚀</span></div>
-          <span class="avatar-name">Rocket</span>
-        </div>
-        <div class="avatar-option" data-avatar="penguin" data-emoji="🐧" data-color="#37474f">
-          <div class="avatar-img-wrap" style="background:#eceff1"><span class="avatar-emoji">🐧</span></div>
-          <span class="avatar-name">Penguin</span>
-        </div>
-        <div class="avatar-option" data-avatar="star" data-emoji="⭐" data-color="#ffc107">
-          <div class="avatar-img-wrap" style="background:#fffde7"><span class="avatar-emoji">⭐</span></div>
-          <span class="avatar-name">Star</span>
-        </div>
-        <div class="avatar-option" data-avatar="dragon" data-emoji="🐲" data-color="#2e7d32">
-          <div class="avatar-img-wrap" style="background:#e8f5e9"><span class="avatar-emoji">🐲</span></div>
-          <span class="avatar-name">Dragon</span>
-        </div>
-        <div class="avatar-option" data-avatar="cat" data-emoji="🐱" data-color="#ff7043">
-          <div class="avatar-img-wrap" style="background:#fbe9e7"><span class="avatar-emoji">🐱</span></div>
-          <span class="avatar-name">Cat</span>
-        </div>
-        <!-- Locked Premium Avatars -->
-        <div class="avatar-option locked" data-avatar="crown" data-emoji="👑" data-color="#ffd700" data-unlock="500">
-          <div class="avatar-img-wrap" style="background:#fff8e1"><span class="avatar-emoji">👑</span></div>
-          <span class="avatar-name">Crown</span>
-          <span class="lock-badge">🔒 500 XP</span>
-        </div>
-        <div class="avatar-option locked" data-avatar="phoenix" data-emoji="🔥" data-color="#ff5722" data-unlock="1000">
-          <div class="avatar-img-wrap" style="background:#fbe9e7"><span class="avatar-emoji">🔥</span></div>
-          <span class="avatar-name">Phoenix</span>
-          <span class="lock-badge">🔒 1K XP</span>
-        </div>
-        <div class="avatar-option locked" data-avatar="alien" data-emoji="👾" data-color="#7c4dff" data-unlock="2000">
-          <div class="avatar-img-wrap" style="background:#ede7f6"><span class="avatar-emoji">👾</span></div>
-          <span class="avatar-name">Alien</span>
-          <span class="lock-badge">🔒 2K XP</span>
-        </div>
-        <div class="avatar-option locked" data-avatar="diamond" data-emoji="💎" data-color="#00bcd4" data-unlock="5000">
-          <div class="avatar-img-wrap" style="background:#e0f7fa"><span class="avatar-emoji">💎</span></div>
-          <span class="avatar-name">Diamond</span>
-          <span class="lock-badge">🔒 5K XP</span>
-        </div>
-      </div>
-    </div>
-    
-    <div class="profile-stats-section">
-      <h3>Your Achievements</h3>
-      <div class="achievements-grid" id="achievementsGrid">
-        <div class="achievement unlocked">
-          <span class="achievement-icon">🎯</span>
-          <span class="achievement-name">First Steps</span>
-          <span class="achievement-desc">Complete your first activity</span>
-        </div>
-        <div class="achievement">
-          <span class="achievement-icon">🔥</span>
-          <span class="achievement-name">On Fire</span>
-          <span class="achievement-desc">Get a 10 streak</span>
-        </div>
-        <div class="achievement">
-          <span class="achievement-icon">📚</span>
-          <span class="achievement-name">Bookworm</span>
-          <span class="achievement-desc">Learn 100 words</span>
-        </div>
-        <div class="achievement">
-          <span class="achievement-icon">⚡</span>
-          <span class="achievement-name">Speed Demon</span>
-          <span class="achievement-desc">Answer 20 in a row under 3s each</span>
-        </div>
-      </div>
-    </div>
-    
-    <button class="save-profile-btn" onclick="saveProfile()">💾 Save Profile</button>
-  </div>
-</div>
+<!-- The inline profile modal lived here. It is built by js/profile-hub.js
+     now, so that the same panel can appear on the twelve other pages a
+     student works in instead of being copied into each of them. It could
+     not simply be left in place: it declares #previewName and #avatarGrid,
+     and duplicate ids would break student/js/avatar.js. -->
 
 <!-- Learning Map Modal - Quest Board -->
 <div id="learningMapModal" class="modal-overlay">
@@ -284,6 +276,62 @@
     <button class="modal-close-btn" onclick="closeLearningMap()">×</button>
     <h2 class="modal-title">🗺️ Quest Board</h2>
     <p class="qc-board-sub">Complete challenges to master each unit</p>
+
+    <!-- MOVED here from the vocabulary column. These are report-card
+         numbers: "2326 words" does not help anyone choose an activity, and
+         together with the hero they were 186px of preamble above the thing
+         you came to do. The ids are unchanged and the nodes were MOVED, not
+         copied, so every JS writer that targets them still works. -->
+    <div class="qc-summary">
+  <!-- The "Welcome back, <name>" band was REMOVED from the Quest Board.
+       This is a modal the student opened deliberately: they know who they
+       are, and greeting them again pushed the stats and the unit cards down
+       for no information. The streak and word count it carried are both
+       still on screen, in the stat row immediately below.
+
+       The four ids it held (welcomeName, welcomeStreak, welcomeWordCount,
+       welcomeAvatar) are gone with it. Every writer was checked first and
+       every one is null-guarded: avatar.js:119 and :71, progress.js:215,
+       ui.js:470. js/boot-trace.js watches welcomeAvatar but only under
+       ?boot=1 and skips a missing node, so nothing logs or throws. -->
+  <div class="dash-stats">
+            <div class="dash-stat" data-accent="streak">
+              <div class="dash-stat-ic">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              </div>
+              <div class="dash-stat-val" id="currentStreak">0</div>
+              <div class="dash-stat-lbl">Streak</div>
+            </div>
+            <div class="dash-stat" data-accent="best">
+              <div class="dash-stat-ic">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+              </div>
+              <div class="dash-stat-val" id="bestStreak">0</div>
+              <div class="dash-stat-lbl">Best</div>
+            </div>
+            <div class="dash-stat" data-accent="accuracy">
+              <div class="dash-stat-ic">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#22c55e"/></svg>
+              </div>
+              <div class="dash-stat-val" id="journeyAccuracy">0%</div>
+              <div class="dash-stat-lbl">Accuracy</div>
+            </div>
+            <div class="dash-stat" data-accent="words">
+              <div class="dash-stat-ic">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              </div>
+              <div class="dash-stat-val" id="journeyWords">0</div>
+              <div class="dash-stat-lbl">Words</div>
+            </div>
+            <div class="dash-stat" data-accent="sessions">
+              <div class="dash-stat-ic">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              </div>
+              <div class="dash-stat-val" id="journeySessions">0</div>
+              <div class="dash-stat-lbl">Sessions</div>
+            </div>
+          </div>
+    </div>
 
     <div class="level-tabs">
       <button class="level-tab active" data-level="A2" onclick="showMapLevel('A2')">A2</button>
@@ -301,7 +349,7 @@
 
 <div class="container">
   <!-- ============================================================
-       HUB SCREEN — multi-skill landing (new)
+       HUB SCREEN - multi-skill landing (new)
        Shows 6 skill cards; first screen seen after sign-in.
        ============================================================ -->
   <div id="hubScreen" class="screen active">
@@ -326,23 +374,16 @@
         </h1>
         <p class="subtitle">Pick a skill to practice today</p>
       </div>
+      <!-- The university's own mark, filled by js/org-brand.js from the
+           signed-in user's email domain. Empty and hidden for anonymous
+           players, demo accounts, and any tenant with no logo configured -
+           in every one of those cases the header looks exactly as before. -->
+      <div class="header-org" data-org-mark hidden></div>
       <div class="header-right">
-        <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
-          <span>⚙️</span>
-        </button>
-        <button class="profile-badge" onclick="openProfileModal()">
-          <div class="avatar-display" id="avatarDisplayHub" style="background:#fff3e0">
-            <span class="avatar-emoji" id="avatarDisplayEmojiHub">🦊</span>
-          </div>
-          <div class="profile-info">
-            <span class="profile-name" id="profileNameHub">Student</span>
-            <span class="profile-level">Level <span class="profile-lvl-n" id="profileXPLevelHub">1</span> • <span class="profile-xp-n" id="profileXPHub">0</span> XP</span>
-          </div>
-        </button>
-        <button class="logout-btn" onclick="openLogoutModal()">
-          <span>🚪</span>
-          <span>Logout</span>
-        </button>
+        <!-- The profile hub injects the avatar badge here. Gear, profile badge
+             and Logout all used to sit in this row; they now live inside the panel
+             the avatar opens. See js/profile-hub.js. -->
+        <span data-profile-hub-mount></span>
       </div>
     </div>
 
@@ -351,21 +392,25 @@
          page on wide screens; collapses to one column ≤1024px (see hub.css). -->
     <div class="hub-two-col">
 
-      <!-- LEFT — skills -->
+      <!-- LEFT - skills -->
       <div class="hub-main">
         <div class="hub-section-lbl">Skills</div>
         <div class="hub-grid" id="hubGrid"><!-- populated by hub.js --></div>
       </div>
 
-      <!-- RIGHT — rail -->
-      <aside class="hub-rail">
+      <!-- BELOW the skills, full width. This was a 360px right rail; the
+           assignments box was the only thing in it, so it sat squeezed into a
+           narrow strip while the tiles fought for what was left. A <section>,
+           not an <aside>: it is the main content of the page now, not an aside
+           to it. -->
+      <section class="hub-below">
 
-        <!-- (Streak/Sessions/XP card removed per request — the assignments
+        <!-- (Streak/Sessions/XP card removed per request - the assignments
              box's own summary "N assignments · X pending · Y done" is the
              rail's top now.) -->
 
         <!-- Always-visible Assignments box. Populated by student-assignments.js
-             (renderMyAssignments()) — the same renderer from its original
+             (renderMyAssignments()) - the same renderer from its original
              vocabulary-sidebar home, so the narrow rail is its native fit.
              Each card's "Start Practice" hands off to startAssignment(),
              which pre-sets book/level/unit and routes to the right screen.
@@ -376,17 +421,6 @@
 
         <div class="hub-assignments-box">
           <div class="assignments-card" id="assignmentsSection">
-            <!-- Student info chips (class / level / module / year) at the TOP of
-                 the box, above the title, with a hairline divider below them so
-                 they read as the student's own info, not as assignment metadata.
-                 Populated by student/js/auth.js from the already-loaded user doc
-                 — 0 extra Firestore reads. Only non-empty values show. -->
-            <div class="student-info-chips" id="studentInfoChips" style="display:none;">
-              <span class="info-chip" id="infoClass"  style="display:none;"></span>
-              <span class="info-chip" id="infoLevel"  style="display:none;"></span>
-              <span class="info-chip" id="infoModule" style="display:none;"></span>
-              <span class="info-chip" id="infoYear"   style="display:none;"></span>
-            </div>
             <div class="assignments-card-header">
               <div class="assignments-card-title">
                 <span>📋</span>
@@ -411,7 +445,7 @@
           </div>
         </div>
 
-      </aside>
+      </section>
     </div>
   </div>
 
@@ -438,23 +472,16 @@
         </h1>
         <p class="subtitle">&#9999;&#65039; <strong>Vocabulary</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">Practice by level</span></span></p>
       </div>
+      <!-- The university's own mark, filled by js/org-brand.js from the
+           signed-in user's email domain. Empty and hidden for anonymous
+           players, demo accounts, and any tenant with no logo configured -
+           in every one of those cases the header looks exactly as before. -->
+      <div class="header-org" data-org-mark hidden></div>
       <div class="header-right">
-        <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
-          <span>⚙️</span>
-        </button>
-        <button class="profile-badge" onclick="openProfileModal()">
-          <div class="avatar-display" id="avatarDisplay" style="background:#fff3e0">
-            <span class="avatar-emoji" id="avatarDisplayEmoji">🦊</span>
-          </div>
-          <div class="profile-info">
-            <span class="profile-name" id="profileName">Student</span>
-            <span class="profile-level">Level <span class="profile-lvl-n" id="profileXPLevel">1</span> • <span class="profile-xp-n" id="profileXP">0</span> XP</span>
-          </div>
-        </button>
-        <button class="logout-btn" onclick="openLogoutModal()">
-          <span>🚪</span>
-          <span>Logout</span>
-        </button>
+        <!-- The profile hub injects the avatar badge here. Gear, profile badge
+             and Logout all used to sit in this row; they now live inside the panel
+             the avatar opens. See js/profile-hub.js. -->
+        <span data-profile-hub-mount></span>
       </div>
     </div>
     
@@ -465,20 +492,9 @@
       <div class="main-content">
 
         <!-- Welcome Banner (design v2) -->
-        <div class="dash-welcome">
-          <div class="dash-welcome-text">
-            <h2>Welcome back, <span id="welcomeName">Student</span>!</h2>
-            <p>
-              You're on a <strong class="streak-hot">
-                <span id="welcomeStreak">0</span>-day streak</strong>.
-              Keep it up!<br>
-              <span id="welcomeWordCount">0</span> words ready to practice.
-            </p>
-          </div>
-          <div class="dash-welcome-ava" id="welcomeAvatar">🦊</div>
-        </div>
+        
 
-        <!-- XP Block (design v2 — moved from sidebar) -->
+        <!-- XP Block (design v2 - moved from sidebar) -->
         <div class="dash-xp-block">
           <div class="dash-xp-top">
             <div class="xp-badge-pill">
@@ -492,55 +508,13 @@
             <div class="xp-bar-fill" id="xpBarFill"></div>
             <div class="xp-bar-glow"></div>
           </div>
-          <div class="xp-milestones" id="xpMilestones">
-            <span class="xp-milestone hit" data-xp="0">0</span>
-            <span class="xp-milestone" data-xp="25">25</span>
-            <span class="xp-milestone" data-xp="50">50</span>
-            <span class="xp-milestone" data-xp="75">75</span>
-            <span class="xp-milestone" data-xp="100">100</span>
-          </div>
+          
           <!-- Hidden legacy badge that avatar.js still touches via #levelBadgeIcon -->
           <div id="levelBadgeIcon" style="display:none">🏆</div>
         </div>
 
-        <!-- Stats Row (design v2 — 5 columns, moved from sidebar) -->
-        <div class="dash-stats">
-          <div class="dash-stat" data-accent="streak">
-            <div class="dash-stat-ic">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            </div>
-            <div class="dash-stat-val" id="currentStreak">0</div>
-            <div class="dash-stat-lbl">Streak</div>
-          </div>
-          <div class="dash-stat" data-accent="best">
-            <div class="dash-stat-ic">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
-            </div>
-            <div class="dash-stat-val" id="bestStreak">0</div>
-            <div class="dash-stat-lbl">Best</div>
-          </div>
-          <div class="dash-stat" data-accent="accuracy">
-            <div class="dash-stat-ic">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#22c55e"/></svg>
-            </div>
-            <div class="dash-stat-val" id="journeyAccuracy">0%</div>
-            <div class="dash-stat-lbl">Accuracy</div>
-          </div>
-          <div class="dash-stat" data-accent="words">
-            <div class="dash-stat-ic">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            </div>
-            <div class="dash-stat-val" id="journeyWords">0</div>
-            <div class="dash-stat-lbl">Words</div>
-          </div>
-          <div class="dash-stat" data-accent="sessions">
-            <div class="dash-stat-ic">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            </div>
-            <div class="dash-stat-val" id="journeySessions">0</div>
-            <div class="dash-stat-lbl">Sessions</div>
-          </div>
-        </div>
+        <!-- Stats Row (design v2 - 5 columns, moved from sidebar) -->
+        
 
         <div class="section-title">
           <span class="icon">🎯</span>
@@ -586,7 +560,7 @@
           </div>
 
           <div class="activity-card" onclick="startActivity('pronunciation')">
-            <div class="icon game-badge" style="background:rgba(14,165,233,0.18);border-color:rgba(14,165,233,0.5);box-shadow:0 4px 16px rgba(14,165,233,0.25)">🗣️</div>
+            <div class="icon game-badge" style="background:rgba(37,99,235,0.18);border-color:rgba(37,99,235,0.5);box-shadow:0 4px 16px rgba(37,99,235,0.25)">🗣️</div>
             <h3>Pronunciation</h3>
             <p>Listen and practice</p>
           </div>
@@ -667,7 +641,7 @@
           </div>
         </div>
 
-        <!-- Assignments are now hub-only — see #hubScreen Assignments tab.
+        <!-- Assignments are now hub-only - see #hubScreen Assignments tab.
              Removed from the vocabulary page so there's a single source of
              truth for "what's assigned to me". The hub fans out to the
              skill-specific drill-down view. -->
@@ -684,7 +658,7 @@
   </div>
 
   <!-- ============================================================
-       LISTENING SKILL SCREEN — lists listening activities.
+       LISTENING SKILL SCREEN - lists listening activities.
        Populated by student/js/skills/listening.js.
        ============================================================ -->
   <div id="listeningScreen" class="screen">
@@ -711,24 +685,17 @@
           </h1>
           <p class="subtitle">&#127911; <strong>Listening</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">Exams &amp; practice</span></span></p>
         </div>
-        <div class="header-right">
-          <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
-            <span>&#9881;&#65039;</span>
-          </button>
-          <button class="profile-badge" onclick="openProfileModal()">
-            <div class="avatar-display" style="background:#fff3e0">
-              <span class="avatar-emoji">&#129418;</span>
-            </div>
-            <div class="profile-info">
-              <span class="profile-name">Student</span>
-              <span class="profile-level">Level <span class="profile-lvl-n">1</span> &#8226; <span class="profile-xp-n">0</span> XP</span>
-            </div>
-          </button>
-          <button class="logout-btn" onclick="openLogoutModal()">
-            <span>&#128682;</span>
-            <span>Logout</span>
-          </button>
-        </div>
+        <!-- The university's own mark, filled by js/org-brand.js from the
+           signed-in user's email domain. Empty and hidden for anonymous
+           players, demo accounts, and any tenant with no logo configured -
+           in every one of those cases the header looks exactly as before. -->
+      <div class="header-org" data-org-mark hidden></div>
+      <div class="header-right">
+        <!-- The profile hub injects the avatar badge here. Gear, profile badge
+             and Logout all used to sit in this row; they now live inside the panel
+             the avatar opens. See js/profile-hub.js. -->
+        <span data-profile-hub-mount></span>
+      </div>
       </div>
 
       <!-- Same list container and same card component as Reading. This used to
@@ -743,7 +710,7 @@
   </div>
 
   <!-- ============================================================
-       EMPTY SKILL SHELLS — Grammar / Reading / Writing / Speaking
+       EMPTY SKILL SHELLS - Grammar / Reading / Writing / Speaking
        Each renders just the skill-header. Bodies are intentionally
        empty per the spec: "you click and the page is empty".
        ============================================================ -->
@@ -771,24 +738,17 @@
           </h1>
           <p class="subtitle">&#9999;&#65039; <strong>Grammar</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">Practice by level</span></span></p>
         </div>
-        <div class="header-right">
-          <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
-            <span>&#9881;&#65039;</span>
-          </button>
-          <button class="profile-badge" onclick="openProfileModal()">
-            <div class="avatar-display" style="background:#fff3e0">
-              <span class="avatar-emoji">&#129418;</span>
-            </div>
-            <div class="profile-info">
-              <span class="profile-name">Student</span>
-              <span class="profile-level">Level <span class="profile-lvl-n">1</span> &#8226; <span class="profile-xp-n">0</span> XP</span>
-            </div>
-          </button>
-          <button class="logout-btn" onclick="openLogoutModal()">
-            <span>&#128682;</span>
-            <span>Logout</span>
-          </button>
-        </div>
+        <!-- The university's own mark, filled by js/org-brand.js from the
+           signed-in user's email domain. Empty and hidden for anonymous
+           players, demo accounts, and any tenant with no logo configured -
+           in every one of those cases the header looks exactly as before. -->
+      <div class="header-org" data-org-mark hidden></div>
+      <div class="header-right">
+        <!-- The profile hub injects the avatar badge here. Gear, profile badge
+             and Logout all used to sit in this row; they now live inside the panel
+             the avatar opens. See js/profile-hub.js. -->
+        <span data-profile-hub-mount></span>
+      </div>
       </div>
       <div class="grammar-body" id="grammarBody"></div>
     </div>
@@ -818,24 +778,17 @@
           </h1>
           <p class="subtitle">&#128214; <strong>Reading</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">Exams &amp; practice</span></span></p>
         </div>
-        <div class="header-right">
-          <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
-            <span>&#9881;&#65039;</span>
-          </button>
-          <button class="profile-badge" onclick="openProfileModal()">
-            <div class="avatar-display" style="background:#fff3e0">
-              <span class="avatar-emoji">&#129418;</span>
-            </div>
-            <div class="profile-info">
-              <span class="profile-name">Student</span>
-              <span class="profile-level">Level <span class="profile-lvl-n">1</span> &#8226; <span class="profile-xp-n">0</span> XP</span>
-            </div>
-          </button>
-          <button class="logout-btn" onclick="openLogoutModal()">
-            <span>&#128682;</span>
-            <span>Logout</span>
-          </button>
-        </div>
+        <!-- The university's own mark, filled by js/org-brand.js from the
+           signed-in user's email domain. Empty and hidden for anonymous
+           players, demo accounts, and any tenant with no logo configured -
+           in every one of those cases the header looks exactly as before. -->
+      <div class="header-org" data-org-mark hidden></div>
+      <div class="header-right">
+        <!-- The profile hub injects the avatar badge here. Gear, profile badge
+             and Logout all used to sit in this row; they now live inside the panel
+             the avatar opens. See js/profile-hub.js. -->
+        <span data-profile-hub-mount></span>
+      </div>
       </div>
 
       <!-- Level tabs + exam cards rendered by skills/reading.js -->
@@ -847,7 +800,7 @@
     </div>
   </div>
 
-  <!-- Reading exam runtime container — populated by reading-exam.js -->
+  <!-- Reading exam runtime container - populated by reading-exam.js -->
   <div id="readingExamScreen" class="screen"></div>
 
   <div id="writingScreen" class="screen">
@@ -874,24 +827,17 @@
           </h1>
           <p class="subtitle">&#9997;&#65039; <strong>Writing</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">Feedback &amp; practice</span></span></p>
         </div>
-        <div class="header-right">
-          <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
-            <span>&#9881;&#65039;</span>
-          </button>
-          <button class="profile-badge" onclick="openProfileModal()">
-            <div class="avatar-display" style="background:#fff3e0">
-              <span class="avatar-emoji">&#129418;</span>
-            </div>
-            <div class="profile-info">
-              <span class="profile-name">Student</span>
-              <span class="profile-level">Level <span class="profile-lvl-n">1</span> &#8226; <span class="profile-xp-n">0</span> XP</span>
-            </div>
-          </button>
-          <button class="logout-btn" onclick="openLogoutModal()">
-            <span>&#128682;</span>
-            <span>Logout</span>
-          </button>
-        </div>
+        <!-- The university's own mark, filled by js/org-brand.js from the
+           signed-in user's email domain. Empty and hidden for anonymous
+           players, demo accounts, and any tenant with no logo configured -
+           in every one of those cases the header looks exactly as before. -->
+      <div class="header-org" data-org-mark hidden></div>
+      <div class="header-right">
+        <!-- The profile hub injects the avatar badge here. Gear, profile badge
+             and Logout all used to sit in this row; they now live inside the panel
+             the avatar opens. See js/profile-hub.js. -->
+        <span data-profile-hub-mount></span>
+      </div>
       </div>
     </div>
   </div>
@@ -920,24 +866,17 @@
           </h1>
           <p class="subtitle">&#127908; <strong>Speaking</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">Practice aloud</span></span></p>
         </div>
-        <div class="header-right">
-          <button type="button" class="header-icon-btn" data-app-settings-open title="Settings">
-            <span>&#9881;&#65039;</span>
-          </button>
-          <button class="profile-badge" onclick="openProfileModal()">
-            <div class="avatar-display" style="background:#fff3e0">
-              <span class="avatar-emoji">&#129418;</span>
-            </div>
-            <div class="profile-info">
-              <span class="profile-name">Student</span>
-              <span class="profile-level">Level <span class="profile-lvl-n">1</span> &#8226; <span class="profile-xp-n">0</span> XP</span>
-            </div>
-          </button>
-          <button class="logout-btn" onclick="openLogoutModal()">
-            <span>&#128682;</span>
-            <span>Logout</span>
-          </button>
-        </div>
+        <!-- The university's own mark, filled by js/org-brand.js from the
+           signed-in user's email domain. Empty and hidden for anonymous
+           players, demo accounts, and any tenant with no logo configured -
+           in every one of those cases the header looks exactly as before. -->
+      <div class="header-org" data-org-mark hidden></div>
+      <div class="header-right">
+        <!-- The profile hub injects the avatar badge here. Gear, profile badge
+             and Logout all used to sit in this row; they now live inside the panel
+             the avatar opens. See js/profile-hub.js. -->
+        <span data-profile-hub-mount></span>
+      </div>
       </div>
     </div>
   </div>
@@ -1084,11 +1023,22 @@
       <p id="pronDef" style="color:var(--text-secondary);margin-top:10px"></p>
       <div class="example-sentence" id="pronExample"></div>
     </div>
+    <!-- Saying the word is OPTIONAL. Listen-and-repeat still works exactly as
+         it did; the microphone is an extra a student can choose. Browser
+         speech recognition mishears a learner far more often than it mishears
+         a native speaker, so it must never be the only way through the
+         activity, and only words actually attempted are ever counted.
+         Hidden entirely on browsers without SpeechRecognition. -->
+    <div id="pronCheckResult" class="pron-check" style="display:none"></div>
     <div class="button-container">
       <button class="play-btn" onclick="speakWord()">🔊 Play Sound</button>
+      <button class="action-btn" id="pronMicBtn" onclick="pronRecord()" style="display:none">🎤 Say it</button>
       <button class="action-btn" onclick="nextPronunciation()">Next →</button>
     </div>
     <p style="text-align:center;color:var(--text-muted);margin-top:10px">Word <span id="pronCurrent">1</span> of <span id="pronTotal">10</span></p>
+    <p id="pronMicNote" style="text-align:center;color:var(--text-muted);font-size:0.82em;margin-top:6px;display:none">
+      Saying the word is optional. Only the words you try are counted.
+    </p>
   </div>
 
   <!-- Unscramble Difficulty Picker -->
@@ -1245,7 +1195,7 @@
     </div>
     <div class="button-container" style="flex-direction:column;gap:12px;align-items:center;">
       <button class="action-btn" style="width:100%;max-width:300px;" onclick="backToMenu()">🏠 Back to Main Menu</button>
-      <button class="action-btn secondary" style="width:100%;max-width:300px;background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(6,182,212,0.25));border:2px solid var(--accent-primary);" onclick="practiceAgain()">🔄 Practice Missed Words</button>
+      <button class="action-btn secondary" style="width:100%;max-width:300px;background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(37,99,235,0.25));border:2px solid var(--accent-primary);" onclick="practiceAgain()">🔄 Practice Missed Words</button>
     </div>
   </div>
 </div>
@@ -1254,63 +1204,88 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
-<script src="activity-tracker/js/activity-config.js"></script>
-<script src="activity-tracker/js/activity-logger.js"></script>
+<!-- Which university, then start Firebase for it. Must come after the
+     Firebase SDK above and before any page script below. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
+<script src="activity-tracker/js/activity-config.js?v=2"></script>
+<script src="activity-tracker/js/activity-logger.js?v=1"></script>
 
 <!-- Modular JavaScript - Load order matters! -->
-<script src="student/js/config.js?v=2"></script>
+<script src="student/js/config.js?v=9"></script>
 <!-- Account gate (window.AccountGate): must load BEFORE auth.js so the
      dashboard can re-check active/expiry on load, not just at login. -->
-<script src="index/js/account-gate.js"></script>
-<script src="student/js/auth.js?v=2"></script>
-<!-- Phase J — bi-monthly verification gate. Watches for
+<script src="index/js/account-gate.js?v=1"></script>
+  <script src="student/js/score-rollup.js?v=2"></script>
+<script src="student/js/auth.js?v=19"></script>
+<!-- Phase J - bi-monthly verification gate. Watches for
      window.currentStudentData (populated by auth.js after the user
      doc loads) and pops the #verifyGateModal if their lastVerifiedAt
      is missing or > 60 days old. Must load AFTER auth.js so the
      global is set first. -->
-<script src="student/js/verify-gate.js"></script>
-<script src="student/js/ui.js"></script>
-<script src="student/js/pronunciation.js"></script>
-<script src="student/js/inflection.js"></script>
-<script src="student/js/games.js?v=2"></script>
-<script src="student/js/progress.js?v=2"></script>
-<script src="student/js/student.js"></script>
+<script src="student/js/verify-gate.js?v=1"></script>
+<script src="student/js/ui.js?v=4"></script>
+<script src="student/js/pronunciation.js?v=3"></script>
+<script src="student/js/inflection.js?v=1"></script>
+<script src="student/js/games.js?v=5"></script>
+<script src="student/js/progress.js?v=8"></script>
+<script src="student/js/student.js?v=8"></script>
 <!-- Skill registry MUST load before student-assignments.js so the
      skill pills + per-skill row meta + smart router can read from it. -->
-<script src="assignments/js/skill-registry.js?v=2"></script>
-<!-- Phase G — exam-registry is the single source of truth for the
+<script src="assignments/js/skill-registry.js?v=8"></script>
+<!-- Phase G - exam-registry is the single source of truth for the
      skill → level → exam catalog. reading-exam.js derives its
      READINGS_INDEX from it at boot, so the registry MUST load
      before reading-exam.js or the student sees zero readings. -->
-<script src="assignments/js/exam-registry.js"></script>
+<script src="assignments/js/exam-registry.js?v=5"></script>
 <!-- Writing feedback v2: the comment bank (for criterion labels) + the
      annotation engine, so the student feedback modal can render the
      teacher's inline highlights. Read-only on the student side. Must
      load before student-assignments.js uses them. -->
-<script src="assignments/js/writing-comment-bank.js"></script>
-<script src="assignments/js/writing-annotations.js"></script>
-<script src="assignments/js/student-assignments.js?v=7"></script>
-<script src="student/js/listening-exam.js?v=5"></script>
-<script src="student/js/reading-exam.js?v=4"></script>
-<script src="student/js/avatar.js?v=4"></script>
-<script src="student/js/hub.js?v=8"></script>
-<script src="student/js/course-target.js"></script>
+<script src="assignments/js/writing-comment-bank.js?v=4"></script>
+<script src="assignments/js/writing-annotations.js?v=2"></script>
+<script src="assignments/js/student-assignments.js?v=15"></script>
+<script src="student/js/listening-exam.js?v=16"></script>
+<script src="student/js/reading-exam.js?v=9"></script>
+<script src="student/js/avatar.js?v=6"></script>
+<script src="student/js/hub.js?v=18"></script>
+<!-- The avatar picture, and under it the display settings, achievements,
+     avatar chooser, password, logout and (for teachers) the teacher dashboard.
+     AFTER student/js/avatar.js on purpose: that file owns avatar selection and
+     writes it to Firestore, and this module calls into it when it is present. -->
+<!-- "Rate Lingualab" - before the profile hub, which offers it as a row. -->
+<script src="js/app-rating.js?v=3"></script>
+<script src="js/faq.js?v=1"></script>
+<script src="js/profile-hub.js?v=22"></script>
+<!-- The university mark in the header. org-registry supplies the domain to
+     university mapping (it is already used on index.html and the teacher
+     dashboard); org-brand decides whether this particular user gets a logo
+     and paints it into [data-org-mark]. Both are no-ops when the tenant has
+     configured no logo. -->
+<script src="index/js/org-registry.js?v=3"></script>
+<script src="js/org-brand.js?v=10"></script>
+<!-- Optional per-tile artwork from y/img/skill-tiles/. Absent files change nothing. -->
+<script src="/js/tile-images.js?v=3"></script>
+<!-- Diagnostics only. Inert unless the url carries ?perf=1 / ?boot=1 -->
+<script src="/js/perf-hud.js?v=2"></script>
+<script src="/js/boot-trace.js?v=2"></script>
+<script src="student/js/course-target.js?v=3"></script>
 <script src="student/js/hub-preload.js?v=1"></script>
-<script src="student/js/placement-tile.js?v=6"></script>
-<script src="student/js/skills/listening.js"></script>
+<script src="student/js/placement-tile.js?v=12"></script>
+<script src="student/js/skills/listening.js?v=2"></script>
 <!-- Phone/system back-button → in-app navigation. Loaded LAST so it can
      wrap showScreen() after every other module has loaded. -->
-<script src="student/js/back-nav.js?v=2"></script>
+<script src="student/js/back-nav.js?v=4"></script>
 <script src="student/js/skills/grammar-content.js?v=34"></script>
-<script src="student/js/skills/grammar.js?v=32"></script>
+<script src="student/js/skills/grammar.js?v=44"></script>
 <!-- Feature toggles for the hub tiles (settings/featureToggles). -->
-<script src="student/js/feature-toggles.js?v=2"></script>
+<script src="student/js/feature-toggles.js?v=9"></script>
 <!-- Content controls: hide assignment-only exams from practice + grammar count. -->
 <script src="student/js/content-controls-student.js?v=6"></script>
-<script src="student/js/set-password.js?v=1"></script>
-<script src="student/js/skills/reading.js"></script>
-<script src="student/js/skills/writing.js"></script>
-<script src="student/js/skills/speaking.js"></script>
+<script src="student/js/set-password.js?v=2"></script>
+<script src="student/js/skills/reading.js?v=1"></script>
+<script src="student/js/skills/writing.js?v=1"></script>
+<script src="student/js/skills/speaking.js?v=1"></script>
 
 <script>
 // ── Skill-screen subtitle text cycle ─────────────────────────────────────────
@@ -1404,6 +1379,9 @@
 })();
 </script>
 
-<script src="/pwa-register.js"></script>
+<script src="/pwa-register.js?v=2"></script>
+<!-- iOS has no beforeinstallprompt: on iPhone the only way to install is
+     Share > Add to Home Screen, by hand. This shows those steps, once. -->
+<script src="/js/ios-install.js?v=2"></script>
 </body>
 </html>

@@ -16,12 +16,12 @@
 
   var STYLE = [
     '.ct-launch{position:fixed;left:18px;bottom:18px;z-index:99980;display:inline-flex;align-items:center;gap:7px;',
-    'font-family:system-ui,Segoe UI,sans-serif;font-size:14px;font-weight:800;color:#fff;background:#2563eb;',
+    'font-family:var(--ll-font);font-size:14px;font-weight:800;color:#fff;background:#2563eb;',
     'border:none;border-radius:999px;padding:11px 16px;cursor:grab;touch-action:none;user-select:none;box-shadow:0 6px 20px rgba(37,99,235,.45);}',
     '.ct-launch:hover{background:#1d4ed8;}',
     '.ct-launch.ct-dragging{cursor:grabbing;opacity:.9;}',
     '.ct-overlay{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;',
-    'background:rgba(2,6,23,.82);backdrop-filter:blur(3px);font-family:system-ui,Segoe UI,sans-serif;}',
+    'background:rgba(2,6,23,.82);backdrop-filter:blur(3px);font-family:var(--ll-font);}',
     '.ct-card{background:#0f172a;border:1px solid #1e293b;border-radius:18px;padding:22px 26px 26px;',
     'width:min(440px,92vw);box-shadow:0 24px 70px rgba(0,0,0,.6);text-align:center;}',
     '.ct-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}',
@@ -41,7 +41,7 @@
     'border:1px solid #334155;border-radius:12px;padding:11px 22px;cursor:pointer;}',
     '.ct-btn:hover{background:#293548;}',
     '.ct-primary{background:#22c55e;border-color:#22c55e;color:#062a14;}',
-    '.ct-primary.running{background:#f59e0b;border-color:#f59e0b;color:#3a2503;}',
+    '.ct-primary.running{background:#3b82f6;border-color:#3b82f6;color:#3a2503;}',
     /* Project (board) mode: digits fill the screen, chrome hidden */
     '.ct-overlay.ct-project .ct-card{background:transparent;border:none;box-shadow:none;width:96vw;}',
     '.ct-overlay.ct-project .ct-head,.ct-overlay.ct-project .ct-presets{display:none;}',
@@ -227,6 +227,13 @@
     } catch (_) { /* fullscreen optional */ }
   }
   function beep(times) {
+    // RESPECT THE APP-WIDE SWITCH. This beep ignored it, so turning Sound
+    // Effects off silenced every other sound in the app while the timer kept
+    // going - on six pages including the teacher dashboard. Read directly
+    // rather than through LLSound so this file keeps working on any page,
+    // with or without the engine; the rule is identical (default ON, only an
+    // explicit 'false' mutes).
+    try { if (localStorage.getItem('soundEnabled') === 'false') return; } catch (_) {}
     try {
       var Ctx = window.AudioContext || window.webkitAudioContext;
       if (!Ctx) return;

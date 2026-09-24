@@ -4,29 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Classroom Mode - Teacher | Lingualab</title>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
 <!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css?v=17">
+<link rel="stylesheet" href="css/brand.css?v=30">
 <!-- Shared themed dialog (alert/confirm/prompt) - replaces native browser popups app-wide. -->
-<script src="js/app-dialog.js"></script>
-<link rel="stylesheet" href="classroom/css/styles.css?v=7">
-<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
+<script src="js/app-dialog.js?v=8"></script>
+  <script src="js/sound.js?v=4"></script>
+<link rel="stylesheet" href="classroom/css/styles.css?v=60">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=14">
 <style>
   /* ===== Game-mode picker - hover/active affordances =====
      Inline styles can't carry :hover, so the look-up rules live
      here. Targets the picker cards by id so they don't bleed
      into other cards on the page. */
-  #pickVocabRace:hover, #pickHeist:hover, #pickTrust:hover, #pickReading:hover, #pickListening:hover, #pickGrammar:hover, #pickTug:hover, #pickBingo:hover, #pickScramble:hover {
+  #pickVocabRace:hover, #pickHeist:hover, #pickTrust:hover, #pickReading:hover, #pickListening:hover, #pickGrammar:hover, #pickTug:hover, #pickBingo:hover, #pickScramble:hover, #pickAiQuiz:hover {
     transform: translateY(-2px);
     border-color: rgba(255,255,255,0.5) !important;
   }
-  #pickVocabRace:active, #pickHeist:active, #pickTrust:active, #pickReading:active, #pickListening:active, #pickGrammar:active, #pickTug:active, #pickBingo:active, #pickScramble:active { transform: translateY(0); }
+  #pickVocabRace:active, #pickHeist:active, #pickTrust:active, #pickReading:active, #pickListening:active, #pickGrammar:active, #pickTug:active, #pickBingo:active, #pickScramble:active, #pickAiQuiz:active { transform: translateY(0); }
   #pickTug:focus-visible      { outline: 2px solid #f59e0b; outline-offset: 3px; }
   #pickBingo:focus-visible    { outline: 2px solid #a855f7; outline-offset: 3px; }
   #pickScramble:focus-visible { outline: 2px solid #10b981; outline-offset: 3px; }
+  #pickAiQuiz:focus-visible   { outline: 2px solid #8b5cf6; outline-offset: 3px; }
   #pickVocabRace:focus-visible, #pickHeist:focus-visible {
     outline: 2px solid #f59e0b; outline-offset: 3px;
   }
@@ -40,40 +40,25 @@
     outline: 2px solid #fb7185; outline-offset: 3px;
   }
   #pickListening:focus-visible {
-    outline: 2px solid #38bdf8; outline-offset: 3px;
+    outline: 2px solid #60a5fa; outline-offset: 3px;
   }
 
-  /* ===== Session QR card (lobby) - minimal, just the QR + caption ===== */
-  .session-qr-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    margin: 20px 0 24px;
-    padding: 18px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-  }
-  .session-qr-tile {
-    background: #ffffff;
-    padding: 10px;
-    border-radius: 12px;
-    line-height: 0;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
-  }
-  .session-qr-tile img { display: block; width: 220px; height: 220px; }
-  .session-qr-label {
-    font-size: 0.9em;
-    font-weight: 600;
-    color: var(--text-secondary, #94a3b8);
-    text-align: center;
-  }
+  /* The session QR card is styled in classroom/css/styles.css, which every
+     classroom page loads. It was defined here as well, and that copy is why
+     the lobby looked designed on this page and raw on the four games that
+     load neither this file nor minigames.css. One definition now. */
+
+/* LIGHT MODE - see the note in join.html. */
+.light-mode .ct-panel, .light-mode .ct-card { box-shadow: 0 18px 40px rgba(15,23,42,0.07); }
 </style>
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 
@@ -150,7 +135,7 @@
         <!-- Vocab Race (existing) -->
         <button type="button" id="pickVocabRace"
                 style="text-align:left; cursor:pointer;
-                       background: linear-gradient(135deg, rgba(59,130,246,0.10), rgba(6,182,212,0.10));
+                       background: linear-gradient(135deg, rgba(59,130,246,0.10), rgba(37,99,235,0.10));
                        border: 1px solid rgba(59,130,246,0.35);
                        border-radius: 16px; padding: 22px;
                        color: inherit; font-family: inherit;
@@ -182,6 +167,30 @@
             Speed quiz with grammar questions. Pick a level and unit;
             everyone races through the same sentences with time anchors
             and hints, fastest correct answers win.
+          </div>
+        </button>
+
+        <!-- AI Quiz - the only TEACHER-PACED game here. Vocab Race and
+             Grammar Race let every student run the word list at their own
+             speed, so the room is never between questions. This one holds
+             the whole room on the same question so a ladder can be shown
+             after each one, which is what a large orientation needs. -->
+        <button type="button" id="pickAiQuiz"
+                style="text-align:left; cursor:pointer;
+                       background: linear-gradient(135deg, rgba(139,92,246,0.10), rgba(99,102,241,0.10));
+                       border: 1px solid rgba(139,92,246,0.4);
+                       border-radius: 16px; padding: 22px;
+                       color: inherit; font-family: inherit;
+                       transition: transform 0.1s, border-color 0.15s, background 0.15s;">
+          <div style="font-size: 2.4em; margin-bottom: 10px;">🤖</div>
+          <div style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">
+            AI Quiz
+            <span style="font-size:0.55em; background:#8b5cf6; color:#fff; padding:2px 6px; border-radius:6px; margin-left:6px; vertical-align:middle; font-weight:800;">NEW</span>
+          </div>
+          <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
+            Questions from the AI Use Guidelines course. You control the pace:
+            the whole room answers the same question, then the ladder appears.
+            Built for large groups.
           </div>
         </button>
 
@@ -236,15 +245,15 @@
              host's replay controls. -->
         <button type="button" id="pickListening"
                 style="text-align:left; cursor:pointer;
-                       background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(14,165,233,0.10));
-                       border: 1px solid rgba(56,189,248,0.4);
+                       background: linear-gradient(135deg, rgba(96,165,250,0.10), rgba(37,99,235,0.10));
+                       border: 1px solid rgba(96,165,250,0.4);
                        border-radius: 16px; padding: 22px;
                        color: inherit; font-family: inherit;
                        transition: transform 0.1s, border-color 0.15s, background 0.15s;">
           <div style="font-size: 2.4em; margin-bottom: 10px;">🎧</div>
           <div style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">
             Listening Exam
-            <span style="font-size:0.55em; background:#38bdf8; color:#0c4a6e; padding:2px 6px; border-radius:6px; margin-left:6px; vertical-align:middle; font-weight:800;">NEW</span>
+            <span style="font-size:0.55em; background:#60a5fa; color:#0c4a6e; padding:2px 6px; border-radius:6px; margin-left:6px; vertical-align:middle; font-weight:800;">NEW</span>
           </div>
           <div style="color: var(--text-secondary, #94a3b8); font-size: 0.92em; line-height: 1.5;">
             You play the audio over the classroom speakers, students
@@ -259,7 +268,7 @@
              same pattern as the Heist. -->
         <button type="button" id="pickTrust"
                 style="text-align:left; cursor:pointer;
-                       background: linear-gradient(135deg, rgba(99,102,241,0.10), rgba(6,182,212,0.10));
+                       background: linear-gradient(135deg, rgba(99,102,241,0.10), rgba(37,99,235,0.10));
                        border: 1px solid rgba(99,102,241,0.4);
                        border-radius: 16px; padding: 22px;
                        color: inherit; font-family: inherit;
@@ -321,7 +330,7 @@
         <!-- Sentence Scramble - synchronized unscramble rounds. -->
         <button type="button" id="pickScramble"
                 style="text-align:left; cursor:pointer;
-                       background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(6,182,212,0.10));
+                       background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(37,99,235,0.10));
                        border: 1px solid rgba(16,185,129,0.4);
                        border-radius: 16px; padding: 22px;
                        color: inherit; font-family: inherit;
@@ -351,7 +360,7 @@
                 style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
                        color: var(--text-secondary, #94a3b8); padding: 6px 12px;
                        border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
-          ← Pick different game
+          🎮 Pick a different game
         </button>
       </div>
       
@@ -429,7 +438,7 @@
                 style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
                        color: var(--text-secondary, #94a3b8); padding: 6px 12px;
                        border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
-          ← Pick different game
+          🎮 Pick a different game
         </button>
       </div>
 
@@ -510,7 +519,7 @@
                 style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
                        color: var(--text-secondary, #94a3b8); padding: 6px 12px;
                        border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
-          ← Pick different game
+          🎮 Pick a different game
         </button>
       </div>
 
@@ -587,7 +596,7 @@
                 style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
                        color: var(--text-secondary, #94a3b8); padding: 6px 12px;
                        border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
-          ← Pick different game
+          🎮 Pick a different game
         </button>
       </div>
 
@@ -646,7 +655,7 @@
                 style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
                        color: var(--text-secondary, #94a3b8); padding: 6px 12px;
                        border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
-          ← Pick different game
+          🎮 Pick a different game
         </button>
       </div>
 
@@ -762,7 +771,7 @@
                 style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
                        color: var(--text-secondary, #94a3b8); padding: 6px 12px;
                        border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
-          ← Pick different game
+          🎮 Pick a different game
         </button>
       </div>
 
@@ -827,7 +836,7 @@
                 style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
                        color: var(--text-secondary, #94a3b8); padding: 6px 12px;
                        border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
-          ← Pick different game
+          🎮 Pick a different game
         </button>
       </div>
 
@@ -888,7 +897,7 @@
                 style="background: transparent; border: 1px solid rgba(148,163,184,0.3);
                        color: var(--text-secondary, #94a3b8); padding: 6px 12px;
                        border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.85em;">
-          ← Pick different game
+          🎮 Pick a different game
         </button>
       </div>
 
@@ -959,6 +968,11 @@
           <img id="sessionQRImg" alt="Scan to join this session" width="220" height="220">
         </div>
         <div class="session-qr-label">📱 Scan with phone camera to join</div>
+        <!-- The same join link every other game's lobby shows, for anyone who
+             cannot scan. The URL was already being built for the QR code; it
+             just was not on screen, which made this the one lobby you could
+             not read the address off. -->
+        <a id="sessionJoinUrl" href="#" style="color: var(--text-muted); font-size: 0.8rem; word-break: break-all;"></a>
       </div>
 
       <div id="sessionInfo" style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;"></div>
@@ -978,7 +992,7 @@
       
       <!-- Live Leaderboard (shows during game) -->
       <div id="liveLeaderboardSection" style="margin-top: 24px;">
-        <h3 style="margin-bottom: 12px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="vertical-align:-4px;margin-right:6px;"><rect x="3" y="13" width="4.5" height="8" rx="1.5" fill="#3b82f6"/><rect x="9.75" y="8" width="4.5" height="13" rx="1.5" fill="#06b6d4"/><rect x="16.5" y="4" width="4.5" height="17" rx="1.5" fill="#38bdf8"/></svg>Live Scores</h3>
+        <h3 style="margin-bottom: 12px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="vertical-align:-4px;margin-right:6px;"><rect x="3" y="13" width="4.5" height="8" rx="1.5" fill="#3b82f6"/><rect x="9.75" y="8" width="4.5" height="13" rx="1.5" fill="#2563eb"/><rect x="16.5" y="4" width="4.5" height="17" rx="1.5" fill="#60a5fa"/></svg>Live Scores</h3>
         <div class="leaderboard-list" id="liveLeaderboard">
           <p style="color: var(--text-muted); text-align: center; padding: 20px;">Scores will appear here during the game</p>
         </div>
@@ -1052,6 +1066,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
+<!-- Which university, then start Firebase for it. Must come after the
+     Firebase SDK above and before any page script below. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
 
 <!-- Vocabulary Data -->
 <script>
@@ -1077,17 +1095,17 @@
      The picker only needs id/title metadata; the per-exam content
      (passages, audio, questions) is loaded by the respective host
      pages after submit. -->
-<script src="assignments/js/exam-registry.js"></script>
+<script src="assignments/js/exam-registry.js?v=5"></script>
 <!-- Grammar question bank - powers the Grammar Race picker card. -->
 <script src="student/js/skills/grammar-content.js?v=34"></script>
 
 <!-- Admin content controls (classroom scope): filters hidden word-lists +
      grammar topics out of the games teacher.js builds. Load before it. -->
-<script src="classroom/js/cc-classroom.js"></script>
+<script src="classroom/js/cc-classroom.js?v=1"></script>
 <!-- Persists a finished-game record for Admin > Reports. -->
 <script src="classroom/js/game-report.js?v=1"></script>
 <!-- Teacher JS -->
-<script src="classroom/js/teacher.js"></script>
+<script src="classroom/js/teacher.js?v=8"></script>
 
 <!-- Hide any classroom games an admin has deactivated in Admin ▸ Features
      (settings/featureToggles.game_*). Uses the db + auth already defined by
@@ -1098,7 +1116,8 @@
       game_vocabRace: 'pickVocabRace', game_grammar: 'pickGrammar',
       game_heist: 'pickHeist', game_trust: 'pickTrust',
       game_reading: 'pickReading', game_listening: 'pickListening',
-      game_tug: 'pickTug', game_bingo: 'pickBingo', game_scramble: 'pickScramble'
+      game_tug: 'pickTug', game_bingo: 'pickBingo', game_scramble: 'pickScramble',
+      game_aiquiz: 'pickAiQuiz'
     };
     var done = false;
     function gate() {
@@ -1288,7 +1307,7 @@
         const glv  = (document.getElementById('heistGrammarLevel') || {}).value || '';
         const gun  = (document.getElementById('heistGrammarUnit')  || {}).value || 'all';
         if (!pack) { AppDialog.alert('Pick a hint pack first.', { title: 'Missing pack', icon: '📦' }); return; }
-        if (qsrc !== 'vocab' && !glv) { AppDialog.alert('Pick a grammar level first.', { title: 'Missing level', icon: '📊' }); return; }
+        if (qsrc !== 'vocab' && !glv) { AppDialog.alert('Pick a grammar level first.', { title: 'Missing level', icon: '⚠️' }); return; }
         const qs = new URLSearchParams({ pack, dur: String(dur), rew: String(rew), fee: String(fee), qsrc, glv, gun, auto: '1' });
         window.location.href = 'classroom-heist-teacher.html?' + qs.toString();
       });
@@ -1320,7 +1339,7 @@
         const glv  = (document.getElementById('trustGrammarLevel') || {}).value || '';
         const gun  = (document.getElementById('trustGrammarUnit')  || {}).value || 'all';
         if (!pack) { AppDialog.alert('Pick a hint pack first.', { title: 'Missing pack', icon: '📦' }); return; }
-        if (qsrc !== 'vocab' && !glv) { AppDialog.alert('Pick a grammar level first.', { title: 'Missing level', icon: '📊' }); return; }
+        if (qsrc !== 'vocab' && !glv) { AppDialog.alert('Pick a grammar level first.', { title: 'Missing level', icon: '⚠️' }); return; }
         const qs = new URLSearchParams({
           pack, imp: String(imp), tgt: String(tgt), rel: String(rel),
           rew: String(rew), dur: String(dur), sm: String(sm), cd: String(cd),
@@ -1362,6 +1381,20 @@
       }
       const tugPick = document.getElementById('pickTug');
       if (tugPick) tugPick.addEventListener('click', () => { show('tugSetupScreen'); fillTugLevelUnit(); });
+
+      // AI Quiz. A button like every other card, so it gets the shared hover,
+      // press and focus treatment and can be switched off from the feature
+      // toggles. It was an <a> that navigated on click, which is why it felt
+      // different: no press feedback, and it left the picker instantly.
+      //
+      // Its setup lives on its own page rather than inline here, the way Tug
+      // and Bingo keep theirs inline. That is the one remaining difference,
+      // and it is deliberate for now: the AI setup needs the module list read
+      // from the question bank, which this page does not load.
+      const aiPick = document.getElementById('pickAiQuiz');
+      if (aiPick) aiPick.addEventListener('click', () => {
+        window.location.href = 'classroom-aiquiz-teacher.html';
+      });
       const tugQ = document.getElementById('tugQSource');
       if (tugQ) tugQ.addEventListener('change', fillTugLevelUnit);
       const tugLvl = document.getElementById('tugLevel');
@@ -1377,7 +1410,7 @@
         const unit = (document.getElementById('tugUnit')  || {}).value || 'all';
         const dur  = parseInt((document.getElementById('tugDuration') || {}).value, 10) || 8;
         const lead = parseInt((document.getElementById('tugLead')     || {}).value, 10) || 15;
-        if (!lvl) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '📊' }); return; }
+        if (!lvl) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '⚠️' }); return; }
         const qs = new URLSearchParams({ qsrc, lvl, unit, dur: String(dur), lead: String(lead), auto: '1' });
         window.location.href = 'classroom-tug-teacher.html?' + qs.toString();
       });
@@ -1398,7 +1431,7 @@
         const unit = (document.getElementById('bingoUnit')    || {}).value || 'all';
         const pool = parseInt((document.getElementById('bingoPool')    || {}).value, 10) || 24;
         const adv  = parseInt((document.getElementById('bingoAdvance') || {}).value, 10) || 0;
-        if (!lvl) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '📊' }); return; }
+        if (!lvl) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '⚠️' }); return; }
         const qs = new URLSearchParams({ lvl, unit, pool: String(pool), adv: String(adv), auto: '1' });
         window.location.href = 'classroom-bingo-teacher.html?' + qs.toString();
       });
@@ -1419,7 +1452,7 @@
         const unit   = (document.getElementById('scrambleUnit')   || {}).value || 'all';
         const rounds = parseInt((document.getElementById('scrambleRounds') || {}).value, 10) || 10;
         const sec    = parseInt((document.getElementById('scrambleSec')    || {}).value, 10) || 40;
-        if (!lvl) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '📊' }); return; }
+        if (!lvl) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '⚠️' }); return; }
         const qs = new URLSearchParams({ lvl, unit, rounds: String(rounds), sec: String(sec), auto: '1' });
         window.location.href = 'classroom-scramble-teacher.html?' + qs.toString();
       });
@@ -1444,7 +1477,7 @@
         const exam  = (document.getElementById('readingExam')  || {}).value || '';
         const dur   = parseInt((document.getElementById('readingDuration') || {}).value, 10);
         const disc  = parseInt((document.getElementById('readingDiscussion') || {}).value, 10);
-        if (!level) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '📊' }); return; }
+        if (!level) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '⚠️' }); return; }
         if (!exam)  { AppDialog.alert('Pick an exam first.', { title: 'Missing exam', icon: '📝' }); return; }
         const qs = new URLSearchParams({
           level, exam,
@@ -1468,7 +1501,7 @@
         const disc   = parseInt((document.getElementById('listeningDiscussion')   || {}).value, 10);
         const qmark  = parseInt((document.getElementById('listeningQMarker')      || {}).value, 10);
         const policy = (document.getElementById('listeningReplayPolicy') || {}).value || 'teacher';
-        if (!level) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '📊' }); return; }
+        if (!level) { AppDialog.alert('Pick a level first.', { title: 'Missing level', icon: '⚠️' }); return; }
         if (!exam)  { AppDialog.alert('Pick an exam first.', { title: 'Missing exam', icon: '📝' }); return; }
         const qs = new URLSearchParams({
           level, exam,
@@ -1586,6 +1619,6 @@
   })();
 </script>
 
-<script src="js/classroom-timer.js?v=3"></script>
+<script src="js/classroom-timer.js?v=6"></script>
 </body>
 </html>

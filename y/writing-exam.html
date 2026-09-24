@@ -8,16 +8,25 @@
 <meta name="format-detection" content="telephone=no, address=no, email=no, date=no">
 <!-- Hide referrer so the writing page never leaks the prompt URL. -->
 <meta name="referrer" content="no-referrer">
-<title>Writing Exam — Empower</title>
+<title>Writing Exam - Lingualab</title>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css?v=17">
-<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
-<!-- Shared themed dialog (alert/confirm/prompt) — replaces native browser popups app-wide. -->
-<script src="js/app-dialog.js"></script>
-<link rel="stylesheet" href="student/css/writing-exam.css?v=3">
+<!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css?v=30">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=14">
+<!-- The gear below opens the SHARED settings panel. The page's own drawer is
+     retired in student/css/writing-exam.css (#wrSettingsPanel is display:none),
+     but app-settings was never actually loaded here, so the button had nothing
+     to open and did nothing at all. These two lines are what make it work. -->
+<link rel="stylesheet" href="css/app-settings.css?v=55">
+<!-- Shared themed dialog (alert/confirm/prompt) - replaces native browser popups app-wide. -->
+<script src="js/app-dialog.js?v=8"></script>
+  <script src="js/sound.js?v=4"></script>
+<script src="js/app-settings.js?v=40"></script>
+<link rel="stylesheet" href="student/css/writing-exam.css?v=10">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
-<body data-theme="dark">
+<body data-theme="light">
 
 <!-- Loading splash while we resolve the assignmentId from URL. -->
 <div id="wrLoading" class="wr-loading">
@@ -27,12 +36,12 @@
   <div class="msg">Loading writing exam…</div>
 </div>
 
-<!-- Top bar — sticky, contains title, timer, word count, submit. -->
+<!-- Top bar - sticky, contains title, timer, word count, submit. -->
 <div class="wr-topbar" id="wrTopbar" style="display:none;">
   <div class="wr-topbar-left">
     <div>
       <div class="wr-title" id="wrTitle">Writing Exam</div>
-      <div class="wr-subtitle" id="wrSubtitle">—</div>
+      <div class="wr-subtitle" id="wrSubtitle">-</div>
     </div>
   </div>
   <div class="wr-topbar-right">
@@ -44,7 +53,12 @@
       <span class="lbl">Time:</span>
       <span id="wrTimer" class="wr-timer">--:--</span>
     </span>
-    <button class="wr-icon-btn" id="wrSettingsBtn" data-app-settings-open title="Settings" aria-label="Settings">⚙️</button>
+    <!-- Keeps BOTH: the id, because student/js/writing-exam.js binds it and a
+         missing element threw; and data-app-settings-open, because the page's
+         own drawer is retired and the shared panel is what should open. The
+         drawer toggle still runs and does nothing visible, which is harmless. -->
+    <button class="wr-icon-btn" id="wrSettingsBtn" data-app-settings-open
+            title="Settings" aria-label="Settings">⚙️</button>
     <button class="wr-btn" id="wrSubmitBtn">Submit</button>
   </div>
 </div>
@@ -86,11 +100,11 @@
   <div class="icon">✅</div>
   <h2>Submitted</h2>
   <p>Your response has been saved. You can close this tab now.</p>
-  <div class="recap" id="wrDoneRecap">—</div>
-  <a class="wr-btn wr-btn-secondary" href="student-dashboard.html#writing" id="wrDoneBackBtn">Back to dashboard</a>
+  <div class="recap" id="wrDoneRecap">-</div>
+  <a class="ll-navbtn" href="student-dashboard.html" id="wrDoneBackBtn">← Back to dashboard</a>
 </div>
 
-<!-- Settings panel — mirrors reading-exam settings architecture. -->
+<!-- Settings panel - mirrors reading-exam settings architecture. -->
 <div class="wr-settings-overlay" id="wrSettingsOverlay"></div>
 <aside class="wr-settings-panel" id="wrSettingsPanel">
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
@@ -101,8 +115,8 @@
   <div class="wr-set-section">
     <div class="wr-set-label">Theme</div>
     <div class="wr-set-row" id="wrThemeRow">
-      <button data-theme="dark"     class="active">Dark</button>
-      <button data-theme="light">Light</button>
+      <button data-theme="dark">Dark</button>
+      <button data-theme="light"    class="active">Light</button>
       <button data-theme="sepia">Sepia</button>
       <button data-theme="contrast">Contrast</button>
     </div>
@@ -160,21 +174,18 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
-<!-- Firebase project config — same as other pages -->
+<!-- Which university, then start Firebase for it. This page used to name the
+     project directly, which would have pointed every university at FSMVU. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
 <script>
-firebase.initializeApp({
-  apiKey:            "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-  authDomain:        "empower-vocabulary-practice.firebaseapp.com",
-  projectId:         "empower-vocabulary-practice",
-  storageBucket:     "empower-vocabulary-practice.firebasestorage.app",
-  messagingSenderId: "136270199832",
-  appId:             "1:136270199832:web:174222066ef1cbdc8f576d",
-  measurementId:     "G-1BBXBVEP5C"
-});
+if (!firebase.apps.length) {
+  throw new Error('writing-exam: js/tenant.js + js/firebase-init.js must load first.');
+}
 const auth = firebase.auth();
 const db   = firebase.firestore();
 </script>
 
-<script src="student/js/writing-exam.js"></script>
+<script src="student/js/writing-exam.js?v=8"></script>
 </body>
 </html>

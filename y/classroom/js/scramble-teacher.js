@@ -15,20 +15,19 @@
        level, unit, roundSec, rounds[{words[],answer,word}],
        roundIndex, roundStartAt, createdAt, startedAt, endedAt }
      /players/{uid} { uid, name, avatar, score, correct,
-                      answered, lastRound, lastOk, joinedAt }
+                      answered, lastRound, lastOk, joinedAt,
+                      joinedRound - the roundIndex when they first joined,
+                      roundResults { r<i>: bool } - written on Submit only }
    ============================================================ */
 (function () {
   'use strict';
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-    authDomain: "empower-vocabulary-practice.firebaseapp.com",
-    projectId: "empower-vocabulary-practice",
-    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-    messagingSenderId: "136270199832",
-    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // Firebase is started by js/firebase-init.js, which reads the project
+  // from js/tenant.js. This file used to name one university directly, which would
+  // have pointed every deployment at that same project.
+  if (!firebase.apps.length) {
+    throw new Error('scramble-teacher: js/tenant.js + js/firebase-init.js must load first.');
+  }
   const auth = firebase.auth();
   const db = firebase.firestore();
 
@@ -62,6 +61,7 @@
   let timerInterval = null;
   let gameInFlight = false;
   let advancing = false;
+  let resultsShown = false;
   let lastPlayers = [];
 
   function setView(id) {
@@ -164,6 +164,10 @@
       settings.level + ' · ' + (settings.unit === 'all' ? 'All units' : settings.unit) +
       ' · ' + sessionData.rounds.length + ' sentences · ' + settings.roundSec + 's each';
 
+    // Re-entering the lobby (a second create, or a retry after a failed one)
+    // would otherwise strand the previous roster listener. Null on the first
+    // run, so this is a no-op then.
+    if (unsubPlayers) unsubPlayers();
     unsubPlayers = db.collection('scramble_sessions').doc(code).collection('players')
       .orderBy('joinedAt', 'asc')
       .onSnapshot(snap => {
@@ -173,7 +177,13 @@
       });
   }
 
+  var _lastRoster = 0;
   function renderRoster(players) {
+    // A student arrived. Throttled: a full cohort joining would otherwise
+    // fire a cue per arrival. Guarded on GROWTH so a snapshot caused by a
+    // score change stays silent.
+    if (players.length > _lastRoster) MG.sfx('join', { throttle: 400 });
+    _lastRoster = players.length;
     const el = document.getElementById('roster');
     const count = document.getElementById('rosterCount');
     if (count) count.textContent = players.length;
@@ -222,6 +232,10 @@
       resetRoundTimer(d);
     });
 
+    // Release the lobby listener before attaching the in-game one. Without
+    // this both stayed live for the whole game, so every player write was
+    // delivered and billed twice. Same shape as trust-teacher.js:475.
+    if (unsubPlayers) unsubPlayers();
     unsubPlayers = db.collection('scramble_sessions').doc(sessionCode).collection('players')
       .onSnapshot(snap => {
         const players = snap.docs.map(d => d.data());
@@ -266,7 +280,7 @@
 
   let advanceTimeout = null;
   function scheduleAdvance(delayMs) {
-    if (advancing || advanceTimeout) return;
+    if (advancing || advanceTimeout || resultsShown) return;
     advanceTimeout = setTimeout(() => { advanceTimeout = null; advanceRound(); }, delayMs);
   }
 
@@ -293,7 +307,9 @@
   }
 
   async function advanceRound() {
-    if (advancing || !sessionData) return;
+    // Never move a finished game on: a late answer used to be able to write
+    // the next roundIndex onto a finished session and re-open its results.
+    if (advancing || !sessionData || sessionData.status !== 'playing' || resultsShown) return;
     advancing = true;
     try {
       const idx = sessionData.roundIndex == null ? -1 : sessionData.roundIndex;
@@ -320,17 +336,50 @@
   }
 
   async function showResults() {
+    // ONCE. The session listener fires "finished" twice - on the host's own
+    // write and again when the server fills in endedAt - and each run read
+    // every player again and re-drew the screen. resultsShown also stops a
+    // late answer that lands during the wait below from counting as
+    // "everyone answered" and advancing the game (scheduleAdvance and
+    // advanceRound refuse once it is set).
+    //
+    // The listeners stay attached until the reads below have finished
+    // (cleanup() at the end). Without persistence the SDK drops a detached
+    // query's documents at once, so if the host's wifi is gone at this moment
+    // the players read would come back empty from the cache.
+    if (resultsShown) return;
+    resultsShown = true;
     if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
     if (advanceTimeout) { clearTimeout(advanceTimeout); advanceTimeout = null; }
     gameInFlight = false;
     setView('results');
     try {
+      // The sentence that was live when the game ended can still have an
+      // answer in flight: a phone accepts Submit until the "finished" status
+      // reaches it, and this runs on the host's own local write, before the
+      // server has even confirmed it. When someone had not answered that
+      // sentence yet, give their write a moment, so a last-second answer is
+      // not listed as "no answer" and its points reach the podium and the
+      // saved report. No wait when everyone had answered.
+      const liveIdx = sessionData && sessionData.roundIndex != null ? sessionData.roundIndex : -1;
+      if (liveIdx >= 0 && lastPlayers.some(p => (p.lastRound == null ? -1 : p.lastRound) < liveIdx)) {
+        document.getElementById('sentenceReview').innerHTML =
+          '<div style="padding: 14px; color: var(--text-muted);">Collecting the last answers...</div>';
+        await new Promise(res => setTimeout(res, 1500));
+      }
       const sref = db.collection('scramble_sessions').doc(sessionCode);
       const [playersSnap, sessSnap] = await Promise.all([
         sref.collection('players').orderBy('score', 'desc').get(),
         sref.get()
       ]);
-      const players = playersSnap.docs.map(d => d.data());
+      // An empty answer from the local cache while players were seen a moment
+      // ago means the host is offline, not that the room was empty: use the
+      // last players the live listener delivered, so the podium, the review
+      // and the saved report are not blanked.
+      const offlineEmpty = playersSnap.empty && playersSnap.metadata && playersSnap.metadata.fromCache && lastPlayers.length > 0;
+      const players = offlineEmpty
+        ? lastPlayers.slice().sort((a, b) => (b.score || 0) - (a.score || 0))
+        : playersSnap.docs.map(d => d.data());
       const s = sessSnap.exists ? sessSnap.data() : {};
 
       if (window.saveGameReport) {
@@ -359,10 +408,73 @@
         </div>`;
       }).join('');
 
-      // Sentence review for the class discussion.
-      document.getElementById('sentenceReview').innerHTML = (s.rounds || []).map((r, i) =>
-        `<div class="leaderboard-item"><div class="leaderboard-rank">${i + 1}</div><div class="leaderboard-player"><div class="leaderboard-name">${MG.escHtml(r.answer)}</div></div><div class="leaderboard-details">${MG.escHtml(r.word)}</div></div>`
-      ).join('');
+      // SENTENCE REVIEW, now with how the class actually did on each one.
+      //
+      // This used to list the sentences and nothing else, so the screen a
+      // teacher discusses the round from could not say which sentence caused
+      // trouble. Reading and Listening have had per-question bars for a
+      // while; this is the same idea, from the per-round results students
+      // now record.
+      //
+      // Rounds here are SYNCHRONIZED, not self-paced: every phone in the room
+      // is shown the same sentence at the same time, so nobody falls behind.
+      // A phone records a result only when Submit is pressed, so a missing
+      // result means the student SAW the sentence and did not submit before
+      // the round moved on (time ran out or Next was pressed). A student who
+      // joined later is not counted for the sentences before they joined. This used to read "not reached", which a teacher testing alone
+      // rightly found impossible. Only sentences after the one the game ended
+      // on were never shown (endGame leaves roundIndex on the live sentence),
+      // and those read "not played".
+      //
+      // The percentage is over submitted answers only, so a sentence nobody
+      // answered reads "-", never "0%". The no-answer count sits under it
+      // instead: a sentence most of the room could not finish in time is a
+      // problem sentence too, and dropping those students made it read green.
+      const lastShown = s.roundIndex == null ? -1 : s.roundIndex;
+      document.getElementById('sentenceReview').innerHTML = (s.rounds || []).map((r, i) => {
+        const key = 'r' + i;
+        let attempted = 0, right = 0, present = 0;
+        players.forEach((p) => {
+          const rr = p.roundResults || {};
+          // Counted only if they were in the room for this sentence AND answered
+          // at least one sentence in the game. A late joiner never saw the
+          // sentences before they joined (scramble-student.js writes
+          // joinedRound). A player doc that never answered anything is usually
+          // not a student at all: a second copy from reopening the link in
+          // another browser, or a tab closed in the lobby. It used to add "1 no
+          // answer" to every sentence.
+          if ((p.joinedRound == null ? -1 : p.joinedRound) <= i && Object.keys(rr).length) present++;
+          if (Object.prototype.hasOwnProperty.call(rr, key)) {
+            attempted++;
+            if (rr[key]) right++;
+          }
+        });
+        const pct = attempted ? Math.round((right / attempted) * 100) : 0;
+        // Red below half, amber to 79, green at 80+: the teacher should be able
+        // to find the problem sentence without reading any numbers.
+        const tone = !attempted ? 'none' : pct >= 80 ? 'good' : pct >= 50 ? 'mid' : 'bad';
+        const wrong = attempted - right;
+        const shown = i <= lastShown;
+        const noAnswer = shown ? Math.max(0, present - attempted) : 0;
+        const tip = shown
+          ? `${right} right, ${wrong} wrong, ${noAnswer} no answer`
+          : 'The game ended before this sentence';
+        const count = attempted
+          ? right + '/' + attempted + (noAnswer ? '<br>' + noAnswer + ' no answer' : '')
+          : (shown ? 'no answers' : 'not played');
+        return `<div class="sr-row">
+          <div class="sr-n">${i + 1}</div>
+          <div class="sr-body">
+            <div class="sr-sentence">${MG.escHtml(r.answer)}</div>
+            <div class="sr-word">${MG.escHtml(r.word)}</div>
+          </div>
+          <div class="sr-bar" title="${tip}">
+            <div class="sr-fill sr-${tone}" style="width:${pct}%;"></div>
+          </div>
+          <div class="sr-pct sr-${tone}-text" title="${tip}">${attempted ? pct + '%' : '-'}</div>
+          <div class="sr-count" title="${tip}">${count}</div>
+        </div>`;
+      }).join('');
 
       const dl = document.getElementById('downloadResultsBtn');
       if (dl) dl.onclick = () => {

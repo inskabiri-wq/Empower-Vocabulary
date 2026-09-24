@@ -149,7 +149,10 @@
     if (availableCount === 0 && unavailableCount === 0) {
       sel.innerHTML = '<option value="">- No exams available yet -</option>';
       if (hint) {
-        hint.textContent = `No ${activeExamSkill} exams are registered yet. Add entries to y/assignments/js/exam-registry.js to make them assignable.`;
+        // No source paths in the interface. A teacher cannot act on a file
+        // name, and being shown one makes a working product read as a
+        // half-finished one.
+        hint.textContent = `No ${activeExamSkill} exams are available yet.`;
       }
       return;
     }
@@ -157,19 +160,18 @@
     sel.innerHTML = '<option value="">- Select an exam -</option>' + groupsHtml;
     if (hint) {
       const unavailNote = unavailableCount > 0
-        ? ` · <span style="color:#fbbf24;">${unavailableCount} disabled</span>`
+        ? ` · <span style="color:#60a5fa;">${unavailableCount} disabled</span>`
         : '';
+      // Just the count. The rest of this line used to tell the teacher to edit
+      // y/assignments/js/exam-registry.js, which is a source path in a
+      // classroom tool: not something they can act on, and it makes the app
+      // look unfinished.
       hint.innerHTML = `
-        <span style="display:inline-block; background:rgba(45,212,191,0.15);
-                     color:#2dd4bf; padding:3px 10px; border-radius:10px;
+        <span style="display:inline-block; background:rgba(147,197,253,0.15);
+                     color:#93c5fd; padding:3px 10px; border-radius:10px;
                      font-weight:600;">
           ${availableCount} ${activeExamSkill} exam${availableCount === 1 ? '' : 's'} available
-        </span>${unavailNote}
-        <span style="margin-left:6px;">- add more or toggle availability in
-          <code style="background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:4px;">
-            y/assignments/js/exam-registry.js
-          </code>
-        </span>`;
+        </span>${unavailNote}`;
     }
   }
 

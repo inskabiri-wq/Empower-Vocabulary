@@ -1,8 +1,8 @@
 /* ============================================================
-   SKILL — Reading
+   SKILL - Reading
    Renders the Reading skill home: a level pill row (A2/B1/B1+/B2)
    and a list of exam cards for the active level. Each card has
-   two launch buttons — Timed (60 min) and Untimed practice — that
+   two launch buttons - Timed (60 min) and Untimed practice - that
    delegate to openReadingExam() in reading-exam.js.
 
    Data source: window.READINGS_INDEX, owned by reading-exam.js.
@@ -14,7 +14,7 @@
   'use strict';
 
   // Level list is derived from EXAM_REGISTRY so adding a new level
-  // (A1, C1, etc.) is a one-line edit there — no parallel update
+  // (A1, C1, etc.) is a one-line edit there - no parallel update
   // here. Falls back to the historical list if the registry hasn't
   // loaded yet (race on cold boot).
   const LEVELS = (typeof window.EXAM_REGISTRY !== 'undefined' && typeof window.EXAM_REGISTRY.levelsFor === 'function')
@@ -106,7 +106,7 @@
           // For TIMED mode, request fullscreen synchronously inside
           // the click handler so the user-gesture is preserved
           // (browsers reject requestFullscreen if it isn't directly
-          // tied to a user activation). Fire-and-forget — we don't
+          // tied to a user activation). Fire-and-forget - we don't
           // await it because openReadingExam needs to run regardless.
           if (mode === 'timed') {
             const el = document.documentElement;
@@ -132,7 +132,7 @@
   }
 
   function renderReadingScreen() {
-    // Honor profile level on first render only — subsequent renders
+    // Honor profile level on first render only - subsequent renders
     // (e.g. after picking a tab) keep the user's chosen level.
     const profile = getProfileLevel();
     if (profile && !window.__rdLevelTouched) {

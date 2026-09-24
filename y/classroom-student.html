@@ -4,27 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Classroom Mode - Join Game | Lingualab</title>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <!-- PWA -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="/manifest.json?v=2">
+<meta name="theme-color" content="#f6f8fb">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Lingualab">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
 <!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css?v=17">
+<link rel="stylesheet" href="css/brand.css?v=30">
 <!-- Shared themed dialog (alert/confirm/prompt) - replaces native browser popups app-wide. -->
-<script src="js/app-dialog.js"></script>
-<link rel="stylesheet" href="classroom/css/styles.css?v=7">
-<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
+<script src="js/app-dialog.js?v=8"></script>
+  <script src="js/sound.js?v=4"></script>
+<link rel="stylesheet" href="classroom/css/styles.css?v=60">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=14">
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -85,7 +88,16 @@
         <label class="form-label">Session Code</label>
         <input type="text" id="sessionCodeInput" class="form-input code-input" placeholder="ABCD or XXXXXX" maxlength="6" autocomplete="off">
       </div>
-      
+
+      <!-- A name field, because this game no longer requires signing in.
+           It used to take the name from the account, which is exactly why it
+           was the one game you could not play without logging in. A signed-in
+           student still gets their real name filled in automatically. -->
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input type="text" id="nameInput" class="form-input" maxlength="24" placeholder="e.g. Alex" autocomplete="off">
+      </div>
+
       <button class="btn btn-primary btn-large" onclick="joinSession()" style="width: 100%;">
         🎟️ Join Game
       </button>
@@ -205,10 +217,14 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
+<!-- Which university, then start Firebase for it. Must come after the
+     Firebase SDK above and before any page script below. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
 
 <!-- Student JS -->
-<script src="classroom/js/student.js"></script>
+<script src="classroom/js/student.js?v=8"></script>
 
-<script src="/pwa-register.js"></script>
+<script src="/pwa-register.js?v=2"></script>
 </body>
 </html>

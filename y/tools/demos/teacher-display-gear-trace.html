@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Display gear</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1040px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;vertical-align:top;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:84ch;line-height:1.55;}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:3px;}
+  iframe{position:absolute;left:-99999px;width:1200px;height:800px;border:0;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">Display row on the teacher sidebar</h3>
+<p class="lede">
+  The panel was switched off on this page with
+  <code>&lt;body data-app-settings="off"&gt;</code> because, with no opener,
+  <code>js/app-settings.js</code> builds a floating wheel AND calls
+  <code>placeInHeader()</code>, which dragged an unwanted Lingualab lockup into
+  the page header. The sidebar row now carries
+  <code>data-app-settings-open</code>, so the script should bind to it and do
+  neither of those. This checks both halves: the row works, and nothing else
+  got injected.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script>
+const rows = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+// The real page's sidebar shape, including the header the lockup used to land in.
+const SIDEBAR =
+  '<header class="t2-page-header"><h1>Dashboard</h1></header>' +
+  '<nav class="t2-sidebar">' +
+  '  <button type="button" class="t2-nav-item" id="wtSidebarBtn"><span class="ico" data-icon="gamepad"></span><span class="label">Widgets</span></button>' +
+  '  <button type="button" class="t2-nav-item" data-app-settings-open data-app-settings-plain title="Display settings"><span class="ico" data-icon="settings"></span><span class="label">Display</span></button>' +
+  '  <a class="t2-nav-item" href="student-dashboard.html"><span class="ico" data-icon="flask"></span><span class="label">Lingualab</span></a>' +
+  '  <button type="button" class="t2-nav-item" onclick="void 0"><span class="ico" data-icon="log-out"></span><span class="label">Logout</span></button>' +
+  '</nav>' +
+  // Buttons that merely MENTION settings must be left alone. The writing form's
+  // second tab carries onclick="switchWritingTab('settings', this)", and the
+  // gear sweep used to match that and replace the tab's label with a cog.
+  '<div class="wtabs">' +
+  "  <button type='button' class='wtab' onclick=\"switchWritingTab('details', this)\">① Details</button>" +
+  "  <button type='button' class='wtab' id='wtabSettings' onclick=\"switchWritingTab('settings', this)\">② Settings &amp; Rubric</button>" +
+  "  <button type='button' class='wtab' onclick=\"switchWritingTab('targeting', this)\">③ Targeting</button>" +
+  '</div>' +
+  // A button whose accessible name really IS "Settings" should still be treated
+  // as a gear, so the tightened rule must not over-correct.
+  '<button type="button" id="realGear" title="Settings">x</button>';
+
+function frame(bodyAttr) {
+  return new Promise(resolve => {
+    const f = document.createElement('iframe');
+    document.body.appendChild(f);
+    const d = f.contentDocument;
+    d.open();
+    d.write('<!DOCTYPE html><html><head><meta charset="utf-8"><base href="/">' +
+      '<link rel="stylesheet" href="/css/app-settings.css?cb=' + Math.random() + '"></head>' +
+      '<body' + (bodyAttr ? ' ' + bodyAttr : '') + '>' + SIDEBAR + '</body></html>');
+    d.close();
+    // Load app-settings.js FIRST, matching the real page where it sits in
+    // <head> and overview-v2.js sits at the end of <body>. Order matters: it is
+    // why app-settings used to paint the icon before the sidebar could.
+    const files = ['/js/app-settings.js', '/teacher/js/overview-v2.js'];
+    const cb = '?cb=' + Math.random();
+    let left = files.length;
+    files.forEach(src => {
+      const s = d.createElement('script');
+      s.src = src + cb; s.async = false;
+      s.onload = s.onerror = () => { if (--left === 0) resolve({ f, w: f.contentWindow, d }); };
+      d.body.appendChild(s);
+    });
+  });
+}
+
+(async function(){
+  // ── The shipped arrangement ──────────────────────────────────────────────
+  {
+    const { w, d } = await frame(null);
+    await wait(400);
+    const opener = d.querySelector('[data-app-settings-open]');
+    check('1. the Display row exists', true, !!opener);
+    check('2. app-settings.js bound to it', true, opener.classList.contains('as-opener'));
+    check('3. it sits directly under Widgets', 'wtSidebarBtn',
+          opener.previousElementSibling ? opener.previousElementSibling.id : null);
+    check('4. the panel was built', true, !!d.querySelector('.as-panel'));
+
+    // The two things the opt-out existed to prevent.
+    check('5. NO floating wheel was created', null, d.getElementById('appSettingsLaunch'));
+    const hdr = d.querySelector('.t2-page-header');
+    check('6. nothing was injected into the page header', 1, hdr.children.length);
+    check('7. no Lingualab lockup in the header', false, /lingualab/i.test(hdr.textContent));
+
+    // ── The row must stay a ROW ───────────────────────────────────────────
+    // app-settings.js paints openers as a 44x44 bordered icon button with
+    // !important. On a nav row that squeezed the row into a square and pushed
+    // the label outside it, which is exactly what was reported.
+    const cs = w.getComputedStyle(opener);
+    check('8. the row was NOT forced to a 44px square', false,
+          cs.width === '44px' || cs.height === '44px');
+    check('9. no icon-button border was painted on it', false,
+          /1px/.test(cs.borderTopWidth) && cs.borderRadius === '12px');
+    check('10. the label is still inside the row', true,
+          opener.getBoundingClientRect().width >=
+          opener.querySelector('.label').getBoundingClientRect().width);
+
+    // Its icon must come from the sidebar's own set, like its neighbours -
+    // same size, same stroke - not app-settings' larger icon-button gear.
+    w.t2HydrateIcons && w.t2HydrateIcons();
+    const ico = opener.querySelector('.ico svg');
+    const nbr = d.querySelector('#wtSidebarBtn .ico svg');
+    check('11. the Display row has an icon', true, !!ico);
+    check('12. it is the SAME size as the Widgets icon', true,
+          !!ico && !!nbr && ico.getAttribute('width') === nbr.getAttribute('width'));
+    check('13. and drawn with the same stroke weight', true,
+          !!ico && !!nbr && ico.getAttribute('stroke-width') === nbr.getAttribute('stroke-width'));
+
+    // It must actually open.
+    const panel = d.querySelector('.as-panel');
+    const openedBefore = panel.classList.contains('open') || panel.getAttribute('aria-hidden') === 'false';
+    opener.dispatchEvent(new w.MouseEvent('click', { bubbles: true }));
+    await wait(250);
+    const openedAfter = panel.classList.contains('open') || panel.getAttribute('aria-hidden') === 'false' ||
+                        w.getComputedStyle(panel).display !== 'none';
+    check('14. panel was not open to begin with', false, openedBefore);
+    check('15. clicking the row opens the panel', true, openedAfter);
+
+    // ── The sweep must not hijack unrelated buttons ────────────────────────
+    const tab = d.getElementById('wtabSettings');
+    check('16. a tab that only MENTIONS settings keeps its label', true,
+          /Settings\s*&\s*Rubric/.test(tab.textContent));
+    check('17. ...and no cog was drawn into it', null, tab.querySelector('svg'));
+    check('18. ...and it was not squeezed to a 44px icon button', false,
+          w.getComputedStyle(tab).width === '44px');
+    // ...but a real gear still is one.
+    const real = d.getElementById('realGear');
+    check('19. a button actually titled Settings is still treated as a gear', true,
+          !!real.querySelector('svg'));
+  }
+
+  // ── Control: prove the checks above would catch a regression ─────────────
+  // Put the old opt-out back and confirm nothing mounts, so checks 1-10 are
+  // measuring the change rather than passing for some unrelated reason.
+  {
+    const { d } = await frame('data-app-settings="off"');
+    await wait(400);
+    check('20. control: with the old opt-out, no panel mounts', null, d.querySelector('.as-panel'));
+    check('21. control: and the row is left unbound', false,
+          d.querySelector('[data-app-settings-open]').classList.contains('as-opener'));
+  }
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__gearTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok).map(r=>r.name+' -> '+r.actual) };
+})();
+</script>
+</body>
+</html>

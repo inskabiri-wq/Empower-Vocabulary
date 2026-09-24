@@ -11,14 +11,16 @@
   <style>html.cor-checking .cor-app { visibility: hidden; }</style>
 
   <!-- Theme tokens from the real app (now in y/, so one level up) -->
-  <link rel="stylesheet" href="../index/css/variables.css?v=2">
-  <link rel="stylesheet" href="css/corrector.css?v=7">
+  <link rel="stylesheet" href="../index/css/variables.css?v=5">
+  <link rel="stylesheet" href="css/corrector.css?v=16">
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="../css/app-settings.css?v=38">
+  <link rel="stylesheet" href="../css/app-settings.css?v=55">
   <!-- Which university is this? Must load before any script that asks. -->
-  <script src="../js/tenant.js?v=2"></script>
-  <script src="../js/app-settings.js?v=22"></script>
+  <script src="../js/tenant.js?v=7"></script>
+  <script src="../js/app-settings.js?v=40"></script>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
   <div class="cor-app">
@@ -113,11 +115,16 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js" integrity="sha384-nr3XW2E61lv+rhFoxO+G+2MytvPBcAHRBkVN+clME9hVhZBH+LxuUkYSsrIEUON+" crossorigin="anonymous"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <!-- Start Firebase for whichever university this address belongs to. This
+       page used to name FSMVU here, which on another university's site meant
+       the writing lab authenticated against FSMVU, found nobody signed in and
+       bounced the user back to the login page. tenant.js is already loaded in
+       <head>. -->
+  <script src="../js/firebase-init.js?v=3"></script>
   <script>
-    (function () {
-      var cfg = { apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU", authDomain: "empower-vocabulary-practice.firebaseapp.com", projectId: "empower-vocabulary-practice", storageBucket: "empower-vocabulary-practice.firebasestorage.app", messagingSenderId: "136270199832", appId: "1:136270199832:web:174222066ef1cbdc8f576d" };
-      if (window.firebase && firebase.apps && !firebase.apps.length) firebase.initializeApp(cfg);
-    })();
+    if (!firebase.apps.length) {
+      throw new Error('lingualab-write: js/tenant.js + js/firebase-init.js must load first.');
+    }
   </script>
 
   <!-- Page gate: runs right after firebase init and before the corrector, so a
@@ -125,12 +132,15 @@
   <script src="js/auth-gate.js?v=2"></script>
 
   <!-- REAL app engine + comment bank (now in y/, so one level up) -->
-  <script src="../assignments/js/writing-rubrics.js?v=1"></script>
-  <script src="../assignments/js/writing-comment-bank.js?v=2"></script>
-  <script src="../assignments/js/writing-annotations.js"></script>
+  <script src="../assignments/js/writing-rubrics.js?v=4"></script>
+  <script src="../assignments/js/writing-comment-bank.js?v=4"></script>
+  <script src="../assignments/js/writing-annotations.js?v=2"></script>
   <!-- Corrector -->
-  <script src="js/corrector-config.js?v=2"></script>
+  <!-- Fail fast when the Gemini dependency is down, instead of every click
+       waiting out the callable timeout. See js/circuit-breaker.js. -->
+  <script src="../js/circuit-breaker.js?v=2"></script>
+  <script src="js/corrector-config.js?v=4"></script>
   <script src="js/sample.js?v=3"></script>
-  <script src="js/corrector.js?v=10"></script>
+  <script src="js/corrector.js?v=14"></script>
 </body>
 </html>

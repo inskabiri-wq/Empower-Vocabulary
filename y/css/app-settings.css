@@ -21,6 +21,27 @@
 
 :root { --app-scale: 1; }
 
+/* Typeface tokens. Declared HERE as well as in css/brand.css and
+   student/css/styles.css because this is the only stylesheet all 31 pages
+   load - join.html, teacher-onboarding.html, 404.html and lingualab-write
+   never pull brand.css, so without this `var(--ll-font)` resolves to nothing
+   on exactly the pages nobody remembers to check. Keep all three in step. */
+:root {
+  --ll-font: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ll-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+/* Form controls do NOT inherit font-family - the browser gives them its own
+   default (Arial on Windows Chrome). That, not the number of stacks in the
+   CSS, is what actually put a second typeface on screen: every button and
+   input nobody styled by hand rendered in Arial next to Segoe text.
+   font-family ONLY, deliberately - `font: inherit` would also take size and
+   weight, and control font-size defaults to 13.33px, so that version moves
+   layout. Specificity is 0,0,1, so any rule with a class still wins. */
+button, input, select, textarea, optgroup {
+  font-family: inherit;
+}
+
 /* ── Themes ──────────────────────────────────────────────────
    The writing exam's four palettes, lifted to the whole app. Light keeps
    using the app's existing `.light-mode` (144 rules already written for it);
@@ -33,26 +54,61 @@
    whichever token it omits at its dark value, which is what made a theme
    change look like it only recoloured the buttons. `y/tools/theme-sanity.js`
    fails the build if any theme is missing a key. */
-body.light-mode {
-  --bg-primary-rgb: 238, 242, 248;
+/* This block, not the one in student/css/styles.css, is the authoritative light
+   palette: app-settings.css loads last, so it wins. Keep the two in step.
+   White paper, one blue. Accents are DEEPER here than in dark mode - blue-400
+   reads fine on navy and washes out on white, so light steps down to
+   blue-600/700. Success / error / warning stay coloured on purpose: they mean
+   right, wrong and careful, and a student needs to see that at a glance. */
+.light-mode {
+  /* The translucent-white idiom, flipped. See tools/tokenise-colors.js. */
+  --tint-surface:     rgba(15,23,42,0.035);
+  --tint-line:        rgba(15,23,42,0.10);
+  --tint-line-strong: rgba(15,23,42,0.18);
+  /* Native widgets the app cannot style - scrollbars, date pickers, the open
+     panel of a <select> - follow this, not our tokens. assignments.css pins
+     `:root { color-scheme: dark }`, which left black scrollbars on the white
+     page, so each theme states its own. */
+  color-scheme: light;
+  --bg-primary-rgb: 246, 248, 251;
   --bg-secondary-rgb: 255, 255, 255;
   --bg-card-rgb: 255, 255, 255;
-  --bg-item-rgb: 241, 245, 249;
+  --bg-item-rgb: 242, 246, 252;
   --text-primary-rgb: 15, 23, 42;
   --text-secondary-rgb: 71, 85, 105;
   --overlay-rgb: 15, 23, 42;
-  --bg-primary:   #eef2f8;
+  --bg-primary:   #f6f8fb;
   --bg-secondary: #ffffff;
   --bg-card:      #ffffff;
-  --bg-item:      #f1f5f9;
-  --bg-tertiary:  #e2e8f0;
-  --bg-hover:     rgba(59,130,246,0.10);
+  --bg-item:      #f2f6fc;
+  --bg-tertiary:  #eef3fa;
+  --bg-hover:     rgba(37,99,235,0.08);
+  --bg-item-hover: rgba(37,99,235,0.08);
   --text-primary: #0f172a;
   --text-secondary: #475569;
-  --text-muted:   #64748b;
-  --border-color: rgba(15,23,42,0.14);
+  --text-muted:   #556274;
+  --border-color: #e3e9f2;
+  --accent-primary:   #2563eb;
+  --accent-secondary: #2563eb;
+  --accent-tertiary:  #1d4ed8;
+  --accent-warm:      #2563eb;
+  --success: #15803d;
+  --error:   #b91c1c;
+  --warning: #b45309;
+  --text-accent:  #1d4ed8;
+  --text-success: #15803d;
+  --text-error:   #b91c1c;
+  --text-warning: #b45309;
 }
-body.theme-sepia {
+.theme-sepia {
+  --tint-surface:     rgba(61,46,26,0.05);
+  --tint-line:        rgba(61,46,26,0.14);
+  --tint-line-strong: rgba(61,46,26,0.24);
+  color-scheme: light;
+  --text-accent:  #5b21b6;
+  --text-success: #15803d;
+  --text-error:   #b91c1c;
+  --text-warning: #92400e;
   --bg-primary-rgb: 244, 236, 216;
   --bg-secondary-rgb: 239, 228, 200;
   --bg-card-rgb: 251, 243, 223;
@@ -61,7 +117,7 @@ body.theme-sepia {
   --text-secondary-rgb: 107, 86, 61;
   --overlay-rgb: 61, 46, 26;
   --bg-tertiary:  #e7d9b6;
-  --bg-hover:     rgba(124,58,237,0.10);
+  --bg-hover:     rgba(29,78,216,0.10);
   --bg-primary:   #f4ecd8;
   --bg-secondary: #efe4c8;
   --bg-card:      #fbf3df;
@@ -70,9 +126,18 @@ body.theme-sepia {
   --text-secondary: #6b563d;
   --text-muted:   #8c7a5c;
   --border-color: rgba(61,46,26,0.16);
-  --accent-primary: #7c3aed;
+  --accent-primary: #1d4ed8;
 }
-body.theme-contrast {
+.theme-contrast {
+  --tint-surface:     rgba(255,255,255,0.10);
+  --tint-line:        rgba(255,255,255,0.34);
+  --tint-line-strong: rgba(255,255,255,0.55);
+  color-scheme: dark;
+  /* Contrast keeps a dark ground, so the text tints stay pale here. */
+  --text-accent:  #a5c8ff;
+  --text-success: #7ef0b0;
+  --text-error:   #ffa8a8;
+  --text-warning: #ffe066;
   --bg-primary-rgb: 0, 0, 0;
   --bg-secondary-rgb: 10, 10, 10;
   --bg-card-rgb: 10, 10, 10;
@@ -151,7 +216,7 @@ html[data-app-line="loose"]  body { line-height: 1.85; }
   transform: translateY(-1px);
 }
 .as-launch:focus-visible {
-  outline: 2px solid rgba(99,102,241,0.6); outline-offset: 3px;
+  outline: 2px solid rgba(37,99,235,0.6); outline-offset: 3px;
 }
 .as-launch svg { width: 20px; height: 20px; }
 
@@ -188,7 +253,7 @@ html[data-app-line="loose"]  body { line-height: 1.85; }
   --as-fg-3:    #64748b;
   --as-accent:  #3b82f6;
 }
-body.light-mode .as-panel {
+.light-mode .as-panel {
   --as-surface: #ffffff;
   --as-inset:   #f1f5f9;
   --as-line:    rgba(15,23,42,0.14);
@@ -197,16 +262,16 @@ body.light-mode .as-panel {
   --as-fg-3:    #64748b;
   --as-accent:  #3b82f6;
 }
-body.theme-sepia .as-panel {
+.theme-sepia .as-panel {
   --as-surface: #fbf3df;
   --as-inset:   #efe4c8;
   --as-line:    rgba(61,46,26,0.16);
   --as-fg:      #3d2e1a;
   --as-fg-2:    #6b563d;
   --as-fg-3:    #8c7a5c;
-  --as-accent:  #7c3aed;
+  --as-accent:  #1d4ed8;
 }
-body.theme-contrast .as-panel {
+.theme-contrast .as-panel {
   --as-surface: #0a0a0a;
   --as-inset:   #181818;
   --as-line:    rgba(255,255,255,0.30);
@@ -246,7 +311,7 @@ body.theme-contrast .as-panel {
   border: 1px solid var(--as-line);
   box-shadow: 0 24px 60px rgba(2,6,23,0.55);
   transition: transform .18s cubic-bezier(.4,0,.2,1), opacity .18s ease, visibility 0s linear .18s;
-  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--ll-font);
 }
 .as-panel.open {
   transform: translate(-50%, -50%) scale(1);
@@ -291,7 +356,7 @@ body.theme-contrast .as-panel {
   border: 1px solid var(--as-line);
   border-radius: 9px;
   color: var(--as-fg-2);
-  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 0.9rem;
+  font-family: var(--ll-font); font-weight: 700; font-size: 0.9rem;
   cursor: pointer;
   transition: background .15s, border-color .15s, color .15s;
 }
@@ -300,12 +365,12 @@ body.theme-contrast .as-panel {
   border-color: var(--as-accent);
 }
 .as-row button.active {
-  background: rgba(99,102,241,0.18);
-  border-color: #6366f1;
+  background: rgba(37,99,235,0.18);
+  border-color: #2563eb;
   color: var(--as-fg);
 }
 .as-row button:focus-visible {
-  outline: 2px solid rgba(99,102,241,0.6); outline-offset: 2px;
+  outline: 2px solid rgba(37,99,235,0.6); outline-offset: 2px;
 }
 
 /* The `.as-inline` variant and the `#settingsModal` height cap that used to sit
@@ -327,8 +392,8 @@ body.theme-contrast .as-panel {
   transition: border-color .2s ease, background .2s ease;
 }
 .as-switch:hover { border-color: var(--as-accent); }
-.as-switch.on { border-color: #6366f1; background: rgba(99,102,241,0.12); }
-.as-switch:focus-visible { outline: 2px solid rgba(99,102,241,0.6); outline-offset: 2px; }
+.as-switch.on { border-color: #2563eb; background: rgba(37,99,235,0.12); }
+.as-switch:focus-visible { outline: 2px solid rgba(37,99,235,0.6); outline-offset: 2px; }
 .as-switch-ic { font-size: 1.35rem; width: 30px; text-align: center; flex-shrink: 0; }
 .as-switch-txt { display: flex; flex-direction: column; min-width: 0; flex: 1; }
 .as-switch-name { font-weight: 700; font-size: 0.9rem; color: var(--as-fg); }
@@ -347,7 +412,7 @@ body.theme-contrast .as-panel {
   box-shadow: 0 2px 4px rgba(0,0,0,0.25);
   transition: left .2s ease, background .2s ease;
 }
-.as-switch.on .as-switch-track { background: #6366f1; border-color: #6366f1; }
+.as-switch.on .as-switch-track { background: #2563eb; border-color: #2563eb; }
 .as-switch.on .as-switch-track::after { left: 23px; background: #fff; }
 @media (prefers-reduced-motion: reduce) {
   .as-switch, .as-switch-track, .as-switch-track::after { transition: none; }
@@ -389,7 +454,10 @@ body.theme-contrast .as-panel {
    is injected by app-settings.js so every wheel is the same inline SVG, never
    a per-OS emoji. Sizing follows the host's font-size so it sits correctly in
    a sidebar row and in a header bar alike. */
-.as-opener svg {
+/* Excludes plain openers: they supply their own icon from their own set, and
+   sizing it in em here would make it a different size from the icons sitting
+   next to it. */
+.as-opener:not([data-app-settings-plain]) svg {
   width: 1.15em; height: 1.15em;
   vertical-align: -0.2em;
   color: currentColor;
@@ -407,9 +475,22 @@ body.theme-contrast .as-panel {
   left: auto !important; right: auto !important; top: auto !important;
   width: 44px !important; height: 44px !important;
   flex: none;
-  margin: 0 10px 0 0;
+  /* Margin on the LEFT now: the wheel sits at the right-hand end of the header
+     rather than leading it, so the gap belongs on the side facing the content. */
+  margin: 0 0 0 10px;
   box-shadow: none;
   align-self: center;
+}
+/* On a phone the header is tight and the wheel is the least important control
+   in it, so it shrinks rather than pushing the title or Logout onto a second
+   row. Still a 36px target, which is comfortably tappable. */
+@media (max-width: 620px) {
+  .as-launch.as-inheader {
+    width: 36px !important;
+    height: 36px !important;
+    margin-left: 6px;
+  }
+  .as-launch.as-inheader svg { width: 17px; height: 17px; }
 }
 .as-launch.as-inheader svg { width: 20px; height: 20px; }
 
@@ -441,7 +522,7 @@ body.theme-contrast .as-panel {
   border: 1px solid var(--border-color, rgba(59, 130, 246, 0.2));
   background: var(--bg-item, rgba(255, 255, 255, 0.04));
   color: var(--text-secondary, #94a3b8);
-  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; font-size: 0.85rem; font-weight: 700; line-height: 1;
+  font-family: var(--ll-font); font-size: 0.85rem; font-weight: 700; line-height: 1;
   text-decoration: none; white-space: nowrap; cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
@@ -511,7 +592,7 @@ body.theme-contrast .as-panel {
 .gr-back,
 .back-btn,
 .rd-back {
-  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--ll-font);
   font-weight: 700;
 }
 
@@ -541,7 +622,7 @@ body.theme-contrast .as-panel {
   border: 1px solid var(--border-color, rgba(59, 130, 246, 0.2));
   background: var(--bg-item, rgba(255, 255, 255, 0.04));
   color: var(--text-secondary, #94a3b8);
-  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; font-size: 0.85rem; font-weight: 700; line-height: 1;
+  font-family: var(--ll-font); font-size: 0.85rem; font-weight: 700; line-height: 1;
   text-decoration: none; white-space: nowrap; cursor: pointer;
 }
 .skill-back-btn.skill-back-btn:hover,
@@ -562,9 +643,9 @@ body.theme-contrast .as-panel {
    SVG ones were plain white. Same icon everywhere now, and it keeps that
    colour rather than losing it - so all of them read the way vocab's did. */
 .as-launch.as-launch,
-.as-gearicon.as-gearicon { color: #c4b5fd; }
+.as-gearicon.as-gearicon { color: var(--text-accent, #c4b5fd); }
 .as-launch.as-launch:hover,
-.as-gearicon.as-gearicon:hover { color: #ddd6fe; }
+.as-gearicon.as-gearicon:hover { color: var(--text-accent, #ddd6fe); }
 
 /* ── Shared page header ────────────────────────────────────────
    For pages that never had one of their own (placement, and any
@@ -582,7 +663,7 @@ body.theme-contrast .as-panel {
 }
 .ll-header-title {
   display: flex; align-items: center; gap: 8px;
-  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--ll-font);
   font-weight: 800; font-size: 1.15rem;
   color: var(--text-primary, #f8fafc);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -604,26 +685,39 @@ body.theme-contrast .as-panel {
    sizes a page title at 1.15rem. Those selectors and `.ll-brand-sub.ll-brand-sub`
    have equal specificity, so source order is what makes the demoted title
    render as a subtitle. Keep this block below them. */
+/* One icon column for BOTH lines of the lockup.
+   The wordmark leads with the flask mark and the subtitle leads with the page's
+   own emoji, and the two were different widths, so "Lingualab" and the page
+   name started at different x and the block read as ragged. Worse, two of these
+   pages set `style="font-size:1.5rem"` INLINE on that emoji span
+   (classroom-teacher.html:132, classroom-student.html:67), so inside a 0.8rem
+   subtitle it rendered nearly twice the size of its own label. An inline style
+   can only be beaten by !important, which is why one appears below.
+   Both lines now reserve the same slot, so the two text runs align. */
+:root {
+  --ll-brand-icon: 20px;
+  --ll-brand-gap: 8px;
+}
 .ll-brand {
   display: flex; flex-direction: column; justify-content: center;
   gap: 1px; min-width: 0;
 }
 .ll-brand-name {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  display: inline-flex; align-items: center; gap: var(--ll-brand-gap);
+  font-family: var(--ll-font);
   font-size: 1.15rem; font-weight: 900; letter-spacing: -0.02em;
   line-height: 1.15; white-space: nowrap;
-  background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 55%, #3b82f6 100%);
+  background: linear-gradient(135deg, #93c5fd 0%, #2563eb 55%, #3b82f6 100%);
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-.ll-brand-cap { width: 1.05em; height: 1.05em; flex-shrink: 0; }
+.ll-brand-cap { width: var(--ll-brand-icon); height: var(--ll-brand-icon); flex-shrink: 0; }
 /* The page's own title element, demoted to the subtitle line. Doubled class so
    it outranks whatever that element was styled as on its own page. */
 .ll-brand-sub.ll-brand-sub {
-  display: flex; align-items: center; gap: 6px;
+  display: flex; align-items: center; gap: var(--ll-brand-gap);
   margin: 0; padding: 0; min-width: 0;
-  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--ll-font);
   font-size: 0.8rem; font-weight: 700; line-height: 1.3;
   color: var(--text-secondary, #94a3b8);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -638,6 +732,22 @@ body.theme-contrast .as-panel {
   background: none; -webkit-background-clip: initial; background-clip: initial;
   -webkit-text-fill-color: currentColor; color: inherit;
 }
+/* The page's leading icon, pinned to the same slot the mark uses so the two
+   text runs line up. Every page that gets this lockup puts its icon in a
+   <span> first and its label after it, in one of three shapes:
+     <span style="font-size:1.5rem">emoji</span><h1>Title</h1>
+     <span class="logo">emoji</span><span>Title</span>
+     <span class="pc-header-icon">emoji</span><span id="...">Title</span>
+   :not(:only-child) is the guard: a title that is a lone <span> of TEXT must
+   not be shrunk into an icon slot. */
+.ll-brand-sub.ll-brand-sub > span:first-child:not(:only-child) {
+  flex: 0 0 var(--ll-brand-icon);
+  width: var(--ll-brand-icon);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.95rem !important;      /* beats the inline 1.5rem, see above */
+  line-height: 1;
+}
+
 @media (max-width: 560px) {
   .ll-brand-name { font-size: 1rem; }
   .ll-brand-sub.ll-brand-sub { font-size: 0.72rem; }
@@ -674,20 +784,29 @@ body.theme-contrast .as-panel {
    Literal values here on purpose. A page cannot override what it does not
    supply, so every gear is the same object everywhere, in every theme.
    Covers all three gears that exist: the injected launcher, the dashboard's
-   own header button, and a page-supplied opener. */
+   own header button, and a page-supplied opener.
+
+   :not([data-app-settings-plain]) matters. This block is the ICON BUTTON
+   treatment, and an opener is not always an icon button: the teacher sidebar's
+   Display row is a full nav row with a label, and being forced to 44x44 with
+   !important squeezed the row into a square and pushed its label outside.
+   A page that supplies its own presentation marks the opener plain and keeps
+   it; only the click wiring is shared. */
 .as-launch.as-launch,
 .as-gearicon.as-gearicon,
 .header-icon-btn.header-icon-btn,
-[data-app-settings-open].as-opener {
+[data-app-settings-open].as-opener:not([data-app-settings-plain]) {
   box-sizing: border-box !important;
   width: 44px !important;
   height: 44px !important;
   min-width: 44px !important;
   padding: 0 !important;
   border-radius: 12px !important;
-  background: #1c2a42 !important;
-  border: 1px solid rgba(59, 130, 246, 0.25) !important;
-  color: #c4b5fd !important;
+  /* Tokenised, not hardcoded: this button used to stay dark navy with a violet
+     icon in every theme, so on the white page it read as a hole in the header. */
+  background: var(--bg-item, #1c2a42) !important;
+  border: 1px solid var(--border-color, rgba(59, 130, 246, 0.25)) !important;
+  color: var(--accent-primary, #3b82f6) !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -699,7 +818,7 @@ body.theme-contrast .as-panel {
 .as-launch.as-launch svg,
 .as-gearicon.as-gearicon svg,
 .header-icon-btn.header-icon-btn svg,
-[data-app-settings-open].as-opener svg {
+[data-app-settings-open].as-opener:not([data-app-settings-plain]) svg {
   width: 20px !important;
   height: 20px !important;
   stroke: currentColor !important;
@@ -710,7 +829,7 @@ body.theme-contrast .as-panel {
 .header-icon-btn.header-icon-btn:hover {
   background: #243450 !important;
   border-color: rgba(59, 130, 246, 0.55) !important;
-  color: #ddd6fe !important;
+  color: var(--text-accent, #ddd6fe) !important;
   transform: none !important;
 }
 
@@ -739,7 +858,7 @@ body.theme-contrast .as-panel {
 #speakingScreen .dashboard-header h1 {
   font-size: 1.4rem !important;
   font-weight: 900 !important;
-  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif !important;
+  font-family: var(--ll-font) !important;
 }
 
 /* The rule under the header. The skill screens draw it because their header
@@ -751,7 +870,88 @@ body.theme-contrast .as-panel {
 #readingScreen  .dashboard-header,
 #writingScreen  .dashboard-header,
 #speakingScreen .dashboard-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  border-bottom: 1px solid var(--tint-line, rgba(255, 255, 255, 0.10));
   padding-bottom: 18px;
   margin-bottom: 22px;
+}
+
+/* ============================================================
+   LIGHT MODE - generated by tools/light-coverage.js findings
+   Each rule mirrors a real one above and flips only its SURFACE,
+   keeping the original alpha so translucent panels stay translucent
+   and nothing about the layering changes. Dark is untouched.
+   ============================================================ */
+.light-mode .as-overlay {
+  background: rgba(246, 248, 251, 0.55);
+}
+
+/* ============================================================
+   FILE PICKERS - one look, app-wide
+   ------------------------------------------------------------
+   The roster import showed the browser's raw "Choose File / No file
+   chosen" control, which is the one widget on the page that looks
+   like 1998 and renders differently in every browser. The native
+   input still does the work (and still carries the accept list and
+   the FileList the JS reads) - it is only restyled, so nothing
+   about the file dialog or the change event changes.
+
+   ::file-selector-button is the standard; ::-webkit-file-upload-button
+   is kept for older WebKit.
+   ============================================================ */
+.ll-file {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--t2-text-muted, #7d8590);
+  padding: 9px 12px;
+  border: 1px solid var(--t2-border, #d8e1ee);
+  border-radius: 10px;
+  background: var(--t2-bg, #fff);
+  cursor: pointer;
+}
+.ll-file:hover { border-color: var(--accent-primary, #2563eb); }
+.ll-file:focus-visible {
+  outline: 2px solid var(--accent-primary, #2563eb);
+  outline-offset: 2px;
+}
+
+.ll-file::file-selector-button,
+.ll-file::-webkit-file-upload-button {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent-primary, #2563eb);
+  border: 0;
+  border-radius: 8px;
+  padding: 7px 14px;
+  margin-right: 12px;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.ll-file::file-selector-button:hover,
+.ll-file::-webkit-file-upload-button:hover { filter: brightness(1.1); }
+
+/* ── Effects volume row ─────────────────────────────────────────────
+   This row has THREE children - label, slider, value - but reuses .as-row,
+   which is `display:grid` with two equal columns, built for pairs of buttons.
+   The third child therefore wrapped onto a second line and the number sat
+   alone and centred under the slider. Its inline `flex:0 0 auto` /
+   `flex:1 1 auto` hints never applied either, because the parent was grid,
+   not flex - so the intent was already written down, it just had no effect.
+
+   Making this one row flex is what those inline hints were always for.
+   Pre-existing; not introduced by the September 2026 work. */
+.as-row.as-sfxvol-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+/* Tabular figures so the number does not jiggle between 5 and 100 as the
+   slider moves. */
+.as-row.as-sfxvol-row .as-sfxvol-val {
+  font-variant-numeric: tabular-nums;
+  color: var(--as-fg-2);
+  font-size: 0.8rem;
 }

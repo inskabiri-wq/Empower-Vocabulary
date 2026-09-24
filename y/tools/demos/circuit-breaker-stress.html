@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Circuit breaker stress</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1000px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:80ch;line-height:1.55;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">Does anything shut down after many tries?</h3>
+<p class="lede">
+  Hammers the real breaker with 1000 calls against a dependency that is 100%
+  down, then brings the dependency back and checks it recovers on its own. The
+  question being answered is whether repeated failure ever puts it into a state
+  it cannot leave - a lockout, a stuck flag, an exception that escapes, or
+  unbounded growth. Cooldown is compressed to 200ms so a real hour of outage
+  fits in a few seconds; the logic is identical.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<script src="../../js/circuit-breaker.js"></script>
+<script>
+const rows = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+(async function(){
+  CircuitBreaker._reset();
+  const b = CircuitBreaker.get('stress', { failureThreshold: 4, cooldownMs: 200, timeoutMs: 300 });
+
+  let realCalls = 0;
+  let down = true;
+  const dep = () => {
+    realCalls++;
+    return down
+      ? Promise.reject(Object.assign(new Error('gemini down'), { code: 'internal' }))
+      : Promise.resolve('feedback');
+  };
+
+  // ── 1000 clicks during a total outage ──────────────────────────────────
+  const N = 1000;
+  let escaped = 0, openRejections = 0, otherRejections = 0;
+  for (let i = 0; i < N; i++) {
+    try {
+      await b.run(dep);
+    } catch (e) {
+      if (e && e.__cbOpen) openRejections++;
+      else if (e && (e.code === 'internal' || e.__cbTimeout)) otherRejections++;
+      else { escaped++; }          // an unexpected error type escaping is a bug
+    }
+    if (i % 120 === 0) await wait(30);   // let some cooldowns elapse mid-run
+  }
+
+  check('1. all 1000 calls handled, none threw something unexpected', 0, escaped);
+  check('2. every call returned a usable answer', N, openRejections + otherRejections);
+  check('3. the breaker actually protected the dependency', true, realCalls < N / 5);
+  check('4. most clicks never reached it', true, openRejections > N * 0.8);
+
+  // state must be a real state, not something wedged
+  check('5. state is still a valid one', true, ['open','half-open','closed'].includes(b.state));
+  check('6. it is open, as it should be during an outage', 'open', b.state);
+  check('7. no runaway counter', true, Number.isFinite(b.failures));
+  check('8. no stuck in-flight flag', false, b.trialInFlight);
+
+  // ── the dependency comes back ──────────────────────────────────────────
+  down = false;
+  await wait(260);                     // let the cooldown expire
+  let recovered = false;
+  try { recovered = (await b.run(dep)) === 'feedback'; } catch (e) { recovered = false; }
+
+  check('9. recovers on the very next probe', true, recovered);
+  check('10. breaker closed itself', 'closed', b.state);
+  check('11. counter reset', 0, b.failures);
+
+  // and normal service afterwards, with no lingering penalty
+  let ok = 0;
+  for (let i = 0; i < 50; i++) { try { if (await b.run(dep) === 'feedback') ok++; } catch (e) {} }
+  check('12. 50 further calls all succeed normally', 50, ok);
+
+  // nothing accumulated: one breaker in the registry, not 1000
+  CircuitBreaker.get('stress');
+  check('13. no object growth per call', true, b === CircuitBreaker.get('stress'));
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__stress = { pass, total: rows.length, realCalls, openRejections, otherRejections,
+                      failed: rows.filter(r=>!r.ok) };
+})();
+</script>
+</body>
+</html>

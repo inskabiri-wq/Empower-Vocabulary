@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI Quiz end-to-end</title>
+<!-- ============================================================
+     AI QUIZ - end to end against the emulators, WITH THE REAL RULES
+     ------------------------------------------------------------
+     Plays a whole game the way the two pages do, so the security
+     rules, the data shape and the scaling choices are exercised
+     together rather than reasoned about:
+
+       teacher signs in -> creates a room -> N students join ->
+       question is published -> students answer -> question closes
+       -> ladder is read -> repeat -> final ladder
+
+     What it is really checking:
+       - the new aiquiz_sessions rules let a host host and a student
+         write only their own score
+       - the session document every phone listens to stays small
+       - the ladder is a limit(10) query, not a listener per student
+
+     Needs:  firebase emulators:start --only firestore,auth
+     ============================================================ -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 20px; background: #f6f8fb; color: #0f172a; }
+  #out { white-space: pre-wrap; font-family: ui-monospace, monospace; font-size: 13px;
+         background: #fff; border: 1px solid #d8e1ee; border-radius: 10px; padding: 14px; }
+</style>
+</head>
+<body>
+<h1>AI Quiz end-to-end</h1>
+<div id="out">idle</div>
+<script src="/classroom/js/ai-quiz-questions.js"></script>
+<script>
+const out = document.getElementById('out');
+const log = (s) => { out.textContent += '\n' + s; };
+window.RESULT = null;
+
+window.runE2E = async function (studentCount, questionCount) {
+  studentCount = studentCount || 25;
+  questionCount = questionCount || 5;
+  out.textContent = 'starting...';
+  const findings = [];
+  const fail = (m) => { findings.push('FAIL  ' + m); log('FAIL  ' + m); };
+  const pass = (m) => { findings.push('ok    ' + m); log('ok    ' + m); };
+
+  firebase.initializeApp({ projectId: 'empower-vocabulary-practice', apiKey: 'x', authDomain: 'x' });
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  auth.useEmulator('http://127.0.0.1:9099', { disableWarnings: true });
+  db.useEmulator('127.0.0.1', 8080);
+
+  const COLL = 'aiquiz_sessions';
+
+  // ── teacher ──────────────────────────────────────────────
+  const t = await auth.createUserWithEmailAndPassword('host' + Date.now() + '@fsm.edu.tr', 'Test1234!');
+  const hostUid = t.user.uid;
+
+  // isTeacher() reads the user document, so it has to exist and say
+  // role: 'teacher'. The rules correctly refuse to let an account hand
+  // ITSELF that role, so seed it through the emulator's admin path, which
+  // is the state a real teacher account is already in. Bypassing rules for
+  // the fixture is fine; the point of the test is the aiquiz rules below.
+  const admin = (path, fields) => fetch(
+    'http://127.0.0.1:8080/v1/projects/empower-vocabulary-practice/databases/(default)/documents/' + path,
+    { method: 'PATCH', headers: { 'Authorization': 'Bearer owner', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields }) });
+  const seeded = await admin('users/' + hostUid,
+    { role: { stringValue: 'teacher' }, name: { stringValue: 'Host' } });
+  if (!seeded.ok) { fail('could not seed the teacher user doc: HTTP ' + seeded.status); return finish(); }
+  pass('teacher signed in, teacher role seeded');
+
+  // ── create the room ──────────────────────────────────────
+  const bank = window.AI_QUIZ.activeQuestions().slice(0, questionCount);
+  const code = 'E' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  const ref = db.collection(COLL).doc(code);
+  try {
+    await ref.set({
+      code, status: 'waiting', currentQuestion: -1, phase: 'asking',
+      questionEndsAt: null, total: bank.length, seconds: 30,
+      hostUid, teacherName: 'Host', createdAt: Date.now()
+    });
+    pass('host created the session document');
+  } catch (e) { fail('host could not create the session: ' + e.message); return finish(); }
+
+  try {
+    await ref.collection('meta').doc('questions').set({ items: bank });
+    pass('host wrote the questions to meta/questions');
+  } catch (e) { fail('host could not write meta/questions: ' + e.message); }
+
+  // How big is the document every phone listens to?
+  const sessSnap = await ref.get();
+  const sessBytes = new TextEncoder().encode(JSON.stringify(sessSnap.data())).length;
+  const metaSnap = await ref.collection('meta').doc('questions').get();
+  const metaBytes = new TextEncoder().encode(JSON.stringify(metaSnap.data())).length;
+  log('   session doc: ' + sessBytes + ' bytes   questions doc: ' + metaBytes + ' bytes');
+  if (sessBytes < 1000) pass('session doc is small (' + sessBytes + 'B), so the fan-out per question is cheap');
+  else fail('session doc is ' + sessBytes + 'B; questions may have leaked into it');
+
+  // ── students join ────────────────────────────────────────
+  const students = [];
+  for (let i = 0; i < studentCount; i++) {
+    const s = await auth.createUserWithEmailAndPassword('s' + i + '_' + Date.now() + '@fsm.edu.tr', 'Test1234!');
+    students.push(s.user.uid);
+    await ref.collection('players').doc(s.user.uid).set({ name: 'Student ' + i, score: 0 });
+  }
+  pass(studentCount + ' students joined and wrote their own player doc');
+
+  // A student must NOT be able to write somebody else's score.
+  try {
+    await ref.collection('players').doc(students[0]).update({ score: 9999 });
+    // We are currently signed in as the LAST student, so this should fail.
+    fail('a student was able to write another student\'s score');
+  } catch (e) { pass('a student cannot write another student\'s score'); }
+
+  // ── play ─────────────────────────────────────────────────
+  await auth.signInWithEmailAndPassword(t.user.email, 'Test1234!');
+  let ladderReads = 0;
+  for (let q = 0; q < bank.length; q++) {
+    await ref.update({ status: 'active', currentQuestion: q, phase: 'asking',
+                       questionEndsAt: Date.now() + 30000 });
+    // Students answer: one increment each, to their own doc.
+    for (let i = 0; i < students.length; i++) {
+      const correct = (i % 3) !== 0;
+      if (correct) {
+        await ref.collection('players').doc(students[i])
+          .update({ score: firebase.firestore.FieldValue.increment(120) });
+      }
+    }
+    await ref.update({ phase: 'revealed' });
+    const top = await ref.collection('players').orderBy('score', 'desc').limit(10).get();
+    ladderReads += top.size;
+  }
+  pass('played ' + bank.length + ' questions; ladder cost ' + ladderReads + ' reads total');
+
+  // ── final ────────────────────────────────────────────────
+  await ref.update({ status: 'finished', phase: 'revealed' });
+  const finalTop = await ref.collection('players').orderBy('score', 'desc').limit(20).get();
+  const winner = finalTop.docs[0] && finalTop.docs[0].data();
+  if (winner && winner.score > 0) pass('winner: ' + winner.name + ' with ' + winner.score);
+  else fail('no winner produced');
+
+  const expected = bank.length * 120;
+  const topScores = finalTop.docs.slice(0, 3).map(d => d.data().score);
+  if (topScores[0] === expected) pass('top score is exactly ' + expected + ' (' + bank.length + ' x 120), so increments did not race');
+  else fail('top score ' + topScores[0] + ' but expected ' + expected);
+
+  function finish() {
+    window.RESULT = { findings, sessBytes, metaBytes, ladderReads,
+                      failed: findings.filter(f => f.startsWith('FAIL')).length };
+    log('\nDONE  failures: ' + window.RESULT.failed);
+    return window.RESULT;
+  }
+  return finish();
+};
+</script>
+</body>
+</html>

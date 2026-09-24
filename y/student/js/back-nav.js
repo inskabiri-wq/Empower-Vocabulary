@@ -1,8 +1,8 @@
 /* ============================================================
-   STUDENT DASHBOARD — Phone-back-button integration
+   STUDENT DASHBOARD - Phone-back-button integration
    ----------------------------------------------------------------
    Mobile users tapping the system back button used to fall out of
-   the page entirely (since the dashboard is a SPA — no real history
+   the page entirely (since the dashboard is a SPA - no real history
    beyond the page-load entry). This module fixes that.
 
    Behavior:
@@ -15,7 +15,7 @@
      • We maintain our own `navStack` instead of trusting the
        browser's session history exactly, because the in-app back
        buttons (backToHub / backToMenu) skip multiple levels at a
-       time — letting the browser do raw step-by-step popping would
+       time - letting the browser do raw step-by-step popping would
        leave stale entries that visit "phantom" intermediate screens.
      • Every call to the existing `showScreen()` is intercepted; we
        update navStack and push a hashState so popstate fires when
@@ -27,7 +27,7 @@
 (function () {
   'use strict';
 
-  // The single source of truth for "where am I in the app" — root is
+  // The single source of truth for "where am I in the app" - root is
   // index 0 (hubScreen), top is the currently-active screen.
   const navStack = ['hubScreen'];
   let isPopping = false;
@@ -36,9 +36,14 @@
   // re-triggering our patched version's history side-effects.
   let origShowScreen = null;
 
+  // Bounded retry. This used to loop every 30ms forever; on any page that
+  // loads back-nav.js WITHOUT defining showScreen that is an immortal timer.
+  var setupTries = 0;
+
   function setupOnce() {
     if (typeof window.showScreen !== 'function') {
-      // ui.js may not have parsed yet — back off and retry. Cheap.
+      // ui.js may not have parsed yet - back off and retry. Cheap.
+      if (++setupTries > 200) return;          // ~6s, then give up quietly
       setTimeout(setupOnce, 30);
       return;
     }
@@ -74,7 +79,7 @@
     //   └─ sentinel-hub (current)  ← the "soft trap" that catches back
     //
     // Without the sentinel push, pressing back from the hub would
-    // navigate the user OFF the page entirely — popstate never fires
+    // navigate the user OFF the page entirely - popstate never fires
     // because there's nothing for the browser to pop INTO within our
     // document. The sentinel gives back-press a target inside the
     // page, which fires popstate, which we use to open the logout
@@ -92,34 +97,67 @@
     armSentinelOnFirstGesture(initial);
   }
 
-  // Push the root sentinel on the first user gesture (see setupOnce). Any tap,
-  // touch or key press counts; capture-phase so it runs before nav click handlers.
-  function armSentinelOnFirstGesture(initial) {
-    var armed = false;
-    var events = ['pointerdown', 'touchstart', 'mousedown', 'keydown'];
-    function arm() {
-      if (armed) return;
-      armed = true;
-      events.forEach(function (e) { window.removeEventListener(e, arm, true); });
-      var top = navStack[navStack.length - 1] || initial;
-      history.pushState({ screen: top, depth: navStack.length, sentinel: true }, '', '#' + top);
-    }
-    events.forEach(function (e) { window.addEventListener(e, arm, true); });
+  // ---- The sentinel ----------------------------------------------
+  // A spare history entry above where the app actually is, so a system-back
+  // press has something INSIDE this document to pop into and therefore fires
+  // popstate instead of leaving the site.
+  //
+  // WHY IT IS RE-ARMED ON EVERY GESTURE, not pushed once:
+  // Chrome (and Samsung Internet, which is Chromium) runs a "history
+  // manipulation" intervention. An entry created by pushState is marked
+  // SKIPPABLE if it was pushed without user activation and the user never
+  // interacted with the page while on it. Back then skips straight past it -
+  // and past the entry below - and the PWA closes. That is exactly the
+  // reported symptom.
+  //
+  // The old code pushed once on the first gesture (correctly activated) but
+  // every later re-push happened inside the popstate handler, which carries NO
+  // user activation. So the first Back worked and each one after it was
+  // skippable. Now the listeners stay attached for the life of the page and
+  // re-arm whenever the sentinel has been consumed, so every sentinel that
+  // matters was pushed during a real tap.
+  var sentinelInPlace = false;
+  var GESTURES = ['pointerdown', 'touchstart', 'mousedown', 'keydown'];
+
+  // `activated` records whether this push happened during a real user gesture.
+  // Only an activated push is allowed to satisfy sentinelInPlace: a push made
+  // without activation may be silently skipped by the browser, so treating it
+  // as "covered" would suppress the gesture re-arm that actually works and put
+  // us straight back to the app closing on Back.
+  function pushSentinel(activated) {
+    var top = navStack[navStack.length - 1];
+    history.pushState({ screen: top, depth: navStack.length, sentinel: true }, '', '#' + top);
+    if (activated) sentinelInPlace = true;
   }
 
-  // Helper: when navStack is back at the root (length 1) we need a
-  // FRESH sentinel above us so the NEXT back press still fires
-  // popstate. Called after a successful pop that lands on the hub,
-  // and after the user dismisses/cancels the logout modal indirectly
-  // (any back press while on hub).
+  function armSentinelOnFirstGesture(initial) {
+    if (!navStack[navStack.length - 1]) navStack[navStack.length - 1] = initial;
+    function arm() {
+      if (sentinelInPlace) return;             // already have one, do not stack
+      pushSentinel(true);                      // inside a real gesture
+    }
+    // Capture phase so this runs before nav click handlers, and NOT removed
+    // after the first call - see the note above.
+    GESTURES.forEach(function (e) { window.addEventListener(e, arm, true); });
+  }
+
+  // Best-effort re-push straight after a pop. This one has no user activation,
+  // so the browser may mark it skippable - it is a belt-and-braces entry for
+  // the case where the user presses Back twice without touching anything in
+  // between. The reliable re-arm is the gesture listener above, and any tap
+  // (including dismissing the logout modal) triggers it.
   function ensureRootSentinel() {
-    const top = navStack[navStack.length - 1];
-    history.pushState({ screen: top, depth: 1, sentinel: true }, '', '#' + top);
+    pushSentinel(false);                       // no activation available here
   }
 
   // ---- Phone / system back button --------------------------------
   window.addEventListener('popstate', () => {
     if (!origShowScreen) return; // setup didn't complete; bail safely
+
+    // Whatever entry we were sitting on has just been popped, so any sentinel
+    // is gone. Clearing this lets the next real tap push a properly
+    // user-activated replacement.
+    sentinelInPlace = false;
 
     // A screen can refuse to be left. The listening and reading exams do:
     // walking out mid-attempt loses the answers, and on a phone the system
@@ -173,7 +211,7 @@
 
   // Run setup as early as possible. ui.js (which defines showScreen)
   // loads BEFORE this file in the page's script order, so showScreen
-  // is already on window — no need to wait for DOMContentLoaded.
+  // is already on window - no need to wait for DOMContentLoaded.
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', setupOnce);
   } else {

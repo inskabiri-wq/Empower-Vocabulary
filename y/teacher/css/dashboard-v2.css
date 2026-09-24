@@ -1,5 +1,5 @@
 /* ============================================================
-   TEACHER DASHBOARD v2 — Sidebar Layout + Crystal Overview
+   TEACHER DASHBOARD v2 - Sidebar Layout + Crystal Overview
    Sourced from the Claude Design "Teacher's Dash" handoff bundle.
    Phase 1: Overview tab visual upgrade. Other tabs keep their
    existing layout but render inside the new sidebar shell.
@@ -16,17 +16,53 @@
   --t2-text-muted:   #7d8590;
   --t2-text-dim:     #484f58;
   --t2-blue:         #3b82f6;
-  --t2-cyan:         #22d3ee;
+  /* White-and-blue repaint: cyan / purple / orange / sky / indigo / rose were
+     decoration and are now steps of one blue ladder. Green, red and amber are
+     NOT: they mark done, failed and needs-attention, and the dashboard exists
+     to make those three states findable at a glance. */
+  --t2-cyan:         #60a5fa;
   --t2-green:        #22c55e;
   --t2-amber:        #f59e0b;
   --t2-red:          #ef4444;
-  --t2-purple:       #a855f7;
+  --t2-purple:       #1d4ed8;
   /* Extras used only by the per-activity color coding on the
      popularity chart (overview-v2.js ACTIVITY_META). */
-  --t2-orange:       #fb923c;
-  --t2-sky:          #0ea5e9;
-  --t2-indigo:       #6366f1;
-  --t2-rose:         #fb7185;
+  --t2-orange:       #2563eb;
+  --t2-sky:          #0284c7;
+  --t2-indigo:       #1e40af;
+  --t2-rose:         #93c5fd;
+}
+
+/* ------------------------------------------------------------
+   LIGHT MODE
+   The set above is GitHub-dark and had no light counterpart, so the teacher
+   dashboard stayed black while the student side turned white. Restated in
+   full rather than patched: a partial override leaves whichever token it
+   misses at its dark value, and --t2-text alone would be white on white.
+   Same specificity as :root and later in the file, so this wins.
+   ------------------------------------------------------------ */
+.light-mode {
+  --t2-bg:           #f6f8fb;
+  --t2-surface:      #ffffff;
+  --t2-surface2:     #f2f6fc;
+  --t2-surface3:     #e9eff8;
+  --t2-border:       #d8e1ee;
+  --t2-border-soft:  #e9eff8;
+  --t2-text:         #0f172a;
+  --t2-text-muted:   #5b6b7f;
+  /* #94a3b8 is fine on the GitHub-dark ground and only 2.56:1 on white, and it
+     is used at 9px for the sidebar section labels. Darkened to clear 4.5:1. */
+  --t2-text-dim:     #5c6a7d;
+  --t2-blue:         #2563eb;
+  --t2-cyan:         #2563eb;
+  --t2-green:        #15803d;
+  --t2-amber:        #b45309;
+  --t2-red:          #b91c1c;
+  --t2-purple:       #1d4ed8;
+  --t2-orange:       #2563eb;
+  --t2-sky:          #0369a1;
+  --t2-indigo:       #1e40af;
+  --t2-rose:         #3b82f6;
 }
 
 /* When the v2 layout class is present, override the default page
@@ -38,7 +74,7 @@ body.t2-active {
   /* Use the brand font (DM Sans, already loaded) instead of the bare system
      font so the dashboard - including the Admin tab - matches the rest of the
      app. Space Grotesk number accents are kept where set explicitly. */
-  font-family: 'DM Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: var(--ll-font);
   margin: 0;
   min-height: 100vh;
   overflow: hidden;
@@ -57,7 +93,7 @@ body.t2-active .container {
 }
 
 /* When mainContent is shown by config.js, render it as a flex row
-   (sidebar + main column). NOTE: no !important — we let the inline
+   (sidebar + main column). NOTE: no !important - we let the inline
    style="display: none" win during the loading phase, otherwise the
    loading spinner and the unpopulated overview render side-by-side.
    config.js sets `style.display = 'flex'` after data loads. */
@@ -117,7 +153,7 @@ body.t2-active .access-denied {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -137,10 +173,13 @@ body.t2-active .access-denied {
   line-height: 1.2;
 }
 .t2-brand-text .top    { font-size: 0.8125rem; font-weight: 700; color: var(--t2-text); }
-.t2-brand-text .bottom { font-size: 0.6875rem; color: var(--t2-text-muted); margin-top: -2px; }
+.t2-brand-text .bottom { font-size: 0.75rem; color: var(--t2-text-muted); margin-top: -2px; }
 
 .t2-sidebar-section-lbl {
-  font-size: 0.5625rem;
+  /* Was 0.5625rem (9px). Measured as the smallest text in the app, and it is
+     uppercase with 1px letter-spacing, which makes small text harder still.
+     12px is the readability floor this sweep set. */
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--t2-text-dim);
   letter-spacing: 1px;
@@ -170,7 +209,7 @@ body.t2-active .access-denied {
   position: relative;
 }
 .t2-nav-item:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.03));
   color: var(--t2-text);
 }
 .t2-nav-item.active {
@@ -190,6 +229,16 @@ body.t2-active .access-denied {
 }
 .t2-nav-item .ico svg { display: block; }
 .t2-nav-item .label { flex: 1; }
+
+/* The Account section's More row and the group it opens (Widgets, Display,
+   Rate Lingualab). The rows inside are ordinary .t2-nav-item rows, set in a
+   little under a thin rule so they read as belonging to More. */
+.t2-more-chev { display: inline-flex; line-height: 0; opacity: .7; transition: transform 0.15s; }
+.t2-more-toggle[aria-expanded="true"] .t2-more-chev { transform: rotate(180deg); }
+.t2-more-toggle[aria-expanded="true"] { color: var(--t2-text); }
+.t2-more-group { margin: 0 0 4px 21px; padding-left: 6px; border-left: 1px solid var(--t2-border); }
+.t2-more-group[hidden] { display: none !important; }
+.t2-more-group .t2-nav-item { padding-top: 7px; padding-bottom: 7px; }
 .t2-nav-item .badge {
   background: var(--t2-red);
   color: #fff;
@@ -215,7 +264,7 @@ body.t2-active .access-denied {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1, #a855f7);
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -234,12 +283,13 @@ body.t2-active .access-denied {
   text-overflow: ellipsis;
 }
 .t2-profile-meta .role {
-  font-size: 0.625rem;
+  /* Was 0.625rem (10px). */
+  font-size: 0.75rem;
   color: var(--t2-text-muted);
 }
 
 /* ============================================================
-   MAIN CONTENT COLUMN — header + tab content
+   MAIN CONTENT COLUMN - header + tab content
    ============================================================ */
 .t2-main {
   flex: 1;
@@ -263,6 +313,31 @@ body.t2-active .access-denied {
   flex-shrink: 0;
   flex-wrap: wrap;
   gap: 12px;
+  /* The positioning context for the university mark below. */
+  position: relative;
+}
+
+/* The university mark (js/org-brand.js). This header has no slot for it, so it
+   always FLOATS: the script measures the empty space between the end of the
+   title text and whatever else is on that line, and centres the mark there -
+   at the true centre of the header when that is free, as on a laptop. It
+   takes no space, so the header lays out exactly as before, and it stays
+   invisible until placed, or where there is no room for it. */
+.t2-org-mark {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.t2-org-mark:not(.is-floating) { visibility: hidden; }
+.t2-org-mark[hidden],
+.t2-org-mark.no-room { display: none !important; }
+.t2-org-mark .org-mark-img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  opacity: 0.92;
 }
 .t2-page-header h1 {
   font-size: 1.25rem;
@@ -318,7 +393,7 @@ body.t2-active .access-denied {
 }
 .t2-btn [data-icon] svg { display: block; }
 .t2-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.05));
   color: var(--t2-text);
 }
 .t2-btn.solid {
@@ -363,8 +438,8 @@ body.t2-active .access-denied {
 }
 .t2-stat-card:hover { background: var(--t2-surface2); }
 .t2-stat-card.alert {
-  border-color: rgba(245, 158, 11, 0.4);
-  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.18);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.18);
 }
 
 .t2-stat-top {
@@ -384,10 +459,16 @@ body.t2-active .access-denied {
 .t2-stat-icon svg { display: block; }
 /* Tint the stat icon to match its card accent so the card has a
    single coherent color story (icon + value + sparkline all align). */
-.t2-stat-card.cyan   .t2-stat-icon { color: var(--t2-cyan); }
-.t2-stat-card.purple .t2-stat-icon { color: var(--t2-purple); }
-.t2-stat-card.amber  .t2-stat-icon { color: var(--t2-amber); }
-.t2-stat-card.green  .t2-stat-icon { color: var(--t2-green); }
+/* The four stat cards are CATEGORIES (students / sessions / active / score),
+   so they step through blue. They deliberately do NOT use --t2-amber and
+   --t2-green: those two mean needs-attention and passed everywhere else on this
+   dashboard, and an amber "Active today" card read as a problem when it is just
+   a count. Values match CARD_ACCENTS in teacher/js/overview-v2.js. The class
+   names stay as they are so the markup does not have to change. */
+.t2-stat-card.cyan   .t2-stat-icon { color: #1d4ed8; }
+.t2-stat-card.purple .t2-stat-icon { color: #2563eb; }
+.t2-stat-card.amber  .t2-stat-icon { color: #0284c7; }
+.t2-stat-card.green  .t2-stat-icon { color: #3b82f6; }
 .t2-stat-trend {
   font-size: 0.6875rem;
   font-weight: 600;
@@ -423,21 +504,41 @@ body.t2-active .access-denied {
 .t2-stat-spark svg { display: block; }
 
 /* Per-card accent colors via class */
-.t2-stat-card.cyan   .t2-stat-value { color: var(--t2-cyan); }
-.t2-stat-card.purple .t2-stat-value { color: var(--t2-purple); }
-.t2-stat-card.amber  .t2-stat-value { color: var(--t2-amber); }
-.t2-stat-card.green  .t2-stat-value { color: var(--t2-green); }
+.t2-stat-card.cyan   .t2-stat-value { color: #1d4ed8; }
+.t2-stat-card.purple .t2-stat-value { color: #2563eb; }
+.t2-stat-card.amber  .t2-stat-value { color: #0284c7; }
+.t2-stat-card.green  .t2-stat-value { color: #3b82f6; }
 
 /* ============================================================
    PANEL ROW (Level Distribution + Needs Attention split)
    ============================================================ */
 .t2-panels-row {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  /* minmax(0, ...) rather than a bare fr on every track.
+     A grid item's automatic minimum size is min-content, so `1fr` does NOT
+     mean "no wider than the container": the track grows to whatever its
+     contents refuse to shrink below. The Needs Attention panel has a nowrap
+     title, a badge and two buttons per row, giving it a 436px min-content, so
+     on a 386px phone the single column resolved to 436px and the whole panel
+     hung off the screen. The 0 minimum lets the track be as narrow as the
+     container and pushes the shrinking down to the children. */
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: 14px;
 }
+/* And the children have to be allowed to shrink too, for the same reason. */
+.t2-panels-row > * { min-width: 0; }
+/* The Needs Attention + Recent Activity row wants a wider left panel. It is a
+   class rather than an inline style on the element, because an inline
+   declaration outranks the media query below and left that row two columns
+   wide on a phone. */
+.t2-panels-row-wide { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
 @media (max-width: 900px) {
-  .t2-panels-row { grid-template-columns: 1fr; }
+  .t2-panels-row,
+  .t2-panels-row-wide { grid-template-columns: minmax(0, 1fr); }
+  /* The panel head is title + badge + a "View All" button. Together they are
+     wider than a phone panel, so let the button drop to its own line rather
+     than force the panel wide enough to hold them all on one. */
+  .t2-panel-title { flex-wrap: wrap; }
 }
 
 .t2-panel {
@@ -464,17 +565,18 @@ body.t2-active .access-denied {
 }
 .t2-panel-title [data-icon] svg { display: block; }
 .t2-panel.alert-tinted {
-  border-color: rgba(245, 158, 11, 0.25);
+  border-color: rgba(59, 130, 246, 0.25);
 }
 .t2-panel.alert-tinted .t2-panel-title [data-icon] {
   color: var(--t2-amber);   /* warning panel → amber icon for affinity */
 }
 
-/* One-line subtitle that explains what a panel represents — sits
+/* One-line subtitle that explains what a panel represents - sits
    directly under the title, above the data viz. Keeps the header
    approachable without making each panel verbose. */
 .t2-panel-sub {
-  font-size: 0.6875rem;
+  /* Was 0.6875rem (11px). */
+  font-size: 0.75rem;
   color: var(--t2-text-muted);
   margin: -10px 0 14px;
   line-height: 1.4;
@@ -541,12 +643,12 @@ body.t2-active .access-denied {
 /* ============================================================
    STUDENTS-TABLE ROW HIGHLIGHT
    Used by `t2OpenStudent(uid)` when the user clicks View on a
-   Needs Attention row — switches to the Students tab, scrolls
+   Needs Attention row - switches to the Students tab, scrolls
    the matching row into view, and pulses it briefly so the
    teacher's eye lands on it. Two-second amber halo.
    ============================================================ */
 @keyframes t2RowFlash {
-  0%   { background: rgba(245, 158, 11, 0.30); box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.55) inset; }
+  0%   { background: rgba(59, 130, 246, 0.30); box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.55) inset; }
   100% { background: transparent;              box-shadow: 0 0 0 0 transparent inset; }
 }
 body.t2-active .t2-row-highlight {
@@ -614,6 +716,125 @@ body.t2-active .t2-row-highlight {
 .t2-legend-item .lbl { color: var(--t2-text-muted); }
 .t2-legend-item .val { color: var(--t2-text); font-weight: 600; }
 
+/* ---- Essays waiting band ----
+   Sits above the student rows inside Needs Attention. GREEN, deliberately
+   not one of the warning hues used by the rows below: those say a student is
+   in trouble, this is the teacher's own to-do list, and dressing a workload
+   in red would say the wrong thing.
+   Wraps on narrow screens so the "Grade now" button drops under the text
+   instead of squeezing the count. */
+.t2-essays-band {
+  display: block;
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(16, 185, 129, 0.30);
+  border-left: 3px solid #10b981;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.08);
+}
+
+/* Head row: the summary toggle on the left, "Grade now" on the right.
+   Wraps so the button drops under the text on a phone rather than
+   squeezing the count out of the line. */
+.t2-essays-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.t2-essays-main { display: flex; align-items: center; gap: 8px; min-width: 0; }
+
+/* The summary is a real button: it expands the list, so it must be
+   keyboard-reachable and show focus. Styled flat so it still reads as text. */
+.t2-essays-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1 1 auto;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.t2-essays-toggle:focus-visible {
+  outline: 2px solid #34d399;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.t2-essays-ico   { font-size: 16px; line-height: 1; }
+.t2-essays-n     { font-size: 1.15em; font-weight: 700; color: #34d399; }
+.t2-essays-lbl   { font-size: 0.86em; color: var(--t2-text, #e6edf3); }
+.t2-essays-caret { font-size: 0.7em; color: #34d399; margin-left: 2px; }
+
+/* Overdue is the one thing here that IS a warning, so it gets the warning
+   colour while the rest of the band stays green. */
+.t2-essays-overdue { color: #fca5a5; font-weight: 600; }
+
+/* Orphaned submissions. Amber, not green and not red: it is neither a task
+   nor a student in trouble, it is a data problem worth knowing about. */
+.t2-essays-orphan {
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border-left: 2px solid #d29922;
+  background: rgba(210, 153, 34, 0.10);
+  font-size: 0.78em;
+  line-height: 1.45;
+  color: var(--t2-text-muted, #94a3b8);
+}
+.t2-essays-orphan strong { color: #e3b341; }
+
+/* Which assignments the pile belongs to. */
+.t2-essays-asg {
+  margin-top: 4px;
+  font-size: 0.78em;
+  color: var(--t2-text-muted, #94a3b8);
+}
+
+/* The expanded per-submission list. Capped and scrollable: a teacher with
+   sixty ungraded essays must not push Recent Activity off the screen. */
+.t2-essays-rows {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(16, 185, 129, 0.20);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.t2-essays-rows[hidden] { display: none; }
+.t2-essays-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.8em;
+  line-height: 1.4;
+}
+.t2-essays-who  { font-weight: 600; color: var(--t2-text, #e6edf3); white-space: nowrap; }
+.t2-essays-meta {
+  color: var(--t2-text-muted, #94a3b8);
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.t2-essays-age  { color: #34d399; white-space: nowrap; }
+.t2-essays-row.is-overdue .t2-essays-age { color: #fca5a5; }
+
+/* Phone: names and metadata stack instead of being squeezed to nothing. */
+@media (max-width: 560px) {
+  .t2-essays-row { flex-wrap: wrap; gap: 2px 8px; }
+  .t2-essays-meta { flex: 1 1 100%; }
+}
+
 /* ---- Needs Attention list ---- */
 .t2-attn-list { display: flex; flex-direction: column; gap: 6px; }
 .t2-attn-row {
@@ -661,7 +882,9 @@ body.t2-active .t2-row-highlight {
 }
 
 .t2-badge {
-  font-size: 0.625rem;
+  /* Was 0.625rem (10px). These carry counts a teacher acts on, like the
+     Needs Attention number, so they are the wrong place to save space. */
+  font-size: 0.75rem;
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 10px;
@@ -686,7 +909,7 @@ body.t2-active .t2-row-highlight {
   transition: all 0.15s;
 }
 .t2-attn-action:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.05));
   color: var(--t2-text);
 }
 
@@ -704,8 +927,8 @@ body.t2-active .t2-row-highlight {
   cursor: pointer;
   transition: all 0.15s;
 }
-.t2-attn-flag:hover { background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.4); }
-.t2-attn-flag.on { background: rgba(245,158,11,0.16); border-color: rgba(245,158,11,0.5); }
+.t2-attn-flag:hover { background: rgba(59,130,246,0.10); border-color: rgba(59,130,246,0.4); }
+.t2-attn-flag.on { background: rgba(59,130,246,0.16); border-color: rgba(59,130,246,0.5); }
 
 .t2-attn-empty {
   display: flex;
@@ -775,7 +998,7 @@ body.t2-active #tab-overview > #alertDetailPanel { display: none; }
 
 /* The other tabs (students/assignments/activity/admin) keep their
    own styles. We just need them to render cleanly inside the new
-   main column — give them the same horizontal padding / max-width
+   main column - give them the same horizontal padding / max-width
    feel by removing any lingering body-level container constraints. */
 body.t2-active .tab-content {
   padding: 0;
@@ -820,13 +1043,13 @@ body.t2-active .tab-content {
   align-items: flex-start;
   gap: 14px;
   padding: 22px 24px;
-  background: linear-gradient(135deg, rgba(99,102,241,0.16), rgba(59,130,246,0.06));
+  background: linear-gradient(135deg, rgba(37,99,235,0.16), rgba(59,130,246,0.06));
   border-bottom: 1px solid var(--t2-border-soft, rgba(255, 255, 255, 0.06));
 }
 .sd-avatar {
   width: 52px; height: 52px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1, #a78bfa);
+  background: linear-gradient(135deg, #2563eb, #60a5fa);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.5em; font-weight: 800; color: #fff;
   flex-shrink: 0;
@@ -842,11 +1065,11 @@ body.t2-active .tab-content {
   border: 1px solid rgba(148, 163, 184, 0.28);
   color: var(--text-secondary, #cbd5e1);
 }
-.sd-tag.active   { background: rgba(34,197,94,0.16); border-color: rgba(34,197,94,0.4); color: #86efac; }
+.sd-tag.active   { background: rgba(34,197,94,0.16); border-color: rgba(34,197,94,0.4); color: var(--text-success, #86efac); }
 .sd-tag.inactive { background: rgba(148, 163, 184, 0.12); color: var(--text-secondary, #94a3b8); }
 .sd-head-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .sd-btn {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.06));
   border: 1px solid var(--t2-border-md, rgba(255, 255, 255, 0.1));
   color: var(--t2-text, var(--text-primary, #f1f5f9));
   border-radius: 9px; padding: 7px 12px;
@@ -854,10 +1077,10 @@ body.t2-active .tab-content {
   cursor: pointer; transition: filter 0.15s, border-color 0.15s;
   white-space: nowrap;
 }
-.sd-btn:hover { filter: brightness(1.15); border-color: rgba(99,102,241,0.5); }
+.sd-btn:hover { filter: brightness(1.15); border-color: rgba(37,99,235,0.5); }
 .sd-close {
   width: 34px; height: 34px; border-radius: 9px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.06));
   border: 1px solid var(--t2-border-md, rgba(255, 255, 255, 0.1));
   color: var(--t2-text-muted, var(--text-secondary, #94a3b8));
   font-size: 1.1em; cursor: pointer;
@@ -872,7 +1095,7 @@ body.t2-active .tab-content {
   border-bottom: 1px solid var(--t2-border-soft, rgba(255, 255, 255, 0.06));
 }
 .sd-qstat { text-align: center; }
-.sd-qval { font-size: 1.5em; font-weight: 800; color: #818cf8; }
+.sd-qval { font-size: 1.5em; font-weight: 800; color: #60a5fa; }
 .sd-qlbl { font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--t2-text-muted, var(--text-secondary, #94a3b8)); margin-top: 2px; }
 
 /* Sections */
@@ -894,31 +1117,77 @@ body.t2-active .tab-content {
 
 /* Assignments */
 .sd-assigns { display: flex; flex-direction: column; gap: 6px; }
-.sd-assign-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; background: rgba(255, 255, 255, 0.025); border: 1px solid var(--t2-border-soft, rgba(255, 255, 255, 0.06)); border-radius: 8px; font-size: 0.88em; }
+.sd-assign-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; background: var(--tint-surface, rgba(255, 255, 255, 0.025)); border: 1px solid var(--t2-border-soft, rgba(255, 255, 255, 0.06)); border-radius: 8px; font-size: 0.88em; }
 .sd-assign-title { font-weight: 600; min-width: 0; }
 .sd-assign-meta { color: var(--t2-text-muted, var(--text-secondary, #94a3b8)); font-weight: 400; }
 .sd-chip { font-size: 0.78em; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
-.sd-chip.done    { background: rgba(34,197,94,0.16); color: #86efac; }
-.sd-chip.prog    { background: rgba(245,158,11,0.16); color: #fcd34d; }
-.sd-chip.overdue { background: rgba(239,68,68,0.16); color: #fca5a5; }
+.sd-chip.done    { background: rgba(34,197,94,0.16); color: var(--text-success, #86efac); }
+.sd-chip.prog    { background: rgba(245,158,11,0.16); color: var(--text-warning, #fcd34d); }
+.sd-chip.overdue { background: rgba(239,68,68,0.16); color: var(--text-error, #fca5a5); }
 .sd-chip.none    { background: rgba(148, 163, 184, 0.14); color: var(--text-secondary, #94a3b8); }
 
 /* Recent sessions table */
 .sd-recent { width: 100%; border-collapse: collapse; font-size: 0.88em; }
 .sd-recent th { text-align: left; color: var(--t2-text-muted, var(--text-secondary, #94a3b8)); font-weight: 600; font-size: 0.85em; padding: 4px 8px; border-bottom: 1px solid var(--t2-border-soft, rgba(255, 255, 255, 0.06)); }
-.sd-recent td { padding: 6px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+.sd-recent td { padding: 6px 8px; border-bottom: 1px solid var(--tint-line, rgba(255, 255, 255, 0.04)); }
 .sd-empty { color: var(--t2-text-muted, var(--text-secondary, #94a3b8)); text-align: center; padding: 14px; font-size: 0.9em; }
 
 @media (max-width: 560px) {
   .sd-quickstats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .sd-skill-row { grid-template-columns: 110px 1fr 38px; }
   .sd-skill-count { display: none; }
+  /* `flex-wrap: wrap` alone could never fire here. `.sd-head-info` is `flex: 1`,
+     so its basis is 0 and it just shrinks instead of pushing a sibling onto a
+     second line, while `.sd-head-actions` does not shrink at all. At 390px that
+     left the identity column about 79px of the 308px head, which is what broke
+     the email mid-word and stacked the five chips one per line.
+     Giving the actions a full-width basis makes the wrap actually happen. */
   .sd-modal-head { flex-wrap: wrap; }
+  .sd-head-info { flex: 1 1 100%; order: 2; }
+  .sd-head-actions { flex: 1 0 100%; order: 1; justify-content: flex-end; }
+  /* Break the email only where it has to, not at an arbitrary character.
+     `word-break: break-all` is what split "Shahin@fsm.ed" from "u.tr". */
+  .sd-email { word-break: normal; overflow-wrap: anywhere; }
 }
 
 /* Students table rows read as clickable now that they open the drill-down. */
-body.t2-active .students-table tbody tr { cursor: pointer; }
-body.t2-active .students-table tbody tr:hover td { background: rgba(99,102,241,0.06); }
+/* Sticky action row at the foot of a tall modal (Cancel / Save).
+   ------------------------------------------------------------
+   This was five copies of the same inline style, whose background was
+   `var(--bg-card, #152035)`. `--bg-card` IS defined, and it is defined dark
+   with no light-mode override, so the fallback never applied and every one of
+   these rendered as a dark navy strip across the bottom of a white modal that
+   followed you as you scrolled.
+
+   A class can be themed; an inline style cannot. `--t2-surface` is white under
+   .light-mode and dark otherwise, so the bar now matches the modal it sits in. */
+.modal-sticky-actions {
+  position: sticky;
+  bottom: 0;
+  background: var(--t2-surface, #fff);
+  border-top: 1px solid var(--t2-border, rgba(59, 130, 246, 0.25));
+  padding-top: 12px;
+  padding-bottom: 6px;
+  margin-top: 8px;
+  z-index: 2;
+}
+
+body.t2-active .students-table tbody tr {
+  cursor: pointer;
+  /* A tap on a touch screen selects text before it fires the click, so the
+     whole row flashed highlighted for a moment and only then opened the
+     report. The row is a button in all but name, and you do not select the
+     text on a button. */
+  -webkit-user-select: none;
+  user-select: none;
+  /* Android also paints its own grey block over the tapped element. The row
+     already has a hover/active treatment of its own. */
+  -webkit-tap-highlight-color: transparent;
+}
+body.t2-active .students-table tbody tr:hover td { background: rgba(37,99,235,0.06); }
+/* Kept for touch: the row still acknowledges the tap, just without the flash
+   of selected text. */
+body.t2-active .students-table tbody tr:active td { background: rgba(37,99,235,0.12); }
 
 /* ============================================================
    DEADLINE CALENDAR (teacher/js/dashboard-extras.js)
@@ -940,7 +1209,7 @@ body.t2-active .students-table tbody tr:hover td { background: rgba(99,102,241,0
 }
 .cal-cell {
   min-height: 78px;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.02));
   border: 1px solid var(--t2-border-soft, rgba(255, 255, 255, 0.06));
   border-radius: 8px;
   padding: 5px 6px;
@@ -950,14 +1219,14 @@ body.t2-active .students-table tbody tr:hover td { background: rgba(99,102,241,0
   overflow: hidden;
 }
 .cal-cell.cal-empty { background: transparent; border-color: transparent; }
-.cal-cell.cal-has { border-color: rgba(99,102,241,0.3); }
-.cal-cell.cal-today { border-color: rgba(99,102,241,0.7); box-shadow: 0 0 0 1px rgba(99,102,241,0.4) inset; }
+.cal-cell.cal-has { border-color: rgba(37,99,235,0.3); }
+.cal-cell.cal-today { border-color: rgba(37,99,235,0.7); box-shadow: 0 0 0 1px rgba(37,99,235,0.4) inset; }
 .cal-day { font-size: 0.78em; font-weight: 700; color: var(--t2-text-muted, var(--text-secondary, #94a3b8)); }
 .cal-cell.cal-today .cal-day { color: #a5b4fc; }
 .cal-chip {
   font-size: 0.68em;
-  background: rgba(99,102,241,0.16);
-  border: 1px solid rgba(99,102,241,0.32);
+  background: rgba(37,99,235,0.16);
+  border: 1px solid rgba(37,99,235,0.32);
   color: #c7d2fe;
   border-radius: 5px;
   padding: 1px 5px;
@@ -971,4 +1240,53 @@ body.t2-active .students-table tbody tr:hover td { background: rgba(99,102,241,0
   .cal-cell { min-height: 56px; padding: 3px 4px; }
   .cal-chip { font-size: 0.6em; }
   .cal-dow { font-size: 0.62em; }
+}
+
+/* ============================================================
+   LIGHT MODE - generated by tools/light-coverage.js findings
+   Each rule mirrors a real one above and flips only its SURFACE,
+   keeping the original alpha so translucent panels stay translucent
+   and nothing about the layering changes. Dark is untouched.
+   ============================================================ */
+.light-mode .sd-overlay {
+  background: rgba(246, 248, 251, 0.78);
+}
+
+/* ============================================================
+   ADMIN > CONTENT - the toggle rows on a phone
+   ------------------------------------------------------------
+   Each row is [icon] [title + status] [Activate/Deactivate], built
+   as a nowrap flex row with inline styles. On a 390px screen a title
+   like "Module 1 - Purpose and Rules of AI Use" and a Deactivate
+   button cannot share a line: the title squeezed to a couple of words
+   and the button crushed against the edge.
+
+   Under 620px the button moves to its own full-width line beneath the
+   title, which is the same trade the classroom header makes. Nothing
+   is hidden and the row keeps its single tap target per control.
+
+   Qualified with `body` because the rows carry inline styles for
+   colour and padding; the layout properties here are not among them,
+   so this needs no !important - only enough specificity to beat the
+   panel's own rules.
+   ============================================================ */
+@media (max-width: 620px) {
+  body .cc-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  /* icon and the title block share the first line */
+  body .cc-row > span:first-child { flex: 0 0 auto; }
+  body .cc-row > div { flex: 1 1 0; min-width: 0; }
+  /* the control gets a line of its own, full width and comfortably tappable */
+  body .cc-row > .cc-row-btn {
+    flex: 1 0 100%;
+    margin-top: 2px;
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+  /* the category chips wrap instead of scrolling off the edge */
+  body .cc-skill-tab { flex: 0 0 auto; }
 }

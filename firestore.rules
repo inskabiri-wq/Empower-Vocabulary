@@ -88,12 +88,11 @@ service cloud.firestore {
     // validity (advertising "which schools can register" is not a
     // secret — see the loosened read rule on /settings/{docId}).
     //
-    // Hardcoded FSM grandfather: we keep matching `@fsm.edu.tr` and
-    // `@stu.fsm.edu.tr` even if the settings doc is missing/empty.
-    // This guarantees the existing FSM deployment never locks out
-    // its users mid-rollout. New deployments should seed the
-    // organizations doc via the admin UI and can later strip this
-    // hardcoded path if desired.
+    // The hardcoded FSM grandfather described in earlier versions of this
+    // comment has been REMOVED (2026-08-12) now that these rules serve more
+    // than one university. Every tenant is defined by its own
+    // settings/organizations document; a tenant without one admits only the
+    // operator. See emailIsFsm() below.
     //
     // Defence-in-depth around email parsing:
     //   • require email_verified for write paths (isVerifiedFsm)
@@ -103,17 +102,38 @@ service cloud.firestore {
     //     a regex — so `attacker@fsm.edu.tr.evil.com` can't slip
     //     through (its parsed domain is `fsm.edu.tr.evil.com`, which
     //     is not literally in the list).
+    // MULTI-TENANT: the hardcoded @fsm.edu.tr / @stu.fsm.edu.tr grandfather
+    // that used to sit here is GONE. These rules are deployed to every
+    // university's project, so a hardcoded FSM domain meant FSM students
+    // could sign in to ANOTHER university's copy of the app.
+    //
+    // Removing it is safe for FSM because settings/organizations on that
+    // project already lists exactly the same two domains - verified against
+    // the live document before this change:
+    //     activeDomains          = ['fsm.edu.tr', 'stu.fsm.edu.tr']
+    //     teacherEligibleDomains = ['fsm.edu.tr']
+    // A project with NO organizations document now admits nobody except the
+    // operator, which is the correct default for a newly created tenant.
     function emailIsFsm() {
       return isAuth() && request.auth.token.email != null && (
-        // (1) Hardcoded grandfather — original FSM domains.
-        request.auth.token.email.lower().matches('.*@fsm[.]edu[.]tr$') ||
-        request.auth.token.email.lower().matches('.*@stu[.]fsm[.]edu[.]tr$') ||
-        // (2) Dynamic — admin-managed organizations from settings.
+        // (1) The platform operator, on every tenant. Without this a fresh
+        //     project would lock even the admin out: the users/create rule
+        //     below requires emailIsFsm() and has no admin bypass, so there
+        //     would be no way to create the first account.
+        isAdmin() ||
         (
           exists(/databases/$(database)/documents/settings/organizations) &&
           request.auth.token.email.lower().split('@').size() == 2 &&
-          request.auth.token.email.lower().split('@')[1] in
-            get(/databases/$(database)/documents/settings/organizations).data.activeDomains
+          (
+            // (2) A whole domain approved for THIS tenant.
+            request.auth.token.email.lower().split('@')[1] in
+              get(/databases/$(database)/documents/settings/organizations).data.get('activeDomains', []) ||
+            // (3) One named person, without opening their whole domain.
+            //     Use this to give a partner university's administrator
+            //     access before their own domain is configured.
+            request.auth.token.email.lower() in
+              get(/databases/$(database)/documents/settings/organizations).data.get('allowedEmails', [])
+          )
         )
       );
     }
@@ -133,18 +153,43 @@ service cloud.firestore {
     // product can mark their staff domain `teacherEligible: true` and
     // their student domain `teacherEligible: false`, locking students
     // out of teacher promotion permanently — same separation FSM has.
+    // Same story: the hardcoded FSM-staff branch is gone, because on another
+    // university's project it would have made FSM staff promotable to teacher
+    // there. FSM keeps working from teacherEligibleDomains = ['fsm.edu.tr'],
+    // which preserves the staff-yes / students-no split exactly.
     function isTeacherEligibleEmail(email) {
-      return email != null && email.lower().split('@').size() == 2 && (
-        // (1) Hardcoded — FSM staff only (NOT students)
-        (email.lower().matches('.*@fsm[.]edu[.]tr$') &&
-         !email.lower().matches('.*@stu[.]fsm[.]edu[.]tr$')) ||
-        // (2) Dynamic
-        (
-          exists(/databases/$(database)/documents/settings/organizations) &&
-          email.lower().split('@')[1] in
-            get(/databases/$(database)/documents/settings/organizations).data.teacherEligibleDomains
-        )
-      );
+      return email != null && email.lower().split('@').size() == 2 &&
+        exists(/databases/$(database)/documents/settings/organizations) &&
+        email.lower().split('@')[1] in
+          get(/databases/$(database)/documents/settings/organizations).data.get('teacherEligibleDomains', []);
+    }
+
+    // IS THE CALLER ON THE ADMIN-WRITTEN TEACHER WHITELIST?
+    //
+    // Admin > Teachers has an "Add Teacher" form that appends a staff email to
+    // settings/teacherEmails and tells the admin "they will get teacher access
+    // on registration". That was never true: users/create below demanded
+    // role == 'student', so the client's attempt to write role:'teacher' was
+    // refused, and the refusal surfaced to the new teacher as "Google sign-in
+    // failed: Missing or insufficient permissions" - which reads as being
+    // denied permission to log in. The only thing that actually granted
+    // teacher was the admin's crown button.
+    //
+    // THIS IS NOT SELF-GRANTING. The authority is settings/teacherEmails,
+    // which is admin-only writable (match /settings/{docId} allows write only
+    // if isAdmin()). A user cannot put themselves on it. Same shape as
+    // _granted() further down: an admin-written document decides, the client
+    // merely asserts what that document already says, and the server checks.
+    //
+    // Belt and braces: the domain must ALSO be teacher-eligible, so even an
+    // admin mistakenly whitelisting a @stu.fsm.edu.tr address cannot produce
+    // a teacher. Two independent admin-controlled documents must agree.
+    function isWhitelistedTeacher() {
+      return isAuth() && request.auth.token.email != null &&
+        isTeacherEligibleEmail(request.auth.token.email) &&
+        exists(/databases/$(database)/documents/settings/teacherEmails) &&
+        request.auth.token.email.lower() in
+          get(/databases/$(database)/documents/settings/teacherEmails).data.get('teacherEmails', []);
     }
 
     // Common gate for write-paths that require a real, verified FSM user.
@@ -152,6 +197,25 @@ service cloud.firestore {
     // (admin is hardcoded; teacher role implies an existing verified account).
     function canWriteAsRealUser() {
       return isAdmin() || isTeacher() || isVerifiedFsm();
+    }
+
+    // IS THIS A DEMO ACCOUNT?
+    //
+    // Note what canWriteAsRealUser() above does NOT do: it does not exclude
+    // demo accounts. createDemoAccount makes them emailVerified:true on the
+    // FSM domain with role 'student' or 'teacher', so isVerifiedFsm() passes
+    // and they are indistinguishable from a real user by role alone. Verified
+    // against production on 2026-09-22:
+    //     demo.student@fsm.edu.tr  emailVerified=true  role=student
+    //     demo.teacher@fsm.edu.tr  emailVerified=true  role=teacher
+    //
+    // The one thing that marks them is `demoAccount: true`, written on the
+    // user document by the admin SDK at creation. Real student documents do
+    // not carry the field at all, hence the default.
+    function isDemoAccount() {
+      return isAuth() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('demoAccount', false) == true;
     }
 
     // ── users collection ──
@@ -163,9 +227,16 @@ service cloud.firestore {
       // Demo accounts (role == 'demo') are pre-created by admin via the
       // admin SDK (which bypasses these rules entirely). Clients cannot
       // create demo docs themselves.
+      // A whitelisted staff address may create itself as a teacher directly,
+      // which is what "Add Teacher" always claimed would happen. Everyone
+      // else is still a student on create, promoted later by admin.
+      // Short-circuits: a normal student registration never reads the
+      // whitelist, so it costs no extra get().
       allow create: if isOwner(userId) &&
-        emailIsFsm() &&
-        request.resource.data.role == 'student';
+        emailIsFsm() && (
+          request.resource.data.role == 'student' ||
+          (request.resource.data.role == 'teacher' && isWhitelistedTeacher())
+        );
 
       // Users can read their own doc.
       // Admin reads anything. Teachers read student docs if they have
@@ -241,6 +312,25 @@ service cloud.firestore {
             request.resource.data.module != resource.data.get('module', '')
           )
         )
+      ) || (
+        // ── WHITELISTED SELF-PROMOTION: student → teacher ──
+        //
+        // The other half of the "Add Teacher" fix. Someone already registered
+        // as a student, and the admin then whitelisted their staff address.
+        // Without this branch roleUnchanged() refuses the promotion and they
+        // are stuck as a student while the admin panel lists them as pending.
+        //
+        // Deliberately narrow: ONLY student → teacher, only for the owner,
+        // only while the admin-written whitelist vouches for them, and
+        // nothing else about the document may move. It cannot grant 'demo',
+        // cannot demote, cannot touch email or the active flag.
+        isOwner(userId) &&
+        isWhitelistedTeacher() &&
+        resource.data.get('role', 'student') == 'student' &&
+        request.resource.data.role == 'teacher' &&
+        (request.resource.data.get('email', null) == resource.data.get('email', null) ||
+         resource.data.get('email', null) == null) &&
+        (request.resource.data.get('active', true) == resource.data.get('active', true))
       );
 
       // Only admin can delete user docs.
@@ -294,19 +384,36 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Policy mini course activation: TEACHERS (not just admin) switch the
-    // course on/off from the dashboard. Additive grant on top of the
-    // general /settings rule above (Firestore allows if ANY match allows).
+    // A TEACHER IS NOT AUTOMATICALLY A GRANTEE.
+    //
+    // These two documents used to be `allow write: if isTeacher()`, which meant
+    // ANY teacher could switch the mini course or the placement test on and off
+    // for the whole organisation. The dashboard has an Admin > Access panel
+    // that hands out exactly these two capabilities, and the rules ignored it -
+    // so the tick box decided what a teacher could SEE, and nothing decided
+    // what they could DO. Hiding a tab is not a permission.
+    //
+    // Now the grant document is the authority, and the UI merely reflects it.
+    // Fails closed: a missing grant document means only the admin may write.
+    function _granted(grantDoc) {
+      return isAdmin() || (
+        isTeacher() &&
+        exists(/databases/$(database)/documents/settings/$(grantDoc)) &&
+        request.auth.uid in get(/databases/$(database)/documents/settings/$(grantDoc)).data.get('teacherUids', [])
+      );
+    }
+
+    // Policy mini course activation. Granted in Admin > Access (Courses).
     match /settings/policyCourse {
       allow read: if isAuth();
-      allow write: if isTeacher();
+      allow write: if _granted('coursesAccess');
     }
 
     // Placement test activation + targeting (classes/levels/modules/years).
-    // Teachers run placement days, so they (not just admin) switch it on/off.
+    // Granted in Admin > Access (Placement).
     match /settings/placementConfig {
       allow read: if isAuth();
-      allow write: if isTeacher();
+      allow write: if _granted('placementAccess');
     }
 
     // ── courseProgress collection — policy mini course ──
@@ -335,6 +442,354 @@ service cloud.firestore {
         request.resource.data.uid == request.auth.uid &&
         request.resource.data.certId == certId;
       allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    // ── supportMessages - students writing to a teacher or to the admin,
+    //    and the sign-in page writing to the admin ──
+    //
+    // Async threads, NOT a live chat. A student picks WHO (teacher / admin),
+    // WHAT (a topic) and WHEN, then writes. Staff answer inside the teacher
+    // dashboard's Messages tab; the student reads the answer in the profile hub
+    // and can reply in the same thread. No email anywhere, and nothing leaves
+    // this project - FSMVU is the data controller.
+    //
+    // THE LINE THAT MATTERS MOST: a message addressed to the ADMIN is never
+    // readable by a teacher. A student may be writing about their teacher, so
+    // this is enforced here, on the document's own `to` field, where a query
+    // can be proven against it - not left to the browser.
+    //
+    // Messages addressed to a teacher follow the same convention as /users:
+    // any teacher with a scope may read them at this layer, and the dashboard
+    // narrows to the teacher's own classes with .where() filters. Firestore's
+    // query validator cannot prove a get()-based per-class rule for those
+    // queries (see the note on /users). A teacher can already read every
+    // student document, so this exposes nothing new.
+    //
+    // THE SIGN-IN PAGE PATH (js/signin-support.js). Someone who cannot sign in
+    // has no session, so the student path above (saved under their uid, email
+    // checked against the account) cannot work for them. They write SIGNED OUT
+    // instead, in one narrow shape: source 'signin', a typed name and email,
+    // addressed to the ADMIN only (sign-in trouble is the admin's, and a
+    // teacher cannot be routed to without a class). The typed email is NOT
+    // proof of anything, so nobody signed out can read a message back - not
+    // even their own. The answer is read later, once they can sign in, by the
+    // account whose VERIFIED email is the one they typed (isAuthorOf below).
+    //
+    // The topic, `when` and recipient lists below are mirrored in
+    // js/profile-hub.js and teacher/js/messages-admin.js, and the sign-in
+    // page's subset in js/signin-support.js.
+    // tools/support-topics-check.js fails if they drift apart.
+    function supportTopics() {
+      return ['lesson', 'grade', 'absence', 'technical', 'account', 'content', 'idea', 'other'];
+    }
+    function supportWhens() {
+      return ['', 'today', 'yesterday', 'week', 'earlier'];
+    }
+    // What a signed-out visitor may pick: only what the admin can act on for
+    // someone who cannot get in. A subset of supportTopics().
+    function supportSigninTopics() {
+      return ['account', 'technical', 'other'];
+    }
+    // Every field a sign-in page message has, and the only ones it may have.
+    function supportSigninFields() {
+      return ['source', 'name', 'email', 'to', 'topic', 'when', 'device', 'page',
+              'message', 'status', 'createdAt'];
+    }
+
+    // Can the requester, as STAFF, see this message? `d` is the message data.
+    // `d.to` is compared directly rather than through .get() with a default:
+    // the plain form is what lets Firestore prove a teacher's
+    // .where('to', '==', 'teacher') query against this rule. A message with no
+    // `to` at all makes the comparison an error, and an error denies - so
+    // anything without the field stays admin-only rather than going public.
+    //
+    // DEMO ACCOUNTS ARE NEVER STAFF HERE. The stakeholder login
+    // demo.teacher@fsm.edu.tr was found assigned to B125, a real class, so
+    // without this it could read and answer real students' messages. Demo
+    // accounts carry demoAccount:true with an ordinary role, which is why
+    // teacherHasScope() alone does not catch them.
+    function staffCanSee(d) {
+      return isAdmin() ||
+        (teacherHasScope() && !isDemoAccount() && d.to == 'teacher');
+    }
+
+    // Is the requester the AUTHOR of this message? `d` is the message data.
+    // Either the student who filed it signed in (userId), or - for a sign-in
+    // page message, which has no userId - the account whose email is the one
+    // typed on the form. That email was never checked when it was typed, so
+    // only a VERIFIED token email may claim it: otherwise anyone could register
+    // an unverified account under someone else's address and read their
+    // thread. Stored lowercase at creation, so the token side is lowered too.
+    // The two shapes cannot overlap: the student create rule refuses `source`
+    // and the sign-in create rule refuses `userId`.
+    function isAuthorOf(d) {
+      return isAuth() && (
+        d.get('userId', '') == request.auth.uid ||
+        (d.get('source', '') == 'signin' &&
+         request.auth.token.email_verified == true &&
+         d.email == request.auth.token.email.lower())
+      );
+    }
+
+    // The role a staff member writes under. Checked, not trusted: otherwise a
+    // teacher could sign a reply "Admin".
+    function staffRole() {
+      return isAdmin() ? 'admin' : 'teacher';
+    }
+
+    // The counters a reply moves must move honestly. Without this a student
+    // could set lastReplyAt years ahead to sit at the top of every inbox, or
+    // write any replyCount they liked.
+    function bookkeepingHonest(before, after) {
+      let changed = after.diff(before).affectedKeys();
+      return (!('replyCount' in changed) || after.replyCount == before.get('replyCount', 0) + 1) &&
+             (!('lastReplyAt' in changed) || after.lastReplyAt == request.time) &&
+             (!('answeredAt' in changed) || after.answeredAt == request.time);
+    }
+
+    match /supportMessages/{msgId} {
+      // hasOnly: the reply bookkeeping fields (status, answeredBy, unread,
+      // counts) can NOT be set by the student at creation, so nobody can file
+      // a message that arrives already "answered by the admin".
+      allow create: if canWriteAsRealUser() &&
+        !isDemoAccount() &&
+        request.resource.data.keys().hasOnly([
+          'userId', 'name', 'email', 'studentClass', 'level', 'module',
+          'to', 'topic', 'when', 'device', 'page',
+          'message', 'status', 'createdAt'
+        ]) &&
+        request.resource.data.userId == request.auth.uid &&
+        // "Who sent it" must be true. The email is the one on the signed-in
+        // account; the display fields are plain bounded strings, so a message
+        // cannot carry a pasted essay as a "name".
+        request.resource.data.email == request.auth.token.email &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() <= 100 &&
+        request.resource.data.get('studentClass', '') is string &&
+        request.resource.data.get('studentClass', '').size() <= 40 &&
+        request.resource.data.get('level', '') is string &&
+        request.resource.data.get('level', '').size() <= 40 &&
+        request.resource.data.get('module', '') is string &&
+        request.resource.data.get('module', '').size() <= 60 &&
+        request.resource.data.to in ['teacher', 'admin'] &&
+        request.resource.data.topic in supportTopics() &&
+        request.resource.data.get('when', '') in supportWhens() &&
+        request.resource.data.get('device', '') is string &&
+        request.resource.data.get('device', '').size() <= 120 &&
+        request.resource.data.get('page', '') is string &&
+        request.resource.data.get('page', '').size() <= 200 &&
+        request.resource.data.message is string &&
+        request.resource.data.message.size() > 0 &&
+        request.resource.data.message.size() <= 2000 &&
+        request.resource.data.status == 'open' &&
+        request.resource.data.createdAt == request.time;
+
+      // THE SIGN-IN PAGE (js/signin-support.js): written signed out, so this is
+      // the one write in the app anybody on the internet can make, and every
+      // field is pinned. The page never signs in anonymously itself (main.js
+      // signs out any non-university account), but a leftover anonymous game
+      // session may still be attached, so that token is accepted too. A real
+      // signed-in account is NOT: it has the student path above, which binds
+      // the message to its uid and its real email.
+      //
+      // hasAll AND hasOnly, so the shape is exact: no userId (that would let the
+      // student read rule claim it), no studentClass (that would suggest a
+      // class to route to), no pre-filled answer bookkeeping. Always to the
+      // admin, so no teacher can ever see one. The email is typed, not checked;
+      // it is stored lowercased so the later read can compare it exactly.
+      allow create: if (request.auth == null ||
+                        request.auth.token.firebase.sign_in_provider == 'anonymous') &&
+        request.resource.data.keys().hasAll(supportSigninFields()) &&
+        request.resource.data.keys().hasOnly(supportSigninFields()) &&
+        request.resource.data.source == 'signin' &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() >= 2 &&
+        request.resource.data.name.size() <= 100 &&
+        request.resource.data.email is string &&
+        request.resource.data.email.size() <= 120 &&
+        request.resource.data.email == request.resource.data.email.lower() &&
+        request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$') &&
+        request.resource.data.to == 'admin' &&
+        request.resource.data.topic in supportSigninTopics() &&
+        request.resource.data.when in supportWhens() &&
+        request.resource.data.device is string &&
+        request.resource.data.device.size() <= 120 &&
+        request.resource.data.page == 'index.html' &&
+        request.resource.data.message is string &&
+        request.resource.data.message.size() > 0 &&
+        request.resource.data.message.size() <= 2000 &&
+        request.resource.data.status == 'open' &&
+        request.resource.data.createdAt == request.time;
+
+      // Never without auth: a sign-in page message is written signed out, but
+      // it is read back only by the admin or, later, by its verified author.
+      allow read: if isAuth() && (
+        isAuthorOf(resource.data) ||
+        staffCanSee(resource.data)
+      );
+
+      // STAFF: open / answered, and the bookkeeping a reply updates. What the
+      // student wrote can never change. `answeredBy` must be the person
+      // actually signed in, under their real role - so "Answered by" on the
+      // student's screen, and on the admin's, cannot be forged.
+      allow update: if staffCanSee(resource.data) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status', 'answeredBy', 'answeredAt', 'studentUnread', 'replyCount', 'lastReplyAt'
+        ]) &&
+        request.resource.data.status in ['open', 'answered'] &&
+        request.resource.data.get('studentUnread', false) is bool &&
+        bookkeepingHonest(resource.data, request.resource.data) &&
+        (
+          !('answeredBy' in request.resource.data.diff(resource.data).affectedKeys()) ||
+          (
+            request.resource.data.answeredBy.email == request.auth.token.email &&
+            request.resource.data.answeredBy.role == staffRole()
+          )
+        );
+
+      // THE AUTHOR: may mark the answer as read, and may re-open the thread
+      // by replying. May NOT mark it answered, set it unread, or touch who
+      // answered it. For a sign-in page message the author is the verified
+      // account with the typed email (isAuthorOf), with exactly these rights.
+      allow update: if isAuthorOf(resource.data) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'studentUnread', 'status', 'replyCount', 'lastReplyAt'
+        ]) &&
+        request.resource.data.get('studentUnread', false) == false &&
+        bookkeepingHonest(resource.data, request.resource.data) &&
+        (request.resource.data.status == 'open' ||
+         request.resource.data.status == resource.data.status);
+
+      allow delete: if isAdmin();
+
+      // ── The thread ──
+      // One document per reply, from the student or from staff. Readable by
+      // exactly whoever can read the message. The author's uid, email and role
+      // are checked against the signed-in account, and a reply cannot be edited
+      // once written - the thread is a record.
+      match /replies/{replyId} {
+        function parentMsg() {
+          return get(/databases/$(database)/documents/supportMessages/$(msgId)).data;
+        }
+
+        allow read: if isAuth() && (
+          isAuthorOf(parentMsg()) ||
+          staffCanSee(parentMsg())
+        );
+
+        allow create: if isAuth() &&
+          request.resource.data.keys().hasOnly([
+            'text', 'authorUid', 'authorName', 'authorEmail', 'authorRole', 'createdAt'
+          ]) &&
+          request.resource.data.authorUid == request.auth.uid &&
+          request.resource.data.authorEmail == request.auth.token.email &&
+          request.resource.data.authorName is string &&
+          request.resource.data.authorName.size() <= 80 &&
+          request.resource.data.text is string &&
+          request.resource.data.text.size() > 0 &&
+          request.resource.data.text.size() <= 2000 &&
+          request.resource.data.createdAt == request.time &&
+          (
+            (isAuthorOf(parentMsg()) &&
+             request.resource.data.authorRole == 'student' &&
+             !isDemoAccount()) ||
+            (staffCanSee(parentMsg()) &&
+             request.resource.data.authorRole == staffRole())
+          );
+
+        allow update: if false;
+        allow delete: if isAdmin();
+      }
+    }
+
+    // ── appFeedback - "Rate Lingualab" (js/app-rating.js) ──
+    //
+    // ONE document per person, keyed by their uid, so a rating is something
+    // you own and can change rather than a stream of repeat votes. Written by
+    // students (profile menu) and teachers (sidebar); read by its owner and the
+    // admin only - Admin > Feedback (teacher/js/feedback-admin.js). Nobody else,
+    // teachers included, sees another person's rating.
+    //
+    // The chip keys are mirrored in js/app-rating.js; tools/app-feedback-check.js
+    // fails if they drift. Demo accounts are refused, as for messages.
+    function feedbackLikes() {
+      return ['vocabulary', 'grammar', 'listening', 'reading', 'writing', 'speaking',
+              'classroom', 'courses', 'assignments', 'progress', 'writingai',
+              'placement', 'reports'];
+    }
+    function validFeedback() {
+      let d = request.resource.data;
+      let me = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return d.keys().hasOnly([
+          'userId', 'role', 'name', 'email', 'studentClass', 'level', 'module',
+          'stars', 'liked', 'comment', 'page', 'createdAt', 'updatedAt'
+        ]) &&
+        d.userId == request.auth.uid &&
+        d.email == request.auth.token.email &&
+        // The role is the account's REAL role, so a teacher's rating cannot be
+        // counted with the students' or the other way round.
+        d.role in ['student', 'teacher'] &&
+        d.role == me.get('role', '') &&
+        d.stars is int && d.stars >= 1 && d.stars <= 5 &&
+        d.get('liked', []) is list &&
+        d.get('liked', []).size() <= 13 &&
+        d.get('liked', []).hasOnly(feedbackLikes()) &&
+        d.get('comment', '') is string && d.get('comment', '').size() <= 1000 &&
+        d.name is string && d.name.size() <= 100 &&
+        d.get('studentClass', '') is string && d.get('studentClass', '').size() <= 40 &&
+        d.get('level', '') is string && d.get('level', '').size() <= 40 &&
+        d.get('module', '') is string && d.get('module', '').size() <= 60 &&
+        d.get('page', '') is string && d.get('page', '').size() <= 200 &&
+        d.updatedAt == request.time;
+    }
+    match /appFeedback/{uid} {
+      allow read: if isAdmin() || (isAuth() && request.auth.uid == uid);
+      allow create: if isAuth() && request.auth.uid == uid &&
+        canWriteAsRealUser() && !isDemoAccount() &&
+        validFeedback() &&
+        request.resource.data.createdAt == request.time;
+      // An update keeps the first rating's date, so "rated since" stays true.
+      allow update: if isAuth() && request.auth.uid == uid &&
+        canWriteAsRealUser() && !isDemoAccount() &&
+        validFeedback() &&
+        request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin();
+    }
+
+    // ── faqs: common questions (Admin > FAQ) ──
+    // Written by the admin only (teacher/js/faq-admin.js). A PUBLISHED question
+    // is public help text: anyone reads it, signed in or not, because the
+    // sign-in page shows the sign-in ones to people who cannot sign in
+    // (js/faq.js). A draft is the admin's only - so every student query must
+    // carry published == true, and js/faq.js always does.
+    //
+    // The topic keys are the Messages & help topics plus 'general', mirrored in
+    // js/faq.js; tools/faq-check.js fails if they drift.
+    function faqTopics() {
+      return ['general', 'account', 'technical', 'content', 'lesson', 'grade',
+              'absence', 'idea', 'other'];
+    }
+    function validFaq() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['q', 'a', 'topic', 'order', 'published', 'onLogin',
+                               'createdAt', 'updatedAt', 'updatedBy']) &&
+        d.keys().hasAll(['q', 'a', 'topic', 'order', 'published', 'onLogin',
+                         'createdAt', 'updatedAt', 'updatedBy']) &&
+        d.q is string && d.q.size() >= 3 && d.q.size() <= 200 &&
+        d.a is string && d.a.size() >= 1 && d.a.size() <= 3000 &&
+        d.topic in faqTopics() &&
+        d.order is int && d.order >= 0 && d.order <= 99999 &&
+        d.published is bool && d.onLogin is bool &&
+        d.updatedAt == request.time &&
+        d.updatedBy == request.auth.token.email;
+    }
+    match /faqs/{id} {
+      allow read: if isAdmin() || resource.data.published == true;
+      allow create: if isAdmin() && validFaq() &&
+        request.resource.data.createdAt == request.time;
+      allow update: if isAdmin() && validFaq() &&
+        request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if isAdmin();
     }
 
@@ -387,9 +842,19 @@ service cloud.firestore {
     // un-editable. A future backfill (admin script) can stamp
     // teacherId onto legacy docs to remove this loophole.
     function _ownsAssignment() {
+      // NO LEGACY GRANDFATHER. This used to return true for any assignment
+      // with no `teacherId`, which meant an ownerless assignment could be
+      // edited or deleted by ANY teacher, not just its author. That was
+      // tolerable when delete removed one document; it is not now that an
+      // admin delete also removes every submission and progress record
+      // attached to it.
+      //
+      // Verified before closing: production has 0 ownerless assignments, so
+      // nothing is stranded by this. If one ever appears (an import, a
+      // backfill that half-ran), ADMIN can still fix or remove it - and
+      // y/tools/backfill-assignment-owner.js exists to set the field.
       return isAdmin() ||
-        !('teacherId' in resource.data) ||
-        resource.data.teacherId == request.auth.uid;
+        (('teacherId' in resource.data) && resource.data.teacherId == request.auth.uid);
     }
 
     match /assignments/{assignmentId} {
@@ -583,9 +1048,13 @@ service cloud.firestore {
     // status/startedAt/endedAt (createdBy is preserved). Legacy
     // sessions without createdBy are grandfathered.
     function _ownsClassroomSession() {
+      // CLOSED. This used to grant access when 'createdBy' was MISSING, so any
+      // teacher could edit or delete an ownerless session. Proven exploitable
+      // against the emulator with a real second teacher's token. Same shape as
+      // _ownsAssignment, which was closed first: the field must be PRESENT and
+      // match. Every host stamps it on create, so no live session is affected.
       return isAdmin() ||
-        !('createdBy' in resource.data) ||
-        resource.data.createdBy == request.auth.uid;
+        (('createdBy' in resource.data) && resource.data.createdBy == request.auth.uid);
     }
 
     // ── AI usage log ─────────────────────────────────────────
@@ -663,11 +1132,20 @@ service cloud.firestore {
 
         // Kick player: only the session creator (or admin). Same
         // ownership check as the parent session.
+        //
+        // CLOSED. This had TWO permissive branches, and the wider one was the
+        // missing-DOCUMENT branch, not the missing-field one: any teacher could
+        // kick any player out of any session whose parent document had been
+        // deleted. A host deleting a finished session leaves the players
+        // subcollection behind, so orphaned rosters are the NORMAL end state,
+        // not an edge case. Both branches are gone; the parent must exist and
+        // must name this teacher. Cleaning up orphaned rosters is now an admin
+        // job, which matches how child deletes are handled for assignments.
         allow delete: if isTeacher() &&
           (isAdmin() ||
-           !exists(/databases/$(database)/documents/classroom_sessions/$(sessionCode)) ||
-           !('createdBy' in get(/databases/$(database)/documents/classroom_sessions/$(sessionCode)).data) ||
-           get(/databases/$(database)/documents/classroom_sessions/$(sessionCode)).data.createdBy == request.auth.uid);
+           (exists(/databases/$(database)/documents/classroom_sessions/$(sessionCode)) &&
+            ('createdBy' in get(/databases/$(database)/documents/classroom_sessions/$(sessionCode)).data) &&
+            get(/databases/$(database)/documents/classroom_sessions/$(sessionCode)).data.createdBy == request.auth.uid));
 
         // Per-question answers subcollection — demo blocked from writing here.
         match /answers/{answerId} {
@@ -696,9 +1174,13 @@ service cloud.firestore {
     // Students can join anonymously (signInAnonymously) since they
     // join via a 4-letter room code physically given by the teacher.
     function _ownsHeistSession() {
+      // CLOSED. This used to grant access when 'hostUid' was MISSING, so any
+      // teacher could edit or delete an ownerless session. Proven exploitable
+      // against the emulator with a real second teacher's token. Same shape as
+      // _ownsAssignment, which was closed first: the field must be PRESENT and
+      // match. Every host stamps it on create, so no live session is affected.
       return isAdmin() ||
-        !('hostUid' in resource.data) ||
-        resource.data.hostUid == request.auth.uid;
+        (('hostUid' in resource.data) && resource.data.hostUid == request.auth.uid);
     }
     function _isHeistHost(code) {
       return isAuth() &&
@@ -766,9 +1248,13 @@ service cloud.firestore {
     // doc within their session (for role assignment + later vote
     // resolution + ghost transitions).
     function _ownsTrustSession() {
+      // CLOSED. This used to grant access when 'hostUid' was MISSING, so any
+      // teacher could edit or delete an ownerless session. Proven exploitable
+      // against the emulator with a real second teacher's token. Same shape as
+      // _ownsAssignment, which was closed first: the field must be PRESENT and
+      // match. Every host stamps it on create, so no live session is affected.
       return isAdmin() ||
-        !('hostUid' in resource.data) ||
-        resource.data.hostUid == request.auth.uid;
+        (('hostUid' in resource.data) && resource.data.hostUid == request.auth.uid);
     }
     function _isTrustHost(code) {
       return isAuth() &&
@@ -865,9 +1351,13 @@ service cloud.firestore {
         get(/databases/$(database)/documents/$(coll)/$(code)).data.hostUid == request.auth.uid;
     }
     function _ownsMiniSession() {
+      // CLOSED. This used to grant access when 'hostUid' was MISSING, so any
+      // teacher could edit or delete an ownerless session. Proven exploitable
+      // against the emulator with a real second teacher's token. Same shape as
+      // _ownsAssignment, which was closed first: the field must be PRESENT and
+      // match. Every host stamps it on create, so no live session is affected.
       return isAdmin() ||
-        !('hostUid' in resource.data) ||
-        resource.data.hostUid == request.auth.uid;
+        (('hostUid' in resource.data) && resource.data.hostUid == request.auth.uid);
     }
 
     match /tug_sessions/{code} {
@@ -906,6 +1396,37 @@ service cloud.firestore {
       }
     }
 
+    // ── aiquiz_sessions collection - the teacher-paced AI Quiz ──
+    //
+    // Same posture as the other mini-games above, with one addition:
+    // a `meta` subcollection holding the question list. It lives apart
+    // from the session document on purpose, because every phone in the
+    // room listens to that session document and it must stay small. The
+    // questions are read once per phone instead of being pushed to
+    // everyone on every question change.
+    //
+    // The answer key IS in that document, which is the same trust model
+    // as the other mini-games (the phone marks its own answer). This is a
+    // classroom game with the teacher watching the board, not an exam.
+    // If it ever needs to be exam-grade, the key has to move out of the
+    // students' reach and marking has to move to the host's tab, the way
+    // reading_sessions does it.
+    match /aiquiz_sessions/{code} {
+      allow create: if isTeacher() &&
+        (isAdmin() || request.resource.data.hostUid == request.auth.uid);
+      allow update, delete: if isTeacher() && _ownsMiniSession();
+      allow read: if isAuth();
+      match /players/{uid} {
+        allow create, update: if isOwner(uid) || _isMiniHost('aiquiz_sessions', code);
+        allow read: if isAuth();
+        allow delete: if _isMiniHost('aiquiz_sessions', code);
+      }
+      match /meta/{docId} {
+        allow read: if isAuth();
+        allow write: if _isMiniHost('aiquiz_sessions', code);
+      }
+    }
+
     // ── reading_sessions collection — classroom-mode reading exam ──
     //
     // Same trust posture as trust_sessions: the teacher's tab is the
@@ -920,9 +1441,13 @@ service cloud.firestore {
     // scores them in real time but doesn't write back to the answer
     // doc — scoring is held in session/{uid} aggregate fields.
     function _ownsReadingSession() {
+      // CLOSED. This used to grant access when 'hostUid' was MISSING, so any
+      // teacher could edit or delete an ownerless session. Proven exploitable
+      // against the emulator with a real second teacher's token. Same shape as
+      // _ownsAssignment, which was closed first: the field must be PRESENT and
+      // match. Every host stamps it on create, so no live session is affected.
       return isAdmin() ||
-        !('hostUid' in resource.data) ||
-        resource.data.hostUid == request.auth.uid;
+        (('hostUid' in resource.data) && resource.data.hostUid == request.auth.uid);
     }
     function _isReadingHost(code) {
       return isAuth() &&
@@ -956,7 +1481,19 @@ service cloud.firestore {
         // reads its own answers back to render selected state).
         match /answers/{questionId} {
           allow create, update: if isOwner(uid);
-          allow read: if isAuth();
+          // TIGHTENED. This was `isAuth()`, which let ANY signed-in student
+          // read ANY other student's answers during a live exam. Proven from
+          // the browser console with nothing but the room code from the
+          // projector: read the session, LIST players to harvest uids (that
+          // subcollection is also isAuth()), then read their answer documents.
+          // The leaked value came back in plain text.
+          //
+          // isAuth() was the lazy way to let the HOST grade. The host is now
+          // named explicitly instead. Checked before changing: no student
+          // client ever reads another student's answers - reading-student.js:211
+          // only ever walks players.doc(myUid) - and reading-teacher.js:431
+          // walks every player, which _isReadingHost still allows.
+          allow read: if isOwner(uid) || _isReadingHost(code);
           allow delete: if _isReadingHost(code);
         }
       }
@@ -972,9 +1509,13 @@ service cloud.firestore {
     // session as the audio plays, so students' tabs can render a
     // Q-marker highlight + "replays used" hint.
     function _ownsListeningSession() {
+      // CLOSED. This used to grant access when 'hostUid' was MISSING, so any
+      // teacher could edit or delete an ownerless session. Proven exploitable
+      // against the emulator with a real second teacher's token. Same shape as
+      // _ownsAssignment, which was closed first: the field must be PRESENT and
+      // match. Every host stamps it on create, so no live session is affected.
       return isAdmin() ||
-        !('hostUid' in resource.data) ||
-        resource.data.hostUid == request.auth.uid;
+        (('hostUid' in resource.data) && resource.data.hostUid == request.auth.uid);
     }
     function _isListeningHost(code) {
       return isAuth() &&
@@ -995,7 +1536,11 @@ service cloud.firestore {
 
         match /answers/{questionId} {
           allow create, update: if isOwner(uid);
-          allow read: if isAuth();
+          // TIGHTENED, same reason as the reading exam above: this was
+          // isAuth(), so one student could read another's answers mid-exam.
+          // listening-student.js:191 only ever reads players.doc(myUid), and
+          // the host's grading walk still passes through _isListeningHost.
+          allow read: if isOwner(uid) || _isListeningHost(code);
           allow delete: if _isListeningHost(code);
         }
       }

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI Quiz at scale</title>
+<!-- ============================================================
+     AI QUIZ - does the HOST screen survive 1000 students?
+     ------------------------------------------------------------
+     The load test on Vocab Race found the ceiling was the teacher's
+     browser, not Firestore: 194 seconds of rendering for a 600
+     player game, because the player list is rebuilt on every score
+     write. The AI Quiz was written to avoid that. This measures
+     whether it actually did.
+
+     What is measured, using the REAL host functions pulled out of
+     classroom/js/aiquiz-teacher.js:
+
+       - the lobby render, at 30 / 300 / 1000 players
+       - the ladder query, which should be 10 reads regardless of
+         room size
+       - the size of the document every phone listens to
+
+     Needs:  firebase emulators:start --only firestore,auth
+     ============================================================ -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<link rel="stylesheet" href="/css/brand.css">
+<link rel="stylesheet" href="/classroom/css/styles.css">
+<link rel="stylesheet" href="/classroom/css/minigames.css">
+<style>
+  body { font-family: system-ui, sans-serif; margin: 20px; }
+  #out { white-space: pre-wrap; font-family: ui-monospace, monospace; font-size: 13px;
+         background: #fff; border: 1px solid #d8e1ee; border-radius: 10px; padding: 14px; }
+  /* Visible, so layout and paint are really measured. A hidden container
+     makes the browser skip the expensive part and reports a fake win. */
+  #roster { min-height: 120px; }
+</style>
+</head>
+<body>
+<h1>AI Quiz at scale</h1>
+<div id="rosterCount"></div>
+<button id="startBtn"></button>
+<div class="players-grid" id="roster"></div>
+<div class="leaderboard-list" id="liveBoard"></div>
+<div id="out">idle</div>
+<script>
+const out = document.getElementById('out');
+const log = (s) => { out.textContent += '\n' + s; };
+window.RESULT = null;
+
+window.runScale = async function (sizes) {
+  sizes = sizes || [30, 300, 1000];
+  out.textContent = 'starting...';
+
+  firebase.initializeApp({ projectId: 'empower-vocabulary-practice', apiKey: 'x', authDomain: 'x' });
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  auth.useEmulator('http://127.0.0.1:9099', { disableWarnings: true });
+  db.useEmulator('127.0.0.1', 8080);
+
+  const t = await auth.createUserWithEmailAndPassword('scale' + Date.now() + '@fsm.edu.tr', 'Test1234!');
+  const hostUid = t.user.uid;
+  await fetch('http://127.0.0.1:8080/v1/projects/empower-vocabulary-practice/databases/(default)/documents/users/' + hostUid,
+    { method: 'PATCH', headers: { 'Authorization': 'Bearer owner', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields: { role: { stringValue: 'teacher' } } }) });
+  log('teacher ready');
+
+  // The REAL lobby render from the host file, so this measures shipped code.
+  const src = await (await fetch('/classroom/js/aiquiz-teacher.js?cb=' + Math.random())).text();
+  const m = src.match(/r\.innerHTML = '<div class="mg-player-count">'[\s\S]*?';/);
+  if (!m) { log('could not find the lobby render'); return; }
+  const renderLobby = (n) => {
+    const c = document.getElementById('rosterCount'); if (c) c.textContent = n;
+    const r = document.getElementById('roster');
+    r.innerHTML = '<div class="mg-player-count">' + n +
+      '<span>' + (n === 1 ? 'student joined' : 'students joined') + '</span></div>';
+    const btn = document.getElementById('startBtn');
+    btn.disabled = n === 0;
+    btn.textContent = n === 0 ? 'Waiting for players...' : 'Start quiz (' + n + ')';
+    void r.offsetHeight;
+  };
+
+  const rows = [];
+  for (const N of sizes) {
+    const code = 'S' + Math.random().toString(36).slice(2, 6).toUpperCase();
+    const ref = db.collection('aiquiz_sessions').doc(code);
+    await ref.set({ code, status: 'waiting', currentQuestion: -1, phase: 'asking',
+                    questionEndsAt: null, total: 20, seconds: 30, hostUid, teacherName: 'Host' });
+
+    // Seed N players via the admin path: this is fixture setup, not the thing
+    // being measured, and doing it through N browser writes would take longer
+    // than the game itself.
+    const t0 = performance.now();
+    for (let i = 0; i < N; i += 200) {
+      const writes = [];
+      for (let k = i; k < Math.min(i + 200, N); k++) {
+        writes.push(fetch('http://127.0.0.1:8080/v1/projects/empower-vocabulary-practice/databases/(default)/documents/aiquiz_sessions/' + code + '/players/u' + k,
+          { method: 'PATCH', headers: { 'Authorization': 'Bearer owner', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fields: { name: { stringValue: 'Student ' + k },
+                                             score: { integerValue: String((k * 37) % 900) } } }) }));
+      }
+      await Promise.all(writes);
+    }
+    const seedMs = performance.now() - t0;
+
+    // 1. LOBBY RENDER, the thing that broke Vocab Race.
+    renderLobby(N);
+    const r0 = performance.now();
+    for (let i = 0; i < 20; i++) renderLobby(N);
+    const lobbyMs = (performance.now() - r0) / 20;
+
+    // 2. LADDER: should be 10 reads whatever the room size.
+    const l0 = performance.now();
+    const top = await ref.collection('players').orderBy('score', 'desc').limit(10).get();
+    const ladderMs = performance.now() - l0;
+
+    // 3. The document every phone listens to.
+    const sess = await ref.get();
+    const bytes = new TextEncoder().encode(JSON.stringify(sess.data())).length;
+
+    const row = { players: N,
+      seedMs: Math.round(seedMs),
+      lobbyRenderMs: Math.round(lobbyMs * 100) / 100,
+      lobbyRenderPerGame20q: Math.round(lobbyMs * N * 20) / 1000 + 's (if it rebuilt per write)',
+      ladderDocsRead: top.size,
+      ladderMs: Math.round(ladderMs),
+      sessionDocBytes: bytes };
+    rows.push(row);
+    log(JSON.stringify(row));
+  }
+
+  window.RESULT = rows;
+  log('\nDONE');
+  return rows;
+};
+</script>
+</body>
+</html>

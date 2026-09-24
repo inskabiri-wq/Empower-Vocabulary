@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Without this the layout viewport falls back to 980px on an emulated phone
+     and every max-width media query silently fails to match, which makes the
+     harness measure the DESKTOP layout while looking like a phone. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grammar mobile layout</title>
+<!-- The REAL stylesheets, in the same order student-dashboard.html loads them,
+     so what this measures is the shipping cascade and not an approximation. -->
+<link rel="stylesheet" href="../../css/brand.css">
+<link rel="stylesheet" href="../../student/css/styles.css">
+<link rel="stylesheet" href="../../student/css/extra.css">
+<link rel="stylesheet" href="../../student/css/hub.css">
+<link rel="stylesheet" href="../../student/css/skills.css">
+<link rel="stylesheet" href="../../student/css/grammar.css">
+<link rel="stylesheet" href="../../css/app-settings.css">
+<style>
+  body{margin:0;background:#eef2f7;}
+  .phone{width:100%;background:var(--bg-primary,#f6f8fb);min-height:100vh;}
+  /* entrance animations are frozen in a non-compositing preview pane, which
+     shifts every animated block. Kill them so geometry is honest. */
+  *,*::before,*::after{animation:none !important;transition:none !important;}
+  #out{position:fixed;left:8px;top:8px;width:280px;background:#fff;border:1px solid #cbd5e1;
+       border-radius:8px;padding:10px;font:12px/1.5 'Segoe UI',Arial,sans-serif;z-index:9;}
+</style>
+</head>
+<body class="light-mode">
+<div class="phone">
+  <div id="grammarScreen" class="screen active" style="display:block">
+    <div class="dashboard-header">
+      <div class="header-left">
+        <h1 class="dashboard-title">Lingualab</h1>
+        <p class="subtitle">&#9999;&#65039; <strong>Grammar</strong> <span class="dash-cycle-wrapper"><span class="dash-cycle-word">with 5 challenge games</span></span></p>
+      </div>
+    </div>
+
+    <div id="grBody">
+      <div class="gr-dash">
+        <div class="gr-main">
+          <div class="dash-xp-block">
+            <div class="dash-xp-row"><span class="dash-xp-badge">Level 1 &middot; Beginner</span>
+            <span class="dash-xp-count">0 / 100 XP</span></div>
+            <div class="dash-xp-track"><div class="dash-xp-fill" style="width:0%"></div></div>
+          </div>
+          <div class="gr-section-title">&#127918; Choose a game &middot; All units</div>
+          <p class="gr-unit-desc">All 11 units &middot; every A2 topic.</p>
+          <div class="gr-game-grid">
+            <button class="gr-game-card"><div class="gr-game-ico">&#127919;</div><h3>Multiple Choice</h3><p>Pick the correct form</p></button>
+            <button class="gr-game-card"><div class="gr-game-ico">&#128221;</div><h3>Fill the Gap</h3><p>Type the answer</p></button>
+            <button class="gr-game-card"><div class="gr-game-ico">&#128260;</div><h3>Reorder</h3><p>Build the sentence</p></button>
+            <button class="gr-game-card"><div class="gr-game-ico">&#9889;</div><h3>Speed Round</h3><p>Beat the clock</p></button>
+            <button class="gr-game-card"><div class="gr-game-ico">&#127942;</div><h3>Unit Test</h3><p>Prove mastery</p></button>
+          </div>
+        </div>
+        <div class="gr-side">
+          <div class="gr-side-card"><div class="gr-side-title">&#128218; Level</div>
+            <div class="gr-level-pills">
+              <button class="gr-pill active">A2</button><button class="gr-pill">B1</button>
+              <button class="gr-pill">B1+</button><button class="gr-pill">B2</button>
+            </div>
+          </div>
+          <div class="gr-side-card"><div class="gr-side-title">&#128214; Unit</div>
+            <div class="gr-level-pills gr-unit-pills">
+              <button class="gr-pill active">All</button><button class="gr-pill">U1</button>
+              <button class="gr-pill">U2</button><button class="gr-pill">U3</button>
+              <button class="gr-pill">U4</button><button class="gr-pill">U5</button>
+              <button class="gr-pill">U6</button><button class="gr-pill">U7</button>
+              <button class="gr-pill">U8</button><button class="gr-pill">U9</button>
+              <button class="gr-pill">U10</button><button class="gr-pill">U11</button>
+            </div>
+            <div class="gr-count"><div class="gr-count-num">2326</div><div class="gr-count-lbl">questions at A2</div></div>
+          </div>
+          <button type="button" class="map-btn-gamified"><span class="map-btn-icon">&#128506;&#65039;</span><span class="map-btn-text">Explore Grammar Map</span><span class="map-btn-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="out">measuring...</div>
+<script>
+function measure(){
+  const q = s => document.querySelector(s);
+  const r = s => { const e = q(s); return e ? e.getBoundingClientRect() : null; };
+  const dash = q('.gr-dash');
+  const cs = getComputedStyle(dash);
+  const rows = [
+    ['.dash-xp-block',   r('.dash-xp-block')],
+    ['.gr-side-card #1', document.querySelectorAll('.gr-side-card')[0].getBoundingClientRect()],
+    ['.gr-side-card #2', document.querySelectorAll('.gr-side-card')[1].getBoundingClientRect()],
+    ['.gr-game-grid',    r('.gr-game-grid')],
+    ['.map-btn-gamified',r('.map-btn-gamified')],
+  ];
+  // header overlap: does the subtitle's ink escape upward into the title?
+  const title = r('.dashboard-title'), sub = r('.subtitle');
+  const wrap = r('.dash-cycle-wrapper');
+  const widths = rows.map(([n, b]) => n + ': ' + Math.round(b.width) + 'px @x' + Math.round(b.left));
+  const distinct = new Set(rows.map(([, b]) => Math.round(b.width)));
+  const res = {
+    dashDisplay: cs.display, dashDirection: cs.flexDirection, dashAlignItems: cs.alignItems,
+    widths,
+    allSameWidth: distinct.size === 1,
+    titleBottom: Math.round(title.bottom), subTop: Math.round(sub.top),
+    headerOverlapPx: Math.round(title.bottom - sub.top),
+    subtitleHeight: Math.round(sub.height),
+    cycleWrapWidth: Math.round(wrap.width),
+    cycleWrapOverflowsSubtitle: Math.round(wrap.right) > Math.round(sub.right) + 1,
+  };
+  document.getElementById('out').innerHTML =
+    Object.entries(res).map(([k, v]) => '<b>' + k + '</b>: ' + (Array.isArray(v) ? '<br>&nbsp;&nbsp;' + v.join('<br>&nbsp;&nbsp;') : v)).join('<br>');
+  window.__layout = res;
+}
+window.addEventListener('load', () => setTimeout(measure, 120));
+</script>
+</body>
+</html>

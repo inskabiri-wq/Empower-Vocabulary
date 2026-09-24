@@ -4,12 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Courses | Lingualab</title>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/brand.css?v=17">
-<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
-<link rel="stylesheet" href="student/css/policy-course.css?v=9">
-<script src="js/app-dialog.js"></script>
+<link rel="stylesheet" href="css/brand.css?v=30">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=14">
+<link rel="stylesheet" href="student/css/policy-course.css?v=15">
+<script src="js/app-dialog.js?v=8"></script>
+  <script src="js/sound.js?v=4"></script>
 <style>
   /* Catalog-only additions on top of policy-course.css */
   .crs-card { align-items: flex-start; }
@@ -25,11 +26,15 @@
     .crs-right .pc-btn { display: block; width: 100%; text-align: center; box-sizing: border-box; }
     .crs-state { text-align: center; }
   }
+
+/* LIGHT MODE - see the note in join.html. */
+.light-mode .cs-hero, .light-mode .cs-card { box-shadow: 0 18px 40px rgba(15,23,42,0.07); }
 </style>
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 
@@ -47,8 +52,16 @@
       <span>Courses</span>
     </div>
     <div class="pc-header-right">
-      <span class="pc-student-chip" id="crsStudentChip"></span>
+      <!-- Hidden: the profile badge already shows the name, and the two together
+           read as the name printed twice. The element stays because courses.html
+           writes into it by id on load. -->
+      <span class="pc-student-chip" id="crsStudentChip" hidden style="display:none"></span>
     </div>
+    <!-- DIRECT child of the header, not inside .pc-header-right. Nested, its
+         margin-left:auto only pushed it within that wrapper, which is no wider
+         than its own contents - so the badge sat next to the title on the LEFT
+         instead of at the top right. -->
+    <span data-profile-hub-mount></span>
   </header>
 
   <main class="pc-wrap">
@@ -60,20 +73,20 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<!-- Which university, then start Firebase for it. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
 <script src="student/js/policy-course-content.js?v=7"></script>
-<script src="student/js/course-target.js?v=2"></script>
+<script src="student/js/course-target.js?v=3"></script>
 <script>
 (function () {
   'use strict';
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-    authDomain: "empower-vocabulary-practice.firebaseapp.com",
-    projectId: "empower-vocabulary-practice",
-    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-    messagingSenderId: "136270199832",
-    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // Firebase is started by js/firebase-init.js, which reads the project
+  // from js/tenant.js. This file used to name one university directly, which would
+  // have pointed every deployment at that same project.
+  if (!firebase.apps.length) {
+    throw new Error('courses: js/tenant.js + js/firebase-init.js must load first.');
+  }
   const auth = firebase.auth();
   const db = firebase.firestore();
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -182,5 +195,12 @@
   });
 })();
 </script>
+<!-- Profile hub: the avatar picture, and under it the display settings,
+     achievements, avatar chooser, password, logout and (for teachers) the
+     teacher dashboard. One shared module so all thirteen pages match. -->
+<!-- "Rate Lingualab" - before the profile hub, which offers it as a row. -->
+<script src="js/app-rating.js?v=3"></script>
+<script src="js/faq.js?v=1"></script>
+<script src="js/profile-hub.js?v=22"></script>
 </body>
 </html>

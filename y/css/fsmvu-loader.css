@@ -1,5 +1,5 @@
 /* ============================================================
-   FSMVÜ SEAL — Loader Animations
+   FSMVÜ SEAL - Loader Animations
    ------------------------------------------------------------
    Recreated 1:1 from the Claude Design hand-off "FSMVU Loaders.html".
    Six stately, academic loading directions built from the Fatih Sultan
@@ -11,7 +11,7 @@
    `@keyframes spin` / `breathe` rules (which run at different speeds).
 
    USAGE
-     Default (Breathe) — a 1:1 drop-in for <div class="spinner">:
+     Default (Breathe) - a 1:1 drop-in for <div class="spinner">:
         <div class="fsmvu-loader" role="status" aria-label="Loading"></div>
 
      Other single-element variants:
@@ -31,8 +31,25 @@
 .fsmvu-overlay{
   --fsmvu-crimson:#ee3342;
   --fsmvu-crimson-deep:#c01f2d;
-  --fsmvu-seal:url('/fsmvu-seal.png');
+  /* The Lingualab MARK (flask), from the "LinguaLab Loaders v4" design
+     hand-off, recoloured to this app's palette. It replaces the FSMVU seal in
+     the loaders only.
+     The seal itself is NOT retired: it is still the university's mark on the
+     printed certificate (policy-course.html) and it stays the tenant seal in
+     js/tenant.js. A certificate carries the university's seal, not the app's
+     logo, so those two must not be swapped for each other. */
+  --ll-mark:url('/lingualab-mark.svg');
+  /* Kept as an alias so nothing that still names the old variable breaks. */
+  --fsmvu-seal:var(--ll-mark);
   --fsmvu-size:128px;
+  /* The faint ring behind the moving arc. On the white app a crimson tint at
+     16% is nearly invisible, so light mode uses an ink tint instead; dark keeps
+     the crimson tint it always had. */
+  --fsmvu-track-ink:rgba(238,51,66,.16);
+}
+.light-mode .fsmvu-loader,
+.light-mode .fsmvu-overlay{
+  --fsmvu-track-ink:rgba(15,23,42,.12);
 }
 
 /* ---------- base seal block ---------- */
@@ -42,7 +59,7 @@
   will-change:transform,opacity,filter;
 }
 
-/* The bare .fsmvu-loader IS a breathing seal — a drop-in for the old
+/* The bare .fsmvu-loader IS a breathing seal - a drop-in for the old
    <div class="spinner"></div> with no markup restructuring. */
 .fsmvu-loader{
   width:var(--fsmvu-size); height:var(--fsmvu-size);
@@ -51,31 +68,56 @@
   animation:fsmvu-breathe 3.6s ease-in-out infinite;
 }
 
-/* ============ 01 · RING ROTATION ============ */
-/* Splits the seal into emblem core + outer text ring; the ring slowly
-   rotates. Keeps the original 152px geometry so the radial split lands
-   exactly on the ring/emblem boundary. */
+/* ============ 01 · DASHED RING  (v4 "M") ============
+   The mark sits STILL and a dashed ring turns around it.
+
+   This variant used to split the artwork itself into an outer ring and an
+   inner core with two radial masks at r=49/50px, and spin the ring half. That
+   only worked because the FSMVU seal HAS a text ring at exactly that radius.
+   The Lingualab mark is a flask - masking it that way punched its middle out
+   and rotated the remainder, which is what the launch splash would have shown.
+   So the motion moved off the mark and onto a ring of its own. */
 .fsmvu-loader--rotate{
   width:152px; height:152px; position:relative;
   background:none; animation:none;
+  display:grid; place-items:center;
 }
-.fsmvu-loader--rotate .fsmvu-seal{ position:absolute; inset:0; width:152px; height:152px; }
-.fsmvu-emblem{
-  -webkit-mask:radial-gradient(circle 76px at 50% 50%, #000 0 49px, transparent 50px);
-          mask:radial-gradient(circle 76px at 50% 50%, #000 0 49px, transparent 50px);
+/* .fsmvu-emblem is the mark, drawn at its natural size, no mask. */
+.fsmvu-loader--rotate .fsmvu-emblem{
+  position:static; width:66px; height:66px;
+  -webkit-mask:none; mask:none;
 }
-.fsmvu-ring{
-  -webkit-mask:radial-gradient(circle 76px at 50% 50%, transparent 0 49px, #000 50px);
-          mask:radial-gradient(circle 76px at 50% 50%, transparent 0 49px, #000 50px);
+/* .fsmvu-ring stops being a slice of the artwork and becomes the ring itself.
+   A dashed circle is drawn as an SVG data URI because CSS `border-style:
+   dashed` gives no control over dash length, and the design's 2-on / 7-off
+   rhythm is what makes it read as a ring rather than a dotted outline. */
+.fsmvu-loader--rotate .fsmvu-ring{
+  position:absolute; inset:0; width:152px; height:152px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%23ee3342' stroke-width='3' stroke-dasharray='2 7' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask:none; mask:none;
+  animation:fsmvu-spin 9s linear infinite;
 }
-.fsmvu-loader--rotate .fsmvu-ring{ animation:fsmvu-spin 9s linear infinite; }
+/* The white treatment applies to the MARK only, so the ring keeps its colour.
+   Without this the silhouette filter would flatten the ring to white too. */
+.fsmvu-loader--white .fsmvu-loader--rotate .fsmvu-ring,
+.fsmvu-loader--rotate.fsmvu-loader--white .fsmvu-ring{ filter:none; }
 @keyframes fsmvu-spin{ to{ transform:rotate(360deg); } }
 
-/* White-seal treatment — renders the crimson seal solid WHITE (keeps all of
+/* White-seal treatment - renders the crimson seal solid WHITE (keeps all of
    its shape/letters), for high contrast on the dark loading screens. Stacks on
    any variant, e.g. `fsmvu-loader fsmvu-loader--rotate fsmvu-loader--white`. */
 .fsmvu-loader--white .fsmvu-seal{ filter:brightness(0) invert(1); }
-/* NB: only .fsmvu-seal is whitened — so Progress Ring keeps its CRIMSON arc
+/* The "white" variant is a SILHOUETTE trick: brightness(0) flattens the seal to
+   black, invert(1) flips it to white for a dark ground. On the white page that
+   is a white mark on white paper - the launch splash rendered as an empty
+   screen. Dropping the invert leaves the same silhouette in black.
+   Scoped to light mode so the dark exam pages keep their white seal. */
+/* On the WHITE app the mark needs no silhouette trick at all: it is already
+   drawn in blue with a crimson fill and reads correctly on paper. Showing it in
+   full colour is better than the black silhouette this used to force, and white
+   is the app default, so this is the case that matters most. */
+.light-mode .fsmvu-loader--white .fsmvu-seal{ filter:none; }
+/* NB: only .fsmvu-seal is whitened - so Progress Ring keeps its CRIMSON arc
    while its centre seal goes white. */
 
 /* ============ 02 · BREATHE / PULSE (default) ============ */
@@ -85,23 +127,67 @@
 }
 
 /* ============ 03 · SHIMMER SWEEP ============ */
-.fsmvu-loader--shimmer{ position:relative; animation:none; }
+/* ============ 03 · COMET SWEEP  (v4 "N") ============
+   A comet tail chases itself round the mark: one conic gradient from
+   transparent to solid, masked into a thin ring.
+   .fsmvu-gloss used to be a sheen swept ACROSS the artwork, masked to its
+   silhouette. That reads as a highlight on a solid seal; on a two-tone flask it
+   mostly washed the liquid out. The motion is a ring now, like the rest. */
+.fsmvu-loader--shimmer{
+  position:relative; animation:none;
+  display:grid; place-items:center;
+  width:132px; height:132px; background:none;
+}
+.fsmvu-loader--shimmer::after{
+  content:''; width:66px; height:66px;
+  background:var(--ll-mark) center/contain no-repeat;
+}
 .fsmvu-loader--shimmer .fsmvu-gloss{
-  position:absolute; inset:0; pointer-events:none;
-  -webkit-mask:var(--fsmvu-seal) center/contain no-repeat;
-          mask:var(--fsmvu-seal) center/contain no-repeat;
-  background:linear-gradient(115deg,
-    transparent 38%, rgba(255,255,255,.92) 50%, transparent 62%);
-  background-size:280% 100%;
-  animation:fsmvu-sheen 3.8s cubic-bezier(.5,0,.2,1) infinite;
+  position:absolute; inset:0; pointer-events:none; border-radius:50%;
+  background:conic-gradient(from 0deg,
+    rgba(238,51,66,0) 0deg, rgba(238,51,66,.15) 180deg,
+    var(--fsmvu-crimson) 350deg, var(--fsmvu-crimson) 360deg);
+  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+          mask:radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+  animation:fsmvu-spin 1.4s linear infinite;
 }
 @keyframes fsmvu-sheen{
   0%{ background-position:170% 0; }
   55%,100%{ background-position:-170% 0; }
 }
 
-/* ============ 04 · DRAW-ON (iris build-up) ============ */
-.fsmvu-loader--draw{ animation:fsmvu-draw 3.8s cubic-bezier(.5,0,.15,1) infinite; }
+/* ============ 04 · COUNTER ARCS  (v4 "R") ============
+   Two arcs at different radii turning in opposite directions. The
+   counter-rotation is what stops it reading as one solid wheel.
+   Replaces the old iris "draw-on", which clipped the artwork itself with an
+   expanding circle - fine on a round seal, wrong on a flask, where it wiped in
+   as a growing disc that cut the mark off at the edges. */
+.fsmvu-loader--draw{
+  position:relative; animation:none; background:none;
+  width:136px; height:136px; display:grid; place-items:center;
+}
+.fsmvu-loader--draw::before,
+.fsmvu-loader--draw::after{
+  content:''; position:absolute; border-radius:50%;
+  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+          mask:radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+}
+.fsmvu-loader--draw::before{
+  inset:0;
+  background:conic-gradient(from 0deg, var(--fsmvu-crimson) 0 20%, transparent 20% 100%);
+  animation:fsmvu-spin 2.6s cubic-bezier(.6,0,.4,1) infinite;
+}
+.fsmvu-loader--draw::after{
+  inset:12px;
+  background:conic-gradient(from 180deg, var(--fsmvu-crimson-deep) 0 14%, transparent 14% 100%);
+  animation:fsmvu-spin-rev 3.4s cubic-bezier(.6,0,.4,1) infinite;
+}
+@keyframes fsmvu-spin-rev{ from{ transform:rotate(360deg); } to{ transform:rotate(0deg); } }
+/* the mark itself, centred and still */
+.fsmvu-loader--draw{ background:var(--ll-mark) center/62px 62px no-repeat; }
+
+/* Kept for anything still asking for the old iris wipe by name. */
+.fsmvu-loader--iris{ animation:fsmvu-draw 3.8s cubic-bezier(.5,0,.15,1) infinite; }
 @keyframes fsmvu-draw{
   0%  { clip-path:circle(0% at 50% 50%);  opacity:1; transform:scale(.94); }
   42% { clip-path:circle(62% at 50% 50%); opacity:1; transform:scale(1); }
@@ -130,10 +216,25 @@
   -webkit-mask:radial-gradient(circle at 50% 50%, transparent 0 86px, #000 87px 91px, transparent 92px);
           mask:radial-gradient(circle at 50% 50%, transparent 0 86px, #000 87px 91px, transparent 92px);
 }
-.fsmvu-track{ background:conic-gradient(rgba(238,51,66,.16) 0 100%); }
+/* ARC TRACE (v4 "P"): a faint full track with one arc that both TURNS and
+   grows/shrinks. The growing is the part that makes it read as work being
+   done rather than a wheel spinning at constant speed.
+   A conic gradient's colour stop is not animatable on its own, so the sweep
+   angle is registered as a real custom property. Where @property is
+   unsupported the initial-value simply holds and the arc turns at a fixed
+   length - the loader still works, it just loses the breathing. */
+@property --fsmvu-arc-sweep{ syntax:'<percentage>'; inherits:false; initial-value:22%; }
+.fsmvu-track{ background:conic-gradient(var(--fsmvu-track-ink, rgba(238,51,66,.16)) 0 100%); }
 .fsmvu-arc{
-  background:conic-gradient(from 0deg, transparent 0 62%, var(--fsmvu-crimson) 78%, var(--fsmvu-crimson) 100%);
-  animation:fsmvu-spin 1.35s cubic-bezier(.6,.05,.4,.95) infinite;
+  background:conic-gradient(from 0deg,
+    var(--fsmvu-crimson) 0 var(--fsmvu-arc-sweep, 22%),
+    transparent var(--fsmvu-arc-sweep, 22%) 100%);
+  animation:fsmvu-spin 1.8s linear infinite,
+            fsmvu-arc-grow 1.8s ease-in-out infinite;
+}
+@keyframes fsmvu-arc-grow{
+  0%,100%{ --fsmvu-arc-sweep:8%; }
+  50%    { --fsmvu-arc-sweep:52%; }
 }
 .fsmvu-ring-wrap .fsmvu-seal{ width:120px; height:120px; animation:fsmvu-breathe-soft 3.2s ease-in-out infinite; }
 @keyframes fsmvu-breathe-soft{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
@@ -149,6 +250,72 @@
 .fsmvu-dots i:nth-child(3){ animation-delay:.36s; }
 @keyframes fsmvu-dot{ 0%,100%{opacity:.2;transform:translateY(0)} 50%{opacity:1;transform:translateY(-4px)} }
 
+/* ============ 07 · TICK DIAL  (v4 "O") ============
+   The mark sits still inside a dial of 12 ticks that light up one after the
+   other, like a second hand. Unlike the other four variants this one cannot be
+   done with pseudo-elements: it needs 12 real children, so js/fsmvu-loader.js
+   builds them (markup('dial')).
+
+   Each tick carries its index as `--i` inline, so one rule places all twelve
+   and one rule staggers all twelve. Writing 12 :nth-child() pairs would be 24
+   rules that have to stay in step with the JS loop. */
+.fsmvu-loader--dial{
+  width:152px; height:152px; position:relative;
+  background:none; animation:none;
+  display:grid; place-items:center;
+}
+.fsmvu-loader--dial .fsmvu-ticks{
+  position:absolute; inset:0; display:block;
+}
+.fsmvu-loader--dial .fsmvu-ticks i{
+  position:absolute; left:50%; top:50%;
+  width:2.5px; height:11px; margin:-5.5px 0 0 -1.25px;
+  border-radius:1.5px;
+  background:var(--fsmvu-crimson);
+  /* rotate into place, then push out to the dial radius */
+  transform:rotate(calc(var(--i) * 30deg)) translateY(-66px);
+  opacity:.16;
+  animation:fsmvu-tick 1.8s linear infinite;
+  animation-delay:calc(var(--i) * -0.15s);
+}
+@keyframes fsmvu-tick{
+  0%   { opacity:1; }
+  18%  { opacity:.16; }
+  100% { opacity:.16; }
+}
+.fsmvu-loader--dial .fsmvu-emblem{ width:86px; height:86px; }
+
+/* ============ 08 · CIRCLING WORD  (v4 "Q") ============
+   The wordmark orbits the still flask on a circular textPath. SVG text on a
+   path is the only way to get letters that actually follow the curve; rotating
+   a ring of absolutely-positioned letters keeps each glyph upright instead.
+
+   The <path> needs an id for textPath to reference, and two loaders on one
+   page would then share it - the same id collision that put the wrong clip on
+   the header mark earlier. js/fsmvu-loader.js therefore stamps a fresh id per
+   call and the CSS never names it. */
+.fsmvu-loader--orbit{
+  width:152px; height:152px; position:relative;
+  background:none; animation:none;
+  display:grid; place-items:center;
+}
+.fsmvu-loader--orbit .fsmvu-orbit{
+  position:absolute; inset:0; width:100%; height:100%;
+  animation:fsmvu-spin 9s linear infinite;
+  overflow:visible;
+}
+.fsmvu-loader--orbit .fsmvu-orbit text{
+  fill:var(--fsmvu-crimson);
+  font-family:var(--ll-font, 'Segoe UI', Roboto, sans-serif);
+  font-size:11px; font-weight:700;
+  letter-spacing:2.6px; text-transform:uppercase;
+}
+.fsmvu-loader--orbit .fsmvu-emblem{ width:80px; height:80px; }
+/* On the white/dark overlay the wordmark takes the same treatment the mark
+   does, so the pair stays one object rather than two colours. */
+.fsmvu-loader--white .fsmvu-orbit text{ fill:#ffffff; }
+.light-mode .fsmvu-loader--white .fsmvu-orbit text{ fill:var(--fsmvu-crimson); }
+
 /* ---------- full-screen overlay (JS-driven page loader) ---------- */
 .fsmvu-overlay{
   position:fixed; inset:0; z-index:99999;
@@ -160,17 +327,21 @@
 .fsmvu-overlay .fsmvu-cap{
   font-family:Georgia,'Times New Roman',serif; font-style:italic;
   font-size:0.8125rem; letter-spacing:.32em; text-transform:uppercase;
-  color:rgba(255,255,255,.6);
+  color:var(--text-secondary, rgba(255,255,255,.6));
 }
 @keyframes fsmvu-fade{ from{opacity:0} to{opacity:1} }
 
-/* ---------- launch splash (one-shot entrance → fades to reveal the page) ----------
+/* ---------- launch splash (one-shot entrance, fades to reveal the page) ----------
    Plays the instant index.html loads, continuing the PWA OS-splash "icon grows"
-   motion with the live seal, then fades into the login. One-shot (not looping). */
+   motion with the live mark, then fades into the login. One-shot (not looping). */
 .fsmvu-splash{
   position:fixed; inset:0; z-index:100000;
   display:flex; align-items:center; justify-content:center;
-  background:var(--bg-primary, #0f172a);                 /* == manifest background_color → seamless hand-off from the OS splash */
+  /* Must equal manifest.json background_color so the OS splash hands off to
+     this one with no flash. The fallback was left at the old dark navy long
+     after the manifest moved to #f6f8fb, so any page where --bg-primary failed
+     to resolve would have flashed navy over a white OS splash. */
+  background:var(--bg-primary, #f6f8fb);
   animation:fsmvu-splash-out .55s ease 1.4s forwards;
 }
 /* splash uses the white Ring-Rotation mark: scale the whole mark in, and spin
@@ -197,6 +368,20 @@
   .fsmvu-loader,
   .fsmvu-loader *,
   .fsmvu-overlay *{ animation:none !important; }
-  /* draw-on freezes invisible without its keyframes — keep it visible */
+  /* draw-on freezes invisible without its keyframes - keep it visible */
   .fsmvu-loader--draw{ clip-path:none !important; opacity:1 !important; }
+  /* the dial's ticks rest at .16 and are only bright mid-keyframe, so killing
+     the animation leaves a dial that looks switched off. Same pairing as the
+     draw variant: whenever animation:none hides something, restore it here. */
+  .fsmvu-loader--dial .fsmvu-ticks i{ opacity:.55 !important; }
+}
+
+/* ============================================================
+   LIGHT MODE - generated by tools/light-coverage.js findings
+   Each rule mirrors a real one above and flips only its SURFACE,
+   keeping the original alpha so translucent panels stay translucent
+   and nothing about the layering changes. Dark is untouched.
+   ============================================================ */
+.light-mode .fsmvu-overlay {
+  background: rgba(246, 248, 251, 0.94);
 }

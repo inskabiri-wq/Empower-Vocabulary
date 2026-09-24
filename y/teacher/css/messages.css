@@ -1,0 +1,143 @@
+/* ============================================================
+   MESSAGES INBOX - teacher/js/messages-admin.js
+   ------------------------------------------------------------
+   One inbox, two homes:
+     Admin > Messages   (#messagesPanel)      the admin, every message
+     Overview page      (#t2messagesPanel)    a teacher, their own students
+
+   Written on the --t2-* tokens ONLY, never on literal colours. Both homes
+   define those tokens (dashboard-v2.css, with light-mode values), and the
+   Admin tab re-points some of them to its gray palette - so the same rules
+   come out in each home's own colours, in light and dark, without a second
+   copy of anything.
+
+   Sizes follow the "admin fonts ran too small" correction: body text 14px,
+   nothing below 12px.
+   ============================================================ */
+
+.msgbox { font-family: var(--ll-font, inherit); color: var(--t2-text, #e6edf3); }
+
+/* ── filters ── */
+.msgbox .msg-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; }
+.msgbox .msg-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.msgbox .msg-filter {
+  cursor: pointer; font-family: inherit; font-weight: 700; font-size: 13px;
+  padding: 6px 13px; border-radius: 999px; border: 1px solid var(--t2-border, #30363d);
+  background: transparent; color: var(--t2-text-muted, #7d8590);
+}
+.msgbox .msg-filter:hover { color: var(--t2-text, #e6edf3); }
+.msgbox .msg-filter.active { color: #fff; background: #2563eb; border-color: #2563eb; }
+.msgbox .msg-filter .n { font-variant-numeric: tabular-nums; opacity: .85; margin-left: 4px; }
+.msgbox .ll-select { min-width: 150px; }
+.msgbox .msg-count { margin-left: auto; font-size: 13px; color: var(--t2-text-muted, #7d8590);
+  font-variant-numeric: tabular-nums; }
+
+/* ── list ── */
+.msgbox .msg-list { display: flex; flex-direction: column; gap: 10px; }
+/* The Overview is a dashboard, not an inbox page: the list scrolls inside its
+   card rather than pushing the rest of the page down. Since the card moved up
+   under the numbers (2026-09-24) it sits in the middle of the first screen, so
+   it is kept short (about three messages) and, at the end of the list, the
+   wheel carries on scrolling the page instead of stopping dead on the card
+   (no overscroll-behavior: contain). */
+.msgbox.is-compact .msg-list { max-height: 340px; overflow-y: auto; padding-right: 4px; }
+/* An OPENED message is never cut off by that box: its thread and reply box
+   need the room, and they sat below the box's edge (2026-09-24 review). */
+.msgbox.is-compact .msg-list:has(.msg-card.is-expanded) { max-height: none; overflow: visible; }
+/* "Show N more" / "Show fewer" at the foot of the Overview list. */
+.msgbox .msg-more { align-self: center; }
+.msgbox .msg-empty { padding: 22px; text-align: center; color: var(--t2-text-muted, #7d8590); font-size: 14px; }
+
+.msgbox .msg-card { border: 1px solid var(--t2-border, #30363d); border-radius: 12px; padding: 13px 15px;
+  background: var(--t2-surface, #161b22); }
+/* Status colours come from the palette tokens, not fixed hex. The bright
+   dark-mode amber and green (#f59e0b / #10b981) read at about 2:1 on the white
+   light-mode card, which is too faint for the one word that says whether a
+   message still needs an answer; the light palette carries darker steps
+   (#b45309 / #15803d) for exactly this. */
+.msgbox .msg-card.is-open { border-left: 3px solid var(--t2-amber, #f59e0b); }
+.msgbox .msg-card.is-answered { border-left: 3px solid var(--t2-green, #10b981); }
+
+.msgbox .msg-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.msgbox .msg-who { font-weight: 700; font-size: 14px; flex: 1 1 auto; min-width: 0; }
+.msgbox .msg-who small { font-weight: 500; font-size: 12.5px; color: var(--t2-text-muted, #7d8590); }
+/* margin-left:auto keeps the time on the right even when a long name line
+   wraps it onto a row of its own; without it the time dropped to the left. */
+.msgbox .msg-when { font-size: 12.5px; color: var(--t2-text-muted, #7d8590); white-space: nowrap; margin-left: auto; }
+
+.msgbox .msg-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.msgbox .msg-tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+  border: 1px solid var(--t2-border, #30363d); color: var(--t2-text-muted, #7d8590); }
+.msgbox .msg-tag.to-admin { color: var(--t2-amber, #f59e0b); border-color: rgba(245, 158, 11, .45); }
+.msgbox .msg-tag.to-teacher { color: var(--t2-blue, #60a5fa); border-color: rgba(96, 165, 250, .45); }
+/* A message from the sign-in page has no account behind it. Dashed, in the
+   text colour, rather than a new hue: amber, green and red already mean a
+   state here, and "not from an account" is a caveat, not a state. The note
+   under the tags says what the caveat is. */
+.msgbox .msg-tag.from-signin { color: var(--t2-text, #e6edf3); border-style: dashed;
+  border-color: var(--t2-text-muted, #7d8590); }
+.msgbox .msg-note { margin-top: 7px; font-size: 12.5px; font-style: italic; color: var(--t2-text-muted, #7d8590); }
+
+/* pre-wrap: a student's line breaks are part of what they wrote. Collapsed
+   cards show three lines; opening the card shows the whole thread. */
+.msgbox .msg-body { margin: 9px 0 10px; font-size: 14px; line-height: 1.5; white-space: pre-wrap;
+  word-break: break-word; }
+.msgbox .msg-card:not(.is-expanded) .msg-body { display: -webkit-box; -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical; overflow: hidden; }
+
+.msgbox .msg-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.msgbox .msg-state { font-size: 13px; color: var(--t2-text-muted, #7d8590); }
+.msgbox .msg-state.is-answered { color: var(--t2-green, #10b981); font-weight: 600; }
+.msgbox .msg-state.is-open { color: var(--t2-amber, #f59e0b); font-weight: 600; }
+
+.msgbox .msg-btn { cursor: pointer; font-family: inherit; font-weight: 700; font-size: 13px;
+  padding: 7px 14px; border-radius: 999px; border: 1px solid var(--t2-border, #30363d);
+  background: transparent; color: var(--t2-text, #e6edf3); }
+.msgbox .msg-btn:hover { border-color: #2563eb; }
+.msgbox .msg-btn.primary { color: #fff; background: #2563eb; border-color: #2563eb; }
+.msgbox .msg-btn:disabled { opacity: .55; cursor: default; }
+
+/* ── the thread ── */
+.msgbox .msg-thread { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--t2-border, #30363d); }
+.msgbox .msg-thread[hidden] { display: none !important; }
+.msgbox .msg-line { display: flex; margin: 8px 0; }
+.msgbox .msg-line.is-staff { justify-content: flex-end; }
+.msgbox .msg-bubble { max-width: 82%; padding: 9px 12px; border-radius: 14px; font-size: 14px; line-height: 1.45;
+  white-space: pre-wrap; word-break: break-word; }
+.msgbox .msg-line.is-student .msg-bubble { background: var(--t2-surface2, rgba(148, 163, 184, .14));
+  border: 1px solid var(--t2-border, #30363d); border-top-left-radius: 4px; }
+.msgbox .msg-line.is-staff .msg-bubble { background: rgba(37, 99, 235, .14); border: 1px solid rgba(37, 99, 235, .35);
+  border-top-right-radius: 4px; }
+.msgbox .msg-by { display: block; font-size: 12px; font-weight: 800; margin-bottom: 3px; }
+.msgbox .msg-at { display: block; font-size: 12px; color: var(--t2-text-muted, #7d8590); margin-top: 4px; }
+
+.msgbox .msg-input { width: 100%; box-sizing: border-box; min-height: 84px; resize: vertical; margin-top: 10px;
+  padding: 10px 12px; border-radius: 10px; font: inherit; font-size: 14px; line-height: 1.45;
+  color: var(--t2-text, #e6edf3); background: var(--t2-bg, #0d1117); border: 1px solid var(--t2-border, #30363d); }
+.msgbox .msg-input:focus { outline: none; border-color: #2563eb; }
+.msgbox .msg-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 8px; }
+.msgbox .msg-err { margin-top: 8px; font-size: 13px; color: var(--t2-red, #ef4444); }
+.msgbox .msg-err[hidden] { display: none !important; }
+
+/* The Overview card's own head: title left, open count right. */
+#t2messagesPanel[hidden] { display: none !important; }
+#t2messagesPanel .t2-badge { margin-left: 4px; }
+/* Shown only with a count that was actually loaded - never "0 waiting" while
+   loading or after a failed load (messages-admin.js publishCount). */
+#t2msgCount[hidden] { display: none !important; }
+
+/* PHONES: the Overview list flows with the page. A 520px box that scrolls on
+   its own inside a page that also scrolls meant a swipe starting on the list
+   could not move the page, which on a phone is most of the screen. */
+@media (max-width: 768px) {
+  .msgbox.is-compact .msg-list { max-height: none; overflow: visible; padding-right: 0; }
+}
+
+@media (max-width: 620px) {
+  /* 16px stops iPhone Safari zooming the page when the box is tapped. */
+  .msgbox .msg-input { font-size: 16px; }
+  .msgbox .msg-actions .msg-btn { flex: 1 1 auto; }
+  .msgbox .msg-count { margin-left: 0; width: 100%; }
+  .msgbox .ll-select { flex: 1 1 140px; min-width: 0; }
+  .msgbox .msg-bubble { max-width: 92%; }
+}

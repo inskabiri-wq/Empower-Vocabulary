@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listening exam wiring</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1000px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:80ch;line-height:1.55;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">Imported listening exams - wiring check</h3>
+<p class="lede">
+  A new exam has to show up in FOUR places, not one: student practice, the
+  teacher assignment picker, the classroom game picker and the admin content
+  controls. Registering it in exam-registry.js alone is the mistake this checks
+  for. Also verifies the exam data itself: answers within range, transcript
+  ordered, audio reachable.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<!-- The container student/js/skills/listening.js renders into. Without it the
+     practice check silently passes on an empty screen. -->
+<div id="listeningActivityGrid" style="display:none"></div>
+
+<!-- The real files, in the dashboard's load order.
+     Loaded dynamically with a cache-buster instead of plain <script src>. A
+     static src is served from the browser's HTTP cache, and this harness has
+     already once reported "3 of 5 exams" against a file that contained all
+     five - a stale pass or fail here is worse than no harness at all.
+     `async = false` preserves execution order, which these files need. -->
+<script>
+(function () {
+  const FILES = [
+    '/assignments/js/exam-registry.js',
+    '/student/js/listening-exam.js',
+    '/student/js/skills/listening.js'
+  ];
+  const cb = '?cb=' + Date.now() + '-' + Math.random().toString(36).slice(2);
+  let remaining = FILES.length;
+  window.__filesReady = new Promise((resolve) => {
+    FILES.forEach((f) => {
+      const s = document.createElement('script');
+      s.src = f + cb;
+      s.async = false;
+      s.onload = s.onerror = () => { if (--remaining === 0) resolve(); };
+      document.head.appendChild(s);
+    });
+  });
+})();
+</script>
+<script>
+const rows = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+const NEW = ['fsmept-forger', 'fsmept-best-places', 'fsmept-museum',
+             'fsmept-news-media', 'fsmept-slang'];
+
+(async function(){
+  await window.__filesReady;          // scripts are injected, not inline tags
+
+  // ── 1. the exam data itself ──────────────────────────────────────────────
+  const haveArray = typeof LISTENING_EXAMS !== 'undefined' && Array.isArray(LISTENING_EXAMS);
+  check('1. LISTENING_EXAMS loads', true, haveArray);
+
+  const byId = {};
+  if (haveArray) LISTENING_EXAMS.forEach(e => { byId[e.id] = e; });
+  check('2. all new exams present', NEW.length, NEW.filter(id => byId[id]).length);
+  check('3. original exam still present', true, !!byId['sample-fsmept']);
+
+  for (const id of NEW) {
+    const e = byId[id];
+    if (!e) continue;
+    const short = id.replace('fsmept-', '');
+
+    // transcript sane: ordered, non-empty, no zero-length segments
+    const t = e.transcript || [];
+    let ordered = true, empty = 0;
+    for (let i = 0; i < t.length; i++) {
+      if (t[i].end <= t[i].start) empty++;
+      if (i && t[i].start < t[i - 1].start) ordered = false;
+    }
+    check('4. ' + short + ': transcript ordered', true, ordered);
+    check('5. ' + short + ': no zero-length segments', 0, empty);
+
+    // every answer must be answerable
+    const secs = e.sections || [];
+    let badTF = 0, badMcq = 0, badFill = 0, unknownType = 0, total = 0;
+    for (const s of secs) {
+      if (!['truefalse', 'mcq', 'fillblank'].includes(s.type)) unknownType++;
+      for (const q of (s.questions || [])) {
+        total++;
+        if (s.type === 'truefalse' && !/^[TF]$/.test(q.answer)) badTF++;
+        if (s.type === 'mcq') {
+          const idx = 'abcdefgh'.indexOf(q.answer);
+          if (idx < 0 || !q.options || idx >= q.options.length) badMcq++;
+          // The renderer derives letters from the options, so a question with
+          // more options than letters would silently produce "undefined."
+          if (q.options && q.options.length > 8) badMcq++;
+        }
+        // Gap-fill arrived with paper 2. An answer that is empty, or a blank
+        // the renderer cannot find, makes the question unanswerable.
+        if (s.type === 'fillblank') {
+          if (!q.answer || !String(q.answer).trim()) badFill++;
+          if (!/_{3,}/.test(q.text || '')) badFill++;
+        }
+      }
+    }
+    check('6. ' + short + ': every T/F answer valid', 0, badTF);
+    check('7. ' + short + ': every MCQ answer in range', 0, badMcq);
+    check('8. ' + short + ': has questions', true, total > 0);
+    check('8b. ' + short + ': every gap-fill answerable', 0, badFill);
+    check('8c. ' + short + ': no unknown section type', 0, unknownType);
+
+    // audio actually served
+    const res = await fetch('/' + e.audio, { method: 'GET', headers: { Range: 'bytes=0-1' } });
+    check('9. ' + short + ': audio file reachable', true, res.status === 200 || res.status === 206);
+  }
+
+  // ── 2. the four surfaces ─────────────────────────────────────────────────
+  // Assignments + content controls both read EXAM_REGISTRY.
+  const reg = window.EXAM_REGISTRY;
+  check('10. EXAM_REGISTRY loads', true, !!reg);
+  let listed = [];
+  if (reg && typeof reg.listening === 'function') listed = reg.listening() || [];
+  else if (reg && reg.forSkill) listed = reg.forSkill('listening') || [];
+  const listedIds = listed.map(x => x.id);
+  check('11. assignments picker lists them all', NEW.length, NEW.filter(id => listedIds.includes(id)).length);
+  check('12. content controls see the same list', NEW.length, NEW.filter(id => listedIds.includes(id)).length);
+
+  // Classroom listening picker reads LISTENING_EXAMS by id (see
+  // classroom/js/listening-teacher.js) - so an id present in BOTH is what it
+  // needs to resolve a session.
+  const resolvable = NEW.filter(id => byId[id] && listedIds.includes(id));
+  check('13. classroom picker can resolve them all', NEW.length, resolvable.length);
+
+  // registry audio path must match the exam data, or the game plays silence
+  let mismatched = 0;
+  for (const id of NEW) {
+    const r = listed.find(x => x.id === id);
+    if (r && byId[id] && r.audio !== byId[id].audio) mismatched++;
+  }
+  check('14. registry audio path matches exam data', 0, mismatched);
+
+  // ── 3. THE SURFACE THIS HARNESS ORIGINALLY MISSED ────────────────────────
+  // Everything above passed while the student's Listening screen still showed
+  // one exam, because that screen had its own hardcoded list and read neither
+  // EXAM_REGISTRY nor LISTENING_EXAMS. Checking the data is not checking the
+  // screen. Render the real thing and count the cards.
+  if (typeof window.renderListeningScreen === 'function') window.renderListeningScreen();
+  const grid = document.getElementById('listeningActivityGrid');
+  const cards = grid ? grid.querySelectorAll('.rd-exam-card') : [];
+  check('15. practice screen renders cards', true, cards.length > 0);
+  check('16. practice screen shows ALL registered exams', listedIds.length, cards.length);
+
+  const titles = [...cards].map(c => (c.querySelector('.rd-exam-title') || {}).textContent || '');
+  check('17. The Forger on the practice screen', true, titles.some(t => /Forger/i.test(t)));
+  check('18. Best Places on the practice screen', true, titles.some(t => /Best Places/i.test(t)));
+  check('18b. News Media on the practice screen', true, titles.some(t => /News Media/i.test(t)));
+  check('18c. Slang on the practice screen', true, titles.some(t => /Slang/i.test(t)));
+
+  // The registry and the exam data used to disagree about every title, so the
+  // teacher's picker and the student's paper named different papers. They must
+  // agree exactly.
+  let titleDrift = [];
+  for (const id of NEW) {
+    const r = listed.find(x => x.id === id);
+    if (r && byId[id] && r.title !== byId[id].title) titleDrift.push(id);
+  }
+  check('18d. registry titles match the exam data', '', titleDrift.join(','));
+
+  // Paper numbers must be unique, or "Listening 2" is ambiguous to a teacher.
+  const nums = listedIds.map(id => {
+    const r = listed.find(x => x.id === id) || {};
+    const m = /Listening (\d+)/.exec(r.title || '');
+    return m ? m[1] : null;
+  }).filter(Boolean);
+  check('18e. no duplicate paper numbers', nums.length, new Set(nums).size);
+
+  // Each card must launch a REAL exam id, or the button opens the wrong paper.
+  let launchable = 0;
+  [...cards].forEach(c => {
+    const btn = c.querySelector('.rd-exam-mode-btn');
+    if (btn) launchable++;
+  });
+  check('19. every practice card has a start button', cards.length, launchable);
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__lexTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok) };
+})();
+</script>
+</body>
+</html>

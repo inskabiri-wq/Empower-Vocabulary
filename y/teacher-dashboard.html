@@ -2,26 +2,35 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Dashboard - Lingualab</title>
 <!-- PWA -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="/manifest.json?v=2">
+<meta name="theme-color" content="#f6f8fb">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Lingualab">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css?v=17">
+<link rel="stylesheet" href="css/brand.css?v=30">
 <!-- Shared themed dialog (alert/confirm/prompt) - replaces native browser popups app-wide. -->
-<script src="js/app-dialog.js"></script>
-<link rel="stylesheet" href="teacher/css/styles.css?v=7">
-<link rel="stylesheet" href="teacher/css/skills.css?v=6">
-<link rel="stylesheet" href="assignments/css/assignments.css?v=4">
+<script src="js/app-dialog.js?v=8"></script>
+  <script src="js/sound.js?v=4"></script>
+<link rel="stylesheet" href="teacher/css/styles.css?v=60">
+<link rel="stylesheet" href="teacher/css/skills.css?v=17">
+<link rel="stylesheet" href="assignments/css/assignments.css?v=21">
 <!-- v2 design system: sidebar layout + Crystal-style overview tab.
      Loaded last so its scoped `.t2-active` rules can override defaults. -->
-<link rel="stylesheet" href="teacher/css/dashboard-v2.css?v=3">
+<link rel="stylesheet" href="teacher/css/dashboard-v2.css?v=25">
+<!-- The student-messages inbox, in both of its homes (Admin > Messages and the
+     teachers' card on Overview). Written on the --t2-* tokens so each home keeps
+     its own palette. -->
+<link rel="stylesheet" href="teacher/css/messages.css?v=6">
+<!-- Admin > Feedback (the "Rate Lingualab" answers). -->
+<link rel="stylesheet" href="teacher/css/feedback.css?v=1">
+<link rel="stylesheet" href="teacher/css/faq.css?v=1">
 <style>
 /* Tab Navigation */
 .tab-nav {
@@ -93,7 +102,10 @@
 /* Improved Alert Cards */
 .alert-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  /* min(380px, 100%) rather than a bare 380px: auto-fit drops to one column on
+     a phone, but the track keeps its 380px minimum and hangs off a 362px
+     content box. The min() lets that single column shrink to the screen. */
+  grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
   gap: 24px;
 }
 
@@ -128,8 +140,17 @@
 }
 
 .alert-card.no-sessions .alert-card-header {
-  background: linear-gradient(135deg, rgba(14,165,233,0.15), rgba(14,165,233,0.05));
-  border-bottom: 1px solid rgba(14,165,233,0.2);
+  background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(37,99,235,0.05));
+  border-bottom: 1px solid rgba(37,99,235,0.2);
+}
+
+/* Essays waiting: GREEN, deliberately not one of the three warning hues.
+   The others say a student is in trouble; this one is a to-do list, and
+   dressing it in red would make a teacher's own workload look like a
+   problem with somebody. */
+.alert-card.essays-waiting .alert-card-header {
+  background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05));
+  border-bottom: 1px solid rgba(16,185,129,0.2);
 }
 
 .alert-icon {
@@ -151,7 +172,11 @@
 }
 
 .alert-card.no-sessions .alert-icon {
-  background: rgba(14,165,233,0.2);
+  background: rgba(37,99,235,0.2);
+}
+
+.alert-card.essays-waiting .alert-icon {
+  background: rgba(16,185,129,0.2);
 }
 
 .alert-title {
@@ -163,6 +188,7 @@
 .alert-card.inactive .alert-title { color: #fca5a5; }
 .alert-card.low-score .alert-title { color: #fcd34d; }
 .alert-card.no-sessions .alert-title { color: #7dd3fc; }
+.alert-card.essays-waiting .alert-title { color: #6ee7b7; }
 
 .alert-subtitle {
   font-size: 0.85em;
@@ -230,6 +256,7 @@
 .alert-card.inactive .alert-student-stat { color: #fca5a5; }
 .alert-card.low-score .alert-student-stat { color: #fcd34d; }
 .alert-card.no-sessions .alert-student-stat { color: #7dd3fc; }
+.alert-card.essays-waiting .alert-student-stat { color: #6ee7b7; }
 
 .alert-action-btn {
   padding: 6px 12px;
@@ -277,7 +304,26 @@
   --t2-border-soft: rgba(59,130,246,0.12);
   --t2-text:        #f8fafc;
   --t2-text-muted:  #94a3b8;
-  --t2-text-dim:    #64748b;
+  /* was #64748b: only 3.02:1 behind the 10px .av-table headers */
+  --t2-text-dim:    #8b98ab;
+}
+/* LIGHT MODE for the Admin tab.
+   The block above is an ID selector, so it outranks the `.light-mode` override
+   in teacher/css/dashboard-v2.css by specificity (100 vs 10). That is why the
+   Teachers list, Demo accounts, Organization and Content panels stayed dark
+   navy while the rest of the dashboard turned white - the repaint never reached
+   them, because no tool scans CSS written inside an HTML <style> block.
+   `.light-mode #tab-admin` is 110, so this wins. */
+.light-mode #tab-admin {
+  --t2-bg:          #f6f8fb;
+  --t2-surface:     #ffffff;
+  --t2-surface2:    #f2f6fc;
+  --t2-surface3:    #e9eff8;
+  --t2-border:      #d8e1ee;
+  --t2-border-soft: #e9eff8;
+  --t2-text:        #0f172a;
+  --t2-text-muted:  #556274;
+  --t2-text-dim:    #5c6a7d;
 }
 
 .av-root {
@@ -294,7 +340,7 @@
   --av-text-muted:   var(--t2-text-muted,   #7d8590);
   --av-text-dim:     var(--t2-text-dim,     #484f58);
   --av-blue:         var(--t2-blue,         #3b82f6);
-  --av-cyan:         var(--t2-cyan,         #22d3ee);
+  --av-cyan:         var(--t2-cyan,         #60a5fa);
   --av-green:        var(--t2-green,        #22c55e);
   --av-amber:        var(--t2-amber,        #f59e0b);
   --av-red:          var(--t2-red,          #ef4444);
@@ -305,7 +351,7 @@
   gap: 16px;
   max-width: 1380px;
   margin: 0 auto;
-  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--ll-font);
   color: var(--av-text);
 }
 
@@ -645,12 +691,12 @@
   padding: 2px 8px;
   border-radius: 10px;
   white-space: nowrap;
-  background: rgba(34,211,238,0.13);
+  background: rgba(96,165,250,0.13);
   color: var(--av-cyan);
-  border: 1px solid rgba(34,211,238,0.25);
+  border: 1px solid rgba(96,165,250,0.25);
   letter-spacing: 0.02em;
 }
-.av-badge.av-c-cyan   { background: rgba(34,211,238,0.13); color: var(--av-cyan);   border-color: rgba(34,211,238,0.25); }
+.av-badge.av-c-cyan   { background: rgba(96,165,250,0.13); color: var(--av-cyan);   border-color: rgba(96,165,250,0.25); }
 .av-badge.av-c-amber  { background: rgba(245,158,11,0.13); color: var(--av-amber);  border-color: rgba(245,158,11,0.25); }
 .av-badge.av-c-blue   { background: rgba(59,130,246,0.13); color: var(--av-blue);   border-color: rgba(59,130,246,0.25); }
 .av-badge.av-c-green  { background: rgba(34,197,94,0.13);  color: var(--av-green);  border-color: rgba(34,197,94,0.25); }
@@ -776,7 +822,7 @@
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
 }
 .av-new-class-input::placeholder {
   text-transform: none;
@@ -832,7 +878,7 @@
 }
 .av-cp-table thead th { background: var(--av-surface2); }
 .av-cp-word {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--ll-mono);
   font-size: 13px;
   font-weight: 700;
   color: var(--av-amber);
@@ -933,6 +979,20 @@
   margin-bottom: 24px;
 }
 
+/* THE FIFTH ALERT CARD SPANS ITS ROW.
+   The alert row holds five cards since "Essays Waiting" joined, and five does
+   not divide into the 4 / 2 / 1 column counts this grid uses at its three
+   widths. MEASURED with plain auto-fit: fine at 1024 and above (5 across),
+   but 4+1 at 834 and 768, and 2+2+1 at 390 - a stranded card at every size
+   below a laptop.
+   Spanning the full row removes the orphan at EVERY width instead of at some
+   of them, and it says something true: the four above are students who need
+   help, this one is work the teacher owes. Different kind of thing, own row.
+   Scoped by id so the other .overview-grid rows keep their four-up layout. */
+#alertCardEssays {
+  grid-column: 1 / -1;
+}
+
 .overview-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -955,7 +1015,7 @@
 }
 
 .overview-card .value {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--ll-font);
   font-size: 2.4em;
   font-weight: 700;
   background: var(--accent-gradient);
@@ -1014,7 +1074,7 @@
 }
 
 .level-card .level-value {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--ll-font);
   font-size: 1.8em;
   font-weight: 700;
   color: var(--accent-primary);
@@ -1087,19 +1147,25 @@
   }
 }
 </style>
-<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=14">
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
-<!-- data-app-settings="off": the "Display" sidebar row was removed, and this
-     page must not grow a replacement. Without the opt-out, app-settings.js
-     finds no [data-app-settings-open] here, builds its floating wheel and
-     injects it plus the Lingualab lockup into <header class="t2-page-header">
-     - none of which was asked for. Text scaling still applies (that is set on
-     <html> before mount); only the panel UI is suppressed. -->
-<body data-app-settings="off">
+<!-- The opt-out that used to sit here (data-app-settings="off") is gone: the
+     Display row is back in the sidebar, under Widgets.
+     It existed because with no [data-app-settings-open] on the page,
+     app-settings.js builds its own floating wheel AND calls placeInHeader(),
+     which dragged a Lingualab lockup into <header class="t2-page-header">.
+     The sidebar row now carries that attribute, so the script binds to it and
+     skips both of those - the reason for the opt-out is removed rather than
+     suppressed. Do not re-add the attribute without also deleting that row,
+     or the panel becomes unreachable on this page again. -->
+<body>
 
 <div class="container">
   <div id="loadingScreen" class="loading">
@@ -1114,7 +1180,11 @@
     <h2>Access Denied</h2>
     <p>This dashboard is only available for teachers.</p>
     <p style="margin-top: 10px; font-size: 0.9em; color: var(--text-muted);" id="accessInfo"></p>
-    <a href="student-dashboard.html#vocabulary" class="btn btn-primary">Go to Practice</a>
+    <!-- The hub root, NOT #vocabulary. This used to deep-link whoever landed
+         here straight into the Vocabulary screen, which is a dead end: they
+         asked for a dashboard and got dropped into one exercise. The same
+         mistake was already fixed once on the sidebar's Lingualab row. -->
+    <a href="student-dashboard.html" class="btn btn-primary">Go to Lingualab</a>
   </div>
 
   <div id="mainContent" style="display: none;">
@@ -1151,7 +1221,11 @@
       <a class="t2-nav-item" href="lingualab-write/index.html" target="_blank" rel="noopener" id="aiWritingNav" style="text-decoration:none">
         <span class="ico" data-icon="pen-line"></span><span class="label">Writing AI</span>
       </a>
-      <button type="button" class="t2-nav-item" data-tab="courses" onclick="switchTab('courses')">
+      <!-- Courses: hidden until auth resolves. teacher/js/policy-course-admin.js
+           reveals it for the admin and for teachers ticked in Admin > Access
+           (settings/coursesAccess). It used to be visible to EVERY teacher with
+           no grant behind it at all. -->
+      <button type="button" class="t2-nav-item" data-tab="courses" onclick="switchTab('courses')" style="display:none">
         <span class="ico" data-icon="graduation-cap"></span><span class="label">Courses</span>
       </button>
       <!-- Placement: hidden until auth resolves; placement-admin.js reveals it
@@ -1170,12 +1244,6 @@
       <div class="t2-sidebar-spacer"></div>
 
       <div class="t2-sidebar-section-lbl">Account</div>
-      <!-- Classroom widgets launcher - sits above Lingualab. Clicking it
-           floats a small popover (Class Timer, more later). Wired by
-           js/widgets-tray.js, which binds to this #wtSidebarBtn. -->
-      <button type="button" class="t2-nav-item" id="wtSidebarBtn" title="Classroom widgets">
-        <span class="ico" style="font-size:18px;line-height:1;">🧰</span><span class="label">Widgets</span>
-      </button>
       <!-- Was "Word Lab" → student-dashboard.html#vocabulary, which deep-linked
            teachers into the Vocabulary screen and felt like a dead-end. Now
            points at the hub root so teachers land on the full skill picker
@@ -1186,11 +1254,55 @@
       <a class="t2-nav-item" href="classroom-teacher.html" style="text-decoration:none">
         <span class="ico" data-icon="gamepad"></span><span class="label">Classroom</span>
       </a>
-      <!-- The "Display" sidebar row was removed on request. The shared panel is
-           still available on this page: with no [data-app-settings-open] here,
-           js/app-settings.js falls back to its own wheel and places it in the
-           page header, the same way it does on courses and the classroom
-           pages. -->
+
+      <!-- MORE: Widgets, Display and Rate Lingualab behind one row (asked for
+           2026-09-24: the three rows made the sidebar "too much"). The rows
+           inside are the same elements as before, moved - js/widgets-tray.js,
+           js/app-settings.js and js/app-rating.js still find them by id and
+           attribute. Opened or closed by the inline script after this aside,
+           remembered per browser. teacher/js/mobile-shell.js shows the same
+           group on a phone, as a More row in its sheet. -->
+      <button type="button" class="t2-nav-item t2-more-toggle" id="t2MoreBtn" data-more-toggle
+              aria-expanded="false" aria-controls="t2MoreGroup" title="Widgets, display and rating">
+        <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></span><span class="label">More</span>
+        <span class="t2-more-chev" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="t2-more-group" id="t2MoreGroup" hidden>
+      <!-- Classroom widgets launcher. Clicking it floats a small popover
+           (Class Timer, more later). Wired by js/widgets-tray.js, which binds
+           to this #wtSidebarBtn. -->
+      <button type="button" class="t2-nav-item" id="wtSidebarBtn" title="Classroom widgets">
+        <span class="ico" style="font-size:18px;line-height:1;">🧰</span><span class="label">Widgets</span>
+      </button>
+      <!-- Display settings.
+           data-app-settings-open  - js/app-settings.js binds the click. Because
+             it finds an opener it builds no floating wheel and never calls
+             placeInHeader(), which is what used to drag a Lingualab lockup into
+             the page header and got the panel switched off on this page.
+           data-app-settings-plain - and it must NOT restyle this row. Its gear
+             treatment paints a 44x44 bordered icon button with !important;
+             on a nav row that squeezed the whole row into a square and pushed
+             the "Display" label outside it. This row was being caught twice,
+             as an opener and again by the title sweep, since the title contains
+             "settings".
+           data-icon="settings"    - the icon comes from the sidebar's own set in
+             teacher/js/overview-v2.js, so it is the same 18px, stroke and colour
+             as Widgets and Lingualab and hydrates in the same pass, instead of
+             appearing late once app-settings had finished mounting. -->
+      <button type="button" class="t2-nav-item" data-app-settings-open data-app-settings-plain title="Display settings">
+        <span class="ico" data-icon="settings"></span><span class="label">Display</span>
+      </button>
+      <!-- Rate Lingualab (js/app-rating.js): one rating per person, read only by
+           the admin in Admin > Feedback. Hidden until the account is known, and
+           kept hidden for demo accounts. -->
+      <button type="button" class="t2-nav-item" id="t2RateBtn" style="display:none" title="Rate Lingualab"
+              onclick="window.AppRating && window.AppRating.open()">
+        <span class="ico" data-icon="star"></span><span class="label">Rate Lingualab</span>
+      </button>
+      </div>
+      <!-- Widgets, Display and Rate Lingualab all live in the More group above.
+           Each used to be its own row here; if you are looking for one, it is
+           in there - do not add a second one. -->
 
       <!-- Export Report moved into Admin > Reports (teacher/js/reports-admin.js). -->
       <button type="button" class="t2-nav-item" onclick="openLogoutModal()">
@@ -1205,6 +1317,25 @@
         </div>
       </div>
     </aside>
+    <script>
+    // The sidebar's More row (#t2MoreBtn) opens and closes the Widgets / Display
+    // / Rate Lingualab group. Closed by default; the last choice is remembered
+    // on this browser, so a teacher who uses Widgets every lesson keeps it open.
+    (function () {
+      var btn = document.getElementById('t2MoreBtn');
+      var grp = document.getElementById('t2MoreGroup');
+      if (!btn || !grp) return;
+      function set(open, remember) {
+        grp.hidden = !open;
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (remember) { try { localStorage.setItem('t2MoreOpen', open ? '1' : '0'); } catch (e) {} }
+      }
+      var saved = null;
+      try { saved = localStorage.getItem('t2MoreOpen'); } catch (e) {}
+      set(saved === '1', false);
+      btn.addEventListener('click', function () { set(grp.hidden, true); });
+    })();
+    </script>
 
     <!-- ╔══════════════════════════════════════════════════════════════╗
          ║  v2 MAIN COLUMN - page header + tab content                   ║
@@ -1221,6 +1352,13 @@
           <h1 id="t2HeaderTitle">Loading…</h1>
           <p class="sub" id="t2HeaderSub"></p>
         </div>
+        <!-- The university's mark, as on the student dashboard. Filled and
+             placed by js/org-brand.js: data-org-float because this header has
+             no slot for it, so it is measured into the free space beside the
+             title (centred when there is room). Empty for demo accounts. -->
+        <div class="t2-org-mark" data-org-mark data-org-float data-org-level="title"
+             data-org-title="#t2HeaderTitle" data-org-sub="#t2HeaderSub"
+             data-org-right=".t2-header-actions" hidden></div>
         <div class="t2-header-actions" id="t2OverviewActions">
           <select class="t2-period-select ll-select" id="t2periodSelect" aria-label="Time period" onchange="t2SetPeriod(this.value)">
             <option value="7" selected>Last 7 days</option>
@@ -1259,7 +1397,7 @@
       <button class="tab-btn" onclick="switchTab('students')" data-tab="students">
         <span>👥</span> Students
       </button>
-      <button class="tab-btn" onclick="switchTab('courses')" data-tab="courses">
+      <button class="tab-btn" onclick="switchTab('courses')" data-tab="courses" style="display:none">
         🎓 Courses
       </button>
       <button class="tab-btn" onclick="switchTab('assignments')" data-tab="assignments">
@@ -1361,6 +1499,17 @@
           <div class="value" id="totalAlertsCount">0</div>
           <div class="label">Total Alerts</div>
         </div>
+        <!-- Essays waiting is YOUR work, not a student at risk, so it sits
+             beside the other four but is deliberately NOT added into Total
+             Alerts: "5 students struggling" and "12 essays to mark" are not
+             the same kind of thing and must not sum into one figure.
+             Counted from allWritingSubs, which the dashboard already holds
+             live, so this costs no extra Firestore reads. -->
+        <div class="overview-card alert-summary-card" id="alertCardEssays" onclick="toggleAlertDetail()" style="cursor: pointer;">
+          <div class="icon">✍️</div>
+          <div class="value" id="essaysWaitingCount">0</div>
+          <div class="label">Essays Waiting</div>
+        </div>
       </div>
 
       <!-- Expandable Alert Details -->
@@ -1395,6 +1544,21 @@
               </div>
             </div>
             <div class="alert-card-body" id="noSessionsList"></div>
+          </div>
+          <!-- The teacher's own work, not a student at risk. Same card shape
+               as the three above so the panel reads as one thing, but its
+               rows show WHO is waiting and for how long rather than a
+               warning about them. Filled from allWritingSubs, already live
+               on this page, so it costs no extra Firestore reads. -->
+          <div class="alert-card essays-waiting" id="essaysWaitingCard" style="display: none;">
+            <div class="alert-card-header">
+              <div class="alert-icon">✍️</div>
+              <div>
+                <div class="alert-title">Essays Waiting to be Graded</div>
+                <div class="alert-subtitle">Submitted work that still needs your mark</div>
+              </div>
+            </div>
+            <div class="alert-card-body" id="essaysWaitingList"></div>
           </div>
         </div>
         <div class="empty-alert" id="noAlertsMessage" style="display: none;">
@@ -1463,6 +1627,27 @@
           </div>
         </div>
 
+        <!-- Messages from this teacher's students. ON THE OVERVIEW, NOT A TAB -
+             the owner's call: teachers get their inbox on the first page, the
+             admin keeps theirs in Admin > Messages. Straight under the numbers,
+             not at the foot of the page: as the last card it sat below Needs
+             Attention and Recent Activity, which on a phone was eight blocks of
+             scrolling. Hidden until teacher/js/messages-admin.js has the
+             teacher's own document; never shown to the admin, a demo account or
+             a teacher with no classes. Shown when empty, so a teacher can see
+             where messages will arrive. No inline margin: the .t2-overview flex
+             gap spaces it like every other row. -->
+        <div class="t2-panel" id="t2messagesPanel" hidden>
+          <div class="t2-panel-title" style="justify-content: space-between;">
+            <span style="display:flex; align-items:center; gap:8px;">
+              <span data-icon="inbox" data-icon-size="16"></span>
+              <span>Messages from your students</span>
+              <span class="t2-badge info" id="t2msgCount" hidden></span>
+            </span>
+          </div>
+          <div class="msgbox" data-msgbox="teacher"></div>
+        </div>
+
         <!-- Row 1: Level Distribution + Weekly Activity heatmap -->
         <div class="t2-panels-row">
           <div class="t2-panel">
@@ -1485,8 +1670,12 @@
           </div>
         </div>
 
-        <!-- Row 2: Needs Attention + Recent Activity -->
-        <div class="t2-panels-row" style="grid-template-columns: 1.4fr 1fr;">
+        <!-- Row 2: Needs Attention + Recent Activity.
+             The wider split is a CLASS, not an inline style. As an inline
+             declaration it outranked the phone rule in dashboard-v2.css, so
+             this row stayed two columns at 390px and pushed the whole Overview
+             off the side of the screen. -->
+        <div class="t2-panels-row t2-panels-row-wide">
           <div class="t2-panel alert-tinted">
             <div class="t2-panel-title" style="justify-content:space-between">
               <span style="display:flex; align-items:center; gap:8px;">
@@ -1496,6 +1685,12 @@
               </span>
               <button type="button" class="t2-btn" onclick="switchTab('students')">View All</button>
             </div>
+            <!-- Essays waiting to be graded. Sits INSIDE Needs Attention
+                 because that is exactly what it is, but above the student
+                 rows and styled apart: those are students in trouble, this
+                 is work the teacher owes. Rendered by overview-v2.js.
+                 Empty and hidden when there is nothing to mark. -->
+            <div class="t2-essays-band" id="t2essaysBand" style="display:none;"></div>
             <div class="t2-attn-list" id="t2attnList"></div>
           </div>
 
@@ -1508,8 +1703,12 @@
               <!-- Teaser → full list. Clarifies this is a 5-item preview
                    of the Activity tab's full filterable feed, not a
                    separate data source. -->
+              <!-- The inline font-size was 0.78em, and em here means 0.78 of the
+                   0.8125rem panel title, which measured 10.14px. .t2-btn already
+                   carries 0.75rem (12px), so dropping the override is the fix.
+                   Padding is kept: it is what makes this a small inline button. -->
               <button type="button" class="t2-btn" onclick="switchTab('activity')"
-                      style="font-size: 0.78em; padding: 4px 10px;">View all →</button>
+                      style="padding: 4px 10px;">View all →</button>
             </div>
             <div class="t2-feed" id="t2feedList"></div>
             <div style="margin-top: 8px; font-size: 0.76em; color: var(--t2-text-muted, #94a3b8); text-align: center;">
@@ -1727,6 +1926,30 @@
           background:transparent; color:var(--t2-text-muted,#7d8590); }
         #adminSubNav .admin-subtab:hover { color:var(--t2-text,#e6edf3); border-color:var(--t2-text-muted,#7d8590); }
         #adminSubNav .admin-subtab.active { color:#fff; background:#2563eb; border-color:#2563eb; }
+
+        /* ── Admin > Messages ──────────────────────────────────────────
+           The unread pill sits inside the sub-tab button, so the count is
+           visible without opening the tab. Hidden at zero rather than showing
+           a "0" nobody needs to read. */
+        .msg-unread { display:inline-block; min-width:18px; margin-left:6px; padding:1px 6px;
+          border-radius:999px; background:#ef4444; color:#fff; font-size:11px; font-weight:800;
+          line-height:16px; text-align:center; font-variant-numeric:tabular-nums; }
+        .msg-unread[hidden] { display:none !important; }
+
+        /* Scoped to this panel, the way every other admin panel scopes its own
+           styles. There is no shared "admin card" component in this file - the
+           first draft assumed one and rendered four unstyled classes. */
+        #messagesPanel .msg-panel { border:1px solid var(--t2-border,#30363d); border-radius:14px;
+          padding:18px 20px; background:var(--t2-bg-inset,rgba(255,255,255,.02)); }
+        #messagesPanel .msg-head { display:flex; align-items:center; justify-content:space-between;
+          gap:14px; flex-wrap:wrap; }
+        #messagesPanel .msg-title { margin:0; font-size:16px; font-weight:800; color:var(--t2-text,#e6edf3); }
+        #messagesPanel .msg-note { margin:8px 0 0; font-size:12.5px; color:var(--t2-text-muted,#7d8590); }
+
+        /* The inbox itself (filters, cards, threads) is styled in
+           teacher/css/messages.css, shared with the Overview card. The old
+           rules here were unscoped - `.msg-card.is-answered { opacity:.62 }`
+           and friends - and would have leaked into the new cards. */
         /* When shown alone, drop the big stacking top-margins. */
         #tab-admin.adminsub-on #featureActivationPanel,
         #tab-admin.adminsub-on #contentControlsPanel,
@@ -1743,12 +1966,15 @@
         <button type="button" class="admin-subtab" data-target="reportsPanel">📈 Reports</button>
         <button type="button" class="admin-subtab" data-target="aiWritingPanel">🔑 Access</button>
         <button type="button" class="admin-subtab" data-target="demoAccountPanel">🎫 Demo accounts</button>
+        <button type="button" class="admin-subtab" data-target="messagesPanel">📬 Messages <span id="msgUnread" class="msg-unread" hidden>0</span></button>
+        <button type="button" class="admin-subtab" data-target="feedbackPanel">⭐ Feedback</button>
+        <button type="button" class="admin-subtab" data-target="faqPanel">❓ FAQ</button>
         <button type="button" class="admin-subtab" data-target="rosterImportPanel">📥 Roster import</button>
         <button type="button" class="admin-subtab" data-target="orgAdminPanel">🏢 Organizations</button>
       </div>
       <script>
         (function () {
-          var IDS = ['teachersList', 'featureActivationPanel', 'contentControlsPanel', 'reportsPanel', 'aiWritingPanel', 'demoAccountPanel', 'rosterImportPanel', 'orgAdminPanel'];
+          var IDS = ['teachersList', 'featureActivationPanel', 'contentControlsPanel', 'reportsPanel', 'aiWritingPanel', 'demoAccountPanel', 'messagesPanel', 'feedbackPanel', 'faqPanel', 'rosterImportPanel', 'orgAdminPanel'];
           function show(target) {
             IDS.forEach(function (id) { var el = document.getElementById(id); if (el) el.style.display = (id === target) ? '' : 'none'; });
             document.querySelectorAll('#adminSubNav .admin-subtab').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-target') === target); });
@@ -1777,7 +2003,7 @@
            Stored in settings/featureToggles (missing key = active).
            Styled with the admin v2 (t2) tokens so it matches the page.
            Logic: teacher/js/feature-activation.js. -->
-      <div id="featureActivationPanel" style="max-width: 1380px; margin: 26px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;">
+      <div id="featureActivationPanel" style="max-width: 1380px; margin: 26px auto 0; font-family: var(--ll-font);">
         <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">🎛️ Feature Activation</h2>
         <p style="font-size: 12px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 14px;">
           Switch student hub features on or off for this organization. Deactivated tiles stay visible to students as "Not activated"; nothing is deleted and progress is kept.
@@ -1791,7 +2017,7 @@
            Per-item "hide from practice" for reading + listening exams
            (assignment-only material), and the grammar question count.
            Stored in settings/contentControls. Logic: teacher/js/content-controls.js. -->
-      <div id="contentControlsPanel" style="max-width: 1380px; margin: 34px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;">
+      <div id="contentControlsPanel" style="max-width: 1380px; margin: 34px auto 0; font-family: var(--ll-font);">
         <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">🗂️ Content controls</h2>
         <p style="font-size: 12px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 14px;">
           Hide specific reading exams, listening exams or grammar topics from free practice so students only meet them in a graded assignment. Browse by level using the tabs. Nothing is deleted, and assignments always work even when content is hidden from practice.
@@ -1799,6 +2025,7 @@
         <div id="contentControlsBody">
           <p style="color: var(--t2-text-muted, #7d8590); font-size: 12px;">Loading...</p>
         </div>
+
       </div>
 
       <!-- ════ Reports (admin only) ════
@@ -1808,7 +2035,7 @@
            download + manual retention cleanup. Replaces the old sidebar
            "Export Report" CSV + the Activity tab Excel button.
            Logic: teacher/js/reports-admin.js. -->
-      <div id="reportsPanel" style="max-width: 1380px; margin: 26px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif; display:none;">
+      <div id="reportsPanel" style="max-width: 1380px; margin: 26px auto 0; font-family: var(--ll-font); display:none;">
         <style>
           /* Hover cue on zoomable chart cards: lift + glow so it reads as
              clickable before you click. */
@@ -1831,12 +2058,13 @@
         </div>
       </div>
 
+
       <!-- ════ Writing AI (admin only) ════
            Grant specific teachers access to live AI writing feedback (Gemini,
            via the analyzeWriting function) and see who is enabled. Usage is
            tracked to /aiUsage and reported in Admin > Reports.
            Logic: teacher/js/ai-writing-admin.js. -->
-      <div id="aiWritingPanel" style="max-width: 900px; margin: 26px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif; display:none;">
+      <div id="aiWritingPanel" style="max-width: 900px; margin: 26px auto 0; font-family: var(--ll-font); display:none;">
         <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">🔑 Access</h2>
         <p style="font-size: 13px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 14px;">
           The single home for every teacher permission: Writing AI, the Deep tier and its limits, Placement management - and every future capability. Every change is audited below.
@@ -1851,7 +2079,58 @@
            DATE (registeredAt -> 1-year expiry). Calls the createDemoAccount
            Cloud Function (Admin SDK sets emailVerified + registeredAt server
            side). Logic: teacher/js/demo-account-admin.js. -->
-      <div id="demoAccountPanel" style="max-width: 760px; margin: 26px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif; display:none;">
+      <!-- ONE home for student support messages. Nothing replies inline and
+           there is no message UI anywhere else in the app - the same
+           single-home discipline as Reports. Staff read here and answer by
+           email; there is no mail provider wired into this project. -->
+      <div id="messagesPanel" style="max-width: 1100px; margin: 26px auto 0; font-family: var(--ll-font); display:none;">
+        <div class="msg-panel">
+          <div class="msg-head">
+            <h3 class="msg-title">📬 Student messages</h3>
+          </div>
+          <p class="msg-note">
+            Every message, whether a student sent it to their teacher or to you. Open one to
+            answer it here - the student sees your answer in the app, with your name. You can
+            also read what teachers have answered, and who answered.
+          </p>
+          <!-- Filled by teacher/js/messages-admin.js. -->
+          <div class="msgbox" data-msgbox="admin" style="margin-top:14px;"><div class="msg-empty">Loading…</div></div>
+        </div>
+      </div>
+
+      <!-- ════ Feedback (admin only) ════
+           The "Rate Lingualab" answers from students (profile menu) and
+           teachers (sidebar). Filled by teacher/js/feedback-admin.js when this
+           sub-tab is opened; styled by teacher/css/feedback.css. -->
+      <div id="feedbackPanel" style="max-width: 1100px; margin: 26px auto 0; font-family: var(--ll-font); display:none;">
+        <div class="fb-panel">
+          <h3 class="fb-title">⭐ Feedback</h3>
+          <p class="fb-note">
+            What students and teachers said in "Rate Lingualab". One rating per person - when someone
+            rates again it replaces their earlier one. Only you can see this.
+          </p>
+          <div data-feedback-admin><div class="fb-empty">Loading…</div></div>
+        </div>
+      </div>
+
+      <!-- ════ FAQ (admin only) ════
+           The common questions. Students see the published ones in Messages &
+           help; the ones marked for it also appear on the sign-in page. Filled
+           by teacher/js/faq-admin.js when this sub-tab is opened; styled by
+           teacher/css/faq.css. -->
+      <div id="faqPanel" style="max-width: 1100px; margin: 26px auto 0; font-family: var(--ll-font); display:none;">
+        <div class="faq-panel">
+          <h3 class="faq-title">❓ FAQ</h3>
+          <p class="faq-note">
+            Common questions and their answers. Students see the ones shown to them in Messages &amp; help,
+            where the questions on the topic they pick appear before they write to you. Mark sign-in questions
+            "Also on the sign-in page" for people who cannot sign in yet.
+          </p>
+          <div data-faq-admin><div class="faq-empty">Loading…</div></div>
+        </div>
+      </div>
+
+      <div id="demoAccountPanel" style="max-width: 760px; margin: 26px auto 0; font-family: var(--ll-font); display:none;">
         <style>
           #demoAccountPanel .da-label { display:block; font-size:12px; font-weight:700; color:var(--t2-text-muted,#7d8590); margin:0 0 5px; }
           #demoAccountPanel .da-in { width:100%; box-sizing:border-box; font-family:inherit; font-size:14px; padding:9px 11px;
@@ -1862,7 +2141,7 @@
           #demoAccountPanel .da-btn { cursor:pointer; font-family:inherit; font-weight:800; font-size:14px; padding:11px 22px;
             border-radius:10px; border:none; background:#2563eb; color:#fff; }
           #demoAccountPanel .da-btn:disabled { opacity:.6; cursor:default; }
-          #demoAccountPanel code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+          #demoAccountPanel code { font-family: var(--ll-mono); }
         </style>
         <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">🎫 Demo / test accounts</h2>
         <p style="font-size: 12px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 16px;">
@@ -1964,7 +2243,7 @@
            classes, per-module enrollments). Logic: teacher/js/roster-import.js.
            SheetJS is lazy-loaded from teacher/js/vendor/ only when this panel
            is opened. -->
-      <div id="rosterImportPanel" style="max-width: 1380px; margin: 26px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif; display:none;">
+      <div id="rosterImportPanel" style="max-width: 1380px; margin: 26px auto 0; font-family: var(--ll-font); display:none;">
         <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">📥 Roster import</h2>
         <p style="font-size: 12px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 16px;">
           Upload one sheet of students and one of teachers for a module. Validate first (a dry run that writes nothing) and fix any flagged rows, then commit. Accounts are created once per year and matched by email after that, so re-running a module only moves people to the new class. Nothing is ever deleted.
@@ -1984,17 +2263,21 @@
           <div style="display:flex; flex-wrap:wrap; gap:14px; margin-bottom:16px;">
             <label style="flex:1; min-width:220px;">
               <div style="font-size:12px; font-weight:700; color:var(--t2-text,#e6edf3); margin-bottom:5px;">👩‍🎓 Students sheet (.xlsx / .csv)</div>
-              <input id="riStudents" type="file" accept=".xlsx,.xls,.csv" style="width:100%; box-sizing:border-box; font-size:12px; color:var(--t2-text-muted,#7d8590);">
+              <input id="riStudents" type="file" accept=".xlsx,.xls,.csv" class="ll-file">
             </label>
             <label style="flex:1; min-width:220px;">
               <div style="font-size:12px; font-weight:700; color:var(--t2-text,#e6edf3); margin-bottom:5px;">👩‍🏫 Teachers sheet (.xlsx / .csv)</div>
-              <input id="riTeachers" type="file" accept=".xlsx,.xls,.csv" style="width:100%; box-sizing:border-box; font-size:12px; color:var(--t2-text-muted,#7d8590);">
+              <input id="riTeachers" type="file" accept=".xlsx,.xls,.csv" class="ll-file">
             </label>
           </div>
           <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
             <button type="button" id="riValidate" style="cursor:pointer; font-family:inherit; font-weight:800; font-size:13px; padding:9px 18px; border-radius:20px; border:1px solid #2563eb; background:rgba(37,99,235,0.14); color:#60a5fa;">Validate (dry run)</button>
             <button type="button" id="riCommit" disabled style="cursor:not-allowed; opacity:0.5; font-family:inherit; font-weight:800; font-size:13px; padding:9px 18px; border-radius:20px; border:1px solid var(--t2-green,#22c55e); background:rgba(34,197,94,0.12); color:var(--t2-green,#22c55e);">Create / relocate accounts</button>
             <button type="button" id="riCredsDownload" style="display:none; cursor:pointer; font-family:inherit; font-weight:700; font-size:12px; padding:8px 14px; border-radius:18px; border:1px solid var(--t2-border,#30363d); background:transparent; color:var(--t2-text-muted,#7d8590);">⬇ Download new credentials (CSV)</button>
+            <!-- Shown when the sheet named people it could not supply an email for.
+                 The class timetable arrives with no addresses at all, so handing the
+                 list back to fill in IS the workflow, not an edge case. -->
+            <button type="button" id="riFillEmails" style="display:none; cursor:pointer; font-family:inherit; font-weight:700; font-size:12px; padding:8px 14px; border-radius:18px; border:1px solid var(--t2-border,#30363d); background:transparent; color:var(--t2-text-muted,#7d8590);">⬇ Download rows to add emails</button>
             <span id="riStatus" style="font-size:12px; color:var(--t2-text-muted,#7d8590);"></span>
           </div>
         </div>
@@ -2015,7 +2298,7 @@
            Which email domains may register, and which may host teacher
            accounts. Read by the sign-up gate (org-registry.js). Stored in
            settings/organizations. Logic: teacher/js/org-admin.js. -->
-      <div id="orgAdminPanel" style="max-width: 1380px; margin: 34px auto 0; font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;">
+      <div id="orgAdminPanel" style="max-width: 1380px; margin: 34px auto 0; font-family: var(--ll-font);">
         <h2 style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--t2-text, #e6edf3); margin: 0;">🏢 Organizations</h2>
         <p style="font-size: 12px; color: var(--t2-text-muted, #7d8590); margin: 3px 0 14px;">
           Control which email domains can register, and which can host teacher accounts. The sign-up page checks this list. FSM domains stay allowed even if removed (safety fallback).
@@ -2042,7 +2325,13 @@
 
         <div class="section-header">
           <h2 class="section-title">📈 Recent Activity</h2>
-          <div style="display: flex; gap: 10px;">
+          <!-- `.filters`, not an inline flex row. An inline `display: flex`
+               with no wrap and no shrink made these two dropdowns size to
+               their longest option, so on a phone the pair was wider than the
+               screen and had to be scrolled sideways. `.filters` is the app's
+               own class for exactly this cluster (the Students tab uses it)
+               and carries the phone treatment. -->
+          <div class="filters">
             <select class="filter-select" id="activityBookFilter" onchange="loadRecentActivity()">
               <option value="all">All Books</option>
               <option value="empower">📘 Empower</option>
@@ -2134,7 +2423,33 @@
               <button class="activity-filter-btn secondary" onclick="ActivityAdmin.clearFilters()">
                 ↺ Clear
               </button>
-              <!-- Excel export moved into Admin > Reports (reports-admin.js). -->
+              <!-- Reporting lives in Admin > Reports. This download is not a
+                   report: it is the mandatory FIRST STEP of deleting logs
+                   below, and the delete refuses to run until it has been used.
+                   Putting it anywhere else would make that guard theatre. -->
+              <button class="activity-filter-btn export" onclick="ActivityAdmin.exportToExcel()">
+                &#128229; Download these logs
+              </button>
+            </div>
+
+            <!-- RETENTION. Deleting an audit log cannot be undone, so the order
+                 is enforced, not suggested: count, download, type the number
+                 back, then delete in capped batches. Nothing runs on a
+                 schedule; this only happens when someone presses the button. -->
+            <div class="activity-retention" style="margin-top:14px; padding-top:12px; border-top:1px solid var(--t2-border,#30363d); display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+              <!-- Fires on tab open when logs older than the retention window
+                   exist. One document read. This is the reminder: nothing runs
+                   on a schedule, so it has to surface where the buttons are. -->
+              <div id="activityRetentionBanner" class="activity-retention-banner" style="display:none;"></div>
+              <button class="activity-filter-btn secondary" onclick="ActivityAdmin.checkRetention()">
+                Check what is older than 6 months
+              </button>
+              <button class="activity-filter-btn secondary" id="activityPruneBtn" onclick="ActivityAdmin.runPrune()">
+                Delete logs older than 6 months
+              </button>
+              <span id="activityRetentionNote" style="font-size:12px; color:var(--t2-text-muted,#7d8590); flex:1 1 100%; line-height:1.5;">
+                Download first - deleting is refused until the logs have been downloaded in this session.
+              </span>
             </div>
           </div>
 
@@ -2242,16 +2557,26 @@
 </div>
 
 <!-- Logout Confirmation Modal -->
+<!-- ll-dialog / ll-dialog-toggle: shared dialog shape and motion from
+     css/brand.css. The marker goes on THIS .modal-box only - the assignment
+     and writing modals below share the class but need their own widths, so
+     they must not pick up the 420px confirmation shape. -->
 <div id="logoutModal" class="modal-overlay">
-  <div class="modal-box" style="text-align: center;">
-    <div style="font-size: 3em; margin-bottom: 16px;">🚪</div>
-    <h3 style="margin-bottom: 12px;">Leaving So Soon?</h3>
-    <p style="color: var(--text-secondary); margin-bottom: 24px;">
-      Are you sure you want to log out? You'll need to sign in again to access the dashboard.
-    </p>
+  <div class="modal-box ll-dialog ll-dialog-toggle" style="text-align: center;">
+    <div class="ll-dialog-icon" style="background: rgba(239,68,68,0.14);">🚪</div>
+    <!-- .modal-title / .modal-message are what the shared rules in
+         css/brand.css match on. They are NOT matched as a bare h3 and p,
+         because .ll-dialog is also worn by the profile hub panel and the
+         reading exam confirm, whose own headings would have been dragged along.
+         No inline margins or font sizes either: inline styles beat every
+         stylesheet, so they would have quietly re-opened the gap these rules
+         exist to close. Colour still comes from the page.
+         The sentence is word for word the student dashboard's. -->
+    <h3 class="modal-title">Leaving So Soon?</h3>
+    <p class="modal-message" style="color: var(--text-secondary);">Are you sure you want to log out? You'll need to sign in again to continue.</p>
     <div class="modal-buttons" style="justify-content: center;">
-      <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">Cancel</button>
-      <button class="modal-btn modal-btn-delete" onclick="confirmLogout()">Yes, Logout</button>
+      <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">Stay</button>
+      <button class="modal-btn modal-btn-delete" onclick="confirmLogout()">Log out</button>
     </div>
   </div>
 </div>
@@ -2379,7 +2704,7 @@
       <input type="date" id="examDeadline">
     </div>
 
-    <div class="modal-buttons" style="position: sticky; bottom: 0; background: var(--bg-card, #152035); border-top: 1px solid var(--border-color, rgba(59, 130, 246, 0.25)); padding-top: 12px; padding-bottom: 6px; margin-top: 8px; z-index: 2;">
+    <div class="modal-buttons modal-sticky-actions">
       <button class="modal-btn modal-btn-cancel" onclick="closeExamAssignmentModal()">Cancel</button>
       <button class="modal-btn modal-btn-save" onclick="saveExamAssignment()">Save Assignment</button>
     </div>
@@ -2455,7 +2780,7 @@
 
     <p id="caScopeSummary" style="margin: 4px 0 0; font-size: 0.88em; font-weight: 700; color: #34d399;"></p>
 
-    <div class="modal-buttons" style="position: sticky; bottom: 0; background: var(--bg-card, #152035); border-top: 1px solid var(--border-color, rgba(59, 130, 246, 0.25)); padding-top: 12px; padding-bottom: 6px; margin-top: 8px; z-index: 2;">
+    <div class="modal-buttons modal-sticky-actions">
       <button class="modal-btn modal-btn-cancel" onclick="closeCourseActivateModal()">Cancel</button>
       <button class="modal-btn modal-btn-save" id="caSaveBtn">🎓 Activate course</button>
     </div>
@@ -2560,7 +2885,7 @@
       <input type="date" id="grammarDeadline">
     </div>
 
-    <div class="modal-buttons" style="position: sticky; bottom: 0; background: var(--bg-card, #152035); border-top: 1px solid var(--border-color, rgba(59, 130, 246, 0.25)); padding-top: 12px; padding-bottom: 6px; margin-top: 8px; z-index: 2;">
+    <div class="modal-buttons modal-sticky-actions">
       <button class="modal-btn modal-btn-cancel" onclick="closeGrammarAssignmentModal()">Cancel</button>
       <button class="modal-btn modal-btn-save" onclick="saveGrammarAssignment()">Save Assignment</button>
     </div>
@@ -2582,17 +2907,18 @@
 
     <style>
       .wtabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px;border-bottom:1px solid var(--border-color,rgba(255,255,255,0.12));padding-bottom:10px;}
-      .wtab{cursor:pointer;font-family:inherit;font-weight:700;font-size:0.9em;color:var(--text-muted,#94a3b8);background:rgba(255,255,255,0.04);border:1px solid var(--border-color,rgba(255,255,255,0.12));border-radius:9px;padding:8px 14px;}
-      .wtab:hover{color:var(--text-primary,#f8fafc);}
-      .wtab.active{background:var(--accent-gradient,linear-gradient(135deg,#3b82f6,#0ea5e9));color:#fff;border-color:transparent;}
+      /* .wtab and .wnav-btn are styled in assignments/css/assignments.css, on
+         the SAME rule as .modal-btn-cancel, so they cannot drift from it.
+         Nothing about their appearance is declared here: they were declared
+         twice before, and the copy that lived here is what went out of step
+         with the real Cancel button. Only behaviour that is unique to this
+         wizard stays below. */
       .wtab-pane[hidden]{display:none;}
       .ai-tab-card{background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.3);border-radius:12px;padding:18px 20px;max-width:640px;}
       .ai-tab-head{font-weight:700;color:var(--text-primary,#f8fafc);font-size:1.05em;display:flex;align-items:center;gap:8px;}
       .ai-soon{font-size:0.62em;padding:2px 8px;border-radius:10px;background:rgba(245,158,11,0.18);color:#fbbf24;font-weight:700;}
       .ai-tab-desc{color:var(--text-muted,#94a3b8);line-height:1.6;font-size:0.92em;margin:8px 0 14px;}
       .ai-tab-note{color:var(--text-muted,#94a3b8);font-size:0.8em;margin-top:10px;font-style:italic;}
-      .wnav-btn{cursor:pointer;font-family:inherit;font-weight:700;font-size:0.9em;color:var(--text-primary,#f8fafc);background:rgba(255,255,255,0.06);border:1px solid var(--border-color,rgba(255,255,255,0.18));border-radius:9px;padding:9px 16px;}
-      .wnav-btn:hover{background:rgba(255,255,255,0.12);}
       .wnav-btn[hidden]{display:none;}
       #writingSaveBtn[hidden]{display:none;}
     </style>
@@ -2778,7 +3104,7 @@
       </div>
     </div>
 
-    <div class="modal-buttons" style="position: sticky; bottom: 0; background: var(--bg-card, #152035); border-top: 1px solid var(--border-color, rgba(59, 130, 246, 0.25)); padding-top: 12px; padding-bottom: 6px; margin-top: 8px; z-index: 2; display: flex; align-items: center; gap: 8px;">
+    <div class="modal-buttons modal-sticky-actions" style="display: flex; align-items: center; gap: 8px;">
       <button class="modal-btn modal-btn-cancel" onclick="closeWritingAssignmentModal()">Cancel</button>
       <div style="display: flex; gap: 8px; align-items: center; margin-left: auto;">
         <button type="button" class="wnav-btn" id="writingBackBtn" onclick="prevWritingTab()" hidden>◀ Back</button>
@@ -2930,7 +3256,7 @@
       🎯 Students must score 100% to complete this assignment
     </p>
     
-    <div class="modal-buttons" style="position: sticky; bottom: 0; background: var(--bg-card, #152035); border-top: 1px solid var(--border-color, rgba(59, 130, 246, 0.25)); padding-top: 12px; padding-bottom: 6px; margin-top: 8px; z-index: 2;">
+    <div class="modal-buttons modal-sticky-actions">
       <button class="modal-btn modal-btn-cancel" onclick="closeAssignmentModal()">Cancel</button>
       <button class="modal-btn modal-btn-save" onclick="saveAssignment()">💾 Save Assignment</button>
     </div>
@@ -2955,15 +3281,22 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js" integrity="sha384-nr3XW2E61lv+rhFoxO+G+2MytvPBcAHRBkVN+clME9hVhZBH+LxuUkYSsrIEUON+" crossorigin="anonymous"></script>
+<!-- Which university, then start Firebase for it. Must come after the
+     Firebase SDK above and before any page script below. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
 
 <!-- SheetJS for Excel Export (self-hosted - no CSP/CDN dependency) -->
-<script src="vendor/xlsx/xlsx.full.min.js"></script>
+<!-- SheetJS is NOT loaded here any more. It is 861 KB raw / 308 KB gzipped and
+     was pulled on every dashboard visit for an export most visits never run.
+     teacher/js/reports-admin.js now loads it on demand when a teacher actually
+     clicks Export, the same way teacher/js/roster-import.js always has. -->
 
 <!-- Activity Tracker -->
-<script src="activity-tracker/js/activity-config.js"></script>
-<script src="activity-tracker/js/activity-logger.js"></script>
-<script src="activity-tracker/js/activity-admin.js?v=2"></script>
-<link rel="stylesheet" href="activity-tracker/css/activity-tracker.css?v=6">
+<script src="activity-tracker/js/activity-config.js?v=2"></script>
+<script src="activity-tracker/js/activity-logger.js?v=1"></script>
+<script src="activity-tracker/js/activity-admin.js?v=10"></script>
+<link rel="stylesheet" href="activity-tracker/css/activity-tracker.css?v=10">
 
 <!-- Tab Switching Script -->
 <script>
@@ -3001,91 +3334,115 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <!-- Modular Teacher JS - Load in order! -->
-<script src="teacher/js/config.js"></script>
-<script src="teacher/js/skills/index.js"></script>
-<script src="teacher/js/students.js"></script>
-<script src="teacher/js/activity.js?v=3"></script>
-<script src="teacher/js/modals.js"></script>
+<!-- score-utils must load FIRST: every card, table and report below
+     averages through it, and it is what keeps an ungraded writing exam
+     from counting as a zero. -->
+<script src="teacher/js/score-utils.js?v=2"></script>
+<script src="teacher/js/config.js?v=9"></script>
+<script src="teacher/js/skills/index.js?v=2"></script>
+<script src="teacher/js/students.js?v=3"></script>
+  <script src="student/js/score-rollup.js?v=2"></script>
+<script src="teacher/js/activity.js?v=16"></script>
+<script src="teacher/js/modals.js?v=6"></script>
 <!-- Shared module - used by admin.js and overview-v2.js. Loaded BEFORE
      admin.js so the IIFE has `ConfusingPairs.mount(...)` available. -->
-<script src="teacher/js/confusing-pairs.js"></script>
+<script src="teacher/js/confusing-pairs.js?v=1"></script>
 <!-- Phase H - dynamic email-domain authorization. Must load BEFORE
      admin.js so the live /settings/organizations snapshot is already
      streaming when that module renders. The admin UI for editing this
      list lives in the Admin tab (#orgAdminPanel, teacher/js/org-admin.js)
      and writes settings/organizations. -->
-<script src="index/js/org-registry.js"></script>
-<script src="teacher/js/admin.js"></script>
+<script src="index/js/org-registry.js?v=3"></script>
+<!-- "Rate Lingualab", opened from the sidebar. -->
+<script src="js/app-rating.js?v=3"></script>
+<!-- The university mark in the page header (after the registry it reads). -->
+<script src="js/org-brand.js?v=10"></script>
+<script src="teacher/js/admin.js?v=2"></script>
 <!-- Skill registry MUST load before teacher-assignments.js so the
      skill picker + filter strip can render from it. -->
-<script src="assignments/js/skill-registry.js?v=2"></script>
-<script src="assignments/js/exam-registry.js"></script>
+<script src="assignments/js/skill-registry.js?v=8"></script>
+<script src="assignments/js/exam-registry.js?v=5"></script>
 <!-- Shared validation helper used by the vocab/writing/exam forms. -->
-<script src="assignments/js/form-validation.js"></script>
+<script src="assignments/js/form-validation.js?v=1"></script>
 <!-- Role-based target scoping - restricts non-admin teachers to
      their own classes & individual students only. -->
-<script src="assignments/js/role-scope.js"></script>
+<script src="assignments/js/role-scope.js?v=1"></script>
 <!-- Shared "select individual students" picker (search + select-all +
      live count). Used by writing-form.js and exam-form.js - vocab
      keeps its own historical implementation. Must load BEFORE the
      two consumer modules below or they fall back to bare checkbox
      lists with no search. -->
-<script src="assignments/js/student-picker.js"></script>
-<script src="assignments/js/teacher-assignments.js"></script>
+<script src="assignments/js/student-picker.js?v=1"></script>
+<script src="assignments/js/teacher-assignments.js?v=10"></script>
 <!-- Skill-specific form modules. Each one self-registers via the
      routeToCreationForm() and openEditAssignmentModal() globals,
      chaining off the previous override so multiple skills can each
      have their own form. -->
-<script src="assignments/js/exam-form.js"></script>
+<script src="assignments/js/exam-form.js?v=2"></script>
 <!-- Gates the vocab-assignment Unit dropdown by assignmentsHidden.vocabulary. -->
 <script src="assignments/js/vocab-assign-gating.js?v=1"></script>
-<script src="assignments/js/writing-form.js"></script>
+<script src="assignments/js/writing-form.js?v=1"></script>
 <!-- Grammar assignment: content (levels/topics) + form. Mirrors exam-form.js. -->
 <script src="student/js/skills/grammar-content.js?v=34"></script>
 <!-- Policy mini course: content (module count for the panel) + teacher admin panel. -->
 <script src="student/js/policy-course-content.js?v=7"></script>
-<script src="teacher/js/policy-course-admin.js?v=13"></script>
-<script src="teacher/js/feature-activation.js?v=6"></script>
-<script src="teacher/js/content-controls.js?v=11"></script>
+<script src="teacher/js/policy-course-admin.js?v=15"></script>
+<script src="teacher/js/feature-activation.js?v=7"></script>
+<script src="teacher/js/content-controls.js?v=19"></script>
 <!-- Reports (admin): KPIs, charts, Excel workbook, game history. -->
-<script src="teacher/js/reports-admin.js?v=11"></script>
+<script src="teacher/js/reports-admin.js?v=18"></script>
+<!-- Admin > Messages: the student support inbox. Reads on demand, never
+     streams - a live listener on a queue nobody watches is cost for nothing. -->
+<script src="teacher/js/messages-admin.js?v=11"></script>
+<script src="teacher/js/feedback-admin.js?v=1"></script>
+<!-- Admin > FAQ: the common questions students see in Messages & help and on
+     the sign-in page. js/faq.js holds the topic list both sides share. -->
+<script src="js/faq.js?v=1"></script>
+<script src="teacher/js/faq-admin.js?v=1"></script>
 <!-- Writing AI access manager (admin): grant teachers + open the corrector. -->
-<script src="teacher/js/ai-writing-admin.js?v=9"></script>
-<script src="teacher/js/placement-admin.js?v=6"></script>
+<script src="teacher/js/ai-writing-admin.js?v=11"></script>
+<script src="teacher/js/placement-admin.js?v=13"></script>
 <!-- Demo/test account creator (admin) - calls the createDemoAccount function. -->
 <script src="teacher/js/demo-account-admin.js?v=3"></script>
-<script src="teacher/js/roster-import.js?v=6"></script>
-<script src="teacher/js/org-admin.js?v=1"></script>
-<script src="assignments/js/grammar-form.js"></script>
+<script src="teacher/js/roster-import.js?v=19"></script>
+<script src="teacher/js/org-admin.js?v=3"></script>
+<script src="assignments/js/grammar-form.js?v=1"></script>
 <!-- Writing feedback v2: comment bank (data) + annotation engine.
      Must load BEFORE writing-submissions-view.js so the grading view
      can use them. Both are pure enhancements - the view degrades to
      plain-text essay + freeform comment if they're missing. -->
-<script src="assignments/js/writing-comment-bank.js"></script>
-<script src="assignments/js/writing-annotations.js"></script>
-<script src="assignments/js/writing-submissions-view.js"></script>
+<script src="assignments/js/writing-comment-bank.js?v=4"></script>
+<script src="assignments/js/writing-annotations.js?v=2"></script>
+<script src="assignments/js/writing-submissions-view.js?v=3"></script>
 <!-- Phase F.3 - cross-assignment writing grading analytics modal.
      Self-installs a "📊 Grading Stats" button next to "+ New Assignment". -->
-<script src="assignments/js/grading-stats.js"></script>
+<script src="assignments/js/grading-stats.js?v=1"></script>
 <!-- v2 Overview render layer - loaded after all data-loading scripts so
      it can read the same `allStudents` / `allSessions` / `currentUserData`
      globals they populate. -->
-<script src="teacher/js/overview-v2.js?v=2"></script>
+<script src="teacher/js/overview-v2.js?v=13"></script>
+<!-- Phone shell: the sidebar becomes a bottom tab bar below 768px. AFTER
+     overview-v2.js, which hydrates the sidebar icons this bar copies. -->
+<script src="teacher/js/mobile-shell.js?v=12"></script>
+<!-- Step 2: wide tables become cards below 768px. Stamps column labels onto
+     cells from the <th> row, so it covers every table including ones written
+     later, without editing the eight modules that render them. -->
+<script src="teacher/js/mobile-tables.js?v=3"></script>
 <!-- Assignments Overview card - loaded LAST so it can patch both
      renderAssignments (from teacher-assignments.js) and renderOverviewV2
      (from overview-v2.js) and re-render itself on every snapshot tick.
      Respects teacher scope: non-admin teachers see only their own
      assignments; admin gets a per-teacher breakdown. -->
-<script src="teacher/js/assignments-overview.js"></script>
+<script src="teacher/js/assignments-overview.js?v=1"></script>
 <!-- Student drill-down (click a student row → full profile modal +
      printable PDF report). Loads after students.js so its row-click
      delegation can find the rendered rows. Reads existing data
      globals only - no new Firestore reads. -->
-<script src="teacher/js/student-detail.js"></script>
+<script src="teacher/js/student-detail.js?v=6"></script>
 <!-- Dashboard extras: class-comparison panel (Overview) + deadline
      calendar (Assignments). Self-installing, patches the render
      pipeline like assignments-overview.js. -->
-<script src="teacher/js/dashboard-extras.js"></script>
+<script src="teacher/js/dashboard-extras.js?v=1"></script>
 
 <!-- Load Assignments on Dashboard Load -->
 <script>
@@ -3114,9 +3471,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 </script>
 
-<script src="/pwa-register.js"></script>
+<!-- The phone gate that used to sit here is gone. It existed because wide
+     tables and grading views did not fit a phone; teacher/js/mobile-shell.js
+     and teacher/js/mobile-tables.js now make them fit, so the dashboard itself
+     is the phone view and there is nothing left to gate. -->
+<script src="/pwa-register.js?v=2"></script>
 <script>window.CLASS_TIMER_NO_FAB = true;</script>
-<script src="js/classroom-timer.js?v=3"></script>
-<script src="js/widgets-tray.js?v=2"></script>
+<script src="js/classroom-timer.js?v=6"></script>
+<script src="js/widgets-tray.js?v=3"></script>
 </body>
 </html>

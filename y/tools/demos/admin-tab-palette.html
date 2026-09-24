@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin tab palette harness</title>
+<!--
+  The Admin tab's palette is declared INSIDE teacher-dashboard.html's <style>
+  blocks, not in any stylesheet, which is exactly why the repaint missed it.
+  This harness fetches those real <style> blocks out of the page and injects
+  them, so the cascade under test is the real one - in particular whether
+  `.light-mode #tab-admin` (110) beats `#tab-admin` (100).
+
+  ?theme=dark to check the dark side still works.
+-->
+<script>
+(function () {
+  // BEFORE app-settings.js: it reads the theme at load time, and the one-time
+  // repaint reset would otherwise stamp light over whatever we asked for.
+  var t = new URLSearchParams(location.search).get('theme');
+  if (t) { try { localStorage.setItem('ll-theme-epoch','white-blue-1'); localStorage.setItem('theme', t); } catch (e) {} }
+  var b = '?b=' + Date.now();
+  ['../../css/brand.css','../../teacher/css/styles.css','../../teacher/css/skills.css',
+   '../../assignments/css/assignments.css','../../teacher/css/dashboard-v2.css',
+   '../../css/app-settings.css'].forEach(function (h) {
+    document.write('<link rel="stylesheet" href="' + h + b + '">');
+  });
+  document.write('<scr' + 'ipt src="../../js/app-settings.js' + b + '"></scr' + 'ipt>');
+})();
+</script>
+</head>
+<body data-app-settings="off" class="t2-active">
+<div style="padding:20px;">
+  <h1 style="font-size:1.3rem;margin:0 0 4px;">Admin tab palette</h1>
+  <p id="status" style="margin:0 0 16px;opacity:.8;font-size:.9rem;">loading real &lt;style&gt; blocks…</p>
+
+  <div id="tab-admin">
+    <div class="av-root">
+      <div class="av-header"><h2 style="margin:0 0 12px;font-size:1.1rem;">Teachers</h2></div>
+      <div class="av-toolbar" style="margin-bottom:12px;">
+        <button class="av-pill is-active">All (11)</button>
+        <button class="av-pill">Admins (1)</button>
+        <button class="av-pill">Teachers (10)</button>
+      </div>
+      <table class="av-table" style="width:100%;border-collapse:collapse;">
+        <thead><tr><th>Teacher</th><th>Role</th><th>Classes</th><th>Students</th><th>Last active</th></tr></thead>
+        <tbody>
+          <tr class="av-row"><td>Derya ÖZDEMİR</td><td>Teacher</td><td>D302</td><td>0</td><td>7mo ago</td></tr>
+          <tr class="av-row"><td>Abdulrauf Badnjku</td><td>Teacher</td><td>B125 D315</td><td>25</td><td>22d ago</td></tr>
+          <tr class="av-row is-expanded"><td>Alireza</td><td>Admin</td><td>None assigned</td><td>0</td><td>Now</td></tr>
+        </tbody>
+      </table>
+      <div class="av-empty" style="margin-top:12px;">Showing 11 of 11 teachers</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  fetch('../../teacher-dashboard.html?b=' + Date.now())
+    .then(function (r) { return r.text(); })
+    .then(function (html) {
+      var css = '', re = /<style[^>]*>([\s\S]*?)<\/style>/gi, m;
+      while ((m = re.exec(html))) css += m[1] + '\n';
+      var s = document.createElement('style');
+      s.textContent = css;
+      document.head.appendChild(s);
+      // re-apply the theme now that a later stylesheet has landed
+      if (window.AppSettings && window.AppSettings.refresh) window.AppSettings.refresh();
+      var el = document.getElementById('tab-admin');
+      var cs = getComputedStyle(el);
+      document.getElementById('status').textContent =
+        'injected ' + css.split('\n').length + ' lines of inline CSS  |  --t2-bg=' +
+        cs.getPropertyValue('--t2-bg').trim() + '  --t2-text=' + cs.getPropertyValue('--t2-text').trim();
+      window.__ready = true;
+    });
+})();
+</script>
+</body>
+</html>

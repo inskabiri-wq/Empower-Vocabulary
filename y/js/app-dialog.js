@@ -1,5 +1,5 @@
 /* ============================================================
-   APP DIALOG — one themed alert / confirm / prompt for the
+   APP DIALOG - one themed alert / confirm / prompt for the
    whole app. Replaces the ugly native browser dialogs with a
    consistent dark-glass modal (same structure + look as the
    classroom .modal-* modals).
@@ -18,7 +18,7 @@
        with a page's existing .modal-* styles.
      • Enter = confirm/OK, Esc = cancel, backdrop click = cancel.
      • Falls back to native dialogs if the DOM isn't available (SSR
-       safety) — never throws.
+       safety) - never throws.
      • Only ONE dialog shows at a time; calls queue.
    ============================================================ */
 (function () {
@@ -30,39 +30,96 @@
     if (document.getElementById(STYLE_ID)) return;
     var css = ''
       + '.appdlg-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;'
-      + 'justify-content:center;padding:18px;background:rgba(8,12,24,.74);backdrop-filter:blur(6px);'
-      + '-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .18s ease;}'
+      // Backdrop matched to the shared .modal-overlay in css/brand.css: the app
+      // had three different treatments (blur 8px, blur 6px, blur 4px) and two
+      // different fade lengths, so dialogs dimmed the page by different amounts.
+      + 'justify-content:center;padding:18px;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);'
+      + '-webkit-backdrop-filter:blur(8px);opacity:0;'
+      + 'transition:opacity var(--ll-dlg-dur,.3s) ease;}'
       + '.appdlg-overlay.in{opacity:1;}'
-      + '.appdlg-card{width:100%;max-width:420px;background:linear-gradient(180deg,rgba(17,24,40,.98),rgba(11,15,28,.99));'
-      + 'border:1.5px solid rgba(148,163,184,.22);border-radius:18px;padding:24px 24px 20px;'
+      // Size and radius come from .ll-dialog in css/brand.css (loaded by every
+      // page that loads this file), so this card is the same shape as the
+      // logout modals and the reading exam's. Only colour lives here.
+      // The motion reads the shared tokens rather than its own numbers, so it
+      // uses the same curve and duration as the rest - it used to be a 0.2s
+      // scale(.94) with a different easing, which is why it moved differently.
+      + '.appdlg-card{background:linear-gradient(180deg,rgba(17,24,40,.98),rgba(11,15,28,.99));'
+      + 'border:1.5px solid rgba(148,163,184,.22);'
       + 'box-shadow:0 30px 80px rgba(0,0,0,.6);color:#f1f5f9;'
-      + "font-family:'Poppins',-apple-system,Segoe UI,Roboto,sans-serif;text-align:center;"
-      + 'transform:scale(.94);opacity:0;transition:transform .2s cubic-bezier(.34,1.4,.64,1),opacity .15s;'
+      + "font-family:var(--ll-font);text-align:center;"
+      + 'transform:var(--ll-dlg-from,scale(.9) translateY(20px));opacity:0;'
+      + 'transition:transform var(--ll-dlg-dur,.3s) var(--ll-dlg-ease,cubic-bezier(.34,1.56,.64,1)),opacity .15s;'
       + 'max-height:calc(100vh - 36px);overflow-y:auto;}'
-      + '.appdlg-overlay.in .appdlg-card{transform:scale(1);opacity:1;}'
+      + '.appdlg-overlay.in .appdlg-card{transform:scale(1) translateY(0);opacity:1;}'
       + '.appdlg-icon{font-size:2.2em;line-height:1;margin-bottom:8px;}'
       + '.appdlg-title{margin:0 0 8px;font-size:1.2em;font-weight:800;letter-spacing:-.01em;'
-      + 'background:linear-gradient(135deg,#818cf8,#a78bfa);-webkit-background-clip:text;background-clip:text;'
+      + 'background:linear-gradient(135deg,#60a5fa,#60a5fa);-webkit-background-clip:text;background-clip:text;'
       + '-webkit-text-fill-color:transparent;}'
-      + '.appdlg-title.danger{background:linear-gradient(135deg,#fb7185,#f59e0b);-webkit-background-clip:text;'
+      + '.appdlg-title.danger{background:linear-gradient(135deg,#fb7185,#e11d48);-webkit-background-clip:text;'
       + 'background-clip:text;-webkit-text-fill-color:transparent;}'
       + '.appdlg-msg{margin:0 0 16px;color:#cbd5e1;line-height:1.55;font-size:.96em;white-space:pre-wrap;}'
       + '.appdlg-input{width:100%;box-sizing:border-box;margin:0 0 16px;padding:11px 13px;border-radius:10px;'
       + 'border:1.5px solid rgba(148,163,184,.3);background:rgba(15,23,42,.7);color:#f1f5f9;font:inherit;font-size:1em;}'
-      + '.appdlg-input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.25);}'
+      + '.appdlg-input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.25);}'
       + '.appdlg-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}'
-      + '.appdlg-btn{flex:1 1 auto;min-width:104px;max-width:200px;padding:11px 20px;border-radius:10px;'
+      // flex-basis 0, NOT auto. With `auto` each button starts at the width of
+      // its own text and grows from there, so "Stay" could never come out the
+      // same width as "Log out". A zero basis gives both the same starting
+      // width, so they always finish equal.
+      // The numbers here are the ones in css/brand.css for the markup dialogs
+      // (.ll-dialog .modal-buttons .modal-btn); change the two together or the
+      // built-on-open dialogs drift away from the built-in-markup ones again.
+      + '.appdlg-btn{flex:1 1 0;min-width:110px;max-width:200px;min-height:48px;padding:12px 22px;border-radius:10px;'
       + 'border:1.5px solid rgba(148,163,184,.28);background:rgba(15,23,42,.5);color:#e2e8f0;'
       + 'font:inherit;font-weight:600;font-size:.95em;cursor:pointer;'
       + 'transition:filter .15s,transform .08s,border-color .15s;}'
       + '.appdlg-btn:hover{filter:brightness(1.12);}'
       + '.appdlg-btn:active{transform:translateY(1px);}'
       + '.appdlg-btn.cancel:hover{border-color:rgba(148,163,184,.55);}'
-      + '.appdlg-btn.ok{background:linear-gradient(135deg,#6366f1,#a78bfa);border-color:transparent;color:#fff;'
-      + 'box-shadow:0 8px 22px -10px rgba(99,102,241,.7);}'
+      + '.appdlg-btn.ok{background:linear-gradient(135deg,#2563eb,#60a5fa);border-color:transparent;color:#fff;'
+      + 'box-shadow:0 8px 22px -10px rgba(37,99,235,.7);}'
       + '.appdlg-btn.ok.danger{background:linear-gradient(135deg,#ef4444,#f43f5e);box-shadow:0 8px 22px -10px rgba(239,68,68,.65);}'
       + '@media (max-width:480px){.appdlg-btn{flex:1 1 100%;max-width:none;}}'
-      + '@media (prefers-reduced-motion:reduce){.appdlg-overlay,.appdlg-card{transition:none;}}';
+      + '@media (prefers-reduced-motion:reduce){.appdlg-overlay,.appdlg-card{transition:none;}}'
+
+      // LIGHT MODE.
+      //
+      // Every colour above is a dark literal with no light counterpart, so on
+      // the repainted white app this dialog rendered as a dark navy box in the
+      // middle of a light page: "Missing level / Pick a level first" arrived
+      // looking like it belonged to a different product. The card is the most
+      // visible shared component in the app, and it was the last one still
+      // painting itself dark.
+      //
+      // Only the SURFACES flip. The accent, the danger red and the motion are
+      // unchanged, so the dialog is recognisably the same object in either
+      // theme.
+      + '.light-mode .appdlg-overlay{background:rgba(15,23,42,.45);}'
+      + '.light-mode .appdlg-card{background:#ffffff;'
+      + 'border:1.5px solid #cbd8e8;box-shadow:0 30px 80px rgba(15,23,42,.28);color:#0f172a;}'
+      + '.light-mode .appdlg-msg{color:#334155;}'
+      + '.light-mode .appdlg-input{background:#ffffff;border-color:#cbd8e8;color:#0f172a;}'
+      // ONLY the secondary button is repainted.
+      //
+      // The first attempt at this styled `.light-mode .appdlg-btn`, which has
+      // the same specificity as `.appdlg-btn.ok` and comes later in the sheet,
+      // so it quietly won and stripped the primary button of its blue. The
+      // result was white text on a near-white pill: the OK button was the
+      // least readable thing on the screen.
+      + '.light-mode .appdlg-btn.cancel{background:#eef3fa;border-color:#c3d2e6;color:#1e293b;}'
+      + '.light-mode .appdlg-btn.cancel:hover{background:#e2eaf6;border-color:#94a3b8;}'
+      // Primary and danger keep their gradient in both themes, stated again
+      // here so no later light rule can flatten them by accident.
+      + '.light-mode .appdlg-btn.ok{background:linear-gradient(135deg,#2563eb,#3b82f6);'
+      + 'border-color:transparent;color:#ffffff;box-shadow:0 8px 22px -10px rgba(37,99,235,.8);}'
+      + '.light-mode .appdlg-btn.ok.danger{background:linear-gradient(135deg,#dc2626,#ef4444);'
+      + 'box-shadow:0 8px 22px -10px rgba(220,38,38,.7);}'
+      // The title uses background-clip:text, so it needs a colour that carries
+      // on white rather than the pale blue that reads as disabled.
+      + '.light-mode .appdlg-title{background:linear-gradient(135deg,#1d4ed8,#2563eb);'
+      + '-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}'
+      + '.light-mode .appdlg-title.danger{background:linear-gradient(135deg,#dc2626,#e11d48);'
+      + '-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}';
     var el = document.createElement('style');
     el.id = STYLE_ID;
     el.textContent = css;
@@ -129,7 +186,7 @@
       btns = '<button type="button" class="appdlg-btn cancel" data-r="cancel">' + esc(o.cancelLabel || 'Cancel') + '</button>'
            + '<button type="button" class="appdlg-btn ok' + dangerCls + '" data-r="ok">' + esc(o.okLabel || 'OK') + '</button>';
     }
-    overlay.innerHTML = '<div class="appdlg-card" role="dialog" aria-modal="true">'
+    overlay.innerHTML = '<div class="appdlg-card ll-dialog" role="dialog" aria-modal="true">'
       + iconHtml + titleHtml + msgHtml + inputHtml
       + '<div class="appdlg-btns">' + btns + '</div></div>';
     document.body.appendChild(overlay);
@@ -195,6 +252,69 @@
                    value: opts.value || '', placeholder: opts.placeholder || '',
                    password: !!opts.password, okLabel: opts.okLabel || 'OK',
                    cancelLabel: opts.cancelLabel || 'Cancel' });
+    },
+
+    /* HOLD A CONFIRM MODAL OPEN WHILE SOMETHING FINISHES.
+     *
+     * Both dashboards used to call closeLogoutModal() as the FIRST line of
+     * confirmLogout(), then sign out. That exposed the live, fully clickable
+     * dashboard for as long as the sign-out took - on the student side that
+     * also included an awaited Firestore write, so roughly a second in which
+     * a student could open a game, or the next person on a shared machine
+     * could click into the account that is on its way out.
+     *
+     * Keeping the overlay up is the fix; this puts it into a visible working
+     * state so the wait reads as progress instead of a stuck button.
+     *
+     * Every step is guarded: this runs on the way out of a session and must
+     * never be the reason a logout fails.
+     */
+    busy: function (modalId, label) {
+      try {
+        var m = document.getElementById(modalId || 'logoutModal');
+        if (!m) return;
+        m.classList.add('is-busy');
+        var btns = m.querySelectorAll('.modal-btn, button');
+        for (var i = 0; i < btns.length; i++) {
+          btns[i].disabled = true;
+          btns[i].setAttribute('aria-disabled', 'true');
+          // The confirm button carries the message; the cancel one just fades.
+          if (/confirm|delete|danger|ok/i.test(btns[i].className)) {
+            if (!btns[i].hasAttribute('data-idle-label')) {
+              btns[i].setAttribute('data-idle-label', btns[i].textContent);
+            }
+            btns[i].textContent = label || 'Signing out...';
+          }
+        }
+      } catch (_) { /* never block the sign-out */ }
+    },
+
+    // Undo busy(). Needed because the sign-out CAN fail: without this the
+    // modal would sit there with both buttons dead and no way to retry or
+    // cancel, which is worse than the delay it replaced.
+    unbusy: function (modalId) {
+      try {
+        var m = document.getElementById(modalId || 'logoutModal');
+        if (!m) return;
+        m.classList.remove('is-busy');
+        var btns = m.querySelectorAll('.modal-btn, button');
+        for (var i = 0; i < btns.length; i++) {
+          btns[i].disabled = false;
+          btns[i].removeAttribute('aria-disabled');
+          var idle = btns[i].getAttribute('data-idle-label');
+          if (idle !== null) { btns[i].textContent = idle; btns[i].removeAttribute('data-idle-label'); }
+        }
+      } catch (_) {}
+    },
+
+    // Is a modal mid-flight? Backdrop and Escape handlers ask this so a
+    // stray click cannot dismiss the overlay and expose the page during the
+    // exact window the overlay exists to cover.
+    isBusy: function (modalId) {
+      try {
+        var m = document.getElementById(modalId || 'logoutModal');
+        return !!(m && m.classList.contains('is-busy'));
+      } catch (_) { return false; }
     }
   };
 })();

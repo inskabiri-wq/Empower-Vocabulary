@@ -18,20 +18,27 @@
 
   function el(tag, style, html) { var e = document.createElement(tag); if (style) e.style.cssText = style; if (html != null) e.innerHTML = html; return e; }
 
+  // Styling lives in student/css/extra.css (.sp-*). It used to be inline and
+  // hardcoded DARK - #152035 card, #0d1117 inputs - which nobody noticed during
+  // the white repaint because this modal had no button anywhere: the only way
+  // to reach it was a roster account's forced first sign-in. On tokens now, so
+  // it follows light / dark / sepia / contrast like every other surface.
   function buildModal(forced) {
-    var overlay = el('div', 'position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(2,6,16,0.72); backdrop-filter:blur(3px); font-family:"DM Sans","Segoe UI",system-ui,sans-serif;');
-    var card = el('div', 'width:100%; max-width:400px; background:#152035; border:1px solid rgba(59,130,246,0.25); border-radius:16px; padding:24px; box-shadow:0 24px 60px rgba(0,0,0,0.5); color:#f8fafc;');
+    var overlay = el('div');
+    overlay.className = 'sp-overlay';
+    var card = el('div');
+    card.className = 'sp-card';
     card.innerHTML =
-      '<div style="font-size:34px; text-align:center; line-height:1;">🔒</div>' +
-      '<h2 style="font-size:19px; font-weight:800; text-align:center; margin:8px 0 4px;">' + (forced ? 'Set your password' : 'Change your password') + '</h2>' +
-      '<p style="font-size:13px; color:#94a3b8; text-align:center; margin:0 0 16px; line-height:1.5;">' +
+      '<div class="sp-icon">🔒</div>' +
+      '<h2 class="sp-title">' + (forced ? 'Set your password' : 'Change your password') + '</h2>' +
+      '<p class="sp-lede">' +
         (forced ? 'Welcome! Please choose your own password to finish setting up your account.' : 'Choose a new password for your account.') + '</p>' +
-      '<input id="spNew" type="password" autocomplete="new-password" placeholder="New password (at least 6 characters)" style="width:100%; box-sizing:border-box; padding:11px 13px; margin-bottom:10px; border:1px solid rgba(59,130,246,0.25); border-radius:10px; background:#0d1117; color:#f8fafc; font-family:inherit; font-size:14px;">' +
-      '<input id="spConfirm" type="password" autocomplete="new-password" placeholder="Confirm new password" style="width:100%; box-sizing:border-box; padding:11px 13px; border:1px solid rgba(59,130,246,0.25); border-radius:10px; background:#0d1117; color:#f8fafc; font-family:inherit; font-size:14px;">' +
-      '<div id="spErr" style="font-size:12.5px; color:#f87171; min-height:18px; margin:8px 2px 0;"></div>' +
-      '<div style="display:flex; gap:10px; margin-top:8px;">' +
-        (forced ? '' : '<button id="spCancel" type="button" style="flex:1; cursor:pointer; font-family:inherit; font-weight:700; font-size:14px; padding:11px; border-radius:10px; border:1px solid rgba(59,130,246,0.25); background:transparent; color:#94a3b8;">Cancel</button>') +
-        '<button id="spSave" type="button" style="flex:2; cursor:pointer; font-family:inherit; font-weight:800; font-size:14px; padding:11px; border-radius:10px; border:none; background:#3b82f6; color:#fff;">Save password</button>' +
+      '<input id="spNew" class="sp-input" type="password" autocomplete="new-password" placeholder="New password (at least 6 characters)">' +
+      '<input id="spConfirm" class="sp-input" type="password" autocomplete="new-password" placeholder="Confirm new password">' +
+      '<div id="spErr" class="sp-err"></div>' +
+      '<div class="sp-row">' +
+        (forced ? '' : '<button id="spCancel" type="button" class="sp-btn sp-btn-ghost">Cancel</button>') +
+        '<button id="spSave" type="button" class="sp-btn">Save password</button>' +
       '</div>';
     overlay.appendChild(card);
     return overlay;

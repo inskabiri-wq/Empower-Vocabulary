@@ -1,5 +1,5 @@
 /* ============================================================
-   REFRESH GUARD — shared across all classroom-mode student pages
+   REFRESH GUARD - shared across all classroom-mode student pages
    ----------------------------------------------------------------
    Intercepts F5 / Ctrl+R / Cmd+R keyboard shortcuts while a game
    is in flight and shows a themed two-step confirmation modal
@@ -7,7 +7,7 @@
    allowing the reload.
 
    The URL-bar refresh button can't be reliably intercepted
-   (browsers don't expose it to keyboard handlers) — that path
+   (browsers don't expose it to keyboard handlers) - that path
    still fires the standard beforeunload native prompt which
    each game's student JS already wires up. The keyboard path
    was the more common accidental-refresh vector reported.
@@ -106,7 +106,7 @@
   function handler(e) {
     // F5
     const isF5 = e.key === 'F5';
-    // Ctrl+R or Cmd+R (not Ctrl+Shift+R since that's force-reload —
+    // Ctrl+R or Cmd+R (not Ctrl+Shift+R since that's force-reload -
     // also intercept it to be safe).
     const isCmdR = (e.ctrlKey || e.metaKey) && (e.key === 'r' || e.key === 'R');
     if (!isF5 && !isCmdR) return;
@@ -118,7 +118,7 @@
     runDoubleConfirm().then(yes => {
       inFlight = false;
       if (yes) {
-        // Programmatic reload — bypasses our handler since it doesn't
+        // Programmatic reload - bypasses our handler since it doesn't
         // dispatch a key event.
         window.location.reload();
       }

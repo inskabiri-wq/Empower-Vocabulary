@@ -1,5 +1,5 @@
 /* =============================================================
-   grading-stats.js  —  Phase F.3
+   grading-stats.js  -  Phase F.3
    Teacher-facing aggregate analytics for writing-grade workflow.
 
    Renders a modal showing, across all writing assignments the
@@ -8,7 +8,7 @@
      • Per-class breakdown (avg score, pending count)
      • Per-assignment breakdown (graded count, avg score, oldest pending)
 
-   One-shot fetch (not live) — the data is read once when the
+   One-shot fetch (not live) - the data is read once when the
    modal is opened and cached for that view. Reopening re-fetches.
 
    Public API (exposed on window):
@@ -34,7 +34,7 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  // Skill classifier — reuses SKILL_REGISTRY if present, otherwise
+  // Skill classifier - reuses SKILL_REGISTRY if present, otherwise
   // falls back to the `skill` field.
   function _isWriting(a) {
     if (typeof SKILL_REGISTRY !== 'undefined' && SKILL_REGISTRY?.skillOf) {
@@ -49,7 +49,7 @@
   function _installButton() {
     if (document.getElementById('openGradingStatsBtn')) return;
     // Look for the "+ New Assignment" button (the most reliable
-    // anchor on the assignments tab — it's been there since v1).
+    // anchor on the assignments tab - it's been there since v1).
     const newBtn = document.querySelector('button[onclick*="openAssignmentModal"], button[onclick*="routeToCreationForm"]');
     if (!newBtn || !newBtn.parentElement) return;
     const btn = document.createElement('button');
@@ -57,7 +57,7 @@
     btn.type = 'button';
     btn.className = newBtn.className || '';
     btn.style.cssText = `
-      background: linear-gradient(135deg, #a855f7, #7c3aed);
+      background: linear-gradient(135deg, #1d4ed8, #1d4ed8);
       color: white; border: none; padding: 8px 14px;
       border-radius: 8px; font-weight: 600; cursor: pointer;
       margin-left: 8px; font-size: 0.92em;
@@ -73,7 +73,7 @@
 
     // Pull every writing assignment the teacher can see. The global
     // `allAssignments` is populated by teacher-assignments.js's live
-    // listener — we just filter it. It's declared with `let` so it
+    // listener - we just filter it. It's declared with `let` so it
     // lives in the shared script scope (NOT on window), so we read
     // the bare name with a typeof guard.
     const _all = (typeof allAssignments !== 'undefined' && Array.isArray(allAssignments))
@@ -86,7 +86,7 @@
       return;
     }
 
-    // Per-assignment fetch — Firestore's `in` operator is capped at
+    // Per-assignment fetch - Firestore's `in` operator is capped at
     // 30 entries, and we'd still need to chunk above that. One get()
     // per assignment is simpler, and the rule layer already lets a
     // scoped teacher read these.
@@ -135,7 +135,7 @@
 
   function _wrap(body, opts) {
     opts = opts || {};
-    // CSV export button — only shown once data has loaded and there's
+    // CSV export button - only shown once data has loaded and there's
     // at least one submission row to export. Builds the CSV in-memory
     // and triggers a Blob download; no server round-trip.
     const csvBtn = opts.showExport ? `
@@ -194,13 +194,13 @@
   }
   function exportGradingStatsCsv() {
     if (!Array.isArray(_rows) || _rows.length === 0) {
-      AppDialog.alert('Nothing to export — no submissions loaded.');
+      AppDialog.alert('Nothing to export - no submissions loaded.');
       return;
     }
     const header = [
       'Student Name', 'Class', 'Level', 'Assignment Title', 'Question Type',
       'Status',
-      // Phase G.6 — per-criterion columns + total
+      // Phase G.6 - per-criterion columns + total
       'TA (/5)', 'CC (/5)', 'GR (/5)', 'VO (/5)', 'Total Score (/20)',
       'Word Count', 'Teacher Comment',
       'Submitted At', 'Graded At', 'Graded By', 'Turnaround (hours)'
@@ -283,7 +283,7 @@
     const byAssign = new Map();  // aid -> { title, graded:0, pending:0, scoreSum:0, scoreN:0, oldestPending:null }
 
     rows.forEach(({ submission: s, assignment: a }) => {
-      const cls = String(a.targetClass || '').trim().toUpperCase() || '—';
+      const cls = String(a.targetClass || '').trim().toUpperCase() || '-';
       const ck = cls;
       if (!byClass.has(ck)) byClass.set(ck, { graded: 0, pending: 0, scoreSum: 0, scoreN: 0 });
       if (!byAssign.has(a.id)) byAssign.set(a.id, {
@@ -330,19 +330,19 @@
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
                   gap: 12px; margin-bottom: 22px;">
         ${_kpiCard('Pending grading', String(pendingCount), '⏳',
-                   pendingCount > 0 ? '#fcd34d' : '#86efac')}
+                   pendingCount > 0 ? '#93c5fd' : '#86efac')}
         ${_kpiCard('Graded', String(gradedCount), '✅', '#86efac')}
         ${_kpiCard('Avg score',
-                   avgScore != null ? (avgScore.toFixed(1) + ' / 20') : '—',
+                   avgScore != null ? (avgScore.toFixed(1) + ' / 20') : '-',
                    '🎯',
                    avgScore == null ? '#94a3b8'
                    : (avgScore / 20) >= 0.8 ? '#86efac'
                    : (avgScore / 20) >= 0.6 ? '#7dd3fc'
-                   : '#fcd34d')}
+                   : '#93c5fd')}
         ${_kpiCard('Avg turnaround',
-                   avgTurnaround != null ? _formatDuration(avgTurnaround) : '—',
+                   avgTurnaround != null ? _formatDuration(avgTurnaround) : '-',
                    '⏱',
-                   '#a78bfa')}
+                   '#60a5fa')}
       </div>
     `;
 
@@ -350,8 +350,8 @@
     const classRows = Array.from(byClass.entries())
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([cls, acc]) => {
-        const avg = acc.scoreN > 0 ? (acc.scoreSum / acc.scoreN).toFixed(1) : '—';
-        const tone = acc.pending > 0 ? '#fcd34d' : '#86efac';
+        const avg = acc.scoreN > 0 ? (acc.scoreSum / acc.scoreN).toFixed(1) : '-';
+        const tone = acc.pending > 0 ? '#93c5fd' : '#86efac';
         return `
           <tr style="border-top: 1px solid rgba(255,255,255,0.04);">
             <td style="padding: 8px 12px; color:#e2e8f0; font-weight:600;">${_esc(cls)}</td>
@@ -399,9 +399,9 @@
         return String(a[1].title).localeCompare(String(b[1].title));
       })
       .map(([aid, acc]) => {
-        const avg = acc.scoreN > 0 ? (acc.scoreSum / acc.scoreN).toFixed(1) : '—';
-        const tone = acc.pending > 0 ? '#fcd34d' : '#86efac';
-        const oldest = acc.oldestPending ? _relativeTime(acc.oldestPending) : '—';
+        const avg = acc.scoreN > 0 ? (acc.scoreSum / acc.scoreN).toFixed(1) : '-';
+        const tone = acc.pending > 0 ? '#93c5fd' : '#86efac';
+        const oldest = acc.oldestPending ? _relativeTime(acc.oldestPending) : '-';
         return `
           <tr style="border-top: 1px solid rgba(255,255,255,0.04);">
             <td style="padding: 8px 12px; color:#e2e8f0; font-weight:600; max-width: 280px;
@@ -415,8 +415,8 @@
             <td style="padding: 8px 12px; text-align: right;">
               <button type="button"
                 onclick="closeGradingStats(); if(typeof openWritingSubmissionsList==='function') openWritingSubmissionsList('${_esc(aid)}');"
-                style="background: rgba(168,85,247,0.20); color:#e9d5ff;
-                       border: 1px solid rgba(168,85,247,0.40);
+                style="background: rgba(29,78,216,0.20); color:#e9d5ff;
+                       border: 1px solid rgba(29,78,216,0.40);
                        padding: 4px 10px; border-radius: 6px;
                        font-size: 0.82em; font-weight: 600; cursor: pointer;">
                 Open →
@@ -452,9 +452,9 @@
     // ----- Failure note -----
     const failNote = failed.length ? `
       <div style="margin-top: 16px; padding: 10px 14px; border-radius: 8px;
-                  background: rgba(245, 158, 11, 0.10);
-                  border: 1px solid rgba(245, 158, 11, 0.30);
-                  color: #fcd34d; font-size: 0.86em;">
+                  background: rgba(59, 130, 246, 0.10);
+                  border: 1px solid rgba(59, 130, 246, 0.30);
+                  color: #93c5fd; font-size: 0.86em;">
         ⚠ Couldn't read submissions for ${failed.length} assignment${failed.length === 1 ? '' : 's'}.
         Check the console for details.
       </div>
@@ -511,7 +511,7 @@
   } else {
     _installButton();
   }
-  // Re-attempt after a moment — some dashboards lazily build the
+  // Re-attempt after a moment - some dashboards lazily build the
   // assignments tab after auth, by which time DOMContentLoaded
   // already fired and the button anchor wasn't on the page yet.
   setTimeout(_installButton, 1500);

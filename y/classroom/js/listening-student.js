@@ -1,5 +1,5 @@
 /* ============================================================
-   LISTENING CLASSROOM — Student client
+   LISTENING CLASSROOM - Student client
    ----------------------------------------------------------------
    Same no-leak rules as the Reading Classroom student.
    Differences:
@@ -15,15 +15,12 @@
 (function () {
   'use strict';
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-    authDomain: "empower-vocabulary-practice.firebaseapp.com",
-    projectId: "empower-vocabulary-practice",
-    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-    messagingSenderId: "136270199832",
-    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // Firebase is started by js/firebase-init.js, which reads the project
+  // from js/tenant.js. This file used to name one university directly, which would
+  // have pointed every deployment at that same project.
+  if (!firebase.apps.length) {
+    throw new Error('listening-student: js/tenant.js + js/firebase-init.js must load first.');
+  }
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
@@ -99,7 +96,7 @@
     session = sdoc.data();
     if (session.status === 'finished') { toast('That exam has ended', 'fail'); return; }
     manifest = session.questionsManifest || null;
-    if (!manifest) { toast('Exam not ready yet — try again in a moment.', 'fail'); return; }
+    if (!manifest) { toast('Exam not ready yet - try again in a moment.', 'fail'); return; }
 
     try {
       await sref.collection('players').doc(myUid).set({
@@ -161,7 +158,7 @@
       // Audio status hint string
       updateAudioStatusHint();
 
-      // Q-marker — only if broadcast is enabled by the host.
+      // Q-marker - only if broadcast is enabled by the host.
       if (d.qMarkerBroadcast !== false && d.activeQuestionKey !== prevActiveKey) {
         lastActiveQKey = d.activeQuestionKey;
         applyQMarker(d.activeQuestionKey);
@@ -201,7 +198,7 @@
   }
 
   // ── Audio status hint ─────────────────────────────────────
-  // Renders the live string under the exam title — pure UI affordance
+  // Renders the live string under the exam title - pure UI affordance
   // so students know whether the audio is currently playing.
   function updateAudioStatusHint() {
     const row = document.getElementById('audioStatusRow');
@@ -226,7 +223,7 @@
   // ── Q-marker ──────────────────────────────────────────────
   // When the host advances the active question key, scroll the
   // matching exam item into view and add a sky-blue highlight ring.
-  // The highlight is purely an attention nudge — it doesn't reveal
+  // The highlight is purely an attention nudge - it doesn't reveal
   // correctness in any way.
   function applyQMarker(key) {
     const wrap = document.getElementById('examSections');
@@ -236,7 +233,7 @@
     const el = wrap.querySelector(`.exam-item[data-q="${CSS.escape(key)}"]`);
     if (!el) return;
     // Auto-expand the parent section AND the question itself if they
-    // were collapsed — otherwise the Q-marker would land inside a
+    // were collapsed - otherwise the Q-marker would land inside a
     // zero-height container and the student wouldn't see anything.
     const parentSec = el.closest('.exam-section');
     if (parentSec && parentSec.classList.contains('is-collapsed')) {
@@ -304,7 +301,7 @@
     if (!wrap) return;
 
     wrap.innerHTML = (manifest.sections || []).map(sec => {
-      // Accordion-wrapped section — clicking the header collapses the
+      // Accordion-wrapped section - clicking the header collapses the
       // body. Defaults to expanded so first-paint behaviour is
       // identical to the pre-accordion build. Mirrors the reading
       // classroom pattern exactly.
@@ -318,7 +315,7 @@
           <div class="exam-section-body">
           ${sec.instructions ? `<div class="exam-section-instr">${escHtml(sec.instructions)}</div>` : ''}
       `;
-      // Per-question accordion — same pattern as reading classroom.
+      // Per-question accordion - same pattern as reading classroom.
       // Each .exam-item gets a stem (with a chevron button at the
       // right) + a wrapped .exam-item-body holding the answer area.
       sec.items.forEach(it => {
@@ -381,7 +378,7 @@
       return out;
     }).join('');
 
-    // Accordion behaviour — section-level + per-question.
+    // Accordion behaviour - section-level + per-question.
     wrap.querySelectorAll('.exam-section-h').forEach(head => {
       head.addEventListener('click', () => {
         const sec = head.closest('.exam-section');
@@ -600,7 +597,7 @@
     setView('join');
   });
 
-  // refresh-guard.js predicate — themed double-confirm on F5 / Ctrl+R
+  // refresh-guard.js predicate - themed double-confirm on F5 / Ctrl+R
   // active during live exam + revealed states.
   window.refreshGuardShouldProtect = () => {
     if (!session) return false;

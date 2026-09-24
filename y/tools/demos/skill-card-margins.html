@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill card margins</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1100px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;}
+  th{background:#eef2f7;}
+  td.n{font-variant-numeric:tabular-nums;}
+  .same{color:#047857;font-weight:700;} .diff{color:#b91c1c;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:80ch;line-height:1.55;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  iframe{position:absolute;left:-99999px;border:0;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">Reading vs Listening - outer card geometry</h3>
+<p class="lede">
+  Screenshots of the two screens came from images of different pixel widths, so
+  comparing margins by eye across them is not measurement. This loads the REAL
+  student-dashboard.html in one iframe at one fixed width, makes each skill
+  screen visible in turn, and reads the actual boxes. Scripts are stripped, so
+  there is no auth redirect and nothing but CSS decides the layout - which is
+  exactly what is being compared.
+</p>
+<table id="t"><thead><tr>
+  <th>Measurement</th><th class="n">Reading</th><th class="n">Listening</th><th>Same?</th>
+</tr></thead><tbody></tbody></table>
+<div id="sum">measuring...</div>
+
+<script>
+const W = 1280;
+const rows = [];
+function row(label, a, b, tol) {
+  tol = tol || 0.5;
+  const same = (typeof a === 'number' && typeof b === 'number')
+    ? Math.abs(a - b) <= tol : String(a) === String(b);
+  rows.push({ label, a, b, same });
+}
+
+(async function(){
+  const html = await (await fetch('/student-dashboard.html?cb=' + Math.random())).text();
+  // Strip every script: no auth redirect, no Firebase, no JS-driven layout.
+  // Pure CSS is what decides these margins.
+  const patched = html
+    .replace(/<head>/i, '<head><base href="/">')
+    .replace(/<script\b[\s\S]*?<\/script>/gi, '');
+
+  const f = document.createElement('iframe');
+  f.width = W; f.height = 1400;
+  document.body.appendChild(f);
+  const d = f.contentDocument;
+  d.open(); d.write(patched); d.close();
+  await new Promise(r => setTimeout(r, 1400));
+
+  const w = f.contentWindow;
+  function measure(screenId) {
+    // Only one .screen is active at a time; force this one visible.
+    Array.prototype.forEach.call(d.querySelectorAll('.screen'), el => {
+      el.classList.remove('active');
+      el.style.display = 'none';
+    });
+    const scr = d.getElementById(screenId);
+    scr.classList.add('active');
+    scr.style.display = 'block';
+
+    const card = scr.querySelector('.skill-screen');
+    const hdr  = scr.querySelector('.dashboard-header');
+    const back = scr.querySelector('.skill-back-btn');
+    const body = d.body;
+
+    // The rows are built by JS, which is stripped here, so inject the real
+    // markup each renderer produces. Reading rows carry TWO mode buttons
+    // (Timed / Untimed); Listening rows carry one (Start). That is the only
+    // structural difference between the screens, so if anything pushes the
+    // layout it is this.
+    const list = scr.querySelector('.rd-exam-list');
+    if (list && !list.querySelector('.rd-exam-card')) {
+      const twoButtons = screenId === 'readingScreen';
+      list.innerHTML = [1, 2, 3].map(() => `
+        <div class="rd-exam-card">
+          <div class="rd-exam-icon" aria-hidden="true">&#128214;</div>
+          <div class="rd-exam-meta">
+            <div class="rd-exam-title">B2 Reading 4 - Homeschooling: A Better Way to Learn?</div>
+            <div class="rd-exam-sub">One passage &middot; Gaps, MCQ, vocabulary, reference, writing</div>
+          </div>
+          <div class="rd-exam-modes">
+            ${twoButtons
+              ? '<button type="button" class="rd-exam-mode-btn timed">Timed 20 min</button>' +
+                '<button type="button" class="rd-exam-mode-btn">Untimed</button>'
+              : '<button type="button" class="rd-exam-mode-btn timed">Start</button>'}
+          </div>
+        </div>`).join('');
+    }
+
+    // Measure AFTER injecting, or every inset is computed against a card box
+    // that predates its own content.
+    const cs = w.getComputedStyle(card);
+    const cr = card.getBoundingClientRect();
+    const br = back ? back.getBoundingClientRect() : null;
+    const hr = hdr ? hdr.getBoundingClientRect() : null;
+    const firstRow = scr.querySelector('.rd-exam-card');
+    const rr = firstRow ? firstRow.getBoundingClientRect() : null;
+
+    return {
+      cardLeft: Math.round(cr.left), cardRight: Math.round(cr.right),
+      cardWidth: Math.round(cr.width),
+      leftGutter: Math.round(cr.left),
+      rightGutter: Math.round(w.innerWidth - cr.right),
+      padTop: cs.paddingTop, padLeft: cs.paddingLeft, padRight: cs.paddingRight,
+      maxWidth: cs.maxWidth,
+      backLeftInset: br ? Math.round(br.left - cr.left) : null,
+      headerWidth: hr ? Math.round(hr.width) : null,
+      rowLeftInset: rr ? Math.round(rr.left - cr.left) : null,
+      rowRightInset: rr ? Math.round(cr.right - rr.right) : null,
+      rowWidth: rr ? Math.round(rr.width) : null,
+      // Horizontal overflow shifts everything and would make one screen look
+      // off-centre against the other. Worth knowing before blaming margins.
+      docScrollWidth: d.documentElement.scrollWidth,
+      overflowsX: d.documentElement.scrollWidth > d.documentElement.clientWidth
+    };
+  }
+
+  const R = measure('readingScreen');
+  const L = measure('listeningScreen');
+
+  row('card left edge (px from viewport)', R.cardLeft, L.cardLeft);
+  row('card right edge', R.cardRight, L.cardRight);
+  row('card width', R.cardWidth, L.cardWidth);
+  row('gutter left', R.leftGutter, L.leftGutter);
+  row('gutter right', R.rightGutter, L.rightGutter);
+  row('card padding-top', R.padTop, L.padTop);
+  row('card padding-left', R.padLeft, L.padLeft);
+  row('card padding-right', R.padRight, L.padRight);
+  row('card max-width', R.maxWidth, L.maxWidth);
+  row('header width', R.headerWidth, L.headerWidth);
+  row('Dashboard button inset from card', R.backLeftInset, L.backLeftInset);
+  row('exam row inset LEFT from card', R.rowLeftInset, L.rowLeftInset);
+  row('exam row inset RIGHT from card', R.rowRightInset, L.rowRightInset);
+  row('exam row width', R.rowWidth, L.rowWidth);
+  row('document scrollWidth', R.docScrollWidth, L.docScrollWidth);
+  row('overflows horizontally', R.overflowsX, L.overflowsX);
+
+  f.remove();
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map(r =>
+    '<tr><td>' + r.label + '</td><td class="n">' + r.a + '</td><td class="n">' + r.b +
+    '</td><td class="' + (r.same ? 'same">same' : 'diff">DIFFERENT') + '</td></tr>').join('');
+  const diffs = rows.filter(r => !r.same);
+  const el = document.getElementById('sum');
+  el.textContent = diffs.length
+    ? diffs.length + ' measurement(s) differ: ' + diffs.map(r => r.label).join('; ')
+    : 'identical geometry on both screens';
+  el.className = diffs.length ? 'diff' : 'same';
+  window.__margins = { viewport: W, reading: R, listening: L,
+                       differences: diffs.map(r => ({ what: r.label, reading: r.a, listening: r.b })) };
+})();
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@
    WRITING COMMENT BANK
    ------------------------------------------------------------
    Pre-written feedback comments, organized by:
-       rubric  →  criterion  →  score (0–5)  →  [10 comments]
+       rubric  →  criterion  →  score (0-5)  →  [10 comments]
 
    Used by the teacher grading view (writing-annotations.js): the
    teacher selects text on a student's essay, picks a criterion +
@@ -16,14 +16,14 @@
        GR = Language / Grammatical Accuracy
        VO = Word Choice / Vocabulary
 
-   Score bands (0–5):
+   Score bands (0-5):
        0 No Attempt · 1 Poor · 2 Needs Improvement
        3 Satisfactory · 4 Good · 5 Excellent
 
    PHASE 1: only the ESSAY rubric bank is filled (240 comments).
    `academic` and `short` are declared empty and get filled once
    the essay flow is confirmed. A missing/empty bank degrades
-   gracefully — the teacher just types their own comment.
+   gracefully - the teacher just types their own comment.
    ============================================================ */
 (function () {
   'use strict';
@@ -52,31 +52,31 @@
     // CC = Organization
     CC: {
       5: [
-        "Excellent organization — every idea connects smoothly and the essay flows from start to finish.",
+        "Excellent organization - every idea connects smoothly and the essay flows from start to finish.",
         "Your introduction, body paragraphs, and conclusion are all clear, complete, and well balanced.",
         "The thesis statement is sharp and guides the whole essay effectively.",
-        "Every paragraph opens with a clear topic sentence — very easy to follow.",
+        "Every paragraph opens with a clear topic sentence - very easy to follow.",
         "You use a strong range of target connectors to link ideas naturally.",
         "The order of ideas is logical throughout; nothing feels out of place.",
-        "Beautifully structured — the reader always knows where the argument is going.",
+        "Beautifully structured - the reader always knows where the argument is going.",
         "Cohesion is excellent: each paragraph leads naturally into the next.",
-        "A model of clear academic structure — intro sets up, body develops, conclusion closes.",
+        "A model of clear academic structure - intro sets up, body develops, conclusion closes.",
         "Outstanding flow; your linking words are varied and used accurately."
       ],
       4: [
-        "Good organization — most ideas connect well and the essay reads smoothly.",
+        "Good organization - most ideas connect well and the essay reads smoothly.",
         "Clear introduction, body, and conclusion, with only minor lapses in flow.",
         "Your thesis statement is present and mostly clear.",
         "Most paragraphs have clear topic sentences.",
         "You use many target connectors well; just a few more would tighten the links.",
         "The overall structure is solid; a couple of transitions could be smoother.",
         "Ideas are mostly well ordered and easy to follow.",
-        "Strong paragraphing — each one focuses on a single idea.",
+        "Strong paragraphing - each one focuses on a single idea.",
         "Good flow overall, with one or two places where the connection could be clearer.",
         "The argument is well structured; refine the weakest transition to reach excellent."
       ],
       3: [
-        "Satisfactory organization — some ideas connect, but the flow is uneven in places.",
+        "Satisfactory organization - some ideas connect, but the flow is uneven in places.",
         "Your intro, body, and conclusion are present but only somewhat clear or complete.",
         "The thesis statement is weak or overly general; the essay still shows its main purpose.",
         "Some paragraphs have clear topic sentences, but others are missing one.",
@@ -88,7 +88,7 @@
         "A clearer thesis would pull the whole essay together."
       ],
       2: [
-        "Organization needs improvement — only a few ideas are connected.",
+        "Organization needs improvement - only a few ideas are connected.",
         "The introduction, body, or conclusion is incomplete.",
         "The thesis statement is vague, unclear, or missing.",
         "Few paragraphs have topic sentences, and those that do are vague or underdeveloped.",
@@ -100,7 +100,7 @@
         "Start each paragraph with a sentence that tells the reader its main point."
       ],
       1: [
-        "Organization is poor — ideas are mostly disconnected.",
+        "Organization is poor - ideas are mostly disconnected.",
         "Introduction, body, and conclusion are largely missing.",
         "The thesis statement is absent or extremely unclear.",
         "Topic sentences are mostly missing.",
@@ -112,7 +112,7 @@
         "Group related ideas into paragraphs rather than one long block."
       ],
       0: [
-        "No organization is shown — ideas are random or missing.",
+        "No organization is shown - ideas are random or missing.",
         "There are no paragraphs and no order of events.",
         "No thesis statement is present.",
         "No topic sentences are used.",
@@ -127,31 +127,31 @@
     // TA = Content
     TA: {
       5: [
-        "Excellent content — your ideas are fully developed, elaborated, and entirely relevant.",
+        "Excellent content - your ideas are fully developed, elaborated, and entirely relevant.",
         "All of your content directly supports the topic.",
         "There's no unnecessary repetition; the writing stays focused throughout.",
         "Your ideas are interesting and genuinely engaging to read.",
         "You answer the task completely and go beyond the minimum.",
         "Every example clearly strengthens your argument.",
         "The depth of development here is impressive for this level.",
-        "You explore the topic from more than one angle — well done.",
+        "You explore the topic from more than one angle - well done.",
         "Strong, well-supported reasoning from start to finish.",
         "A complete, thoughtful response that fully addresses the prompt."
       ],
       4: [
-        "Good content — most of your ideas are well developed and relevant.",
+        "Good content - most of your ideas are well developed and relevant.",
         "Most of your content supports the topic clearly.",
         "Minor repetition appears but doesn't distract from the quality.",
         "You address the task well; a little more detail in one area would lift it further.",
         "Your examples mostly support your points effectively.",
-        "Solid development of ideas — add one more supporting detail to deepen it.",
+        "Solid development of ideas - add one more supporting detail to deepen it.",
         "The response is mostly complete and on-topic.",
         "Good engagement with the prompt; expand your weakest point.",
         "Most paragraphs develop their idea fully.",
-        "A strong response — push one idea further to reach excellent."
+        "A strong response - push one idea further to reach excellent."
       ],
       3: [
-        "Satisfactory content — some ideas are developed and partly relevant.",
+        "Satisfactory content - some ideas are developed and partly relevant.",
         "Some of your content supports the topic; some drifts away from it.",
         "Occasional repetition slightly affects clarity or variety.",
         "You address the task, but several ideas need more development.",
@@ -159,23 +159,23 @@
         "Some points are clear, but others are left underexplained.",
         "Keep each paragraph focused on the topic to avoid drifting.",
         "Develop your ideas with reasons and examples, not just statements.",
-        "The response is partially complete — a few ideas feel unfinished.",
+        "The response is partially complete - a few ideas feel unfinished.",
         "Good start; explain *why* and *how* to develop your points."
       ],
       2: [
-        "Content needs improvement — few ideas are developed.",
+        "Content needs improvement - few ideas are developed.",
         "Your content is limited or only partly relevant to the topic.",
         "Repetition is noticeable and affects development.",
         "Several ideas are mentioned but not explained.",
         "Add examples and reasons to support each point.",
-        "Stay closer to the topic — some content drifts off task.",
+        "Stay closer to the topic - some content drifts off task.",
         "Try to write more about each idea instead of listing them.",
         "Plan two or three clear points and develop each one.",
         "The response is incomplete; some parts of the task are missing.",
         "Explain your ideas fully so the reader understands your meaning."
       ],
       1: [
-        "Content is poor — very few ideas are developed.",
+        "Content is poor - very few ideas are developed.",
         "Most of the content is irrelevant to the topic.",
         "Frequent repetition makes the writing unclear or monotonous.",
         "The task is barely addressed.",
@@ -183,7 +183,7 @@
         "Add real examples to support your ideas.",
         "Each point needs at least one supporting sentence.",
         "Re-read the prompt and make sure every sentence relates to it.",
-        "Develop your ideas — one sentence per idea is not enough.",
+        "Develop your ideas - one sentence per idea is not enough.",
         "Plan your main points before you write."
       ],
       0: [
@@ -202,47 +202,47 @@
     // GR = Language Accuracy
     GR: {
       5: [
-        "Excellent grammar — level-appropriate structures used accurately and consistently.",
+        "Excellent grammar - level-appropriate structures used accurately and consistently.",
         "Great variety in sentence length and type.",
         "Punctuation and capitalization are correct throughout.",
         "All sentences are complete; any errors are tiny and don't affect meaning.",
         "Your control of complex sentences is impressive for this level.",
         "Verb tenses are accurate and consistent across the whole essay.",
-        "Subject–verb agreement is correct everywhere.",
-        "Very polished writing — almost error-free.",
+        "Subject-verb agreement is correct everywhere.",
+        "Very polished writing - almost error-free.",
         "You handle a wide range of structures with confidence.",
         "Clean, accurate grammar that lets your ideas shine."
       ],
       4: [
-        "Good grammar — mostly accurate, with only very minor mistakes that don't affect meaning.",
+        "Good grammar - mostly accurate, with only very minor mistakes that don't affect meaning.",
         "You use many different sentence lengths and types.",
         "Very few punctuation or capitalization errors.",
         "Most sentences are complete and your meaning is clear.",
-        "A few small slips with tense/agreement — easy to fix.",
+        "A few small slips with tense/agreement - easy to fix.",
         "Strong control overall; proofread to catch the last few errors.",
         "Good range of structures; watch one recurring small mistake.",
-        "Mostly accurate — meaning is never in doubt.",
+        "Mostly accurate - meaning is never in doubt.",
         "Solid grammar; vary one or two repeated sentence patterns to lift it.",
-        "Nearly there — a careful re-read would reach excellent."
+        "Nearly there - a careful re-read would reach excellent."
       ],
       3: [
-        "Satisfactory grammar — some noticeable mistakes, but meaning is mostly clear.",
+        "Satisfactory grammar - some noticeable mistakes, but meaning is mostly clear.",
         "Several sentence lengths and types are used.",
         "Some punctuation or capitalization errors appear.",
         "A few sentences are incomplete, though the text is mostly understandable.",
-        "Check your verb tenses — they shift in places.",
-        "Watch subject–verb agreement (he go → he goes).",
+        "Check your verb tenses - they shift in places.",
+        "Watch subject-verb agreement (he go → he goes).",
         "Some run-on or fragment sentences need fixing.",
         "Capitalize the start of every sentence and proper nouns.",
         "Proofread for the small errors that add up.",
         "Good effort; focus on completing every sentence."
       ],
       2: [
-        "Grammar needs improvement — frequent mistakes in sentence structure.",
+        "Grammar needs improvement - frequent mistakes in sentence structure.",
         "There's little variety in sentence length or type.",
         "Multiple punctuation and capitalization errors.",
         "Few complete sentences; meaning is sometimes unclear.",
-        "Subject–verb agreement is often incorrect.",
+        "Subject-verb agreement is often incorrect.",
         "Verb tenses are inconsistent and need attention.",
         "Try writing shorter, complete sentences first, then build up.",
         "Review basic punctuation: full stops, commas, and capitals.",
@@ -250,11 +250,11 @@
         "Practise one tense at a time until it's secure."
       ],
       1: [
-        "Grammar is poor — mistakes hinder understanding.",
+        "Grammar is poor - mistakes hinder understanding.",
         "Sentence length and type variety is very limited.",
         "Many punctuation and capitalization errors.",
         "Most sentences are incomplete; meaning is often unclear.",
-        "Subject–verb agreement is rarely correct.",
+        "Subject-verb agreement is rarely correct.",
         "Focus on writing one complete, correct sentence at a time.",
         "Review where sentences begin and end.",
         "Practise the present simple and past simple tenses.",
@@ -263,7 +263,7 @@
       ],
       0: [
         "No correct sentence structures are present.",
-        "Subject–verb agreement, punctuation, and capitalization are all incorrect.",
+        "Subject-verb agreement, punctuation, and capitalization are all incorrect.",
         "The text is incomprehensible.",
         "Grammar errors prevent any communication of meaning.",
         "There is no sentence variety.",
@@ -277,31 +277,31 @@
     // VO = Word Choice
     VO: {
       5: [
-        "Excellent vocabulary — outstanding range that strongly supports the topic.",
+        "Excellent vocabulary - outstanding range that strongly supports the topic.",
         "Your words are varied, precise, and used accurately.",
         "Spelling is correct; any errors are tiny and don't affect meaning.",
         "You use topic-specific vocabulary confidently and naturally.",
         "Word choice adds real colour and precision to your writing.",
         "Impressive lexical range for this level.",
         "You avoid repetition by using strong synonyms.",
-        "Every word earns its place — very economical and precise.",
+        "Every word earns its place - very economical and precise.",
         "Sophisticated, accurate vocabulary throughout.",
         "Your collocations and phrasing sound natural and fluent."
       ],
       4: [
-        "Good vocabulary — a strong range that supports the topic.",
+        "Good vocabulary - a strong range that supports the topic.",
         "Your words are mostly varied and accurate.",
         "Most words are spelled correctly; minor errors don't affect meaning.",
         "Good use of topic vocabulary; reach for one or two more precise words.",
         "Word choice is effective, with only occasional repetition.",
         "Solid range; replace the weakest repeated word with a synonym.",
-        "Mostly precise — a few word choices could be sharper.",
+        "Mostly precise - a few word choices could be sharper.",
         "Good control of vocabulary; proofread spelling to lift it.",
         "Strong lexical variety; one more topic-specific term would help.",
-        "Nearly excellent — vary one repeated word to get there."
+        "Nearly excellent - vary one repeated word to get there."
       ],
       3: [
-        "Satisfactory vocabulary — partially supports the topic; some words are repetitive or inexact.",
+        "Satisfactory vocabulary - partially supports the topic; some words are repetitive or inexact.",
         "Your words are sometimes varied; there are some word-choice errors.",
         "Several spelling errors appear, though meaning is mostly clear.",
         "Try using more topic-specific vocabulary.",
@@ -313,7 +313,7 @@
         "Good base vocabulary; widen your range with synonyms."
       ],
       2: [
-        "Vocabulary needs improvement — very limited and often repetitive.",
+        "Vocabulary needs improvement - very limited and often repetitive.",
         "Few words are varied or precise; there are many word-choice errors.",
         "Frequent spelling errors make the meaning sometimes unclear.",
         "Many words are inappropriate for the topic.",
@@ -325,7 +325,7 @@
         "Build vocabulary by reading short texts on the topic."
       ],
       1: [
-        "Vocabulary is poor — extremely limited and repetitive.",
+        "Vocabulary is poor - extremely limited and repetitive.",
         "Words are often inaccurate or inappropriate.",
         "Many spelling or word-choice errors make meaning hard to follow.",
         "The same few words are used over and over.",
@@ -358,25 +358,25 @@
   const short = {
     CC: {
       5: [
-        "Excellent — all your ideas connect and the paragraph flows well.",
+        "Excellent - all your ideas connect and the paragraph flows well.",
         "Your sentences are coherent and easy to follow from start to finish.",
         "Great use of linkers (and, but, then, because) to join ideas.",
         "The order of your ideas is clear and logical.",
-        "Everything fits together — a well-organized paragraph.",
+        "Everything fits together - a well-organized paragraph.",
         "Smooth flow throughout; one idea leads naturally to the next.",
         "You connected every idea clearly. Well done.",
         "Clear, organized writing with good linking words.",
         "Your paragraph reads as one connected piece.",
-        "Ideas are fully linked — very easy to read."
+        "Ideas are fully linked - very easy to read."
       ],
       4: [
-        "Good — most of your ideas connect and the paragraph mostly flows.",
+        "Good - most of your ideas connect and the paragraph mostly flows.",
         "Flow is mostly clear; you use many linkers well.",
         "Just a few minor places where ideas could connect better.",
         "Most sentences follow each other logically.",
-        "Nearly there — link the one or two ideas that feel separate.",
+        "Nearly there - link the one or two ideas that feel separate.",
         "Good organization; add a linker between your last two ideas.",
-        "Mostly coherent — a small jump in the middle to smooth out.",
+        "Mostly coherent - a small jump in the middle to smooth out.",
         "Strong order of ideas with only minor gaps.",
         "Good use of connectors; one more would tighten it.",
         "Well organized overall; polish the weakest link to reach excellent."
@@ -387,7 +387,7 @@
         "You use some linkers, though not always consistently.",
         "Add linking words so your ideas join more smoothly.",
         "Put your ideas in a clearer order.",
-        "Some sentences feel separate — connect them with and/but/because.",
+        "Some sentences feel separate - connect them with and/but/because.",
         "The paragraph is understandable but needs tighter links.",
         "Group related ideas together so they flow.",
         "Use a linker at the start of your next idea.",
@@ -400,7 +400,7 @@
         "Try to join your sentences with simple linkers (and, but, then).",
         "Put your ideas in order before you write.",
         "Connections between ideas are often unclear.",
-        "Each sentence stands alone — link them together.",
+        "Each sentence stands alone - link them together.",
         "Plan the order of your ideas first.",
         "Add words like 'because' and 'so' to connect ideas.",
         "Practise joining two short sentences into one."
@@ -413,7 +413,7 @@
         "Use 'and', 'but', and 'then' to join sentences.",
         "Each idea needs to connect to the one before it.",
         "Plan two or three ideas and put them in order.",
-        "The paragraph is difficult to follow — connect your ideas.",
+        "The paragraph is difficult to follow - connect your ideas.",
         "Try writing short, linked sentences.",
         "Group your sentences so they belong together."
       ],
@@ -432,31 +432,31 @@
     },
     TA: {
       5: [
-        "Excellent — a fully developed response that completely addresses the task.",
+        "Excellent - a fully developed response that completely addresses the task.",
         "All of your content supports the task.",
         "Your paragraph is the expected length.",
         "You answered the question fully and clearly.",
         "Every sentence is relevant to the topic.",
-        "Complete and focused — exactly what the task asked for.",
+        "Complete and focused - exactly what the task asked for.",
         "You developed your idea fully with good detail.",
         "Strong, on-task response from start to finish.",
-        "No off-topic content — well done staying focused.",
+        "No off-topic content - well done staying focused.",
         "A complete answer of the right length."
       ],
       4: [
-        "Good — a mostly complete response.",
+        "Good - a mostly complete response.",
         "Most of your content is relevant and supportive.",
         "Your paragraph is within or very close to the expected length.",
         "You address the task well; add one more detail to finish it.",
         "Most sentences support the topic.",
-        "Nearly complete — develop your last idea a little more.",
+        "Nearly complete - develop your last idea a little more.",
         "Good focus on the task with only minor gaps.",
         "Add one supporting sentence to make it fully complete.",
         "Mostly on-task; trim the one sentence that drifts.",
-        "A solid response — a little more detail would lift it."
+        "A solid response - a little more detail would lift it."
       ],
       3: [
-        "Partially complete — some content addresses the task.",
+        "Partially complete - some content addresses the task.",
         "There is some repetition or minor off-topic content.",
         "Your paragraph is shorter than expected.",
         "Add more detail to fully answer the task.",
@@ -468,25 +468,25 @@
         "Avoid repeating the same idea."
       ],
       2: [
-        "Limited response — very little content is relevant.",
+        "Limited response - very little content is relevant.",
         "Your paragraph is noticeably shorter than expected.",
         "Most of the writing does not yet address the task.",
         "Write more about the topic.",
         "Add examples and reasons to support your idea.",
         "Focus on what the task asks and write about it.",
         "Develop at least one clear idea about the topic.",
-        "Much of the content is off-task — stay on topic.",
+        "Much of the content is off-task - stay on topic.",
         "Plan your idea before writing, then add detail.",
         "Try to write a full paragraph about the topic."
       ],
       1: [
-        "Barely addressed — most ideas are irrelevant.",
+        "Barely addressed - most ideas are irrelevant.",
         "Your text is far below the expected length.",
         "Very little relates to the task.",
         "Read the task again and write directly about it.",
         "Write more sentences about the topic.",
         "Add at least one relevant idea with detail.",
-        "Most of this is off-topic — focus on the question.",
+        "Most of this is off-topic - focus on the question.",
         "Start with one idea that answers the task.",
         "Develop your writing with reasons or examples.",
         "Build a full paragraph on the given topic."
@@ -506,8 +506,8 @@
     },
     GR: {
       5: [
-        "Excellent — you use level-appropriate structures correctly and consistently.",
-        "Subject–verb agreement is correct throughout.",
+        "Excellent - you use level-appropriate structures correctly and consistently.",
+        "Subject-verb agreement is correct throughout.",
         "Punctuation and capitalization are accurate.",
         "Any errors are very minor and meaning is always clear.",
         "Very clean, accurate sentences.",
@@ -515,11 +515,11 @@
         "All sentences are complete and correct.",
         "Great accuracy for this level.",
         "Tenses are used correctly throughout.",
-        "Almost error-free — well done."
+        "Almost error-free - well done."
       ],
       4: [
-        "Good — mostly correct sentence structures.",
-        "Subject–verb agreement is mostly correct.",
+        "Good - mostly correct sentence structures.",
+        "Subject-verb agreement is mostly correct.",
         "Only minor punctuation or capitalization errors.",
         "Minor errors, but meaning stays clear.",
         "Proofread to catch the last few small mistakes.",
@@ -527,11 +527,11 @@
         "Most sentences are complete and accurate.",
         "A careful re-read would make this excellent.",
         "Good grammar; check your capital letters.",
-        "Nearly there — fix a couple of small slips."
+        "Nearly there - fix a couple of small slips."
       ],
       3: [
         "Occasional errors in sentence structure.",
-        "Some subject–verb agreement errors (he go → he goes).",
+        "Some subject-verb agreement errors (he go → he goes).",
         "Some punctuation or capitalization errors.",
         "Noticeable errors, but the text is mostly understandable.",
         "Check that each sentence is complete.",
@@ -539,11 +539,11 @@
         "Capitalize the first word of every sentence.",
         "Proofread for small mistakes before submitting.",
         "Read your work aloud to find errors.",
-        "Good effort; focus on subject–verb agreement."
+        "Good effort; focus on subject-verb agreement."
       ],
       2: [
         "Frequent errors in sentence structure.",
-        "Subject–verb agreement is often incorrect.",
+        "Subject-verb agreement is often incorrect.",
         "Many punctuation and capitalization errors.",
         "Meaning is sometimes unclear because of errors.",
         "Write short, complete sentences first.",
@@ -555,7 +555,7 @@
       ],
       1: [
         "Sentences are frequently incomplete or incorrect.",
-        "Subject–verb agreement is rarely correct.",
+        "Subject-verb agreement is rarely correct.",
         "Frequent punctuation and capitalization errors.",
         "Major errors make the text difficult to understand.",
         "Focus on writing one correct sentence at a time.",
@@ -567,7 +567,7 @@
       ],
       0: [
         "No correct sentence structures are used.",
-        "Subject–verb agreement, punctuation, and capitalization are all incorrect.",
+        "Subject-verb agreement, punctuation, and capitalization are all incorrect.",
         "The text is incomprehensible.",
         "Grammar errors prevent understanding.",
         "Please write simple, complete sentences.",
@@ -580,7 +580,7 @@
     },
     VO: {
       5: [
-        "Excellent — a wide vocabulary range, fluent and flexible.",
+        "Excellent - a wide vocabulary range, fluent and flexible.",
         "You use the target words accurately.",
         "Spelling is mostly correct with very few errors.",
         "Strong, precise word choice.",
@@ -592,7 +592,7 @@
         "Excellent control of vocabulary."
       ],
       4: [
-        "Good — adequate vocabulary for the task.",
+        "Good - adequate vocabulary for the task.",
         "Some target words are used accurately.",
         "Only minor spelling errors; meaning is usually clear.",
         "Try one or two more topic-specific words.",
@@ -601,7 +601,7 @@
         "Mostly accurate; proofread your spelling.",
         "Solid vocabulary; reach for one stronger word.",
         "Good range; one more target word would help.",
-        "Nearly excellent — vary a repeated word."
+        "Nearly excellent - vary a repeated word."
       ],
       3: [
         "Limited vocabulary.",
@@ -610,7 +610,7 @@
         "Try to use more topic words.",
         "Replace simple words (good, nice) with stronger ones.",
         "Check the spelling of your common words.",
-        "Some words don't quite fit — choose more carefully.",
+        "Some words don't quite fit - choose more carefully.",
         "Build a list of topic words before writing.",
         "Aim for more precise words.",
         "Good base; widen your vocabulary with synonyms."
@@ -657,36 +657,36 @@
   // ── ACADEMIC-PARAGRAPH rubric bank (Pre-Int / Int) ─────────
   // Criteria: CC=Organization, TA=Content, GR=Language Accuracy,
   // VO=Word Choice. Paragraph-level (topic sentence / supporting
-  // sentences / concluding sentence / linkers) — between the short
+  // sentences / concluding sentence / linkers) - between the short
   // paragraph and the multi-paragraph essay.
   const academic = {
     CC: {
       5: [
-        "Excellent — a clear topic sentence, well-developed supporting sentences, and a strong concluding sentence.",
+        "Excellent - a clear topic sentence, well-developed supporting sentences, and a strong concluding sentence.",
         "All ideas connect smoothly with effective linkers.",
         "The paragraph flows logically from start to finish.",
         "Your topic sentence clearly states the main idea.",
         "Supporting sentences are in a logical order.",
         "A well-structured academic paragraph.",
-        "Excellent cohesion — every sentence links to the next.",
+        "Excellent cohesion - every sentence links to the next.",
         "Clear beginning, middle, and end within the paragraph.",
         "Strong, varied connectors used accurately.",
         "Beautifully organized for this level."
       ],
       4: [
-        "Good — clear topic sentence and mostly logical supporting sentences.",
+        "Good - clear topic sentence and mostly logical supporting sentences.",
         "Most ideas connect well with many linkers.",
         "Only minor lapses in the flow.",
         "Your concluding sentence is present and mostly effective.",
         "Most sentences follow a logical order.",
         "Good structure; smooth one transition to improve it.",
-        "Mostly cohesive — link the one idea that feels separate.",
+        "Mostly cohesive - link the one idea that feels separate.",
         "Good topic sentence; tighten the ending.",
         "Strong organization with small gaps.",
         "Add one connector to reach excellent."
       ],
       3: [
-        "Satisfactory — a topic sentence is present but could be clearer.",
+        "Satisfactory - a topic sentence is present but could be clearer.",
         "Some supporting sentences connect; others jump around.",
         "Some linkers are used, but not consistently.",
         "Your concluding sentence is weak or missing.",
@@ -698,7 +698,7 @@
         "Connect each supporting sentence to the topic."
       ],
       2: [
-        "Organization needs improvement — the topic sentence is unclear or missing.",
+        "Organization needs improvement - the topic sentence is unclear or missing.",
         "Few supporting sentences connect to each other.",
         "Few linkers are used, so ideas feel separate.",
         "There is no clear concluding sentence.",
@@ -710,7 +710,7 @@
         "Each sentence should support the topic sentence."
       ],
       1: [
-        "Poor organization — ideas are mostly disconnected.",
+        "Poor organization - ideas are mostly disconnected.",
         "There is no clear topic or concluding sentence.",
         "Linkers are largely absent, so the paragraph is hard to follow.",
         "Supporting sentences are not in order.",
@@ -722,7 +722,7 @@
         "Group your sentences into one focused paragraph."
       ],
       0: [
-        "No organization — ideas are random or missing.",
+        "No organization - ideas are random or missing.",
         "There is no topic sentence, order, or linkers.",
         "The writing is off-topic.",
         "Please write a paragraph with a topic sentence, supporting sentences, and a conclusion.",
@@ -736,7 +736,7 @@
     },
     TA: {
       5: [
-        "Excellent — your ideas are fully developed and entirely relevant.",
+        "Excellent - your ideas are fully developed and entirely relevant.",
         "All content supports the topic of the paragraph.",
         "No unnecessary repetition; the writing stays focused.",
         "Your idea is explained with strong detail and examples.",
@@ -748,19 +748,19 @@
         "Thorough and relevant from start to finish."
       ],
       4: [
-        "Good — most ideas are well developed and relevant.",
+        "Good - most ideas are well developed and relevant.",
         "Most content supports the topic.",
         "Minor repetition appears but doesn't distract.",
         "Add one more supporting detail to fully develop it.",
         "Most sentences are relevant and clear.",
         "Solid development; expand your weakest point.",
-        "Mostly complete — one idea needs more detail.",
+        "Mostly complete - one idea needs more detail.",
         "Good support for your main idea.",
         "On-topic with only small gaps.",
-        "A strong paragraph — push one idea further."
+        "A strong paragraph - push one idea further."
       ],
       3: [
-        "Satisfactory — some ideas are developed and partly relevant.",
+        "Satisfactory - some ideas are developed and partly relevant.",
         "Some content supports the topic; some drifts.",
         "Occasional repetition affects clarity.",
         "Develop your ideas with reasons and examples.",
@@ -772,7 +772,7 @@
         "Support your topic sentence more fully."
       ],
       2: [
-        "Content needs improvement — few ideas are developed.",
+        "Content needs improvement - few ideas are developed.",
         "Content is limited or only partly relevant.",
         "Repetition is noticeable.",
         "Add examples and reasons for each point.",
@@ -784,7 +784,7 @@
         "Explain your idea so the reader understands."
       ],
       1: [
-        "Poor — very few ideas are developed.",
+        "Poor - very few ideas are developed.",
         "Most content is irrelevant.",
         "Frequent repetition makes it unclear.",
         "The topic is barely addressed.",
@@ -810,11 +810,11 @@
     },
     GR: {
       5: [
-        "Excellent — level-appropriate grammar used accurately and consistently.",
+        "Excellent - level-appropriate grammar used accurately and consistently.",
         "Good variety in sentence length and type.",
         "Correct punctuation and capitalization.",
         "All sentences complete; any errors are tiny.",
-        "Subject–verb agreement is correct throughout.",
+        "Subject-verb agreement is correct throughout.",
         "Tenses are accurate and consistent.",
         "Very clean, accurate writing.",
         "Strong control of sentence structure.",
@@ -822,23 +822,23 @@
         "Accurate grammar that lets your ideas shine."
       ],
       4: [
-        "Good — mostly accurate, with only minor mistakes.",
+        "Good - mostly accurate, with only minor mistakes.",
         "Several sentence lengths and types.",
         "Very few punctuation or capitalization errors.",
         "Most sentences are complete and clear.",
         "A few small tense/agreement slips to fix.",
         "Strong control; proofread for the last errors.",
         "Watch one recurring small mistake.",
-        "Mostly accurate — meaning is never unclear.",
+        "Mostly accurate - meaning is never unclear.",
         "Vary one repeated sentence pattern.",
         "A careful re-read would make this excellent."
       ],
       3: [
-        "Satisfactory — some noticeable mistakes, but meaning is mostly clear.",
+        "Satisfactory - some noticeable mistakes, but meaning is mostly clear.",
         "Some punctuation or capitalization errors.",
         "Some sentences are incomplete.",
         "Check your verb tenses for consistency.",
-        "Watch subject–verb agreement.",
+        "Watch subject-verb agreement.",
         "Fix run-on or fragment sentences.",
         "Capitalize sentence beginnings and proper nouns.",
         "Proofread for the small errors that add up.",
@@ -846,10 +846,10 @@
         "Good effort; complete every sentence."
       ],
       2: [
-        "Needs improvement — frequent grammar mistakes.",
+        "Needs improvement - frequent grammar mistakes.",
         "Little variety in sentence length or type.",
         "Multiple punctuation and capitalization errors.",
-        "Subject–verb agreement is often incorrect.",
+        "Subject-verb agreement is often incorrect.",
         "Some sentences are incomplete; meaning sometimes unclear.",
         "Write shorter, complete sentences first.",
         "Review basic punctuation and capitals.",
@@ -858,11 +858,11 @@
         "Check each sentence has a subject and a verb."
       ],
       1: [
-        "Poor — grammar mistakes hinder understanding.",
+        "Poor - grammar mistakes hinder understanding.",
         "Very limited sentence variety.",
         "Many punctuation and capitalization errors.",
         "Most sentences are incomplete; meaning often unclear.",
-        "Subject–verb agreement is rarely correct.",
+        "Subject-verb agreement is rarely correct.",
         "Focus on one correct sentence at a time.",
         "Review where sentences begin and end.",
         "Practise the present and past simple tenses.",
@@ -884,7 +884,7 @@
     },
     VO: {
       5: [
-        "Excellent — a strong vocabulary range that supports the topic.",
+        "Excellent - a strong vocabulary range that supports the topic.",
         "Words are varied, precise, and accurate.",
         "Spelling is correct; any errors are tiny.",
         "You use topic vocabulary confidently.",
@@ -896,7 +896,7 @@
         "Strong, accurate word choice."
       ],
       4: [
-        "Good — a solid vocabulary range supporting the topic.",
+        "Good - a solid vocabulary range supporting the topic.",
         "Words are mostly varied and accurate.",
         "Most words spelled correctly; minor errors only.",
         "Reach for one or two more precise words.",
@@ -908,7 +908,7 @@
         "Vary one repeated word to reach excellent."
       ],
       3: [
-        "Satisfactory — vocabulary partly supports the topic; some words repetitive or inexact.",
+        "Satisfactory - vocabulary partly supports the topic; some words repetitive or inexact.",
         "Some word-choice errors appear.",
         "Several spelling errors, but meaning mostly clear.",
         "Use more topic-specific vocabulary.",
@@ -920,7 +920,7 @@
         "Widen your range with synonyms."
       ],
       2: [
-        "Needs improvement — vocabulary is very limited and repetitive.",
+        "Needs improvement - vocabulary is very limited and repetitive.",
         "Many word-choice errors.",
         "Frequent spelling errors make meaning unclear.",
         "Many words are inappropriate for the topic.",
@@ -932,7 +932,7 @@
         "Read short texts on the topic to build vocabulary."
       ],
       1: [
-        "Poor — extremely limited and repetitive vocabulary.",
+        "Poor - extremely limited and repetitive vocabulary.",
         "Words are often inaccurate or inappropriate.",
         "Many spelling errors make meaning hard to follow.",
         "The same few words repeat.",

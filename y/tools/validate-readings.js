@@ -1,5 +1,5 @@
 /* ============================================================
-   validate-readings.js  —  read-only integrity check for every
+   validate-readings.js  -  read-only integrity check for every
    reading JSON registered in exam-registry.js.
 
    What it verifies (per registered exam):
@@ -40,7 +40,7 @@ const failures = [];
 function ok(name)          { totalPass++; console.log('  ' + C.green + '✓' + C.reset + ' ' + name); }
 function bad(name, detail) {
   totalFail++; failures.push({ name, detail });
-  console.log('  ' + C.red + '✗' + C.reset + ' ' + name + (detail ? ' — ' + detail : ''));
+  console.log('  ' + C.red + '✗' + C.reset + ' ' + name + (detail ? ' - ' + detail : ''));
 }
 function note(s) { console.log('  ' + C.dim + '·' + C.reset + ' ' + s); }
 
@@ -56,15 +56,15 @@ function loadRegistry() {
 
 // ── Per-exam validation ───────────────────────────────────
 function validateExam(skill, exam, reg) {
-  console.log('\n' + C.bold + '[' + skill + '] ' + exam.id + ' — ' + exam.title + C.reset);
+  console.log('\n' + C.bold + '[' + skill + '] ' + exam.id + ' - ' + exam.title + C.reset);
 
   // Listening exams (and any future skill that bundles its content
-  // inline in JS) don't carry a `file` pointer — their questions
+  // inline in JS) don't carry a `file` pointer - their questions
   // live in the per-skill engine. Skip the file-based checks for
   // those; just verify the registry entry has the minimum fields.
   if (!exam.file) {
     if (skill === 'listening' && exam.audio) {
-      ok('Listening exam — content lives in listening-exam.js (no JSON file)');
+      ok('Listening exam - content lives in listening-exam.js (no JSON file)');
       const audioPath = path.join(Y_ROOT, exam.audio.replace(/\//g, path.sep));
       if (fs.existsSync(audioPath)) ok('Audio file exists at ' + exam.audio);
       else                          bad('Audio file missing', audioPath);
@@ -179,7 +179,7 @@ function validateExam(skill, exam, reg) {
 }
 
 // ── Main ──────────────────────────────────────────────────
-console.log(C.bold + '📚 Reading library — integrity check' + C.reset);
+console.log(C.bold + '📚 Reading library - integrity check' + C.reset);
 const reg = loadRegistry();
 if (!reg) {
   console.error(C.red + 'Could not load EXAM_REGISTRY' + C.reset);
@@ -200,7 +200,7 @@ console.log('  Checks passed : ' + C.green + totalPass + C.reset);
 console.log('  Checks failed : ' + (totalFail > 0 ? C.red : C.green) + totalFail + C.reset);
 if (totalFail > 0) {
   console.log('\n' + C.red + 'Failures:' + C.reset);
-  failures.forEach(f => console.log('  - ' + f.name + (f.detail ? ' — ' + f.detail : '')));
+  failures.forEach(f => console.log('  - ' + f.name + (f.detail ? ' - ' + f.detail : '')));
   process.exit(1);
 }
 process.exit(0);

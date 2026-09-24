@@ -1,5 +1,5 @@
 /* ============================================================
-   ROLE-BASED ASSIGNMENT SCOPE — Phase B
+   ROLE-BASED ASSIGNMENT SCOPE - Phase B
    Hides target options that non-admin teachers shouldn't have
    (Entire Level, Entire Module) and restricts the class dropdown
    to their assigned classes. Mirrors the Firestore rule that
@@ -28,13 +28,13 @@
 
   // Strips the "Entire Level" and "Entire Module" options from a target
   // dropdown when the current user isn't admin. Admins keep all four.
-  // Idempotent — calling multiple times is safe (it inserts a dataset
+  // Idempotent - calling multiple times is safe (it inserts a dataset
   // marker so options are only removed once).
   function applyRoleScopeToTargetDropdown(selectId) {
     const sel = document.getElementById(selectId);
     if (!sel) return;
     if (_isAdminNow()) {
-      // Admin gets everything — make sure no prior call hid options.
+      // Admin gets everything - make sure no prior call hid options.
       return;
     }
     // Remove level + module options for non-admin teachers.
@@ -86,13 +86,13 @@
     const sel = document.getElementById(selectId);
     if (!sel) return;
     const previous = sel.value;
-    sel.innerHTML = '<option value="">— Loading classes —</option>';
+    sel.innerHTML = '<option value="">- Loading classes -</option>';
     const classes = await allowedClassesForCurrentUser();
     if (classes.length === 0) {
-      sel.innerHTML = '<option value="">— No classes assigned to you —</option>';
+      sel.innerHTML = '<option value="">- No classes assigned to you -</option>';
       return;
     }
-    sel.innerHTML = '<option value="">— Select a class —</option>'
+    sel.innerHTML = '<option value="">- Select a class -</option>'
       + classes.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c.replace(/</g, '&lt;')}</option>`).join('');
     if (previous && classes.includes(previous)) sel.value = previous;
   }

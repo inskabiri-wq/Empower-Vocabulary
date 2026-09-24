@@ -7,7 +7,7 @@
    with a pre-verified email, and a Firestore user doc whose
    role == 'demo'. The role triggers the same restrictions as
    anonymous demos used to: no session writes, no assignment
-   completions, no classroom answers — enforced by firestore.rules.
+   completions, no classroom answers - enforced by firestore.rules.
 
    Run manually:
 
@@ -16,7 +16,7 @@
      node tools/create-demo-accounts.js
 
    Requires:
-     tools/.serviceAccount.json — Firebase admin private key.
+     tools/.serviceAccount.json - Firebase admin private key.
      Download via Console → Project settings → Service accounts.
      The .gitignore already excludes this file.
 
@@ -48,7 +48,7 @@ const auth = admin.auth();
 // ============================================================
 // EDIT THIS BLOCK to change the demo accounts you want to issue.
 // Email domains MUST be @fsm.edu.tr or @stu.fsm.edu.tr to satisfy
-// firestore.rules. @stu.fsm.edu.tr is recommended — those addresses
+// firestore.rules. @stu.fsm.edu.tr is recommended - those addresses
 // are permanently locked from teacher promotion as an extra safety.
 // ============================================================
 const DEMO_ACCOUNTS = [
@@ -72,7 +72,7 @@ const DEMO_ACCOUNTS = [
 async function upsertDemo(account) {
   const { email, password, name } = account;
 
-  // 1. Auth user — create if absent, otherwise fetch.
+  // 1. Auth user - create if absent, otherwise fetch.
   let userRecord;
   try {
     userRecord = await auth.getUserByEmail(email);
@@ -93,11 +93,11 @@ async function upsertDemo(account) {
     console.log(`  · Created auth account for ${email} (uid ${userRecord.uid})`);
   }
 
-  // 2. Firestore user doc — create if absent, otherwise leave intact.
+  // 2. Firestore user doc - create if absent, otherwise leave intact.
   const ref = db.collection('users').doc(userRecord.uid);
   const snap = await ref.get();
   if (snap.exists) {
-    console.log(`  · Firestore user doc already present — leaving as-is`);
+    console.log(`  · Firestore user doc already present - leaving as-is`);
   } else {
     await ref.set({
       name,

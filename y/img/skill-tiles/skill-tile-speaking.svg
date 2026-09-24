@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="">
+  <rect width="800" height="600" fill="#dbeafe"/>
+  <path d="M170 130 h460 a56 56 0 0 1 56 56 v210 a56 56 0 0 1 -56 56 h-300
+           l-120 96 v-96 h-40 a56 56 0 0 1 -56 -56 v-210 a56 56 0 0 1 56 -56 z"
+        fill="#2563eb"/>
+  <g fill="#dbeafe">
+    <circle cx="320" cy="292" r="26"/><circle cx="400" cy="292" r="26"/><circle cx="480" cy="292" r="26"/>
+  </g>
+</svg>

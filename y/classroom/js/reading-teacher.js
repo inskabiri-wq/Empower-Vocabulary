@@ -37,15 +37,12 @@
   'use strict';
 
   // ── Firebase init ──────────────────────────────────────────
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-    authDomain: "empower-vocabulary-practice.firebaseapp.com",
-    projectId: "empower-vocabulary-practice",
-    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-    messagingSenderId: "136270199832",
-    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // Firebase is started by js/firebase-init.js, which reads the project
+  // from js/tenant.js. This file used to name one university directly, which would
+  // have pointed every deployment at that same project.
+  if (!firebase.apps.length) {
+    throw new Error('reading-teacher: js/tenant.js + js/firebase-init.js must load first.');
+  }
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
@@ -352,7 +349,20 @@
         renderRoster(players);
       });
   }
+  var _lastRoster = 0;
   function renderRoster(players) {
+    // A student arrived. Throttled: a full cohort joining would otherwise
+    // fire a cue per arrival. Guarded on GROWTH so a snapshot caused by a
+    // score change stays silent.
+    // These host pages do not load minigame-core.js, so there is no MG here:
+    // MG.sfx threw "MG is not defined" on every join, BEFORE the count below
+    // was written, and the teacher saw no players at all (2026-09-24, a live
+    // class). The sound goes straight to js/sound.js and can never stop the
+    // roster from drawing.
+    if (players.length > _lastRoster && window.LLSound) {
+      try { LLSound.play('join', { throttle: 400 }); } catch (e) { /* a sound is never worth a roster */ }
+    }
+    _lastRoster = players.length;
     const el = document.getElementById('roster');
     const count = document.getElementById('rosterCount');
     if (count) count.textContent = players.length;
@@ -618,6 +628,25 @@
   // Host clicks "Reveal answers" → writes the answer key to
   // session.revealedAnswers + flips status to 'revealed'. Student
   // tabs pick this up and render the per-question breakdown.
+  // Firestore commits AT MOST 500 writes in one batch. Both score-persist
+  // paths below wrote one entry per player plus the session doc, as a single
+  // batch, so a room of 500 or more failed as one INVALID_ARGUMENT and NOT ONE
+  // score was saved. Silent, and worst exactly when the room is biggest.
+  //
+  // 400 leaves headroom, the same figure the assignment cascade delete uses.
+  // NOTE: the local emulator does NOT enforce the 500 limit (probes at 501 and
+  // 1001 both succeeded), so this is a documented production constraint that
+  // cannot be reproduced locally. That is why it is chunked rather than
+  // "tested and found fine".
+  async function commitChunked(writes) {
+    const LIMIT = 400;
+    for (let i = 0; i < writes.length; i += LIMIT) {
+      const batch = db.batch();
+      writes.slice(i, i + LIMIT).forEach(function (w) { batch.update(w.ref, w.data); });
+      await batch.commit();
+    }
+  }
+
   async function revealAnswers() {
     if (!sessionCode || !answerKey) return;
     // Strip out the .acceptable[] (only the host's grader needed
@@ -634,13 +663,12 @@
       });
       // Also persist each student's score so the revealed view can
       // show consistent numbers even after the host closes their tab.
-      const batch = db.batch();
       const sref = db.collection('reading_sessions').doc(sessionCode);
-      allPlayersCache.forEach(p => {
+      const writes = allPlayersCache.map(p => {
         const { score, correct } = scoreStudent(p.uid);
-        batch.update(sref.collection('players').doc(p.uid), { score, correctCount: correct });
+        return { ref: sref.collection('players').doc(p.uid), data: { score, correctCount: correct } };
       });
-      await batch.commit();
+      await commitChunked(writes);
       toast('🔓 Answers revealed to the class', 'success');
     } catch (e) {
       console.error('revealAnswers', e);
@@ -656,16 +684,17 @@
       // if we passed through that state, but we re-do it here so
       // "end without reveal" also captures scores).
       const sref = db.collection('reading_sessions').doc(sessionCode);
-      const batch = db.batch();
-      allPlayersCache.forEach(p => {
+      const writes = allPlayersCache.map(p => {
         const { score, correct } = scoreStudent(p.uid);
-        batch.update(sref.collection('players').doc(p.uid), { score, correctCount: correct });
+        return { ref: sref.collection('players').doc(p.uid), data: { score, correctCount: correct } };
       });
-      batch.update(sref, {
+      // The session doc goes LAST, in its own chunk if need be, so the room is
+      // only marked finished after every score has actually landed.
+      writes.push({ ref: sref, data: {
         status: 'finished',
         endedAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      await batch.commit();
+      } });
+      await commitChunked(writes);
     } catch (e) {
       console.error('endExam', e);
     }

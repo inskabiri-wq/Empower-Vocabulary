@@ -1,9 +1,9 @@
 /* ============================================================
-   WRITING SUBMISSIONS VIEWER — Phase 5
+   WRITING SUBMISSIONS VIEWER - Phase 5
    Minimal modal that lists every writingSubmissions row for an
    assignment and lets the teacher open + read each essay. Builds
    the foundation for a future grading UI (the score / comment
-   fields already exist on the doc — just no form to fill them
+   fields already exist on the doc - just no form to fill them
    in yet).
 
    Loaded after writing-form.js on teacher-dashboard.html.
@@ -21,7 +21,7 @@
   // | 'not_submitted' | 'late' | 'in_progress'.
   let _statusFilter = 'all';
 
-  // Live snapshot unsubscriber — set when the modal is open so we
+  // Live snapshot unsubscriber - set when the modal is open so we
   // can detach the listener on close (no rule-read storms).
   let _liveUnsubscribe = null;
 
@@ -57,7 +57,7 @@
           <!-- Header -->
           <div style="display:flex; justify-content:space-between; align-items:center;
                       padding: 14px 20px; border-bottom: 1px solid var(--border-color);
-                      background: rgba(168,85,247,0.06);">
+                      background: rgba(29,78,216,0.06);">
             <div style="display:flex; align-items:center; gap:12px; min-width:0;">
               <span style="font-size: 1.5em;">📄</span>
               <div style="min-width:0;">
@@ -94,7 +94,7 @@
             <!-- Right column: grading sidebar -->
             <div id="wsEssayFooter"
                  style="overflow-y: auto; min-height: 0;
-                        background: rgba(167,139,250,0.05); border: 1px solid rgba(167,139,250,0.20);
+                        background: rgba(96,165,250,0.05); border: 1px solid rgba(96,165,250,0.20);
                         border-radius: 10px; padding: 14px;"></div>
           </div>
         </div>
@@ -127,7 +127,7 @@
     const bodyEl   = document.getElementById('wsListBody');
 
     const a = (typeof allAssignments !== 'undefined' ? allAssignments : []).find(x => x.id === assignmentId);
-    titleEl.textContent = '✍️ Submissions — ' + (a?.title || 'Writing Assignment');
+    titleEl.textContent = '✍️ Submissions - ' + (a?.title || 'Writing Assignment');
     subEl.textContent   = a?.prompt
       ? a.prompt.slice(0, 180) + (a.prompt.length > 180 ? '…' : '')
       : '';
@@ -140,7 +140,7 @@
     _ctx = { assignmentId, assignment: a, roster: [], submissions: [] };
     _statusFilter = 'all';
 
-    // Compute the target roster — every student the assignment targets,
+    // Compute the target roster - every student the assignment targets,
     // even those who haven't submitted yet. This is what makes the panel
     // a tracking dashboard rather than just a submitter list.
     _ctx.roster = computeTargetRoster(a);
@@ -201,7 +201,7 @@
   }
 
   // Renders the dashboard (header + filter pills + status table).
-  // Called both on first open AND on every onSnapshot tick — that's
+  // Called both on first open AND on every onSnapshot tick - that's
   // what makes it a "live" tracking dashboard.
   function renderTracker() {
     if (!_ctx) return;
@@ -217,7 +217,7 @@
 
     // Compute per-student status. Order of precedence:
     //   - sub.status === 'returned'   → 'returned' (teacher has sent it
-    //     back to the student, waiting on revision — DON'T classify as
+    //     back to the student, waiting on revision - DON'T classify as
     //     "submitted needs grading" anymore; the teacher already acted)
     //   - sub.status === 'graded'     → 'graded'
     //   - submitted before deadline   → 'submitted'
@@ -246,7 +246,7 @@
       return { student: s, sub, status, when };
     });
 
-    // Counters for the filter chips. `returned` is its own bucket —
+    // Counters for the filter chips. `returned` is its own bucket -
     // teacher has done their part, ball is in the student's court.
     const counts = {
       all:           decorated.length,
@@ -270,14 +270,14 @@
       <div style="display:flex; flex-wrap:wrap; gap:6px; margin: 0 0 12px 0;">
         ${filterChip('all',           'All',             'var(--accent-primary)')}
         ${filterChip('submitted',     '✓ Submitted',     'var(--success)')}
-        ${filterChip('returned',      '🔄 Returned',     '#f59e0b')}
+        ${filterChip('returned',      '🔄 Returned',     '#3b82f6')}
         ${filterChip('not_submitted', '⏳ Not submitted', 'var(--text-muted)')}
         ${filterChip('late',          '⚠ Late',          'var(--warning)')}
         ${filterChip('overdue',       '❌ Overdue',      'var(--error)')}
       </div>
     `;
 
-    // Apply filter. `submitted` now EXCLUDES returned essays — once
+    // Apply filter. `submitted` now EXCLUDES returned essays - once
     // a teacher returns one, it's the student's job, not part of the
     // "pending grading" queue.
     const visible = decorated.filter(d => {
@@ -292,9 +292,9 @@
 
     // Live banner showing the headline numbers.
     const summaryBanner = `
-      <div style="display:flex; gap: 14px; flex-wrap:wrap; padding: 8px 12px; background: rgba(167, 139, 250, 0.08); border:1px solid rgba(167, 139, 250, 0.25); border-radius:10px; margin-bottom: 12px; font-size: 0.88em;">
+      <div style="display:flex; gap: 14px; flex-wrap:wrap; padding: 8px 12px; background: rgba(96, 165, 250, 0.08); border:1px solid rgba(96, 165, 250, 0.25); border-radius:10px; margin-bottom: 12px; font-size: 0.88em;">
         <span><strong style="color: var(--text-primary);">${counts.submitted}</strong> / ${roster.length} submitted</span>
-        ${counts.returned > 0 ? `<span style="color: #f59e0b;"><strong>${counts.returned}</strong> 🔄 awaiting revision</span>` : ''}
+        ${counts.returned > 0 ? `<span style="color: #3b82f6;"><strong>${counts.returned}</strong> 🔄 awaiting revision</span>` : ''}
         ${counts.late    > 0 ? `<span style="color: var(--warning);"><strong>${counts.late}</strong> late</span>` : ''}
         ${counts.overdue > 0 ? `<span style="color: var(--error);"><strong>${counts.overdue}</strong> overdue</span>` : ''}
         <span style="margin-left:auto; color: var(--text-muted); font-size: 0.85em;">🔴 Live</span>
@@ -326,14 +326,14 @@
         </thead>
         <tbody>
           ${visible.map(({ student, sub, status, when }) => {
-            const time = sub?.timeSpentSec ? `${Math.floor(sub.timeSpentSec / 60)}m ${sub.timeSpentSec % 60}s` : '—';
+            const time = sub?.timeSpentSec ? `${Math.floor(sub.timeSpentSec / 60)}m ${sub.timeSpentSec % 60}s` : '-';
             const auto = sub?.autoSubmitted ? ` <span title="Auto-submitted on timeout" style="color: var(--warning);">⏱</span>` : '';
             const breach = (sub && (sub.tabSwitches || 0) > 0) ? ` <span title="Tab switched ${sub.tabSwitches} time(s)" style="color: var(--warning);">⚠ ${sub.tabSwitches}</span>` : '';
             const statusBadge = (function () {
               const map = {
                 submitted:     { lbl: '✓ Submitted',    color: 'var(--success)' },
                 graded:        { lbl: '🎓 Graded',       color: 'var(--success)' },
-                returned:      { lbl: '🔄 Returned',     color: '#f59e0b' },
+                returned:      { lbl: '🔄 Returned',     color: '#3b82f6' },
                 late:          { lbl: '⚠ Late',          color: 'var(--warning)' },
                 overdue:       { lbl: '❌ Overdue',      color: 'var(--error)' },
                 not_submitted: { lbl: '⏳ Not submitted', color: 'var(--text-muted)' }
@@ -343,7 +343,7 @@
             })();
             // View-essay button: prominent for fresh submissions (teacher
             // needs to grade them), muted for returned ones (teacher
-            // already acted — student's turn now). The button still
+            // already acted - student's turn now). The button still
             // works in both states so the teacher can re-check what
             // they returned, but the visual hierarchy stops shouting.
             const viewBtn = sub
@@ -353,12 +353,12 @@
                              onclick="openWritingEssay('${sub.id.replace(/'/g, "\\'")}', '${String(_ctx.assignmentId).replace(/'/g, "\\'")}')">📖 Re-open</button>`
                   : `<button class="modal-btn modal-btn-save" style="padding: 5px 12px; font-size: 0.85em;"
                              onclick="openWritingEssay('${sub.id.replace(/'/g, "\\'")}', '${String(_ctx.assignmentId).replace(/'/g, "\\'")}')">View essay</button>`)
-              : `<span style="color: var(--text-dim); font-size: 0.85em;">—</span>`;
+              : `<span style="color: var(--text-dim); font-size: 0.85em;">-</span>`;
             return `
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
                 <td style="padding: 10px 12px;">${(student.name || student.email || 'Student').replace(/</g,'&lt;')}${auto}${breach}</td>
                 <td style="padding: 10px 12px; color: var(--text-muted);">${(student.studentClass || '').replace(/</g,'&lt;')}</td>
-                <td style="padding: 10px 12px; text-align: center;">${sub?.wordCount || '—'}</td>
+                <td style="padding: 10px 12px; text-align: center;">${sub?.wordCount || '-'}</td>
                 <td style="padding: 10px 12px; text-align: center; color: var(--text-muted);">${time}</td>
                 <td style="padding: 10px 12px; text-align: center;">${statusBadge}</td>
                 <td style="padding: 10px 12px; text-align: right;">${viewBtn}</td>
@@ -378,7 +378,7 @@
     });
   }
 
-  // Tiny helper to colorize rgba() for the status badge backgrounds —
+  // Tiny helper to colorize rgba() for the status badge backgrounds -
   // accepts either a hex string or a CSS var() expression.
   function _skillRgb(v) {
     if (!v) return '255,255,255';
@@ -393,7 +393,7 @@
     const modal = document.getElementById('wsListModal');
     if (modal) modal.classList.remove('active');
     document.body.style.overflow = '';
-    // Detach the live listener — otherwise it keeps reading docs
+    // Detach the live listener - otherwise it keeps reading docs
     // forever, which would burn Firestore reads in the background.
     if (typeof _liveUnsubscribe === 'function') {
       try { _liveUnsubscribe(); } catch (_) {}
@@ -446,7 +446,7 @@
     // ── Header ──
     titleEl.textContent = (a.title || 'Writing Assignment');
     const subAt   = row.submittedAt?.toDate?.() || (row.submittedAt ? new Date(row.submittedAt) : null);
-    const subAtTxt = subAt ? subAt.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—';
+    const subAtTxt = subAt ? subAt.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : '-';
     studentMetaEl.innerHTML = `
       <strong style="color:#cbd5e1;">${escAttr(row.userName || 'Student')}</strong>
       ${row.studentClass ? ` · Class ${escAttr(row.studentClass)}` : ''}
@@ -457,7 +457,7 @@
     // ── Stats meta row (left col, above rubric) ──
     metaEl.innerHTML = `
       <span><strong>Words:</strong> ${row.wordCount || 0}</span>
-      &nbsp;·&nbsp; <span><strong>Time:</strong> ${row.timeSpentSec ? Math.floor(row.timeSpentSec / 60) + 'm ' + (row.timeSpentSec % 60) + 's' : '—'}</span>
+      &nbsp;·&nbsp; <span><strong>Time:</strong> ${row.timeSpentSec ? Math.floor(row.timeSpentSec / 60) + 'm ' + (row.timeSpentSec % 60) + 's' : '-'}</span>
       &nbsp;·&nbsp; <span><strong>Status:</strong> ${row.status || 'submitted'}</span>
       ${row.autoSubmitted ? '&nbsp;·&nbsp; <span style="color: var(--warning);">⏱ Auto-submitted</span>' : ''}
       ${(row.tabSwitches || 0) > 0 ? `&nbsp;·&nbsp; <span style="color: var(--warning);">⚠ Tab switched ${row.tabSwitches}×</span>` : ''}
@@ -471,10 +471,10 @@
     const rubricUrl  = String(a.rubricUrl || '').trim();
     if (rubricText || rubricUrl) {
       rubricEl.innerHTML = `
-        <details open style="background: rgba(45, 212, 191, 0.06);
-                             border: 1px solid rgba(45, 212, 191, 0.25);
+        <details open style="background: rgba(147, 197, 253, 0.06);
+                             border: 1px solid rgba(147, 197, 253, 0.25);
                              border-radius: 10px; padding: 10px 14px;">
-          <summary style="cursor: pointer; font-weight: 700; color: #5eead4;
+          <summary style="cursor: pointer; font-weight: 700; color: #bfdbfe;
                           font-size: 0.85em; letter-spacing: 0.04em;
                           text-transform: uppercase;">
             📋 Rubric (click to collapse)
@@ -490,8 +490,8 @@
             <div style="margin-top: 10px;">
               <a href="${escAttr(rubricUrl)}" target="_blank" rel="noopener"
                  style="display: inline-flex; align-items: center; gap: 6px;
-                        background: rgba(45, 212, 191, 0.18); color: #99f6e4;
-                        border: 1px solid rgba(45, 212, 191, 0.40);
+                        background: rgba(147, 197, 253, 0.18); color: #99f6e4;
+                        border: 1px solid rgba(147, 197, 253, 0.40);
                         padding: 6px 12px; border-radius: 8px;
                         text-decoration: none; font-weight: 600; font-size: 0.88em;">
                 📎 Open rubric file →
@@ -516,16 +516,16 @@
       bodyEl.textContent = row.responseText || '(No text submitted.)';
     }
 
-    // Phone guard — inline tools need a real screen. Non-blocking warn.
+    // Phone guard - inline tools need a real screen. Non-blocking warn.
     if (window.WritingAnnotations && WritingAnnotations.isPhone()) {
       const warn = document.createElement('div');
-      warn.style.cssText = 'background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.4);'
-        + 'color:#fcd34d;border-radius:8px;padding:8px 12px;font-size:0.85em;margin-bottom:10px;';
-      warn.textContent = '⚠ Grading is best on a computer — the inline-comment tools are hard to use on a small screen.';
+      warn.style.cssText = 'background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.4);'
+        + 'color:#93c5fd;border-radius:8px;padding:8px 12px;font-size:0.85em;margin-bottom:10px;';
+      warn.textContent = '⚠ Grading is best on a computer - the inline-comment tools are hard to use on a small screen.';
       metaEl.parentNode.insertBefore(warn, metaEl);
     }
 
-    // ── Grading sidebar (Phase G.6 — criterion-based) ──
+    // ── Grading sidebar (Phase G.6 - criterion-based) ──
     // Replaces the old single-score input with four criterion sliders
     // (TA / CC / GR / VO, each 0..5). The total = sum, capped at 20,
     // and is what we write to the `score` field for backward compat.
@@ -568,12 +568,12 @@
       <!-- Total (auto-computed, read-only) -->
       <div style="display: flex; align-items: center; justify-content: space-between;
                   padding: 8px 12px; border-radius: 8px;
-                  background: rgba(168,85,247,0.10);
-                  border: 1px solid rgba(168,85,247,0.30);
+                  background: rgba(29,78,216,0.10);
+                  border: 1px solid rgba(29,78,216,0.30);
                   margin-bottom: 12px;">
         <span style="font-weight: 700; color: var(--text-primary);">Total</span>
         <span id="wsGradeTotal" style="font-weight: 800; font-size: 1.2em; color: #c4b5fd;">
-          — / 20
+          - / 20
         </span>
       </div>
 
@@ -607,8 +607,12 @@
       </div>
 
       <!-- Save -->
+      <!-- One Close per view. There used to be a second one here, next to Save
+           grade, while the panel header already carries "✕ Close" - two buttons
+           doing exactly the same thing, a few hundred pixels apart. The header
+           one is the conventional place, so this footer keeps only the action
+           that is unique to it. -->
       <div style="display: flex; gap: 8px; justify-content: flex-end;">
-        <button class="modal-btn modal-btn-cancel" onclick="closeWritingEssay()">Close</button>
         <button class="modal-btn modal-btn-save" id="wsGradeSaveBtn">💾 Save grade</button>
       </div>
       <div id="wsGradeError" style="margin-top: 8px; color: var(--error); font-size: 0.88em; display: none;"></div>
@@ -624,11 +628,11 @@
         const v = el.value.trim();
         if (v !== '') { sum += Number(v) || 0; any = true; }
       });
-      totalEl.textContent = any ? `${sum.toFixed(1)} / 20` : '— / 20';
+      totalEl.textContent = any ? `${sum.toFixed(1)} / 20` : '- / 20';
       totalEl.style.color = !any ? '#94a3b8'
                           : sum >= 16 ? '#86efac'
                           : sum >= 12 ? '#7dd3fc'
-                          : '#fcd34d';
+                          : '#93c5fd';
     }
     tEls.forEach(el => el && el.addEventListener('input', recomputeTotal));
     recomputeTotal();
@@ -676,9 +680,9 @@
       fab.type = 'button';
       fab.textContent = '💬 Comment';
       fab.style.cssText = 'position:absolute;z-index:10060;display:none;'
-        + 'background:#6366f1;color:#fff;border:none;border-radius:8px;padding:6px 12px;'
+        + 'background:#2563eb;color:#fff;border:none;border-radius:8px;padding:6px 12px;'
         + 'font-family:inherit;font-weight:600;font-size:0.85em;cursor:pointer;'
-        + 'box-shadow:0 6px 20px rgba(99,102,241,0.5);';
+        + 'box-shadow:0 6px 20px rgba(37,99,235,0.5);';
       document.body.appendChild(fab);
     }
     let pendingSel = null;
@@ -746,7 +750,7 @@
     }
   }
 
-  // Tiny rendering helpers — escape user content for safe inline HTML,
+  // Tiny rendering helpers - escape user content for safe inline HTML,
   // and build a labeled criterion input cell.
   function escHtml(s) {
     return String(s == null ? '' : s)
@@ -765,7 +769,7 @@
           </span>
         </label>
         <input type="number" id="${id}" min="0" max="5" step="0.5" value="${value === '' ? '' : escAttr(value)}"
-               placeholder="0–5"
+               placeholder="0-5"
                style="padding: 8px 10px; border-radius: 8px; width: 100%; box-sizing: border-box;
                       background: var(--bg-item, rgba(255,255,255,0.04));
                       color: var(--text-primary); border: 1px solid var(--border-color);
@@ -783,7 +787,7 @@
     const errEl   = document.getElementById('wsGradeError');
     const cmtEl   = document.getElementById('wsGradeComment');
     const stEl    = document.getElementById('wsGradeStatus');
-    // Phase G.6 — criterion inputs replace the single score field.
+    // Phase G.6 - criterion inputs replace the single score field.
     const taEl = document.getElementById('wsGradeTA');
     const ccEl = document.getElementById('wsGradeCC');
     const grEl = document.getElementById('wsGradeGR');
@@ -820,7 +824,7 @@
 
     // Build the criteria map. If ANY criterion is set, persist all four
     // (missing ones become 0 so the math works downstream). If NONE are
-    // set, criteria stays null — the rule allows that for backwards
+    // set, criteria stays null - the rule allows that for backwards
     // compat with the old single-score path.
     const anyCrit = [pTA, pCC, pGR, pVO].some(p => p.value != null);
     let criteria = null;
@@ -832,17 +836,17 @@
         GR: pGR.value != null ? pGR.value : 0,
         VO: pVO.value != null ? pVO.value : 0
       };
-      // Compute total — clamped to 0..20 just in case of float drift.
+      // Compute total - clamped to 0..20 just in case of float drift.
       score = Math.max(0, Math.min(20, criteria.TA + criteria.CC + criteria.GR + criteria.VO));
     }
 
     const comment = (cmtEl ? cmtEl.value : '').trim();
 
-    // Gating by status — different rules per outcome:
+    // Gating by status - different rules per outcome:
     //   • 'graded' (final): MUST have a numeric total, since this is
     //     the student-visible grade. Comments alone aren't enough.
     //   • 'returned' (revise): scores are OPTIONAL. The teacher is
-    //     asking for changes, not delivering a final mark — a comment
+    //     asking for changes, not delivering a final mark - a comment
     //     telling the student WHAT to fix is what matters. Score can
     //     stay null and the teacher can grade after re-submission.
     //   • 'submitted': no validation (clearing out a draft).
@@ -876,7 +880,7 @@
 
       // Update local cache so the list row reflects the new status
       // without a round-trip. (The live snapshot will sync on its own
-      // tick too — this is just for instant feedback.)
+      // tick too - this is just for instant feedback.)
       if (cache.has(assignmentId)) {
         const list = cache.get(assignmentId);
         const idx = list.findIndex(r => r.id === submissionId);
@@ -888,16 +892,25 @@
       // Status-aware success label so the teacher gets explicit
       // confirmation that the RIGHT thing happened. Previously it
       // just said "✓ Saved" which read the same whether you'd
-      // returned for revision or marked final — confusing.
+      // returned for revision or marked final - confusing.
       if (saveBtn) {
         if (status === 'returned')   saveBtn.textContent = '🔄 Returned to student';
         else if (status === 'graded') saveBtn.textContent = '✅ Final grade saved';
         else                          saveBtn.textContent = '✓ Saved';
       }
 
+      // Then close, so grading a stack of essays is one pass instead of
+      // save-then-hunt-for-the-X on every single one. The pause is long enough
+      // to read the label above, which is the only confirmation there is.
+      setTimeout(function () {
+        if (typeof closeWritingEssay === 'function') {
+          try { closeWritingEssay(); } catch (_) {}
+        }
+      }, 900);
+
       // Activity log entry for this grading action (Phase G fix).
       // Without this, the activity log was silent on the grading
-      // workflow — teachers could grade dozens of essays and the
+      // workflow - teachers could grade dozens of essays and the
       // log would show nothing. We emit a typed entry so the log
       // can later filter by grade-action.
       if (typeof ActivityLogger !== 'undefined') {

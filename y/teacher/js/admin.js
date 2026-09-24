@@ -1,15 +1,15 @@
 /* ============================================================
-   Teacher Dashboard — Admin Section (v2)
+   Teacher Dashboard - Admin Section (v2)
    Visual port of the design in admin.html (React reference) into
    vanilla JS, plugged into the existing Firestore wiring.
 
    Public functions kept identical so external callers keep working:
-     • loadTeachers()                              — entry point, populates UI
-     • addTeacherEmail()                           — add to whitelist
-     • removeFromWhitelist(email)                  — remove from whitelist
-     • removeTeacher(teacherId, email)             — demote to student
+     • loadTeachers()                              - entry point, populates UI
+     • addTeacherEmail()                           - add to whitelist
+     • removeFromWhitelist(email)                  - remove from whitelist
+     • removeTeacher(teacherId, email)             - demote to student
      • toggleClassAssignment(id, className, on)
-     • updateTeacherAssignment(id, field, value)   — field = 'year' | 'module'
+     • updateTeacherAssignment(id, field, value)   - field = 'year' | 'module'
 
    Globals consumed (defined elsewhere in the dashboard):
      isAdmin, db, allStudents, escapeHtml, showError, showSuccess,
@@ -130,7 +130,7 @@
       State.pending = whitelist.filter(e => !registeredEmails.includes(e));
       State.teachers = teachers;
 
-      // 4. Class registry — settings/availableClasses lets admins add
+      // 4. Class registry - settings/availableClasses lets admins add
       //    classes that don't have any students yet (e.g. brand-new
       //    sections). Merged with student-derived classes so the
       //    assignment grid surfaces both.
@@ -141,10 +141,10 @@
           const v = reg.data().classes;
           if (Array.isArray(v)) registry = v.map(s => String(s).trim().toUpperCase()).filter(Boolean);
         }
-      } catch (_) { /* missing doc is fine — treat as empty */ }
+      } catch (_) { /* missing doc is fine - treat as empty */ }
       State.registryClasses = [...new Set(registry)];
 
-      // Student-derived class set (for delete-protection — these can't
+      // Student-derived class set (for delete-protection - these can't
       // be removed via the ✕ chip because real students are in them).
       const fromStudents = (Array.isArray(allStudents) ? allStudents : [])
         .map(s => s.studentClass).filter(Boolean);
@@ -159,7 +159,7 @@
       render();
     } catch (e) {
       console.error('Error loading teachers:', e);
-      container.innerHTML = `<div class="av-empty">Failed to load teachers — ${escapeHtml(e.message || String(e))}</div>`;
+      container.innerHTML = `<div class="av-empty">Failed to load teachers - ${escapeHtml(e.message || String(e))}</div>`;
     }
   }
   window.loadTeachers = loadTeachers;
@@ -198,7 +198,7 @@
     // Header ("👑 Admin / Manage teacher accounts and class assignments")
     // is rendered by the dashboard's tab-header system in overview-v2.js
     // (renderHeaderForTab). Including it here too produced two stacked
-    // copies on the admin tab — drop the internal one.
+    // copies on the admin tab - drop the internal one.
     container.innerHTML = `
       <div class="av-root">
         ${renderStats(allCount, adminCount, totalStudents, unassignedCount)}
@@ -207,7 +207,7 @@
         ${renderTable(filtered, allCount)}
         ${renderPending()}
         <!-- Confusing pairs UI is rendered by teacher/js/confusing-pairs.js
-             (shared module — also mounted on the Overview tab). -->
+             (shared module - also mounted on the Overview tab). -->
         <div id="adminConfusingPairsMount"></div>
       </div>
     `;
@@ -222,13 +222,13 @@
     const tc = document.getElementById('totalClasses');  if (tc) tc.textContent = State.classes.length;
   }
 
-  // renderHeader removed — the dashboard tab-header system in
+  // renderHeader removed - the dashboard tab-header system in
   // overview-v2.js (renderHeaderForTab) already shows the "👑 Admin"
   // title above every tab, so calling it again here produced two
   // stacked copies.
 
   function renderStats(total, admins, students, unassigned) {
-    // Sparklines based on real-time-ish samples — keep flat trend if we
+    // Sparklines based on real-time-ish samples - keep flat trend if we
     // don't have history. The trend chips below pull from heuristics.
     const teacherSpark = [Math.max(0, total - 3), Math.max(0, total - 2), Math.max(0, total - 2),
                           Math.max(0, total - 1), Math.max(0, total - 1), total, total];
@@ -271,9 +271,9 @@
         return v || fallback;
       } catch (_) { return fallback; }
     }
-    const sparkColor = color === 'cyan'   ? _cssVar('--t2-cyan',   '#22d3ee')
-                     : color === 'purple' ? _cssVar('--t2-purple', '#a855f7')
-                     : color === 'amber'  ? _cssVar('--t2-amber',  '#f59e0b')
+    const sparkColor = color === 'cyan'   ? _cssVar('--t2-cyan',   '#60a5fa')
+                     : color === 'purple' ? _cssVar('--t2-purple', '#1d4ed8')
+                     : color === 'amber'  ? _cssVar('--t2-amber',  '#3b82f6')
                      : color === 'red'    ? _cssVar('--t2-red',    '#ef4444')
                      :                      _cssVar('--t2-blue',   '#3b82f6');
     return `
@@ -414,7 +414,7 @@
 
     const levelBadge = t.assignedYear
       ? `<span class="av-badge ${levelColorClass(t.assignedYear)}">${escapeHtml(t.assignedYear)}</span>`
-      : `<span class="av-c-dim av-small">—</span>`;
+      : `<span class="av-c-dim av-small">-</span>`;
 
     return `
       <tr class="av-row ${expanded ? 'is-expanded' : ''}" data-action="toggle" data-id="${escapeHtml(t.id)}">
@@ -437,7 +437,7 @@
         <td>${levelBadge}</td>
         <td>${t.assignedModule
               ? `<span class="av-row-text">${escapeHtml(t.assignedModule)}</span>`
-              : `<span class="av-c-dim av-small">—</span>`}</td>
+              : `<span class="av-c-dim av-small">-</span>`}</td>
         <td>${classStack}</td>
         <td><span class="av-row-count">${studentCount}</span></td>
         <td>
@@ -486,7 +486,7 @@
                 </div>
                 <div class="av-class-grid">
                   ${State.classes.length === 0
-                    ? '<span class="av-c-dim av-small">No classes available yet — add one below.</span>'
+                    ? '<span class="av-c-dim av-small">No classes available yet - add one below.</span>'
                     : State.classes.map(c => {
                         const on = cls.includes(c);
                         // A class is registry-only when it isn't backed by
@@ -510,7 +510,7 @@
                           </label>`;
                       }).join('')}
                 </div>
-                <!-- Add a new class — for sections that don't have any
+                <!-- Add a new class - for sections that don't have any
                      students yet. Saved to settings/availableClasses
                      and immediately assigned to this teacher. -->
                 <div class="av-new-class">
@@ -644,7 +644,7 @@
     // teacher/js/confusing-pairs.js (scoped to [data-cp-field]).
   });
 
-  // Search input — debounce so we don't re-render on every keystroke.
+  // Search input - debounce so we don't re-render on every keystroke.
   let searchT = null;
   document.addEventListener('input', (e) => {
     const tab = document.getElementById('tab-admin');
@@ -693,7 +693,7 @@
     }
   });
 
-  // ── Mutations (kept identical to v1 — same Firestore writes) ──
+  // ── Mutations (kept identical to v1 - same Firestore writes) ──
   async function addTeacherEmail() {
     if (!isAdmin()) return showError('Admin Only', 'Only administrators can add teachers.');
     const emailEl = document.getElementById('newTeacherEmail');
@@ -720,7 +720,9 @@
         await existingUsers.docs[0].ref.update({ role: 'teacher' });
         showSuccess('Teacher Added', '✓ Teacher access granted immediately.');
       } else {
-        showSuccess('Teacher Added', '✓ Email added to whitelist. They will get teacher access on registration.');
+        showSuccess('Teacher Added',
+          '✓ Added to the teacher whitelist. They get teacher access the next time they sign in - ' +
+          'with Google or with a password. They will show as Pending here until they do.');
       }
 
       if (typeof ActivityLogger !== 'undefined') {
@@ -763,7 +765,7 @@
   async function removeTeacher(teacherId, email) {
     if (!isAdmin()) return;
     showConfirm('👤', 'Demote to Student?',
-      `This will remove teacher privileges from ${email}. Their account, progress, classes, and all data are preserved — only their role changes back to student. You can re-promote them anytime.`,
+      `This will remove teacher privileges from ${email}. Their account, progress, classes, and all data are preserved - only their role changes back to student. You can re-promote them anytime.`,
       'Yes, Demote',
       async () => {
         try {
@@ -865,7 +867,7 @@
         await teacherRef.update({ assignedClasses: assigned });
       }
 
-      // 3. Local state — keep the row expanded, no full reload needed
+      // 3. Local state - keep the row expanded, no full reload needed
       State.registryClasses = next;
       State.classes = [...new Set([...State.classes, name])].sort();
       const local = State.teachers.find(t => t.id === teacherId);
@@ -910,7 +912,7 @@
     }
 
     showConfirm('🗑️', 'Delete Class?',
-      `Remove ${name} from the system? This unassigns it from any teacher who has it. (This is safe — no student is in this class.)`,
+      `Remove ${name} from the system? This unassigns it from any teacher who has it. (This is safe - no student is in this class.)`,
       'Yes, Delete',
       async () => {
         try {
@@ -961,7 +963,7 @@
     try {
       const update = {};
       // "-- Not Assigned --" sends an empty string. Translate that into a
-      // FIELD DELETE so the user doc doesn't keep "" — that empty string
+      // FIELD DELETE so the user doc doesn't keep "" - that empty string
       // would otherwise make Firestore rules treat the teacher as "must
       // match year ''" and block all student reads.
       const cleanValue = (typeof value === 'string') ? value.trim() : value;
@@ -976,7 +978,7 @@
       showSuccess('Saved', `Teacher ${field === 'year' ? 'level' : 'module'} updated.`);
 
       // Local update so the row reflects the change without a full reload.
-      // Mirror the server state — for an "empty" pick, the field is
+      // Mirror the server state - for an "empty" pick, the field is
       // deleted on Firestore, so locally we delete the property too.
       const local = State.teachers.find(t => t.id === teacherId);
       if (local) {

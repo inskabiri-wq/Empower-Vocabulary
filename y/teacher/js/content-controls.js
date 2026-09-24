@@ -48,7 +48,12 @@
     // Mini courses get their own tab (next to Grammar): the course on/off AND
     // its per-module toggles live here - the single home for every
     // activate/deactivate control. Future courses appear as more blocks.
-    { id: 'courses', label: '🎓 Mini courses' }
+    { id: 'courses', label: '🎓 Mini courses' },
+    // Placement sits beside Mini courses because it is the same kind of
+    // decision as the rest of this panel: which content a student meets.
+    // The panel body is rendered by teacher/js/placement-admin.js into
+    // #placementContentMount, so the two files stay independent.
+    { id: 'placement', label: '🎯 Placement' }
   ];
 
   var $ = function (id) { return document.getElementById(id); };
@@ -101,12 +106,12 @@
 
   function toggleRow(skill, id, label) {
     var hidden = isHidden(skill, id);
-    return '<div style="display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid ' +
-        (hidden ? 'rgba(245,158,11,0.5)' : 'var(--t2-border,#30363d)') + '; border-radius:8px; margin-bottom:6px; ' +
-        (hidden ? 'background:rgba(245,158,11,0.06);' : '') + '">' +
+    return '<div class="cc-row" style="display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid ' +
+        (hidden ? 'rgba(59,130,246,0.5)' : 'var(--t2-border,#30363d)') + '; border-radius:8px; margin-bottom:6px; ' +
+        (hidden ? 'background:rgba(59,130,246,0.06);' : '') + '">' +
       '<div style="flex:1; min-width:0;">' +
         '<div style="font-size:14px; color:var(--t2-text,#e6edf3); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + esc(label) + '</div>' +
-        '<div style="font-size:12px; font-weight:600; margin-top:1px; color:' + (hidden ? '#f59e0b' : 'var(--t2-green,#22c55e)') + ';">' +
+        '<div style="font-size:12px; font-weight:600; margin-top:1px; color:' + (hidden ? '#3b82f6' : 'var(--t2-green,#22c55e)') + ';">' +
           (hidden ? 'Hidden from practice · assignment-only' : 'In practice') + '</div>' +
       '</div>' +
       '<button type="button" class="cc-toggle" data-skill="' + skill + '" data-id="' + esc(id) + '" ' +
@@ -130,17 +135,17 @@
       return '<button type="button" class="cc-scope" data-scope="' + s.id + '" data-skill="' + skill + '" data-id="' + esc(id) + '" ' +
         'title="' + (off ? 'Show in ' : 'Hide from ') + s.label.toLowerCase() + '" ' +
         'style="cursor:pointer; font-family:inherit; font-size:12px; font-weight:700; padding:4px 11px; border-radius:14px; white-space:nowrap; ' +
-        'border:1px solid ' + (off ? 'rgba(245,158,11,0.55)' : 'rgba(34,197,94,0.45)') + '; ' +
-        'background:' + (off ? 'rgba(245,158,11,0.12)' : 'rgba(34,197,94,0.08)') + '; ' +
-        'color:' + (off ? '#f59e0b' : 'var(--t2-green,#22c55e)') + ';">' +
+        'border:1px solid ' + (off ? 'rgba(59,130,246,0.55)' : 'rgba(34,197,94,0.45)') + '; ' +
+        'background:' + (off ? 'rgba(59,130,246,0.12)' : 'rgba(34,197,94,0.08)') + '; ' +
+        'color:' + (off ? '#3b82f6' : 'var(--t2-green,#22c55e)') + ';">' +
         (off ? '✕ ' : '✓ ') + s.label + '</button>';
     }).join('');
     return '<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:8px 10px; border:1px solid ' +
-        (anyHidden ? 'rgba(245,158,11,0.5)' : 'var(--t2-border,#30363d)') + '; border-radius:8px; margin-bottom:6px; ' +
-        (anyHidden ? 'background:rgba(245,158,11,0.06);' : '') + '">' +
+        (anyHidden ? 'rgba(59,130,246,0.5)' : 'var(--t2-border,#30363d)') + '; border-radius:8px; margin-bottom:6px; ' +
+        (anyHidden ? 'background:rgba(59,130,246,0.06);' : '') + '">' +
       '<div style="flex:1; min-width:180px;">' +
         '<div style="font-size:14px; color:var(--t2-text,#e6edf3); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + esc(label) + '</div>' +
-        '<div style="font-size:12px; font-weight:600; margin-top:1px; color:' + (anyHidden ? '#f59e0b' : 'var(--t2-green,#22c55e)') + ';">' + status + '</div>' +
+        '<div style="font-size:12px; font-weight:600; margin-top:1px; color:' + (anyHidden ? '#3b82f6' : 'var(--t2-green,#22c55e)') + ';">' + status + '</div>' +
       '</div>' +
       '<div style="display:flex; gap:6px; flex-wrap:wrap;">' + pills + '</div>' +
     '</div>';
@@ -167,8 +172,49 @@
   // Lazily load the vocab dataset once, then re-render so unit toggles appear.
   // Same path config.js uses; teacher-dashboard.html sits at the app root.
   var VOCAB_LEVELS = ['A2', 'B1', 'B1+', 'B2', 'C1'];
+  // Waits for the panel to actually appear, then loads. Armed at most once.
+  //
+  // A setTimeout poll, NOT an IntersectionObserver. IO is the obvious tool and
+  // was the first implementation, but it cannot be verified in this project's
+  // preview pane: the pane never composites, so IO never fires there, exactly
+  // like requestAnimationFrame. Rather than ship a mechanism that cannot be
+  // tested before it reaches a classroom, this uses a check that behaves the
+  // same everywhere. It is one boolean per 500ms while the panel is closed,
+  // and it stops for good the moment the panel opens.
+  var vocabPoll = null;
+  function loadVocabWhenVisible() {
+    if (vocabPoll || vocabUnits || vocabLoading) return;
+    var tick = function () {
+      vocabPoll = null;
+      if (vocabUnits || vocabLoading) return;
+      var box = $('contentControlsBody');
+      if (!box) return;                       // panel gone: stop polling
+      if (box.offsetParent) {
+        ensureVocabUnits();
+        // Repaint too: the panel may have been drawn while hidden, showing
+        // the "no units yet" state, and nothing else would refresh it.
+        if (!vocabLoading && !vocabUnits) render();
+        return;
+      }
+      vocabPoll = setTimeout(tick, 500);
+    };
+    vocabPoll = setTimeout(tick, 500);
+  }
+
   function ensureVocabUnits() {
     if (vocabUnits || vocabLoading) return;
+    // MEASURED: datasets.json is 689 KB raw, 106 KB gzipped, and it was fetched
+    // on EVERY teacher dashboard load. The "lazily load" comment below was true
+    // of the second fetch only: init() binds to DOMContentLoaded and renders
+    // whatever tab is open, and render() calls this unconditionally, so the
+    // panel never had to be opened. Teachers are on mobile data.
+    //
+    // Now it waits until the panel is actually on screen. Everything else in
+    // the panel still renders immediately; only the per-unit vocabulary
+    // toggles arrive a moment later, which is the same behaviour the fetch
+    // always had.
+    var box = $('contentControlsBody');
+    if (box && !box.offsetParent) { loadVocabWhenVisible(); return; }
     vocabLoading = true;
     fetch('datasets.json').then(function (r) { return r.json(); }).then(function (d) {
       var out = {};
@@ -210,7 +256,7 @@
       var n = units.filter(function (u) {
         return SCOPES.some(function (s) { return isScopeHidden(s.id, 'vocabulary', level + '::' + u); });
       }).length;
-      if (n) title += ' &middot; <span style="color:#f59e0b;">' + n + ' restricted</span>';
+      if (n) title += ' &middot; <span style="color:#3b82f6;">' + n + ' restricted</span>';
       var rows = units.map(function (u) { return examScopeRow('vocabulary', level + '::' + u, u); }).join('');
       inner = '<div style="font-size:12px; color:var(--t2-text-muted,#7d8590); padding:2px 2px 8px;">Toggle each word list per surface: Practice (free practice), Classroom (live games) and Assignments.</div>' + scrollWrap(rows);
     }
@@ -226,7 +272,7 @@
       return SCOPES.some(function (s) { return isScopeHidden(s.id, skill, e.id); });
     }).length;
     var rows = exams.map(function (e) { return examScopeRow(skill, e.id, e.title || e.id); }).join('');
-    var title = icon + ' ' + name + ' &middot; ' + esc(level) + (!off && n ? (' &middot; <span style="color:#f59e0b;">' + n + ' restricted</span>') : '') + levelToggle(skill, level);
+    var title = icon + ' ' + name + ' &middot; ' + esc(level) + (!off && n ? (' &middot; <span style="color:#3b82f6;">' + n + ' restricted</span>') : '') + levelToggle(skill, level);
     return section(title, (off ? offBanner() : '') + scrollWrap(rows));
   }
 
@@ -245,7 +291,7 @@
     var n = topics.filter(function (t) {
       return SCOPES.some(function (s) { return isScopeHidden(s.id, 'grammar', t.id); });
     }).length;
-    var title = '✏️ Grammar topics &middot; ' + esc(level) + (!off && n ? (' &middot; <span style="color:#f59e0b;">' + n + ' restricted</span>') : '') + levelToggle('grammar', level);
+    var title = '✏️ Grammar topics &middot; ' + esc(level) + (!off && n ? (' &middot; <span style="color:#3b82f6;">' + n + ' restricted</span>') : '') + levelToggle('grammar', level);
     return section(title, (off ? offBanner() : '') + scrollWrap(rows));
   }
 
@@ -268,7 +314,7 @@
       '<span style="font-size:20px;">🎓</span>' +
       '<div style="flex:1; min-width:0;">' +
         '<div style="font-weight:800; font-size:15px; color:var(--t2-text,#e6edf3);">Mini course (policy / onboarding)</div>' +
-        '<div style="font-size:12px; font-weight:600; margin-top:1px; color:' + (on ? 'var(--t2-green,#22c55e)' : '#f59e0b') + ';">' + (on ? 'Active - targeted students see it' : 'Deactivated - hidden from students') + '</div>' +
+        '<div style="font-size:12px; font-weight:600; margin-top:1px; color:' + (on ? 'var(--t2-green,#22c55e)' : '#3b82f6') + ';">' + (on ? 'Active - targeted students see it' : 'Deactivated - hidden from students') + '</div>' +
       '</div>' +
       '<button type="button" id="ccCourseToggle" style="cursor:pointer; font-family:inherit; font-size:13px; font-weight:700; padding:7px 16px; border-radius:20px; border:1px solid ' + (on ? 'rgba(248,113,113,0.5)' : 'var(--t2-green,#22c55e)') + '; background:transparent; color:' + (on ? '#f87171' : 'var(--t2-green,#22c55e)') + ';">' + (on ? 'Deactivate' : 'Activate') + '</button>' +
       '</div>';
@@ -316,6 +362,16 @@
   function render() {
     var box = $('contentControlsBody');
     if (!box) return;
+    // Arm the visibility watcher on EVERY render while the panel is hidden.
+    //
+    // Doing it only from inside ensureVocabUnits() was not enough and was
+    // caught in the browser: that function is reached from one branch of the
+    // vocabulary section (units === null), so if the panel rendered while
+    // hidden without taking that branch, nothing armed the watcher and the
+    // unit toggles would never have loaded at all. Arming here does not
+    // depend on which section rendered.
+    if (!box.offsetParent) loadVocabWhenVisible();
+    else ensureVocabUnits();
     if (typeof window.EXAM_REGISTRY === 'undefined') { box.innerHTML = '<p style="color:#f87171; font-size:12px;">Exam registry not loaded.</p>'; return; }
     var levels = allLevels();
     if (!levels.length) { box.innerHTML = '<p style="color:var(--t2-text-muted,#7d8590); font-size:12px;">No content found.</p>'; return; }
@@ -339,6 +395,20 @@
         'background:' + (on ? 'rgba(59,130,246,0.14)' : 'transparent') + '; ' +
         'color:' + (on ? '#60a5fa' : 'var(--t2-text-muted,#7d8590)') + ';">' + esc(s.label) + '</button>';
     }).join('') + '</div>';
+
+    // Placement tab: the level tabs do not apply, and the body belongs to
+    // placement-admin.js. This renders the chips plus an empty mount and asks
+    // that module to fill it, so neither file has to know the other's markup.
+    if (activeSkill === 'placement') {
+      box.innerHTML = skillTabs + '<div id="placementContentMount"></div>';
+      box.querySelectorAll('.cc-skill-tab').forEach(function (b) {
+        b.addEventListener('click', function () { activeSkill = b.getAttribute('data-skilltab'); render(); });
+      });
+      if (window.PlacementAdmin && typeof window.PlacementAdmin.renderContent === 'function') {
+        window.PlacementAdmin.renderContent();
+      }
+      return;
+    }
 
     // Mini courses tab: level tabs do not apply - just the course blocks.
     if (activeSkill === 'courses') {

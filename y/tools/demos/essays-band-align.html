@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- REQUIRED: without it a narrow emulation falls back to a 980px layout
+     viewport and every phone measurement silently reports the desktop. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Essays band alignment probe</title>
+<link rel="stylesheet" href="/css/brand.css">
+<link rel="stylesheet" href="/teacher/css/dashboard-v2.css">
+<style>
+  body { margin: 0; background: #0d1117; }
+  /* Stand-in for the panel the band lives in, at the width the real
+     two-column row gives it. */
+  .frame { padding: 16px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="t2-panel alert-tinted">
+    <div class="t2-panel-title" style="justify-content:space-between">
+      <span style="display:flex; align-items:center; gap:8px;">
+        <span>Needs Attention</span>
+        <span class="t2-badge warning">63 students</span>
+      </span>
+      <button type="button" class="t2-btn">View All</button>
+    </div>
+    <div class="t2-essays-band" id="t2essaysBand"></div>
+    <div class="t2-attn-list" id="t2attnList"></div>
+  </div>
+</div>
+
+<script>
+// The exact markup renderEssaysBand() emits, expanded.
+document.getElementById('t2essaysBand').innerHTML =
+  '<div class="t2-essays-head">' +
+    '<button type="button" class="t2-essays-toggle" aria-expanded="true">' +
+      '<span class="t2-essays-ico">&#9997;&#65039;</span>' +
+      '<span class="t2-essays-n">7</span>' +
+      '<span class="t2-essays-lbl">essays waiting &middot; ' +
+        '<span class="t2-essays-overdue">2 overdue</span> &middot; 12 done in 7d &middot; oldest 5d</span>' +
+      '<span class="t2-essays-caret">&#9652;</span>' +
+    '</button>' +
+    '<button type="button" class="t2-btn">Grade now</button>' +
+  '</div>' +
+  '<div class="t2-essays-asg">Argument essay (4) &middot; Opinion piece (2) &middot; Discursive writing about a very long topic (1)</div>' +
+  '<div class="t2-essays-rows">' +
+    ['Ayşe Nur Kılıç|B2 · Argument essay|overdue · 5d|1',
+     'Mehmet Emin Toksöz|B1+ · Opinion piece|overdue · 3d|1',
+     'Zeynep Sude Kestane|B1 · Argument essay|2d|0',
+     'Abdurrahman Yılmaz|A2 · Discursive writing about a very long topic|1d|0',
+     'Bo|B2 · Argument essay|18h|0'].map(function (r) {
+      var p = r.split('|');
+      return '<div class="t2-essays-row' + (p[3] === '1' ? ' is-overdue' : '') + '">' +
+        '<span class="t2-essays-who">' + p[0] + '</span>' +
+        '<span class="t2-essays-meta">' + p[1] + '</span>' +
+        '<span class="t2-essays-age">' + p[2] + '</span>' +
+      '</div>';
+    }).join('') +
+  '</div>';
+
+window.probeReady = (async function () {
+  const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
+  await Promise.all(links.map(l => l.sheet ? null : new Promise(res => {
+    l.addEventListener('load', res, { once: true });
+    l.addEventListener('error', res, { once: true });
+  })));
+  // Poll with setTimeout, never rAF: a hidden Browser pane never fires rAF.
+  const band = document.getElementById('t2essaysBand');
+  for (let i = 0; i < 100; i++) {
+    if (getComputedStyle(band).borderLeftWidth !== '0px') break;
+    await new Promise(r => setTimeout(r, 10));
+  }
+  return links.map(l => l.href.split('/').pop().split('?')[0] + (l.sheet ? ' ok' : ' FAILED'));
+})();
+
+window.measure = function () {
+  const band = document.getElementById('t2essaysBand');
+  const bb = band.getBoundingClientRect();
+  const bcs = getComputedStyle(band);
+  const innerL = bb.left + parseFloat(bcs.paddingLeft);
+  const innerR = bb.right - parseFloat(bcs.paddingRight);
+
+  const out = [];
+  band.querySelectorAll('*').forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.width > 0 && (r.right > innerR + 1 || r.left < innerL - 1)) {
+      out.push((el.className || el.tagName) + ' by ' +
+        Math.round(Math.max(r.right - innerR, innerL - r.left)) + 'px');
+    }
+  });
+
+  const head = band.querySelector('.t2-essays-head').getBoundingClientRect();
+  const toggle = band.querySelector('.t2-essays-toggle').getBoundingClientRect();
+  const gradeBtn = band.querySelectorAll('.t2-btn')[0].getBoundingClientRect();
+  const rows = Array.from(band.querySelectorAll('.t2-essays-row')).map(r => r.getBoundingClientRect());
+  const rowsBox = band.querySelector('.t2-essays-rows');
+
+  return {
+    viewport: window.innerWidth,
+    bandW: Math.round(bb.width),
+    insetL: Math.round(innerL - bb.left),
+    insetR: Math.round(bb.right - innerR),
+    headWrapped: Math.round(gradeBtn.top) > Math.round(toggle.top) + 4,
+    headH: Math.round(head.height),
+    rowCount: rows.length,
+    rowHeights: Array.from(new Set(rows.map(r => Math.round(r.height)))),
+    rowsScroll: rowsBox.scrollHeight > rowsBox.clientHeight + 1,
+    overflowingBand: out.length ? out : 'none',
+    pageScrollsSideways: document.documentElement.scrollWidth > document.documentElement.clientWidth
+  };
+};
+</script>
+</body>
+</html>

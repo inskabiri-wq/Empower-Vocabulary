@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transcript accordion animation</title>
+<link rel="stylesheet" href="/student/css/extra.css">
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1020px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;vertical-align:top;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:82ch;line-height:1.55;}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:3px;}
+  #stage{position:absolute;left:-99999px;top:0;width:1280px;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">Transcript drawer opens and closes with an animation</h3>
+<p class="lede">
+  The drawer snapped. Two independent causes: the closed grid track was
+  <code>0fr</code> and the open one a length, and those types cannot
+  interpolate; and the panel toggled <code>display:none</code>, which is not an
+  animatable property at all.
+  <br><br>
+  This preview pane is a hidden tab - it never composites and rAF never fires -
+  so sampling a frame mid-transition proves nothing. What IS decisive: a browser
+  only creates a <code>CSSTransition</code> when the two values can genuinely
+  interpolate. Asking <code>getAnimations()</code> what exists after the class
+  flips tests exactly the thing that was broken.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+
+<div id="stage">
+  <div id="screen">
+    <div class="exam-split has-transcript" id="split">
+      <div class="exam-split-main">questions</div>
+      <div class="exam-split-side" id="side">
+        <div id="examTranscript"><div class="transcript-lines">a transcript line</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const rows = [];
+function check(name, expected, actual){
+  rows.push({name, expected, actual, ok:String(expected)===String(actual)});
+}
+const split = document.getElementById('split');
+const side  = document.getElementById('side');
+const cs = el => getComputedStyle(el);
+
+function animatingProps(el){
+  return el.getAnimations().map(a => a.transitionProperty || (a.effect && a.effect.target && a.animationName) || '?');
+}
+
+(function(){
+  // ── 1. the closed state must use a length, not a flex unit ────────────────
+  const closedCols = cs(split).gridTemplateColumns;
+  check('1. closed track is resolved, not "0fr"', false, /fr\b/.test(closedCols));
+  check('2. closed track ends in a zero length', true, /(^|\s)0px$/.test(closedCols.trim()));
+
+  // ── 2. the transition is actually declared on the grid ────────────────────
+  const tp = cs(split).transitionProperty;
+  check('3. grid-template-columns is transitioned', true, /grid-template-columns/.test(tp));
+  check('4. gap is transitioned too', true, /(^|,|\s)gap/.test(tp));
+  const dur = cs(split).transitionDuration;
+  check('5. the grid transition has a real duration', true,
+        parseFloat(dur) > 0.05);
+
+  // ── 3. the panel is display:none while closed (costs no layout) ───────────
+  check('6. closed panel is display:none', 'none', cs(side).display);
+
+  // ── 4. THE DECISIVE TEST ──────────────────────────────────────────────────
+  // Flip the class and ask the engine what it is animating. A CSSTransition for
+  // grid-template-columns only exists if the endpoints interpolate; with the
+  // old 0fr -> length pair the list comes back empty.
+  split.getAnimations().forEach(a => a.cancel());
+  void split.offsetWidth;                       // settle the closed state
+  split.classList.add('drawer-open');
+  void split.offsetWidth;                       // force style recalc
+
+  const gridAnims = animatingProps(split);
+  check('7. opening creates a transition on the grid', true,
+        gridAnims.some(p => /grid-template-columns/.test(p)));
+
+  // The panel's own fade/padding must animate as well, or the content pops in
+  // while the column glides. Read these BEFORE settling - cancelling clears them.
+  const sideAnims = animatingProps(side);
+  check('8. opening animates the panel opacity', true,
+        sideAnims.some(p => /opacity/.test(p)));
+  check('9. opening animates the panel padding', true,
+        sideAnims.some(p => /padding/.test(p)));
+
+  // Now settle. Mid-transition getComputedStyle returns the INTERPOLATED value,
+  // which at t=0 is still the closed 0px - reading the destination requires
+  // finishing the transition first. (That it reads 0px at t=0 rather than
+  // jumping to the end is itself proof the interpolation is live.)
+  split.getAnimations().forEach(a => a.finish());
+  check('10. the settled open track is a real width, not zero', false,
+        /(^|\s)0px$/.test(cs(split).gridTemplateColumns.trim()));
+  check('11. open panel is displayed', 'flex', cs(side).display);
+
+  // ── 5. CLOSING must animate too - this is the half that display:none broke ─
+  split.getAnimations().forEach(a => a.cancel());
+  side.getAnimations().forEach(a => a.cancel());
+  void split.offsetWidth;
+  split.classList.remove('drawer-open');
+  void split.offsetWidth;
+
+  const closeGrid = animatingProps(split);
+  check('12. closing creates a transition on the grid', true,
+        closeGrid.some(p => /grid-template-columns/.test(p)));
+
+  // With `display ... allow-discrete` the panel must still be rendered while
+  // the close is in flight. Without it display flips to none instantly and the
+  // panel vanishes before the column has moved.
+  const displayDuringClose = cs(side).display;
+  const supportsDiscrete = CSS.supports('transition-behavior', 'allow-discrete');
+  check('13. browser supports allow-discrete', true, supportsDiscrete);
+  if (supportsDiscrete) {
+    check('14. panel stays rendered while closing', true, displayDuringClose !== 'none');
+    const closeSide = animatingProps(side);
+    check('15. closing fades the panel out', true, closeSide.some(p => /opacity/.test(p)));
+  } else {
+    check('14. panel stays rendered while closing', 'skipped', 'skipped');
+    check('15. closing fades the panel out', 'skipped', 'skipped');
+  }
+
+  // ── 6. the @starting-style rule survived into the stylesheet ──────────────
+  let hasStarting = false;
+  for (const sheet of document.styleSheets) {
+    let rules; try { rules = sheet.cssRules; } catch (e) { continue; }
+    for (const r of rules) {
+      if (r.constructor.name === 'CSSStartingStyleRule' ||
+          (r.cssText && r.cssText.startsWith('@starting-style'))) {
+        if (/exam-split-side/.test(r.cssText)) hasStarting = true;
+      }
+    }
+  }
+  check('16. @starting-style rule is present for the panel', true, hasStarting);
+
+  // ── 7. the mobile tab path must NOT inherit the closed-state invisibility ──
+  // It never adds .drawer-open, so if opacity:0 leaked through, the transcript
+  // tab would open onto a blank pane. Cannot switch media queries here, so read
+  // the rule out of the stylesheet instead.
+  let mobileResets = false;
+  for (const sheet of document.styleSheets) {
+    let rules; try { rules = sheet.cssRules; } catch (e) { continue; }
+    for (const r of rules) {
+      if (r.media && /pointer: ?coarse|max-width: ?600px/.test(r.conditionText || '')) {
+        for (const inner of (r.cssRules || [])) {
+          if (inner.selectorText === '.exam-split-side' &&
+              inner.style.opacity === '1') mobileResets = true;
+        }
+      }
+    }
+  }
+  check('17. mobile block restores opacity for the tab view', true, mobileResets);
+
+  split.classList.remove('drawer-open');
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__accTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok).map(r=>r.name+' got '+r.actual) };
+})();
+</script>
+</body>
+</html>

@@ -2,11 +2,12 @@
 <html>
   <head>
     <meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Page Not Found</title>
 
     <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: var(--ll-font); margin: 0; padding: 0; }
       #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px 16px; border-radius: 3px; }
       #message h3 { color: #888; font-weight: normal; font-size: 16px; margin: 16px 0 12px; }
       #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
@@ -19,11 +20,16 @@
         body, #message { margin-top: 0; background: white; box-shadow: none; }
         body { border-top: 16px solid #ffa100; }
       }
-    </style>
+    
+/* LIGHT MODE - see the note in join.html. */
+.light-mode body { background: #f6f8fb; color: #0f172a; }
+.light-mode a { color: #2563eb; }
+</style>
     <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
   <body>
     <div id="message">

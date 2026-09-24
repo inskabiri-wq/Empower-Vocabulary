@@ -8,18 +8,12 @@ function escapeHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-// Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-  authDomain: "empower-vocabulary-practice.firebaseapp.com",
-  projectId: "empower-vocabulary-practice",
-  storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-  messagingSenderId: "136270199832",
-  appId: "1:136270199832:web:174222066ef1cbdc8f576d",
-  measurementId: "G-1BBXBVEP5C"
-};
-
-firebase.initializeApp(firebaseConfig);
+// Firebase is started by js/firebase-init.js, which reads the project
+// from js/tenant.js. This file used to name the project itself, which
+// would have pointed every deployment at that same project.
+if (!firebase.apps.length) {
+  throw new Error('classroom teacher: js/tenant.js + js/firebase-init.js must load first.');
+}
 const auth = firebase.auth();
 const db = firebase.firestore();
 
@@ -63,7 +57,7 @@ function initParticles() {
       this.speedX = (Math.random() - 0.5) * 0.5;
       this.speedY = (Math.random() - 0.5) * 0.5;
       this.opacity = Math.random() * 0.5 + 0.2;
-      this.color = ['#3b82f6', '#0ea5e9', '#06b6d4', '#10b981'][Math.floor(Math.random() * 4)];
+      this.color = ['#3b82f6', '#2563eb', '#2563eb', '#10b981'][Math.floor(Math.random() * 4)];
     }
     
     update() {
@@ -217,7 +211,7 @@ function confirmModalAction() {
 // Auth Protection
 auth.onAuthStateChanged(user => {
   if (!user) {
-    window.location.href = 'index.html';
+    window.location.replace('index.html');
     return;
   }
   currentUser = user;
@@ -235,7 +229,13 @@ let playersListener = null;
 // are ignored on every modern browser since 2016) - setting returnValue
 // is what triggers it. We only enable when the session is "active"
 // (game in flight), not during setup or after results.
+// Set just before the page navigates ON PURPOSE. Without it, choosing Log out
+// in the app's own dialog during a live game asked the same question twice:
+// ours, then the browser's generic box, which cannot be styled or reworded.
+let leavingDeliberately = false;
+
 window.addEventListener('beforeunload', (e) => {
+  if (leavingDeliberately) return;
   const inFlight = currentSessionData && currentSessionData.status === 'active';
   if (inFlight) {
     e.preventDefault();
@@ -294,7 +294,10 @@ async function createSession() {
   const qMode = (srcSel && srcSel.value) || window.classroomMode || 'vocab';
 
   if (!level) {
-    showError('Please select a level');
+    // Word for word the same as the eight game launchers in the inline script
+    // of classroom-teacher.html. It is the same mistake, so it gets the same
+    // sentence and the same card, not a differently worded near-miss.
+    showError('Pick a level first.', 'error', { title: 'Missing level', icon: '⚠️' });
     return;
   }
 
@@ -326,7 +329,10 @@ async function createSession() {
   }
 
   if (words.length === 0) {
-    showError(qMode === 'vocab' ? 'No words found for selected level/unit' : 'No questions found for selected level/unit');
+    showError(qMode === 'vocab'
+      ? 'No words found for that level and unit.'
+      : 'No questions found for that level and unit.',
+      'error', { title: 'Nothing to play', icon: '📭' });
     return;
   }
 
@@ -463,6 +469,9 @@ function showSessionLobby(code, data) {
   const qrCard = document.getElementById('sessionQRCard');
   if (qrImg)  qrImg.src = qrSrc;
   if (qrCard) qrCard.style.display = '';
+  // Show the link as well as the code, the way every other game's lobby does.
+  const qrLink = document.getElementById('sessionJoinUrl');
+  if (qrLink) { qrLink.href = joinUrl; qrLink.textContent = joinUrl; }
 }
 
 function listenToPlayers(sessionCode) {
@@ -567,7 +576,7 @@ async function endGame() {
 
 // Confetti celebration
 function createConfetti() {
-  const colors = ['#3b82f6', '#0ea5e9', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
+  const colors = ['#3b82f6', '#2563eb', '#2563eb', '#10b981', '#3b82f6', '#ef4444'];
   
   for (let i = 0; i < 100; i++) {
     const confetti = document.createElement('div');
@@ -586,8 +595,19 @@ function createConfetti() {
 }
 
 function listenToResults() {
-  // Already listening via playersListener, just update display
-  db.collection('classroom_sessions').doc(currentSession)
+  // ONE listener, not two.
+  //
+  // This used to attach a SECOND players listener on top of the lobby one at
+  // line 482, and never captured the returned handle, so it could not be
+  // unsubscribed even in principle. Both stayed live for the rest of the game:
+  // every player write was delivered twice and billed twice, and
+  // updatePlayersDisplay ran twice per change.
+  //
+  // Releasing the lobby listener and reusing the same variable is what
+  // trust-teacher.js:475 already does, and it keeps the existing teardown at
+  // lines 865 and 879 working unchanged.
+  if (playersListener) playersListener();
+  playersListener = db.collection('classroom_sessions').doc(currentSession)
     .collection('players')
     .orderBy('score', 'desc')
     .onSnapshot(snapshot => {
@@ -959,13 +979,16 @@ function deleteSessionOnLeave(e) {
   // Fallback to the dashboard if there's no href for any reason.
   const target = (e.currentTarget && e.currentTarget.getAttribute('href')) || 'teacher-dashboard.html';
   showDownloadModal(() => {
+    // The teacher has already been asked and answered in the download modal.
+    leavingDeliberately = true;
     window.location.href = target;
   });
 }
 
 function logout() {
+  leavingDeliberately = true;
   auth.signOut().then(() => {
-    window.location.href = 'index.html';
+    window.location.replace('index.html');
   });
 }
 
@@ -973,17 +996,51 @@ function logout() {
 // UTILITIES
 // ============================================
 
-// Themed toast - replaces the old plain `alert()`. Floats top-right,
-// auto-dismisses, dark-mode card matching the rest of the classroom UI.
-// `kind` is 'error' (default), 'info', or 'success' - controls the
-// left-border accent color.
-function showError(message, kind) {
+// THE SAME POPUP AS THE REST OF THE PAGE.
+//
+// classroom-teacher.html hosts every classroom game, and it used to answer the
+// same mistake in two different ways depending on which button you pressed.
+// Press "Create Session" for Vocab Race or Grammar Race without picking a
+// level and this function drew a small `.cls-toast` in the top corner. Press
+// any of the eight other game launchers, whose handlers sit in the inline
+// script further down the same file, and you got AppDialog's centred card with
+// a title, an icon and an OK button.
+//
+// Nothing decided that; it is age. Vocab Race is the original flow and this
+// toast predates js/app-dialog.js. The eight launchers were written after it
+// existed and used it. The page has loaded app-dialog.js in <head> the whole
+// time, so this code could always have called it.
+//
+// Routing through AppDialog.alert converts every call site at once and makes
+// the two halves of the page agree. The toast is kept only as a fallback for
+// the case where app-dialog.js somehow did not load, because a validation
+// message that silently does not appear is worse than one in the wrong shape.
+//
+// `kind` is 'error' (default), 'info' or 'success'. Callers may pass their own
+// title and icon to match a specific message.
+const SHOW_ERROR_STYLE = {
+  error:   { title: 'Cannot continue', icon: '⚠️' },
+  info:    { title: 'Nothing to show', icon: 'ℹ️' },
+  success: { title: 'Done',            icon: '✅' }
+};
+
+function showError(message, kind, opts) {
   kind = kind || 'error';
+  opts = opts || {};
+  const preset = SHOW_ERROR_STYLE[kind] || SHOW_ERROR_STYLE.error;
+
+  if (window.AppDialog && typeof AppDialog.alert === 'function') {
+    return AppDialog.alert(message, {
+      title: opts.title || preset.title,
+      icon: opts.icon || preset.icon
+    });
+  }
+
+  // Fallback only. See the note above.
   const t = document.createElement('div');
   t.className = 'cls-toast cls-toast-' + kind;
   t.textContent = message;
   document.body.appendChild(t);
-  // Force a reflow so the transition fires
   void t.offsetWidth;
   t.classList.add('shown');
   setTimeout(() => {

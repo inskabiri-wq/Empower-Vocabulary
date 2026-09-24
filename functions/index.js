@@ -13,22 +13,25 @@
        Marks `reminderEmailSent: true` + `reminderEmailSentAt` on
        the doc so we never spam.
 
-   Prerequisites BEFORE first deploy:
-     1. Project on Firebase Blaze (pay-as-you-go) plan.
-     2. SendGrid account (free tier = 100 emails/day).
-        Generate an API key with "Mail Send" full access.
-     3. Configure secrets:
-          firebase functions:config:set \
-            sendgrid.key="SG.xxxxx" \
-            sender.email="noreply@yourdomain.tld" \
-            sender.name="Lingualab"
-     4. cd functions && npm install
-     5. firebase deploy --only functions
+   NO EMAIL IS SENT TODAY. There is no provider, no mail dependency and
+   no secret, so this deploys and runs without asking for anything:
 
-   Cost: 200 invocations/month (every hour × 24h × 30 days = 720
-   invocations but most are no-ops) × $0.0000004 = ~$0.30/month.
-   SendGrid free tier covers 100 emails/day = 3000/month, well
-   above realistic reminder volume.
+       firebase deploy --only functions:sendWritingReminders
+
+   It finds the submissions that need a reminder, resolves the teacher,
+   formats the message, and then stops - because emailProviderReady()
+   returns false. Nothing is marked as reminded, so no reminder is lost
+   while the transport is missing.
+
+   To see what it WOULD send without sending: REMINDERS_DRY_RUN=1 in
+   functions/.env, then read the logs.
+
+   To actually send later, implement the two functions marked
+   "THE PROVIDER SEAM" further down. University SMTP is the recommended
+   route; a hosted API works the same way.
+
+   Cost while dormant: 720 invocations/month (hourly) x $0.0000004,
+   which is well under a cent.
    ============================================================ */
 
 // Explicit v1 import: in firebase-functions v5+ the root export starts moving
@@ -37,12 +40,27 @@
 // nothing about behavior.
 const functions = require('firebase-functions/v1');
 const admin     = require('firebase-admin');
-const sgMail    = require('@sendgrid/mail');
+// No mail library. See "NO EMAIL PROVIDER IS CONFIGURED" below.
 // Exam writing rubrics (IELTS / GRE / TOEFL / CELPIP / PTE). Authored once at
 // y/assignments/js/writing-rubrics.js; this is the byte-identical copy that
 // ships with the functions bundle. Keep them in step:
 //   node y/tools/rubric-sync.js --fix
 const RUBRICS   = require('./writing-rubrics');
+
+// ── Email credentials: SECRETS, not functions.config() ────────────
+//
+// NO EMAIL PROVIDER IS CONFIGURED, DELIBERATELY.
+//
+// SendGrid was removed. Nothing in this file talks to a mail service, no
+// dependency is installed for one, and no secret is declared - which is what
+// makes `firebase deploy` stop asking for a SENDGRID_KEY.
+//
+// Plain env vars with defaults rather than defineString(): a declared param
+// prompts on deploy until a value is stored, and there is nothing here worth
+// answering a prompt for while the sending step is a stub. Set them in
+// functions/.env if you ever want to override them.
+const SENDER_EMAIL = process.env.SENDER_EMAIL || 'noreply@fsm.edu.tr';
+const SENDER_NAME  = process.env.SENDER_NAME  || 'Lingualab';
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -106,19 +124,63 @@ function escape(s) {
     .replace(/"/g, '&quot;');
 }
 
+/* ── THE PROVIDER SEAM ────────────────────────────────────────────────────
+   Everything else about reminders works: finding ungraded submissions,
+   resolving the teacher, formatting the email, not sending twice. The only
+   missing piece is the transport, and it is deliberately just these two
+   functions so adding one later is a small, contained change.
+
+   TO WIRE UP A PROVIDER:
+
+     University SMTP (recommended for FSMVU - free, no third party, and mail
+     genuinely from your own domain so it is not filtered):
+       1. npm i nodemailer  (in functions/)
+       2. put SMTP_HOST / SMTP_PORT / SMTP_USER / SMTP_PASS in functions/.env
+          (or, for the password, `firebase functions:secrets:set SMTP_PASS`
+          and add `secrets: ['SMTP_PASS']` back to the runWith below)
+       3. return true from emailProviderReady() when the host is present
+       4. create a transport in sendReminderEmail() and send `msg`
+
+     A hosted API (Brevo, Resend, Mailgun): same two functions, using their
+     SDK instead. Note that sending as @fsm.edu.tr through any of them needs
+     SPF/DKIM records added to the domain by whoever runs its DNS.
+
+   `msg` is already in the shape every provider expects:
+     { to, from: { email, name }, subject, html }
+   ------------------------------------------------------------------------ */
+
+// Is there anything to send with? False today, on purpose.
+function emailProviderReady() {
+  return false;
+}
+
+// Returns TRUE only if the message really went. Returning false is the
+// signal to the caller that the submission must NOT be marked as reminded.
+async function sendReminderEmail(msg) {
+  if (!emailProviderReady()) return false;
+  throw new Error('emailProviderReady() returned true but sendReminderEmail() ' +
+                  'has no transport - wire one up before enabling it.');
+}
+
 exports.sendWritingReminders = functions
   .runWith({ memory: '256MB', timeoutSeconds: 540 })
   .pubsub.schedule('every 60 minutes')
   .timeZone('Europe/Istanbul')   // adjust if FSM moves
   .onRun(async () => {
-    const SG_KEY = (functions.config().sendgrid || {}).key;
-    const FROM_EMAIL = ((functions.config().sender || {}).email) || 'noreply@example.com';
-    const FROM_NAME  = ((functions.config().sender || {}).name)  || 'Lingualab';
-    if (!SG_KEY) {
-      console.warn('sendgrid.key not configured - skipping reminder pass.');
+    // Secret first, deprecated config second, so an existing setup keeps
+    // working and a new one never touches the API that is going away.
+    const FROM_EMAIL = SENDER_EMAIL;
+    const FROM_NAME  = SENDER_NAME;
+
+    // Short-circuit while there is no provider. The pass still runs below in
+    // dry-run mode when you want to see what it WOULD send; flip this by
+    // setting REMINDERS_DRY_RUN=1 in functions/.env. Returning here by default
+    // keeps the scheduled job at a few cents a month doing nothing.
+    if (!emailProviderReady() && process.env.REMINDERS_DRY_RUN !== '1') {
+      console.log('No email provider configured - reminder pass skipped. ' +
+                  'See sendReminderEmail() to wire one up.');
       return null;
     }
-    sgMail.setApiKey(SG_KEY);
 
     const twelveHoursAgo = new admin.firestore.Timestamp(
       Math.floor((Date.now() - 12 * 60 * 60 * 1000) / 1000), 0
@@ -161,14 +223,23 @@ exports.sendWritingReminders = functions
       };
 
       try {
-        await sgMail.send(msg);
-        await doc.ref.update({
-          reminderEmailSent:   true,
-          reminderEmailSentAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-        sent++;
+        const delivered = await sendReminderEmail(msg);
+        // Only mark it sent if it ACTUALLY went. A dry run, or a stub that
+        // did nothing, must leave the submission untouched - otherwise the
+        // reminder is silently consumed and the teacher is never told, which
+        // is worse than sending nothing at all.
+        if (delivered) {
+          await doc.ref.update({
+            reminderEmailSent:   true,
+            reminderEmailSentAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+          sent++;
+        } else {
+          console.log('would email', msg.to, '·', msg.subject);
+          skipped++;
+        }
       } catch (e) {
-        console.error('SendGrid failed for', doc.id, '·', e.message || e);
+        console.error('reminder send failed for', doc.id, '·', e.message || e);
         errors++;
       }
     }
@@ -993,4 +1064,114 @@ exports.analyzeWriting = functions
     }
 
     return { ok: true, correction: correction };
+  });
+
+/* ============================================================
+   pruneRetention - the 6-month policy, run on a schedule.
+   ------------------------------------------------------------
+   WHY
+
+   activity-tracker/js/activity-config.js has carried `retentionMonths: 6`
+   since the KVKK conversation, with the note "Nothing enforces this on its
+   own". The Activity Logs tab offers a button and somebody has to remember
+   to press it. This is the same policy, on a timer.
+
+   MEASURED against production before this was written:
+     activityLogs  4394 docs, oldest 2026-02-28,  185 older than 6 months
+     sessions      3049 docs, oldest 2025-12-22, 1397 older than 6 months
+
+   That second number is why `sessions` ships DISABLED with no window.
+   Pruning it at six months would delete 46% of the practice history, and
+   sessions are what the Reports tab draws on. That is a policy decision AND
+   a reporting decision, and neither is mine to make.
+
+   THE SAFETY PROPERTIES, in the order they matter
+
+   1. OFF UNLESS ASKED. No settings/retention document means this does
+      nothing at all.
+   2. DRY RUN UNLESS TOLD OTHERWISE. Even enabled, it only counts and logs
+      until `dryRun: false` is set. You read a real number before anything
+      is deleted.
+   3. A FLOOR ON THE WINDOW. Under 3 months is refused, because `months: 0`
+      is far more likely to be a typo than an instruction.
+   4. A HARDCODED ALLOWLIST. Config picks settings for a collection, never
+      the collection. Nothing in Firestore can aim this at `users`.
+   5. DOCUMENTS WITHOUT THE FIELD ARE INVISIBLE to a range query, so they
+      can never be selected. A Firestore guarantee, not one this code has
+      to earn.
+   6. CAPPED PER RUN, with an audit row written for every run, dry included.
+
+   Configure by hand, once, at settings/retention:
+
+     { activityLogs: { enabled: true,  months: 6, dryRun: false },
+       sessions:     { enabled: false, months: 24 } }
+
+   To stop it immediately set enabled:false. No deploy needed.
+
+   The logic lives in ./retention.js so y/tools/retention-check.js can run the
+   REAL code against the emulator instead of a copy of it.
+
+   NOT EXPORTED SINCE 2026-09-11. Alireza removed the deployed function with
+   `firebase functions:delete pruneRetention`. An `exports.` here would have
+   silently recreated it on the next `firebase deploy --only functions` - for
+   any unrelated reason, a fix to analyzeWriting say - so the export is held
+   back rather than the code deleted.
+
+   Nothing else depends on this export: y/tools/retention-check.js requires
+   ./retention.js directly, so that gate still exercises the real logic.
+
+   TO RE-ENABLE: rename `_pruneRetention_notExported` below back to
+   `exports.pruneRetention`, deploy functions, then create settings/retention.
+   Without that document it does nothing even when deployed.
+   ============================================================ */
+const retention = require('./retention');
+
+// eslint-disable-next-line no-unused-vars
+const _pruneRetention_notExported = functions
+  .runWith({ memory: '256MB', timeoutSeconds: 540 })
+  .pubsub.schedule('every sunday 03:00')
+  .timeZone('Europe/Istanbul')
+  .onRun(async () => {
+    let cfg = null;
+    try {
+      const doc = await db.collection('settings').doc('retention').get();
+      cfg = doc.exists ? (doc.data() || null) : null;
+    } catch (e) {
+      console.error('retention: could not read settings/retention', e);
+      return null;
+    }
+    if (!cfg) {
+      console.log('retention: no settings/retention document - nothing to do.');
+      return null;
+    }
+
+    const results = [];
+    for (const coll of Object.keys(retention.COLLECTIONS)) {
+      try {
+        results.push(await retention.pruneOneCollection(db, coll, cfg[coll]));
+      } catch (e) {
+        console.error('retention: ' + coll + ' failed', e);
+        results.push({ collection: coll, deleted: 0, error: String(e && e.message).slice(0, 200) });
+      }
+    }
+
+    results.forEach(function (r) {
+      console.log('retention: ' + r.collection + ' -> ' +
+        (r.error ? ('ERROR ' + r.error)
+                 : (r.skipped ? r.skipped
+                              : ('deleted ' + r.deleted + ' of ' + r.matched +
+                                 ' older than ' + r.cutoff + ', ' + r.remaining + ' left'))));
+    });
+
+    // An audit row for every run, dry ones included, so there is a record of
+    // what this did and when even if nobody was reading the logs.
+    try {
+      await db.collection('settings').doc('retentionRuns')
+        .set({ ['run_' + new Date().toISOString().slice(0, 10)]: {
+          at: admin.firestore.FieldValue.serverTimestamp(),
+          results: results
+        } }, { merge: true });
+    } catch (e) { console.warn('retention: could not write the audit row', e); }
+
+    return null;
   });

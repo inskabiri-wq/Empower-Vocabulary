@@ -1,5 +1,5 @@
 /* ============================================================
-   SKILLS — shared shell for every skill-home screen
+   SKILLS - shared shell for every skill-home screen
    Used by #listeningScreen, #grammarScreen, #readingScreen,
    #writingScreen, #speakingScreen. Scoped via .skill-screen.
 
@@ -12,9 +12,9 @@
   /* Shared dashboard tokens */
   --dash-surface:     #1e293b;
   --dash-elevated:    #334155;
-  --dash-primary:     #0d9488;
-  --dash-primary-lt:  #2dd4bf;
-  --dash-primary-dk:  #0f766e;
+  --dash-primary:     #2563eb;
+  --dash-primary-lt:  #93c5fd;
+  --dash-primary-dk:  #1d4ed8;
   --dash-border:      rgba(255,255,255,0.07);
   --dash-border-md:   rgba(255,255,255,0.13);
   /* The rest of #menuScreen's token set, same values. Without these, any
@@ -23,9 +23,9 @@
      --dash-xp / --dash-xp-lt drive the amber fill and the "33 / 100 XP"
      figure, and neither existed on a skill screen. */
   --dash-secondary:   #3b82f6;
-  --dash-xp:          #f59e0b;
-  --dash-xp-lt:       #fcd34d;
-  --dash-streak:      #f97316;
+  --dash-xp:          #3b82f6;
+  --dash-xp-lt:       #93c5fd;
+  --dash-streak:      #3b82f6;
   --dash-success:     #22c55e;
   --dash-fg1:         #f1f5f9;
   --dash-fg2:         #94a3b8;
@@ -33,7 +33,7 @@
   --text-primary:     #f1f5f9;
   --text-secondary:   #94a3b8;
   --text-tertiary:    #64748b;
-  /* Default skill accent — pages can override via --skill-accent */
+  /* Default skill accent - pages can override via --skill-accent */
   --skill-accent:     var(--dash-primary-lt);
 
   /* No second width cap. .container already bounds and pads the card; capping
@@ -48,7 +48,7 @@
      nothing declared it here, so every skill screen fell back to the body font
      (Segoe UI) - the clearest reason listening did not look like vocabulary
      even where the boxes matched. */
-  font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: var(--ll-font);
 }
 
 /* Per-skill accents on skill-home screens. The id-based selectors
@@ -59,11 +59,11 @@
    <div id="listeningScreen" class="screen"><div class="skill-screen">, so the
    class is on a CHILD and all five rules matched nothing - every skill screen
    silently used the default accent. */
-#listeningScreen .skill-screen { --skill-accent: #38bdf8; }
-#grammarScreen   .skill-screen { --skill-accent: #f59e0b; }
-#readingScreen   .skill-screen { --skill-accent: #fb7185; }
-#writingScreen   .skill-screen { --skill-accent: #a78bfa; }
-#speakingScreen  .skill-screen { --skill-accent: #fbbf24; }
+#listeningScreen .skill-screen { --skill-accent: #60a5fa; }
+#grammarScreen   .skill-screen { --skill-accent: #3b82f6; }
+#readingScreen   .skill-screen { --skill-accent: #60a5fa; }
+#writingScreen   .skill-screen { --skill-accent: #60a5fa; }
+#speakingScreen  .skill-screen { --skill-accent: #60a5fa; }
 
 /* ---------- Header ---------- */
 .skill-header {
@@ -76,7 +76,13 @@
   background: var(--dash-surface, rgba(15, 23, 42, 0.7));
   border: 1px solid var(--dash-border-md, rgba(255, 255, 255, 0.06));
   border-radius: 14px;
-  backdrop-filter: blur(6px);
+  /* No backdrop-filter. This header is on all five skill screens, so it was in
+     the path of every single tile tap - and it had nothing to blur. It is a
+     static block, not sticky, so no content ever scrolls underneath it; what
+     sits behind it is the container's flat background, and blurring a flat
+     colour returns that same flat colour. Cost on every tap, no visible
+     difference. (The Learning Map modal keeps its blur - a modal really does
+     have the varied dashboard behind it.) */
 }
 
 .skill-header-left {
@@ -87,7 +93,7 @@
 }
 
 .skill-back-btn {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--tint-surface, rgba(255, 255, 255, 0.04));
   border: 1px solid var(--dash-border-md, rgba(255, 255, 255, 0.08));
   color: var(--text-primary, #f1f5f9);
   font-family: inherit;
@@ -102,12 +108,12 @@
   transition: border-color 0.15s, background 0.15s, transform 0.1s;
 }
 .skill-back-btn:hover {
-  border-color: var(--dash-primary, #0d9488);
-  background: rgba(13, 148, 136, 0.08);
+  border-color: var(--dash-primary, #2563eb);
+  background: rgba(37, 99, 235, 0.08);
 }
 .skill-back-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.35);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
 }
 .skill-back-btn:active {
   transform: translateY(1px);
@@ -203,4 +209,28 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 14px;
+}
+
+/* Light-mode overrides. The dark set above hardcodes near-white text
+   (--dash-fg1 / --text-primary), which is invisible on the white page, so a
+   partial override is worse than none: every token in the set is restated. */
+.light-mode .skill-screen {
+  --dash-surface:     #ffffff;
+  --dash-elevated:    #f2f6fc;
+  --dash-primary:     #2563eb;
+  --dash-primary-lt:  #60a5fa;
+  --dash-primary-dk:  #1d4ed8;
+  --dash-secondary:   #2563eb;
+  --dash-xp:          #2563eb;
+  --dash-xp-lt:       #60a5fa;
+  --dash-streak:      #2563eb;
+  --dash-success:     #15803d;
+  --dash-fg1:         #0f172a;
+  --dash-fg2:         #475569;
+  --dash-fg3:         #64748b;
+  --dash-border:      #e3e9f2;
+  --dash-border-md:   #d5dfec;
+  --text-primary:     #0f172a;
+  --text-secondary:   #475569;
+  --text-tertiary:    #64748b;
 }

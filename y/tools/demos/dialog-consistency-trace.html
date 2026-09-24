@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dialog consistency</title>
+<style>
+  body{margin:0;padding:20px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  table{border-collapse:collapse;width:100%;max-width:1100px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;vertical-align:top;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:14px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:84ch;line-height:1.55;}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:3px;}
+  iframe{position:absolute;left:-99999px;width:1100px;height:700px;border:0;}
+  pre{background:#0f172a;color:#e2e8f0;padding:10px;border-radius:8px;font-size:12px;overflow:auto;}
+</style>
+</head>
+<body>
+<h3 style="margin:0 0 4px;font-size:16px;">All four dialogs, one shape and one motion</h3>
+<p class="lede">
+  Four independent implementations that agreed on nothing: radii of 24, 16, 18
+  and 14px; four different paddings; widths of 420 and 500px; and four
+  different entry curves. Each is rendered here with its OWN stylesheets, the
+  way its real page loads them, and the computed values compared. Colour is
+  deliberately not checked - the dark exam sheets should stay dark.
+</p>
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">running...</div>
+<pre id="dump"></pre>
+
+<script>
+const rows = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const cb = '?cb=' + Math.random();
+
+function frame(sheets, bodyHtml, scripts) {
+  return new Promise(resolve => {
+    const f = document.createElement('iframe');
+    document.body.appendChild(f);
+    const d = f.contentDocument;
+    d.open();
+    d.write('<!DOCTYPE html><html><head><meta charset="utf-8"><base href="/">' +
+      sheets.map(s => '<link rel="stylesheet" href="/' + s + cb + '">').join('') +
+      '</head><body>' + bodyHtml + '</body></html>');
+    d.close();
+    if (!scripts || !scripts.length) { setTimeout(() => resolve({ f, w: f.contentWindow, d }), 700); return; }
+    let left = scripts.length;
+    scripts.forEach(src => {
+      const s = d.createElement('script');
+      s.src = src + cb; s.async = false;
+      s.onload = s.onerror = () => { if (--left === 0) setTimeout(() => resolve({ f, w: f.contentWindow, d }), 500); };
+      d.head.appendChild(s);
+    });
+  });
+}
+
+// Only the properties this change owns.
+// Take the FIRST entry of a comma-separated CSS list, without splitting inside
+// a cubic-bezier()'s own commas. transition-timing-function on the AppDialog
+// card is "cubic-bezier(...), ease" (transform then opacity), and a naive
+// split reported the whole string as a mismatch.
+function firstInList(v) {
+  let depth = 0;
+  for (let i = 0; i < v.length; i++) {
+    if (v[i] === '(') depth++;
+    else if (v[i] === ')') depth--;
+    else if (v[i] === ',' && depth === 0) return v.slice(0, i).trim();
+  }
+  return v.trim();
+}
+
+function shapeOf(w, el) {
+  const cs = w.getComputedStyle(el);
+  const animated = cs.animationName !== 'none';
+  return {
+    radius: cs.borderTopLeftRadius,
+    padding: cs.paddingTop + ' ' + cs.paddingRight + ' ' + cs.paddingBottom,
+    // offsetWidth, NOT getBoundingClientRect: this preview pane never
+    // composites, so a keyframe sits frozen on its opening frame and the rect
+    // comes back scaled by that transform (420 * 0.9 = 378, which looked like a
+    // real width difference). offsetWidth is the layout box and ignores it.
+    width: el.offsetWidth,
+    // Motion arrives two ways on purpose; capture whichever is in play.
+    dur: firstInList(animated ? cs.animationDuration : cs.transitionDuration),
+    ease: firstInList(animated ? cs.animationTimingFunction : cs.transitionTimingFunction)
+  };
+}
+
+(async function(){
+  const got = {};
+
+  // 1. Student logout - in the markup, revealed by .active
+  {
+    const { f, w, d } = await frame(['css/brand.css','student/css/styles.css'],
+      '<div id="m" class="modal-overlay active"><div class="modal-content ll-dialog ll-dialog-toggle">' +
+      '<div class="modal-icon ll-dialog-icon">D</div><h2>T</h2><p>m</p></div></div>');
+    got.student = shapeOf(w, d.querySelector('.modal-content'));
+    f.remove();
+  }
+
+  // 2. Teacher logout - same pattern, different stylesheet
+  {
+    const { f, w, d } = await frame(['css/brand.css','teacher/css/styles.css'],
+      '<div id="m" class="modal-overlay active"><div class="modal-box ll-dialog ll-dialog-toggle">' +
+      '<div class="ll-dialog-icon">D</div><h3>T</h3><p>m</p></div></div>' +
+      // The big assignment modal shares .modal-box and must NOT be reshaped.
+      '<div class="modal-overlay active"><div id="big" class="modal-box assignment-modal-content" ' +
+      'style="max-width: min(960px, 96vw); width: 96%;"><p>content</p></div></div>');
+    got.teacher = shapeOf(w, d.querySelector('#m .modal-box'));
+    const big = d.getElementById('big');
+    check('1. the big assignment modal keeps its own width', true,
+          big.getBoundingClientRect().width > 700);
+    check('2. ...and its own padding', '28px', w.getComputedStyle(big).paddingTop);
+    f.remove();
+  }
+
+  // 3. AppDialog - self-injects its CSS, built at open time
+  {
+    const { f, w, d } = await frame(['css/brand.css'], '<div></div>', ['js/app-dialog.js']);
+    w.AppDialog.confirm('Your answers in this attempt will be lost.',
+      { title: 'Leave this exam?', okLabel: 'Leave', cancelLabel: 'Stay', danger: true });
+    await wait(500);
+    const card = d.querySelector('.appdlg-card');
+    check('3. AppDialog card carries the shared marker', true,
+          !!card && card.classList.contains('ll-dialog'));
+    got.appdialog = shapeOf(w, card);
+    f.remove();
+  }
+
+  // 4. Reading exam
+  {
+    const { f, w, d } = await frame(['css/brand.css','student/css/reading-exam.css'],
+      '<div class="rd-confirm-overlay"><div class="rd-confirm ll-dialog ll-dialog-pop">' +
+      '<div class="rd-confirm-icon">!</div><h3>T</h3><p>m</p></div></div>');
+    got.reading = shapeOf(w, d.querySelector('.rd-confirm'));
+    f.remove();
+  }
+
+  document.getElementById('dump').textContent =
+    Object.entries(got).map(([k, v]) =>
+      k.padEnd(11) + 'radius ' + String(v.radius).padEnd(7) +
+      'padding ' + String(v.padding).padEnd(22) +
+      'width ' + String(v.width).padEnd(6) +
+      'dur ' + String(v.dur).padEnd(7) + v.ease).join('\n');
+
+  const keys = Object.keys(got);
+  const same = prop => new Set(keys.map(k => String(got[k][prop]))).size === 1;
+  check('4. all four share one border-radius', true, same('radius'));
+  check('5. all four share one padding', true, same('padding'));
+  check('6. all four are the same width', true, same('width'));
+  check('7. all four move for the same duration', true, same('dur'));
+  check('8. all four use the same easing curve', true, same('ease'));
+
+  // The agreed values: the student logout's bouncy curve.
+  check('9. radius is the shared 18px', '18px', got.student.radius);
+  check('10. duration is 0.3s', '0.3s', got.student.dur);
+  check('11. easing is the bouncy cubic-bezier', true,
+        /0\.34,\s*1\.56,\s*0\.64,\s*1/.test(got.student.ease));
+  check('12. nothing is stuck at the old 500px', true,
+        keys.every(k => got[k].width <= 420));
+
+  // ── Both reveal classes must actually reveal ─────────────────────────────
+  // The shared overlay hides with `visibility`, and the app uses TWO reveal
+  // classes: .active on the dashboards and classroom, .open on the index/login
+  // modals. Neither of those stylesheets sets visibility themselves, so a rule
+  // covering only .active blanks every login modal. This caught exactly that.
+  {
+    const { f, w, d } = await frame(['css/brand.css'],
+      '<div id="a" class="modal-overlay active"><div class="ll-dialog">a</div></div>' +
+      '<div id="o" class="modal-overlay open"><div class="ll-dialog">o</div></div>' +
+      '<div id="n" class="modal-overlay"><div class="ll-dialog">n</div></div>');
+    const vis = id => w.getComputedStyle(d.getElementById(id));
+    check('13. .active reveals the overlay', 'visible', vis('a').visibility);
+    check('14. .open reveals it too', 'visible', vis('o').visibility);
+    check('15. with neither class it stays hidden', 'hidden', vis('n').visibility);
+    check('16. and hidden overlays cannot eat clicks', 'none', vis('n').pointerEvents);
+    f.remove();
+  }
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__dlgTrace = { pass, total: rows.length, failed: rows.filter(r=>!r.ok).map(r=>r.name+' -> '+r.actual), got };
+})();
+</script>
+</body>
+</html>

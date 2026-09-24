@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Quiz | Lingualab</title>
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css?v=30">
+<!-- UNIVERSAL classroom look; the game only adds its own widgets. -->
+<link rel="stylesheet" href="classroom/css/styles.css?v=60">
+<link rel="stylesheet" href="classroom/css/minigames.css?v=14">
+  <!-- Shared display settings (text size + line spacing), app-wide.
+       In <head> so the saved size applies before first paint. -->
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body class="aiquiz">
+
+<!-- Animated Background - same as every classroom page -->
+<div class="gradient-bg"></div>
+<div class="floating-shapes">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <div class="shape shape-4"></div>
+</div>
+
+<!-- Music Control. Switched off for the 2026-09-22 orientation because a
+     multi-MB track per phone was the one thing the venue wifi could not
+     spare; restored the same day once the event had run and held.
+     To switch off again: add `hidden` here and change MG.setupMusic() to
+     MG.setupMusic([]) in y/classroom/js/aiquiz-student.js. -->
+<div class="music-control">
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
+  <button class="music-btn" onclick="nextTrack()" title="Next Track">🎶</button>
+  <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" onchange="setVolume(this.value)">
+</div>
+<audio id="bgMusic" preload="none"></audio>
+
+<!-- Header - identical to every other classroom game page. -->
+<header class="header">
+  <div class="header-title">
+    <span style="font-size: 1.5rem;">🤖</span>
+    <h1 data-i18n="appTitle">AI Quiz</h1>
+  </div>
+  <div class="header-actions">
+    <!-- The language switch. The room decides the starting language; this
+         lets each student choose for themselves (classroom/js/aiquiz-student.js). -->
+    <div class="aiq-lang" role="group" aria-label="Language / Dil">
+      <button type="button" data-aiq-lang="en" aria-pressed="false" title="English">EN</button>
+      <button type="button" data-aiq-lang="both" aria-pressed="true" title="English + Türkçe">EN+TR</button>
+      <button type="button" data-aiq-lang="tr" aria-pressed="false" title="Türkçe">TR</button>
+    </div>
+    <span style="color: var(--text-secondary); font-weight: 600;">⭐ <span id="myScore">0</span></span>
+  </div>
+</header>
+
+<!-- Join -->
+<div id="view-join" class="lobby-container">
+  <div class="lobby-icon">🤖</div>
+  <h1 class="lobby-title" data-i18n="joinTitle">Join the Quiz</h1>
+  <p class="lobby-subtitle" data-i18n="joinSub">Enter the session code from your teacher</p>
+
+  <div class="card" style="max-width: 400px; margin: 24px auto;">
+    <div class="form-group">
+      <label class="form-label" data-i18n="codeLabel">Session Code</label>
+      <input type="text" id="codeInput" class="form-input code-input" maxlength="5" placeholder="ABCDE" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="nameLabel">Your Name</label>
+      <input type="text" id="nameInput" class="form-input" maxlength="24" placeholder="e.g. Alex" data-i18n-ph="namePh" autocomplete="off">
+    </div>
+    <button id="joinBtn" class="btn btn-primary btn-large" style="width: 100%;">🎟️ Join Quiz</button>
+  </div>
+</div>
+
+<!-- Waiting for the teacher to start -->
+<div id="view-wait" class="lobby-container" style="display: none;">
+  <div class="lobby-icon">⏳</div>
+  <h1 class="lobby-title" data-i18n="inTitle">You're in!</h1>
+  <p class="lobby-subtitle" data-i18n="waitStart">Waiting for your teacher to start the quiz...</p>
+  <div class="card" style="max-width: 400px; margin: 24px auto; text-align: center;">
+    <div style="color: var(--text-secondary);" data-i18n="playingAs">Playing as</div>
+    <div style="font-size: 1.3rem; font-weight: 700; margin-top: 4px;" id="waitName"></div>
+  </div>
+</div>
+
+<!-- The question -->
+<div id="view-q" class="container" style="display: none;">
+  <div class="card">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+      <div style="color: var(--text-muted); font-size: 0.9rem;" id="qProgress"></div>
+      <div class="game-timer" id="timer">⏱ --</div>
+    </div>
+    <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 6px;" id="qModule"></div>
+    <h2 style="margin: 12px 0 18px; font-size: 1.25rem; line-height: 1.4;" id="qText"></h2>
+    <div class="aiq-answers" id="answers"></div>
+    <div id="qFeedback" class="aiq-feedback"></div>
+  </div>
+</div>
+
+<!-- Between questions / final -->
+<div id="view-ladder" class="container" style="display: none;">
+  <div class="card" style="text-align: center;">
+    <h2 class="card-title" style="justify-content: center;" id="ladderTitle">🏆 Ladder</h2>
+    <div style="font-size: 2.4rem; font-weight: 800; margin: 10px 0;" id="ladderScore">0</div>
+    <div style="color: var(--text-secondary);" id="ladderNote">Waiting for the next question...</div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<!-- Which university, then start Firebase for it. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
+<script src="classroom/js/refresh-guard.js?v=1"></script>
+<script src="classroom/js/minigame-core.js?v=5"></script>
+<script src="classroom/js/aiquiz-student.js?v=11"></script>
+
+</body>
+</html>

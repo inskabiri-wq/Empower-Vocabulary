@@ -25,15 +25,12 @@
   'use strict';
 
   // ── Firebase ───────────────────────────────────────────────
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-    authDomain: "empower-vocabulary-practice.firebaseapp.com",
-    projectId: "empower-vocabulary-practice",
-    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-    messagingSenderId: "136270199832",
-    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // Firebase is started by js/firebase-init.js, which reads the project
+  // from js/tenant.js. This file used to name one university directly, which would
+  // have pointed every deployment at that same project.
+  if (!firebase.apps.length) {
+    throw new Error('policy-course: js/tenant.js + js/firebase-init.js must load first.');
+  }
   const auth = firebase.auth();
   const db = firebase.firestore();
 
@@ -640,7 +637,7 @@
     // screen; the header Dashboard button is the way out.
 
     auth.onAuthStateChanged(u => {
-      if (!u) { window.location.href = 'index.html'; return; }
+      if (!u) { window.location.replace('index.html'); return; }
       boot(u);
     });
   });

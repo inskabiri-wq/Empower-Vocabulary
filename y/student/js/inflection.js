@@ -194,10 +194,10 @@ function getIrregularForms(word) {
  * Parallel lookup keyed by grammatical slot name instead of array position.
  *
  * Why this exists: `IRREGULAR_VERBS` above stores forms as plain arrays, but
- * the arrays have inconsistent lengths — `['put', 'puts', 'putting']` has 3
+ * the arrays have inconsistent lengths - `['put', 'puts', 'putting']` has 3
  * slots while `['take', 'takes', 'took', 'taking', 'taken']` has 5. The
  * distractor-inflection logic used to do `correctIrr.indexOf(matched)` on
- * one verb, then `distractorIrr[sameIndex]` on another — producing garbage
+ * one verb, then `distractorIrr[sameIndex]` on another - producing garbage
  * when the two verbs had different slot layouts (e.g. past of "take" is
  * slot 2, but slot 2 of "put" is gerund → "putting" rendered as a past
  * tense).
@@ -332,7 +332,7 @@ function getIrregularSlot(baseVerb, slot) {
   const keyed = IRREGULAR_FORMS_KEYED[String(baseVerb).toLowerCase()];
   if (!keyed) return null;
   if (keyed[slot]) return keyed[slot];
-  // Fallbacks — match English morphology defaults.
+  // Fallbacks - match English morphology defaults.
   if (slot === 'ppt')   return keyed.past || keyed.base;
   if (slot === 'past')  return keyed.base;
   if (slot === 'third') return keyed.base + 's';

@@ -606,10 +606,36 @@ function selectMatchItem(el) {
       b.el.classList.add('incorrect');
       updateStreak(false);
       playSound('incorrect');
+
+      // SHOW WHAT THE WORD ACTUALLY MEANT.
+      //
+      // A wrong pair used to flash red and reset, so the student learned only
+      // that they were wrong - never the answer. Every other vocabulary mode
+      // reveals it (choice highlights the right button, spelling and fill
+      // print "Correct: ...", order and unscramble print it after three
+      // tries); matching was the one that never did.
+      //
+      // Both tiles carry data-id = the word, so the right partner is the
+      // definition tile sharing the id of whichever tile is the WORD side.
+      // Found by comparing dataset.id rather than with an attribute selector,
+      // because a word could contain quotes and would need escaping.
+      var wordSide = (a.type === 'word') ? a : b;
+      var partner = null;
+      document.querySelectorAll('#matchContainer .match-item[data-type="def"]').forEach(function (d) {
+        if (d.dataset.id === wordSide.id) partner = d;
+      });
+      // Already matched? Then this pair could not have been wrong - leave it.
+      if (partner && !partner.classList.contains('correct')) {
+        partner.classList.add('reveal');
+      }
+
+      // 1400ms, not 600: long enough to actually read a definition. The old
+      // 600 was fine for "wrong" but far too short to teach anything.
       setTimeout(() => {
         a.el.classList.remove('incorrect', 'selected');
         b.el.classList.remove('incorrect', 'selected');
-      }, 600);
+        if (partner) partner.classList.remove('reveal');
+      }, 1400);
     }
     selectedItems = [];
   }
@@ -1768,12 +1794,40 @@ function nextUnscramble() {
 // ============================================
 function showCompletion() {
   const total = currentWords.length;
-  const pct = Math.round((score / Math.max(1, total)) * 100);
-  document.getElementById('finalScore').textContent = `${score}/${total} (${pct}%)`;
-  const msg = pct >= 90 ? '🌟 Outstanding!' : pct >= 70 ? '👏 Great job!' : pct >= 50 ? '👍 Good effort!' : '💪 Keep practicing!';
-  document.getElementById('finalMessage').textContent = msg;
 
-  if (missedWords.length > 0) {
+  // An unmarked activity gets a count, not a score. Pronunciation is
+  // listen-and-repeat: nothing in it decides an answer is right, so it always
+  // finished on "0/10 (0%)" and "Keep practicing!", which told a student who
+  // had just done the whole exercise properly that they had failed it.
+  const UNSCORED = ['pronunciation'];
+  // If the student used the microphone, the activity DID mark something and
+  // the end screen should say so. If they only listened, it stays a count.
+  const pronStats = (currentActivity === 'pronunciation' && typeof getPronStats === 'function')
+    ? getPronStats() : null;
+  const pronScored = !!(pronStats && pronStats.attempted > 0);
+  const isUnscored = UNSCORED.indexOf(currentActivity) !== -1 && !pronScored;
+
+  const pct = Math.round((score / Math.max(1, total)) * 100);
+  if (isUnscored) {
+    document.getElementById('finalScore').textContent =
+      `${total} ${total === 1 ? 'word' : 'words'} practised`;
+    document.getElementById('finalMessage').textContent = '🎙️ Nice work!';
+  } else if (pronScored) {
+    // Out of what was ATTEMPTED, not out of the whole set - the student chose
+    // which words to say, and the rest are not failures.
+    const p = Math.round((pronStats.correct / pronStats.attempted) * 100);
+    document.getElementById('finalScore').textContent =
+      `${pronStats.correct}/${pronStats.attempted} said clearly`;
+    document.getElementById('finalMessage').textContent =
+      `${total} ${total === 1 ? 'word' : 'words'} practised · ` +
+      (p >= 80 ? '🌟 Clear pronunciation!' : p >= 50 ? '👍 Getting there' : '💪 Keep practising');
+  } else {
+    document.getElementById('finalScore').textContent = `${score}/${total} (${pct}%)`;
+    const msg = pct >= 90 ? '🌟 Outstanding!' : pct >= 70 ? '👏 Great job!' : pct >= 50 ? '👍 Good effort!' : '💪 Keep practicing!';
+    document.getElementById('finalMessage').textContent = msg;
+  }
+
+  if (missedWords.length > 0 && !isUnscored) {
     document.getElementById('reviewSection').style.display = 'block';
     // All three values flow in from dataset entries - escape each before
     // interpolation. The literal fallback string "No definition available" is
@@ -1800,8 +1854,10 @@ function showCompletion() {
   // Add XP for completing
   addXP(score * 2);
   
-  // Check and mark any matching assignments as completed
-  checkAndMarkAssignmentCompletion(pct);
+  // Check and mark any matching assignments as completed. An unmarked
+  // activity has no percentage to compare against a pass mark, so it cannot
+  // complete an assignment; sending 0 here would have failed one instead.
+  if (!isUnscored) checkAndMarkAssignmentCompletion(pct);
 
   showScreen('completionScreen');
 }

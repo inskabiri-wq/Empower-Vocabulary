@@ -71,7 +71,7 @@ async function saveStudentEdit() {
     return;
   }
   
-  // Normalize on write — guarantees the user doc stores the canonical
+  // Normalize on write - guarantees the user doc stores the canonical
   // form (uppercase, trimmed) so it always matches assignment.targetClass.
   const studentClass = _normCls(classLetter + classNumber);
 
@@ -192,13 +192,39 @@ function closeLogoutModal() {
 }
 
 async function confirmLogout() {
-  // Log logout activity before signing out
+  // Start the activity log, do NOT wait for it.
+  //
+  // This used to `await` the write, which is a Firestore round trip, so the
+  // dialog closed on tap and then the app sat there for about a second before
+  // actually signing out. Logging out is the one action that has to feel
+  // instant: the user has already decided to leave.
+  //
+  // The write is issued while still signed in, so it is in flight before
+  // signOut runs and normally lands. If a slow network means it does not, the
+  // cost is one missing logout row in the activity log, which is a much
+  // cheaper thing to lose than a second of the user's time on every logout.
   if (typeof ActivityLogger !== 'undefined') {
-    await ActivityLogger.logLogout();
+    try { ActivityLogger.logLogout(); } catch (_) {}
   }
-  
-  await auth.signOut();
-  window.location.href = 'index.html';
+
+  // The modal already stays up through the sign-out, which is right. What it
+  // did NOT do is stop responding: "Stay" was still live, so a second click
+  // could close the overlay and put the dashboard back on screen while the
+  // sign-out was already in flight. Disabled, and labelled so the wait reads
+  // as progress rather than a stuck button.
+  if (window.AppDialog && AppDialog.busy) AppDialog.busy('logoutModal');
+
+  try {
+    await auth.signOut();
+    window.location.replace('index.html');
+  } catch (error) {
+    // Without this the modal sat there forever, saying nothing.
+    console.error('Logout error:', error);
+    if (window.AppDialog && AppDialog.unbusy) AppDialog.unbusy('logoutModal');
+    if (window.AppDialog && AppDialog.alert) {
+      AppDialog.alert('Error logging out. Please try again.');
+    }
+  }
 }
 
 // ============================================
@@ -316,9 +342,10 @@ function exportToCSV() {
     });
     const totalWords = uniqueWords.size;
     
-    const avgScore = totalSessions > 0
-      ? Math.round(studentSessions.reduce((sum, sess) => sum + (sess.percentage || 0), 0) / totalSessions)
-      : 0;
+    // Marked work only - see teacher/js/score-utils.js. An essay awaiting a
+    // mark carries no percentage and must not be averaged as a zero.
+    const _avg = window.LLScore ? LLScore.avgRounded(studentSessions) : null;
+    const avgScore = _avg === null ? 0 : _avg;
 
     // Per-skill rollup (sessions + average), so grammar / reading / listening /
     // writing / speaking each appear. Buckets via the shared activityToSkill map.
@@ -326,16 +353,24 @@ function exportToCSV() {
     const bySkill = {};
     SKILLS.forEach(k => { bySkill[k] = { n: 0, sum: 0 }; });
     studentSessions.forEach(sess => {
-      const sk = (typeof activityToSkill === 'function') ? activityToSkill(sess.activity) : 'vocabulary';
+      const sk = (typeof activityToSkill === 'function') ? activityToSkill(sess) : 'vocabulary';
       if (!bySkill[sk]) bySkill[sk] = { n: 0, sum: 0 };
       bySkill[sk].n++;
-      bySkill[sk].sum += (sess.percentage || 0);
+      // n = attempts, scored = the divisor for the average. Separate on
+      // purpose: pronunciation and un-marked essays have the first, not the
+      // second.
+      if (!window.LLScore || LLScore.isScored(sess)) {
+        bySkill[sk].scored = (bySkill[sk].scored || 0) + 1;
+        // Guarded above, so the value is a finite number already. No `|| 0`.
+        bySkill[sk].sum += Number(sess.percentage);
+      }
     });
     const skillCells = [];
     SKILLS.forEach(k => {
       const b = bySkill[k];
+      const n = (b.scored === undefined) ? b.n : b.scored;  // marked only
       skillCells.push(b.n);                                 // <Skill> Sessions
-      skillCells.push(b.n ? Math.round(b.sum / b.n) : '');  // <Skill> Avg (%)
+      skillCells.push(n ? Math.round(b.sum / n) : '');      // <Skill> Avg (%)
     });
 
     const lastLogin = s.lastLogin?.toDate ? s.lastLogin.toDate() : null;

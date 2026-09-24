@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logout dialog button sizes</title>
+<!-- ============================================================
+     Are the two logout buttons the same size - and the same on every page?
+     ------------------------------------------------------------
+     Asked many times and answered by eye every time, which is why it kept
+     coming back. This measures.
+
+     The logout dialog is NOT AppDialog: it is markup in the page, revealed by
+     .active (see the ll-dialog-toggle note in css/brand.css). It is copied
+     verbatim below from student-dashboard.html and teacher-dashboard.html,
+     and each copy is rendered against the REAL stylesheet that page loads.
+     Three different `.modal-btn` rules exist in this app, which is the whole
+     question.
+
+     Run: static-y, then /tools/harness/logout-dialog-size.html
+     ============================================================ -->
+<style>
+  body { font: 14px/1.6 "Segoe UI", system-ui, sans-serif; background: #0d1117; color: #e6edf3; padding: 24px; }
+  h1 { font-size: 18px; margin-bottom: 4px; }
+  table { border-collapse: collapse; margin-top: 14px; width: 100%; max-width: 760px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid #30363d; font-size: 13px; }
+  th { color: #7d8590; font-weight: 600; }
+  .ok { color: #22c55e; font-weight: 700; }
+  .bad { color: #f87171; font-weight: 700; }
+  iframe { width: 620px; height: 300px; border: 1px solid #30363d; border-radius: 8px; background: #0d1117; margin-top: 10px; }
+  code { background: #161b22; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Logout dialog - are both buttons the same width?</h1>
+<p>Real markup, real stylesheets. <b>Same</b> means "Stay" and "Log out" match each
+other within one dialog; the last column compares dialogs across pages.</p>
+<div id="out">Running...</div>
+<div id="frames"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  // The dialog markup, copied verbatim from each dashboard.
+  var STUDENT_BODY =
+    '<div id="logoutModal" class="modal-overlay active">' +
+      '<div class="modal-content ll-dialog ll-dialog-toggle">' +
+        '<div class="modal-icon ll-dialog-icon">&#128682;</div>' +
+        '<h2 class="modal-title">Leaving So Soon?</h2>' +
+        '<p class="modal-message">Are you sure you want to log out? You\'ll need to sign in again to continue.</p>' +
+        '<div class="modal-buttons">' +
+          '<button class="modal-btn modal-btn-cancel">Stay</button>' +
+          '<button class="modal-btn modal-btn-confirm">Log out</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  var TEACHER_BODY =
+    '<div id="logoutModal" class="modal-overlay active">' +
+      '<div class="modal-box ll-dialog ll-dialog-toggle" style="text-align:center;">' +
+        '<div class="ll-dialog-icon" style="background:rgba(239,68,68,0.14);">&#128682;</div>' +
+        '<h3 class="modal-title">Leaving So Soon?</h3>' +
+        '<p class="modal-message" style="color:var(--text-secondary);">Are you sure you want to log out? You\'ll need to sign in again to continue.</p>' +
+        '<div class="modal-buttons" style="justify-content:center;">' +
+          '<button class="modal-btn modal-btn-cancel">Stay</button>' +
+          '<button class="modal-btn modal-btn-delete">Log out</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  // A classroom game's leave dialog, for the third `.modal-btn` rule.
+  var CLASSROOM_BODY =
+    '<div id="logoutModal" class="modal-overlay active">' +
+      '<div class="modal-content ll-dialog ll-dialog-toggle">' +
+        '<div class="modal-icon ll-dialog-icon">&#128682;</div>' +
+        '<h2 class="modal-title">Leave the game?</h2>' +
+        '<p class="modal-message">Your score so far is saved.</p>' +
+        '<div class="modal-buttons">' +
+          '<button class="modal-btn modal-btn-cancel">Stay</button>' +
+          '<button class="modal-btn modal-btn-confirm">Leave</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  var CASES = [
+    { key: 'student',   css: ['../../css/brand.css', '../../student/css/styles.css'],   body: STUDENT_BODY },
+    { key: 'teacher',   css: ['../../css/brand.css', '../../teacher/css/styles.css'],   body: TEACHER_BODY },
+    { key: 'classroom', css: ['../../css/brand.css', '../../classroom/css/styles.css'], body: CLASSROOM_BODY }
+  ];
+
+  // The stylesheet has to be THERE. A 404 would style nothing and every width
+  // would come back identical and meaningless - the harness would "pass" by
+  // measuring nothing. Assert before believing any number.
+  async function assertCss(urls) {
+    for (var i = 0; i < urls.length; i++) {
+      var r = await fetch(urls[i] + '?cb=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) throw new Error(urls[i] + ' returned ' + r.status);
+    }
+  }
+
+  function build(c) {
+    return new Promise(function (resolve, reject) {
+      var f = document.createElement('iframe');
+      f.setAttribute('title', c.key);
+      // .modal-overlay is display:none until .active, and the overlays are
+      // fixed-position, so the iframe gives each case its own viewport.
+      f.srcdoc = '<!DOCTYPE html><html><head>' +
+        // Busted per run. A reload alone keeps the stylesheet the browser
+        // already has, which has quietly made a CSS fix look like no fix here
+        // before.
+        c.css.map(function (u) { return '<link rel="stylesheet" href="' + u + '?cb=' + Date.now() + '">'; }).join('') +
+        '<style>body{margin:0;} .modal-overlay.active{display:flex;align-items:center;justify-content:center;}</style>' +
+        '</head><body>' + c.body + '</body></html>';
+      f.onload = function () {
+        var d = f.contentDocument;
+        // Poll until the real sheet has actually applied, rather than trusting
+        // onload: a link can still be pending when the frame fires load.
+        var tries = 0;
+        (function wait() {
+          var btn = d.querySelector('.modal-btn');
+          var pad = btn ? f.contentWindow.getComputedStyle(btn).paddingLeft : '0px';
+          if (pad && pad !== '0px') return resolve({ frame: f, doc: d, win: f.contentWindow, key: c.key });
+          if (++tries > 100) return reject(new Error(c.key + ': stylesheet never applied'));
+          setTimeout(wait, 50);
+        })();
+      };
+      document.getElementById('frames').appendChild(f);
+    });
+  }
+
+  (async function () {
+    var rows = [];
+    try {
+      for (var i = 0; i < CASES.length; i++) {
+        await assertCss(CASES[i].css);
+        var ctx = await build(CASES[i]);
+        var btns = ctx.doc.querySelectorAll('.modal-btn');
+        var stay = btns[0].getBoundingClientRect();
+        var go = btns[1].getBoundingClientRect();
+        var cs = ctx.win.getComputedStyle(btns[0]);
+
+        // The CARD and its TEXT, not just the buttons. "The box is not the
+        // same" and "the font size is not the same" are separate faults from
+        // "the buttons are not the same", and each needs its own number.
+        var card = ctx.doc.querySelector('.modal-content, .modal-box');
+        var cardCs = ctx.win.getComputedStyle(card);
+        var cardBox = card.getBoundingClientRect();
+        var title = ctx.doc.querySelector('.modal-title, h2, h3');
+        var msg = ctx.doc.querySelector('.modal-message, p');
+        var icon = ctx.doc.querySelector('.ll-dialog-icon');
+        var px = function (el) { return el ? Math.round(parseFloat(ctx.win.getComputedStyle(el).fontSize) * 10) / 10 : null; };
+
+        rows.push({
+          page: ctx.key,
+          // buttons
+          stayW: Math.round(stay.width * 10) / 10,
+          goW: Math.round(go.width * 10) / 10,
+          h: Math.round(stay.height * 10) / 10,
+          diff: Math.round(Math.abs(stay.width - go.width) * 10) / 10,
+          btnFont: px(btns[0]),
+          pad: cs.padding,
+          radius: cs.borderRadius,
+          minW: cs.minWidth,
+          // card
+          cardW: Math.round(cardBox.width * 10) / 10,
+          cardH: Math.round(cardBox.height * 10) / 10,
+          cardPad: cardCs.padding,
+          cardRadius: cardCs.borderRadius,
+          cardBorder: cardCs.borderWidth,
+          // text
+          titleTag: title ? title.tagName : null,
+          titleFont: px(title),
+          msgFont: px(msg),
+          msgChars: msg ? msg.textContent.trim().length : 0,
+          iconW: icon ? Math.round(icon.getBoundingClientRect().width) : null
+        });
+      }
+    } catch (e) {
+      document.getElementById('out').innerHTML = '<p class="bad">HARNESS FAILED: ' + e.message + '</p>';
+      window.__logoutSizes = { error: e.message };
+      return;
+    }
+
+    var worstInside = rows.reduce(function (m, r) { return Math.max(m, r.diff); }, 0);
+    var widths = rows.map(function (r) { return r.goW; });
+    var acrossSpread = Math.round((Math.max.apply(null, widths) - Math.min.apply(null, widths)) * 10) / 10;
+
+    // The question that keeps being asked is about the LOGOUT dialog on the two
+    // dashboards. Classroom is in this table for the third .modal-btn rule, but
+    // it is a different dialog (leaving a game) with its own wording, so its
+    // card height is legitimately its own. Compare the two that must match.
+    var byKey = {};
+    rows.forEach(function (r) { byKey[r.page] = r; });
+    var s = byKey.student, t = byKey.teacher;
+    var card = (s && t) ? {
+      widthDelta: Math.round(Math.abs(s.cardW - t.cardW) * 10) / 10,
+      heightDelta: Math.round(Math.abs(s.cardH - t.cardH) * 10) / 10,
+      btnFontDelta: Math.round(Math.abs(s.btnFont - t.btnFont) * 10) / 10,
+      titleFontDelta: Math.round(Math.abs(s.titleFont - t.titleFont) * 10) / 10,
+      msgFontDelta: Math.round(Math.abs(s.msgFont - t.msgFont) * 10) / 10,
+      iconDelta: Math.abs(s.iconW - t.iconW)
+    } : null;
+
+    var html = '<table><tr><th>Page</th><th>Stay px</th><th>Log out px</th><th>Height</th>' +
+      '<th>Same inside?</th><th>padding</th><th>radius</th><th>min-width</th></tr>';
+    rows.forEach(function (r) {
+      var equal = r.diff < 0.5;
+      html += '<tr><td>' + r.page + '</td><td>' + r.stayW + '</td><td>' + r.goW + '</td><td>' + r.h + '</td>' +
+        '<td class="' + (equal ? 'ok' : 'bad') + '">' + (equal ? 'same' : 'off by ' + r.diff + 'px') + '</td>' +
+        '<td><code>' + r.pad + '</code></td><td><code>' + r.radius + '</code></td><td><code>' + r.minW + '</code></td></tr>';
+    });
+    html += '</table>';
+    html += '<p style="margin-top:12px;">Worst mismatch inside one dialog: <b class="' +
+      (worstInside < 0.5 ? 'ok' : 'bad') + '">' + worstInside + 'px</b>' +
+      ' &middot; spread of the same button across pages: <b class="' +
+      (acrossSpread < 0.5 ? 'ok' : 'bad') + '">' + acrossSpread + 'px</b></p>';
+
+    if (card) {
+      var allZero = Object.keys(card).every(function (k) { return card[k] < 0.5; });
+      html += '<p style="margin-top:8px;">student vs teacher logout card - ' +
+        'width ' + card.widthDelta + 'px, height ' + card.heightDelta + 'px, ' +
+        'button font ' + card.btnFontDelta + 'px, title font ' + card.titleFontDelta + 'px, ' +
+        'message font ' + card.msgFontDelta + 'px, icon ' + card.iconDelta + 'px &middot; ' +
+        '<b class="' + (allZero ? 'ok' : 'bad') + '">' + (allZero ? 'identical' : 'STILL DIFFERENT') + '</b></p>';
+    }
+    document.getElementById('out').innerHTML = html;
+
+    window.__logoutSizes = { rows: rows, worstInside: worstInside, acrossSpread: acrossSpread, studentVsTeacher: card };
+  })();
+})();
+</script>
+</body>
+</html>

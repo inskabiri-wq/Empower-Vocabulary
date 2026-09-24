@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Toggle snapshot trace</title>
+<style>
+  body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:#f6f8fb;color:#0f172a;margin:0;padding:28px;}
+  h1{font-size:20px;margin:0 0 6px;}
+  p.lede{margin:0 0 20px;color:#475569;max-width:70ch;line-height:1.55;}
+  table{border-collapse:collapse;width:100%;max-width:1100px;font-size:13px;}
+  th,td{border:1px solid #e2e8f0;padding:8px 10px;text-align:left;vertical-align:top;}
+  th{background:#eef2f7;font-weight:600;}
+  td.v{font-variant-numeric:tabular-nums;}
+  .pass{color:#047857;font-weight:700;}
+  .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin:18px 0 0;font-size:15px;font-weight:700;}
+  iframe{display:none;}
+  code{background:rgba(15,23,42,.06);padding:1px 5px;border-radius:4px;}
+</style>
+</head>
+<body>
+<h1>feature-toggles.js - cache-then-server trace</h1>
+<p class="lede">
+  Loads the real <code>student/js/feature-toggles.js</code> against a stubbed
+  Firestore and replays the snapshot sequences it actually sees, counting how
+  many times it dispatches <code>feature-toggles-ready</code>. Each case runs in
+  its own iframe because the module attaches its listener exactly once per page.
+  The case that matters is B: a fresh sign-in where the cache has no document,
+  so the cached snapshot reads as "every skill active" and only the server
+  snapshot carries the real toggles.
+</p>
+
+<table id="t">
+  <thead><tr>
+    <th>#</th><th>Scenario</th><th>Expected dispatches</th><th class="v">Actual</th>
+    <th>Final window.featureToggles</th><th>Result</th>
+  </tr></thead>
+  <tbody></tbody>
+</table>
+<div id="sum">running...</div>
+
+<script>
+const REAL = { reading:false, speaking:false, writing:true };
+
+// Which implementation to exercise. Defaults to the shipping one; ?impl=<url>
+// lets a control run point at a pre-fix copy, so we can show the harness
+// actually FAILS on the old code rather than passing no matter what.
+const IMPL = new URLSearchParams(location.search).get('impl')
+          || '../../student/js/feature-toggles.js';
+
+const CASES = [
+  { id:'A', name:'Returning visit: cache and server carry the SAME data',
+    steps:[ {cache:true, data:REAL}, {cache:false, data:REAL} ],
+    expect:1, expectFinal:REAL },
+
+  { id:'B', name:'Fresh sign-in: cache has NO doc, server has the real toggles',
+    steps:[ {cache:true, exists:false}, {cache:false, data:REAL} ],
+    expect:1, expectFinal:REAL },
+
+  { id:'C', name:'Cache has STALE data, server corrects it',
+    steps:[ {cache:true, data:{reading:true,speaking:true,writing:true}}, {cache:false, data:REAL} ],
+    expect:1, expectFinal:REAL },
+
+  { id:'D', name:'Server only (no cached copy at all)',
+    steps:[ {cache:false, data:REAL} ],
+    expect:1, expectFinal:REAL },
+
+  { id:'E', name:'Teacher flips a switch while the page is open',
+    steps:[ {cache:true, exists:false}, {cache:false, data:REAL},
+            {cache:false, data:{reading:true,speaking:false,writing:true}} ],
+    expect:2, expectFinal:{reading:true,speaking:false,writing:true} },
+
+  { id:'F', name:'Offline: only a cached snapshot ever arrives (waits for the 3.5s fallback)',
+    steps:[ {cache:true, data:REAL} ],
+    expect:1, expectFinal:REAL, waitMs:4200 },
+
+  { id:'G', name:'Listener errors (permission denied)',
+    steps:[ {error:true} ],
+    expect:1, expectFinal:{}, },
+
+  // ---- priming from the last visit's saved copy ----
+  { id:'H', name:'PRIME: saved copy present, grid is correct BEFORE any snapshot',
+    seed:REAL,
+    steps:[ {cache:false, data:REAL} ],
+    expect:1, expectFinal:REAL, expectPrimed:REAL },
+
+  { id:'I', name:'PRIME: nothing saved, so nothing primed (first-ever sign-in)',
+    seed:null,
+    steps:[ {cache:false, data:REAL} ],
+    expect:1, expectFinal:REAL, expectPrimed:null },
+
+  { id:'J', name:'PRIME: junk in storage is ignored, not treated as toggles',
+    seedRaw:'"not-an-object"',
+    steps:[ {cache:false, data:REAL} ],
+    expect:1, expectFinal:REAL, expectPrimed:null },
+
+  { id:'K', name:'PRIME: server DISAGREES with the saved copy, one honest repaint',
+    seed:{ reading:true, speaking:true, writing:true },
+    steps:[ {cache:false, data:REAL} ],
+    expect:1, expectFinal:REAL, expectPrimed:{ reading:true, speaking:true, writing:true } },
+
+  { id:'L', name:'PRIME: a server answer is written back for next time',
+    seed:null,
+    steps:[ {cache:false, data:REAL} ],
+    expect:1, expectFinal:REAL, expectSaved:REAL },
+];
+
+const LS_KEY = 'll-feature-toggles';
+
+const CASE_PAGE = c => `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>
+  var CASE = ${JSON.stringify(c)};
+  var fired = 0;
+  document.addEventListener('feature-toggles-ready', function(){ fired++; });
+
+  // Seed the saved copy BEFORE the module parses, since it primes at parse time.
+  try {
+    localStorage.removeItem('${LS_KEY}');
+    if (CASE.seedRaw != null)   localStorage.setItem('${LS_KEY}', CASE.seedRaw);
+    else if (CASE.seed != null) localStorage.setItem('${LS_KEY}', JSON.stringify(CASE.seed));
+  } catch (e) {}
+
+  var snapCb = null, errCb = null;
+  window.auth = { currentUser: { uid: 'trace' } };
+  function stubDoc() {
+    return {
+      onSnapshot: function (cb, err) {
+        snapCb = cb; errCb = err;
+        return function () {};
+      }
+    };
+  }
+  window.db = {
+    collection: function () {
+      return { doc: stubDoc };
+    }
+  };
+
+  function deliver(step){
+    if (step.error) { errCb && errCb(new Error('permission-denied')); return; }
+    var exists = step.exists !== false;
+    snapCb({
+      exists: exists,
+      data: function(){ return exists ? step.data : undefined; },
+      metadata: { fromCache: !!step.cache, hasPendingWrites: false }
+    });
+  }
+
+  function report(){
+    var saved = null;
+    try { var raw = localStorage.getItem('${LS_KEY}'); saved = raw ? JSON.parse(raw) : null; } catch (e) {}
+    parent.postMessage({ id: CASE.id, fired: fired,
+      final: window.featureToggles || null, primed: PRIMED, saved: saved }, '*');
+  }
+
+  // Captured the instant the module finished parsing: this is what the hub
+  // would see on its very first render.
+  var PRIMED = null;
+  window.addEventListener('DOMContentLoaded', function(){
+    PRIMED = (window.featureToggles == null) ? null : window.featureToggles;
+  });
+
+  window.addEventListener('load', function(){
+    // let the module's DOMContentLoaded init + waitAuth run first
+    setTimeout(function(){
+      CASE.steps.forEach(function(s, i){ setTimeout(function(){ deliver(s); }, i * 60); });
+      setTimeout(report, (CASE.waitMs || 400) + CASE.steps.length * 60);
+    }, 120);
+  });
+<\/script>
+<script src="${IMPL}"><\/script>
+</body></html>`;
+
+const tbody = document.querySelector('#t tbody');
+const got = {};
+
+function same(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
+
+window.addEventListener('message', e => {
+  const d = e.data; if (!d || !d.id) return;
+  got[d.id] = d;
+  render();
+});
+
+function render(){
+  tbody.innerHTML = '';
+  let done = 0, pass = 0;
+  for (const c of CASES){
+    const g = got[c.id];
+    const tr = document.createElement('tr');
+    let verdict = '<span style="color:#64748b">...</span>';
+    if (g){
+      done++;
+      let ok = g.fired === c.expect && same(g.final, c.expectFinal);
+      // Only assert the extra fields on the cases that declare them.
+      if ('expectPrimed' in c) ok = ok && same(g.primed, c.expectPrimed);
+      if ('expectSaved'  in c) ok = ok && same(g.saved,  c.expectSaved);
+      if (ok) pass++;
+      verdict = ok ? '<span class="pass">PASS</span>'
+                   : '<span class="fail">FAIL</span>';
+    }
+    tr.innerHTML = '<td>' + c.id + '</td><td>' + c.name + '</td>'
+      + '<td class="v">' + c.expect + '</td>'
+      + '<td class="v">' + (g ? g.fired : '-') + '</td>'
+      + '<td><code>' + (g ? JSON.stringify(g.final) : '-') + '</code></td>'
+      + '<td>' + verdict + '</td>';
+    tbody.appendChild(tr);
+  }
+  const el = document.getElementById('sum');
+  if (done < CASES.length){ el.textContent = 'running... ' + done + '/' + CASES.length; }
+  else {
+    el.textContent = pass + ' / ' + CASES.length + (pass === CASES.length ? '  PASS' : '  FAIL');
+    el.className = pass === CASES.length ? 'pass' : 'fail';
+    window.__traceResult = { pass, total: CASES.length,
+      rows: CASES.map(c => {
+        const g = got[c.id] || {};
+        const row = { id: c.id, expect: c.expect, actual: g.fired ?? null, final: g.final ?? null };
+        if ('expectPrimed' in c) { row.primed = g.primed ?? null; row.wantPrimed = c.expectPrimed; }
+        if ('expectSaved'  in c) { row.saved  = g.saved  ?? null; row.wantSaved  = c.expectSaved; }
+        return row;
+      }) };
+  }
+}
+render();
+
+// SEQUENTIAL, not parallel. Every case shares one localStorage on this origin,
+// and the priming cases seed and read it, so running them concurrently would
+// have each case clobbering the others' saved copy.
+(async function runAll(){
+  for (const c of CASES){
+    const f = document.createElement('iframe');
+    const done = new Promise(res => {
+      const h = e => { if (e.data && e.data.id === c.id) { window.removeEventListener('message', h); res(); } };
+      window.addEventListener('message', h);
+      setTimeout(res, (c.waitMs || 400) + c.steps.length * 60 + 4000);   // never hang the run
+    });
+    f.srcdoc = CASE_PAGE(c);
+    document.body.appendChild(f);
+    await done;
+  }
+})();
+</script>
+</body>
+</html>

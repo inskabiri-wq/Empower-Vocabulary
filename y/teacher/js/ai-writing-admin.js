@@ -7,6 +7,7 @@
      - Writing AI Deep (+ cap)   -> settings/aiWritingAccess.deepUids/deepCaps
        (deepUsed is written server-side by analyzeWriting - read-only here)
      - Placement (manage tab)    -> settings/placementAccess.teacherUids
+     - Courses (manage tab)      -> settings/coursesAccess.teacherUids
    Every change AUTOSAVES (no save button). Only granted teachers
    are listed; add via the unified .ll-select dropdown. The owner
    admin (ADMIN_EMAIL) implicitly has everything and is not listed.
@@ -27,6 +28,7 @@
   var teachers = null;          // [{uid,name,email}]
   var ai = { teacherUids: [], deepUids: [], deepCaps: {}, deepUsed: {} };
   var pl = { teacherUids: [] };
+  var co = { teacherUids: [] };
   var loading = false;
 
   // ── Corrector entry points (sidebar + more-menu) ─────────────
@@ -80,7 +82,8 @@
     Promise.all([
       d.collection('users').where('role', 'in', ['teacher', 'admin']).limit(1000).get(),
       d.collection('settings').doc('aiWritingAccess').get(),
-      d.collection('settings').doc('placementAccess').get()
+      d.collection('settings').doc('placementAccess').get(),
+      d.collection('settings').doc('coursesAccess').get()
     ]).then(function (res) {
       teachers = res[0].docs.map(function (doc) { var u = doc.data() || {}; return { uid: doc.id, name: u.name || u.email || doc.id, email: u.email || '' }; })
         .filter(function (t) { return String(t.email).toLowerCase() !== ADMIN_EMAIL; })
@@ -92,6 +95,8 @@
       ai.deepUsed = a.deepUsed || {};
       var p = res[2].exists ? (res[2].data() || {}) : {};
       pl.teacherUids = Array.isArray(p.teacherUids) ? p.teacherUids : [];
+      var co0 = res[3] && res[3].exists ? (res[3].data() || {}) : {};
+      co.teacherUids = Array.isArray(co0.teacherUids) ? co0.teacherUids : [];
       loading = false;
       render();
     }).catch(function (e) { loading = false; renderError((e && e.message) || 'Could not load teachers.'); });
@@ -112,6 +117,15 @@
     var d = db_(); if (!d) return;
     d.collection('settings').doc('placementAccess').set({
       teacherUids: pl.teacherUids,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).then(function () { note('Saved.'); })
+      .catch(function (e) { if (window.AppDialog) AppDialog.alert('Could not save (admin only): ' + e.message); });
+  }
+
+  function saveCo() {
+    var d = db_(); if (!d) return;
+    d.collection('settings').doc('coursesAccess').set({
+      teacherUids: co.teacherUids,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true }).then(function () { note('Saved.'); })
       .catch(function (e) { if (window.AppDialog) AppDialog.alert('Could not save (admin only): ' + e.message); });
@@ -162,25 +176,14 @@
     }).join('');
   }
 
-  // Presets just TICK the boxes for a person (still visible + editable after).
-  function applyPreset(uid, preset) {
-    var use = preset !== 'none';
-    var deep = preset === 'writing-deep' || preset === 'semi-admin';
-    var plc = preset === 'semi-admin';
-    if (use) { if (ai.teacherUids.indexOf(uid) === -1) ai.teacherUids.push(uid); }
-    else ai.teacherUids = ai.teacherUids.filter(function (u) { return u !== uid; });
-    if (deep) { if (ai.deepUids.indexOf(uid) === -1) ai.deepUids.push(uid); }
-    else ai.deepUids = ai.deepUids.filter(function (u) { return u !== uid; });
-    if (plc) { if (pl.teacherUids.indexOf(uid) === -1) pl.teacherUids.push(uid); }
-    else pl.teacherUids = pl.teacherUids.filter(function (u) { return u !== uid; });
-    logAudit('preset "' + preset + '"', uid);
-    saveAi(); savePl(); render();
-  }
 
   function grantedUids() {
     var set = {};
     ai.teacherUids.forEach(function (u) { set[u] = 1; });
     pl.teacherUids.forEach(function (u) { set[u] = 1; });
+    // Someone granted ONLY Courses still has to appear in the list, or an
+    // admin cannot see or revoke that grant.
+    co.teacherUids.forEach(function (u) { set[u] = 1; });
     return Object.keys(set);
   }
 
@@ -199,7 +202,7 @@
     teachers.forEach(function (t) { byUid[t.uid] = t; });
     var notGranted = teachers.filter(function (t) { return granted.indexOf(t.uid) === -1; });
 
-    var intro = '<div style="font-size:13px;color:var(--t2-text-muted,#7d8590);margin-bottom:14px;">One place for every permission. Add a teacher, then tick exactly what they may do - each tick saves instantly. Writing AI = the corrector; Deep = the minute-analysis tier (limit per teacher, blank = unlimited); Placement = may manage the Placement tab. You (the admin) always have everything.'
+    var intro = '<div style="font-size:13px;color:var(--t2-text-muted,#7d8590);margin-bottom:14px;">One place for every permission. Add a teacher, then tick exactly what they may do - each tick saves instantly. Writing AI = the corrector; Deep = the minute-analysis tier (limit per teacher, blank = unlimited); Placement = may manage the Placement tab; Courses = may manage the mini courses. You (the admin) always have everything.'
       + ' <span id="accSaveNote" style="color:#16a34a;font-weight:700;"></span></div>';
 
     var addRow = '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:16px;">' +
@@ -217,7 +220,7 @@
       var th = function (t) { return '<th style="text-align:left;padding:8px 10px;border-bottom:1px solid var(--t2-border,#30363d);color:var(--t2-text-muted,#7d8590);font-size:12px;text-transform:uppercase;letter-spacing:0.04em;">' + t + '</th>'; };
       var td = 'padding:9px 10px;border-bottom:1px solid var(--t2-border,#30363d);font-size:13.5px;';
       rows = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">' +
-        '<thead><tr>' + th('Teacher') + th('Preset') + th('Writing AI') + th('Deep') + th('Deep limit') + th('Deep used') + th('Placement') + th('') + '</tr></thead><tbody>' +
+        '<thead><tr>' + th('Teacher') + th('Writing AI') + th('Deep') + th('Deep limit') + th('Deep used') + th('Placement') + th('Courses') + th('') + '</tr></thead><tbody>' +
         granted.map(function (uid) {
           var t = byUid[uid] || { uid: uid, name: uid, email: '' };
           var useOn = ai.teacherUids.indexOf(uid) !== -1;
@@ -225,23 +228,16 @@
           var cap = ai.deepCaps[uid] || '';
           var used = ai.deepUsed[uid] || 0;
           var plOn = pl.teacherUids.indexOf(uid) !== -1;
+          var coOn = co.teacherUids.indexOf(uid) !== -1;
           var overCap = cap && used >= cap;
-          // Preset just TICKS the boxes for this person; boxes stay editable.
-          var preset = (useOn && deepOn && plOn) ? 'semi-admin' : (useOn && deepOn && !plOn) ? 'writing-deep' : (useOn && !deepOn && !plOn) ? 'writing' : 'custom';
-          var presetSel = '<select class="ll-select acc-preset" data-uid="' + esc(uid) + '" style="min-width:150px;padding:6px 10px;font-size:13px;">' +
-            (preset === 'custom' ? '<option value="custom" selected>Custom</option>' : '') +
-            '<option value="writing"' + (preset === 'writing' ? ' selected' : '') + '>Writing only</option>' +
-            '<option value="writing-deep"' + (preset === 'writing-deep' ? ' selected' : '') + '>Writing + Deep</option>' +
-            '<option value="semi-admin"' + (preset === 'semi-admin' ? ' selected' : '') + '>Semi-admin (all)</option>' +
-            '</select>';
           return '<tr>' +
             '<td style="' + td + '"><b>' + esc(t.name) + '</b>' + (t.email ? '<div style="font-size:12px;color:var(--t2-text-muted,#7d8590);">' + esc(t.email) + '</div>' : '') + '</td>' +
-            '<td style="' + td + '">' + presetSel + '</td>' +
             '<td style="' + td + '"><input type="checkbox" class="acc-use" data-uid="' + esc(uid) + '"' + (useOn ? ' checked' : '') + '></td>' +
             '<td style="' + td + '"><input type="checkbox" class="acc-deep" data-uid="' + esc(uid) + '"' + (deepOn ? ' checked' : '') + (useOn ? '' : ' disabled') + '></td>' +
             '<td style="' + td + '"><input type="number" min="0" class="acc-cap" data-uid="' + esc(uid) + '" value="' + esc(cap) + '" placeholder="unlimited"' + (deepOn ? '' : ' disabled') + ' style="width:88px;font-family:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--t2-border,#30363d);background:transparent;color:var(--t2-text,#e6edf3);"></td>' +
             '<td style="' + td + (overCap ? 'color:#f87171;font-weight:700;' : '') + '">' + used + (cap ? ' / ' + cap : '') + '</td>' +
             '<td style="' + td + '"><input type="checkbox" class="acc-pl" data-uid="' + esc(uid) + '"' + (plOn ? ' checked' : '') + '></td>' +
+            '<td style="' + td + '"><input type="checkbox" class="acc-co" data-uid="' + esc(uid) + '"' + (coOn ? ' checked' : '') + '></td>' +
             '<td style="' + td + '"><button type="button" class="acc-revoke" data-uid="' + esc(uid) + '" style="cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:8px;border:1px solid rgba(248,113,113,0.5);background:rgba(248,113,113,0.08);color:#f87171;">Revoke all</button></td>' +
           '</tr>';
         }).join('') + '</tbody></table></div>';
@@ -259,11 +255,6 @@
       if (ai.teacherUids.indexOf(s.value) === -1) ai.teacherUids.push(s.value);   // default grant: Writing AI use
       logAudit('granted Writing AI', s.value);
       saveAi(); render();
-    });
-    box.querySelectorAll('.acc-preset').forEach(function (s) {
-      s.addEventListener('change', function () {
-        if (s.value && s.value !== 'custom') applyPreset(s.getAttribute('data-uid'), s.value);
-      });
     });
     box.querySelectorAll('.acc-use').forEach(function (c) {
       c.addEventListener('change', function () {
@@ -304,6 +295,15 @@
         savePl(); render();
       });
     });
+    box.querySelectorAll('.acc-co').forEach(function (c) {
+      c.addEventListener('change', function () {
+        var uid = c.getAttribute('data-uid');
+        if (c.checked) { if (co.teacherUids.indexOf(uid) === -1) co.teacherUids.push(uid); }
+        else co.teacherUids = co.teacherUids.filter(function (u) { return u !== uid; });
+        logAudit((c.checked ? 'granted' : 'revoked') + ' Courses', uid);
+        saveCo(); render();
+      });
+    });
     box.querySelectorAll('.acc-revoke').forEach(function (b) {
       b.addEventListener('click', function () {
         var uid = b.getAttribute('data-uid');
@@ -312,8 +312,13 @@
           ai.deepUids = ai.deepUids.filter(function (u) { return u !== uid; });
           delete ai.deepCaps[uid];
           pl.teacherUids = pl.teacherUids.filter(function (u) { return u !== uid; });
+          // "Revoke all" has to mean ALL. A capability added later that is not
+          // cleared here leaves a teacher holding something after an admin has
+          // deliberately taken everything away, which is the worst way to keep
+          // a permission.
+          co.teacherUids = co.teacherUids.filter(function (u) { return u !== uid; });
           logAudit('revoked ALL grants', uid);
-          saveAi(); savePl(); render();
+          saveAi(); savePl(); saveCo(); render();
         };
         if (window.AppDialog && AppDialog.confirm) AppDialog.confirm('Remove ALL grants for this teacher?').then(function (ok) { if (ok) doIt(); });
         else if (confirm('Remove all grants for this teacher?')) doIt();

@@ -25,15 +25,12 @@
 (function () {
   'use strict';
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-    authDomain: "empower-vocabulary-practice.firebaseapp.com",
-    projectId: "empower-vocabulary-practice",
-    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-    messagingSenderId: "136270199832",
-    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // Firebase is started by js/firebase-init.js, which reads the project
+  // from js/tenant.js. This file used to name one university directly, which would
+  // have pointed every deployment at that same project.
+  if (!firebase.apps.length) {
+    throw new Error('bingo-teacher: js/tenant.js + js/firebase-init.js must load first.');
+  }
   const auth = firebase.auth();
   const db = firebase.firestore();
 
@@ -181,6 +178,10 @@
       (sessionData.callFormat === 'gap' ? 'clues are gapped sentences' : 'clues are definitions') +
       (settings.autoAdvanceSec ? ' · auto clue every ' + settings.autoAdvanceSec + 's' : ' · you control the clue pace');
 
+    // Re-entering the lobby (a second create, or a retry after a failed one)
+    // would otherwise strand the previous roster listener. Null on the first
+    // run, so this is a no-op then.
+    if (unsubPlayers) unsubPlayers();
     unsubPlayers = db.collection('bingo_sessions').doc(code).collection('players')
       .orderBy('joinedAt', 'asc')
       .onSnapshot(snap => {
@@ -189,7 +190,13 @@
       });
   }
 
+  var _lastRoster = 0;
   function renderRoster(players) {
+    // A student arrived. Throttled: a full cohort joining would otherwise
+    // fire a cue per arrival. Guarded on GROWTH so a snapshot caused by a
+    // score change stays silent.
+    if (players.length > _lastRoster) MG.sfx('join', { throttle: 400 });
+    _lastRoster = players.length;
     const el = document.getElementById('roster');
     const count = document.getElementById('rosterCount');
     if (count) count.textContent = players.length;
@@ -239,6 +246,10 @@
       renderCall(d);
     });
 
+    // Release the lobby listener before attaching the in-game one. Without
+    // this both stayed live for the whole game, so every player write was
+    // delivered and billed twice. Same shape as trust-teacher.js:475.
+    if (unsubPlayers) unsubPlayers();
     unsubPlayers = db.collection('bingo_sessions').doc(sessionCode).collection('players')
       .onSnapshot(snap => {
         const players = snap.docs.map(d => d.data());

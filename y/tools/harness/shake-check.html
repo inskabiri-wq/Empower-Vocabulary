@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Harness - wrong-answer shake reaches every game</title>
+<link rel="stylesheet" href="../../css/brand.css">
+<link rel="stylesheet" href="../../classroom/css/minigames.css">
+<link rel="stylesheet" href="../../student/css/styles.css">
+<style>body{padding:18px;font-family:system-ui,sans-serif}</style>
+</head>
+<body>
+<h1>Does a wrong answer animate, in every game's markup?</h1>
+
+<!-- one sample of each real wrong-answer selector found in the app -->
+<button class="aiq-answer is-wrong">AI Quiz answer</button>
+<div class="aiq-feedback is-wrong">AI Quiz feedback line</div>
+<button class="gr-opt is-wrong">Grammar option</button>
+<button class="pc-opt is-wrong">Policy course option</button>
+<button class="option-btn incorrect">Generic option button</button>
+<input class="type-input incorrect" value="typed answer">
+<input class="spelling-input incorrect" value="spelling">
+<button class="choice-btn incorrect">Vocab multiple choice</button>
+<div class="match-item incorrect">Vocab matching tile</div>
+<div class="feedback-msg incorrect">Feedback message</div>
+<button class="save-btn error">Save button (.error - must NOT shake)</button>
+
+<pre id="out"></pre>
+<script>
+window.report = function () {
+  const rows = [];
+  document.querySelectorAll('button, div, input').forEach(function (el) {
+    if (!el.className || el.id === 'out') return;
+    const cs = getComputedStyle(el);
+    const name = cs.animationName;
+    rows.push({
+      selector: '.' + String(el.className).trim().split(/\s+/).join('.'),
+      animationName: name,
+      animates: name !== 'none' && name !== ''
+    });
+  });
+  return rows;
+};
+</script>
+</body>
+</html>

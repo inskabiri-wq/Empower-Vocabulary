@@ -1,5 +1,5 @@
 /* ============================================================
-   ship-ready.js  —  one-shot pre-deploy hygiene runner.
+   ship-ready.js  -  one-shot pre-deploy hygiene runner.
 
    Sequence:
      1. node tools/backfill-assignment-owner.js
@@ -11,7 +11,7 @@
         bounds, criteria sums, doc-id shape, ownership,
         cross-collection references, role validity.
      3. Print the remaining MANUAL checks from SMOKE-TEST.md
-        (the ones a script can't do — UI + security spot-checks
+        (the ones a script can't do - UI + security spot-checks
         via DevTools).
 
    Each sub-script runs in its OWN Node process so the
@@ -39,7 +39,7 @@ const STEPS = [
   {
     name:        'Backfill assignment ownership',
     file:        'backfill-assignment-owner.js',
-    stopOnFail:  true   // smoke-test references teacherId — don't continue if backfill failed
+    stopOnFail:  true   // smoke-test references teacherId - don't continue if backfill failed
   },
   {
     name:        'Data-integrity smoke test',
@@ -82,7 +82,7 @@ function spawnScript(file) {
 }
 
 async function main() {
-  banner('🚀 Lingualab — Ship-Readiness Check');
+  banner('🚀 Lingualab - Ship-Readiness Check');
   console.log(' Project root : ' + path.resolve(HERE, '..'));
   console.log(' Started      : ' + new Date().toISOString());
 
@@ -102,7 +102,7 @@ async function main() {
     results.push({ name: step.name, file: step.file, code });
 
     if (code !== 0 && step.stopOnFail) {
-      banner(ANSI.red + '✗ Stopping chain — ' + step.name + ' failed.' + ANSI.reset);
+      banner(ANSI.red + '✗ Stopping chain - ' + step.name + ' failed.' + ANSI.reset);
       break;
     }
   }
@@ -118,7 +118,7 @@ async function main() {
 
   const allPassed = results.length === STEPS.length && results.every(r => r.code === 0);
   if (!allPassed) {
-    console.log('\n' + ANSI.red + 'At least one check failed — fix the above before deploying.' + ANSI.reset + '\n');
+    console.log('\n' + ANSI.red + 'At least one check failed - fix the above before deploying.' + ANSI.reset + '\n');
     process.exit(1);
   }
 

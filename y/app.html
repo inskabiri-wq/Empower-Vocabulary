@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/lingualab-mark.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Lingualab</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<!-- Brand-wide reset — must load FIRST so per-page styles win conflicts. -->
-<link rel="stylesheet" href="css/brand.css?v=17">
-<link rel="stylesheet" href="css/fsmvu-loader.css?v=3">
+<!-- Brand-wide reset - must load FIRST so per-page styles win conflicts. -->
+<link rel="stylesheet" href="css/brand.css?v=30">
+<link rel="stylesheet" href="css/fsmvu-loader.css?v=14">
 <style>
 :root {
   --bg-primary: #0a0f1a;
@@ -15,8 +15,8 @@
   --bg-card: #152035;
   --bg-item: #1c2a42;
   --accent-primary: #3b82f6;
-  --accent-secondary: #0ea5e9;
-  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 50%, #06b6d4 100%);
+  --accent-secondary: #2563eb;
+  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #2563eb 100%);
   --success: #10b981;
   --error: #ef4444;
   --warning: #f59e0b;
@@ -29,7 +29,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--ll-font);
   background: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
@@ -128,7 +128,7 @@ body {
 }
 
 .header h1 {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--ll-font);
   font-size: 2em;
   background: var(--accent-gradient);
   -webkit-background-clip: text;
@@ -301,7 +301,7 @@ body {
 }
 
 .activity-title {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--ll-font);
   font-size: 1.5em;
   margin-bottom: 12px;
 }
@@ -344,7 +344,7 @@ body {
 }
 
 .word-display .word {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--ll-font);
   font-size: 2.5em;
   font-weight: 700;
   margin-bottom: 8px;
@@ -500,7 +500,7 @@ body {
 }
 
 .completion h2 {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--ll-font);
   font-size: 2em;
   background: var(--accent-gradient);
   -webkit-background-clip: text;
@@ -659,11 +659,33 @@ body {
     display: none;
   }
 }
+
+/* LIGHT MODE. This page's palette lives in this <style> block, not a
+   stylesheet, so the app-wide repaint could not reach it. */
+.light-mode {
+  --bg-primary: #f6f8fb;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-item: #f2f6fc;
+  --accent-primary: #2563eb;
+  --accent-secondary: #2563eb;
+  --accent-gradient: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
+  --success: #15803d;
+  --error: #b91c1c;
+  --warning: #b45309;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #556274;
+  --border-color: #e3e9f2;
+}
 </style>
   <!-- Shared display settings (text size + line spacing), app-wide.
        In <head> so the saved size applies before first paint. -->
-  <link rel="stylesheet" href="css/app-settings.css?v=38">
-  <script src="js/app-settings.js?v=22"></script>
+  <link rel="stylesheet" href="css/app-settings.css?v=55">
+  <!-- The shared sound engine. This page's playSound() delegates to it. -->
+  <script src="js/sound.js?v=4"></script>
+  <script src="js/app-settings.js?v=40"></script>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 
@@ -856,20 +878,18 @@ body {
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" integrity="sha384-yuGdyIzzYtOBlBG6JOWn+Ey9kpq7HocusNuxEGyyohr1eEyXpeEyehIIXC/hznw4" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" integrity="sha384-lI+CxEx/bCvWP1b0OK13j5HTrTZP7yf1xle8TVOFq2smz6KC1RChTarRV/RHP5PP" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" integrity="sha384-nwX2Qpkhc2sv6L0ZPkLefLGguao67toSowvePuQvGF6cG+8MUphGI2uI94Ls3JF7" crossorigin="anonymous"></script>
+<!-- Which university, then start Firebase for it. -->
+<script src="js/tenant.js?v=7"></script>
+<script src="js/firebase-init.js?v=3"></script>
 
 <script>
 // Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-  authDomain: "empower-vocabulary-practice.firebaseapp.com",
-  projectId: "empower-vocabulary-practice",
-  storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-  messagingSenderId: "136270199832",
-  appId: "1:136270199832:web:174222066ef1cbdc8f576d",
-  measurementId: "G-1BBXBVEP5C"
-};
-
-firebase.initializeApp(firebaseConfig);
+// Firebase is started by js/firebase-init.js (loaded just above), using the
+// project js/tenant.js picked from the web address. This page used to name
+// the project itself, which would have sent every deployment to the same project.
+if (!firebase.apps.length) {
+  throw new Error('app: js/tenant.js + js/firebase-init.js must load first.');
+}
 const auth = firebase.auth();
 const db = firebase.firestore();
 
@@ -1089,25 +1109,16 @@ function shuffleArray(arr) {
   return a;
 }
 
+// Delegates to js/sound.js, the app's one sound engine.
+//
+// This page used to carry its own copy: a single oscillator, and a BRAND NEW
+// AudioContext on every call. That is the exact bug the shared engine was
+// written to fix - browsers cap concurrent contexts and suspend any created
+// before a user gesture, so first sounds went missing and a long session
+// eventually dropped audio entirely. It also meant this page's "correct"
+// sounded nothing like the dashboard's.
 function playSound(type) {
-  if (!soundEnabled) return;
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  
-  if (type === 'correct') {
-    osc.frequency.value = 600;
-    gain.gain.value = 0.1;
-  } else {
-    osc.frequency.value = 200;
-    gain.gain.value = 0.1;
-  }
-  
-  osc.start();
-  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-  osc.stop(ctx.currentTime + 0.3);
+  if (window.LLSound) window.LLSound.play(type);
 }
 
 function showFeedback(type, text) {

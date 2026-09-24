@@ -1,11 +1,11 @@
 /* ============================================================
-   student-picker.js  —  shared "select individual students" UI
+   student-picker.js  -  shared "select individual students" UI
    Lifted from the vocab assignment form (which has had the
    nice search/filter/select-all box for ages) so writing-form
    and exam-form can reuse the SAME experience instead of each
    rebuilding their own bare checkbox list.
 
-   Why a shared module: the user explicitly asked — "whenever
+   Why a shared module: the user explicitly asked - "whenever
    you are going to expand a modular system, if it is something
    that you have it already, bring the one and implement it.
    Do not build from scratch." This module IS the import path.
@@ -103,7 +103,7 @@
       </div>
     `;
 
-    // Wire search (scoped to this container only — no global selectors)
+    // Wire search (scoped to this container only - no global selectors)
     const searchEl = container.querySelector('#' + ns + '-search');
     searchEl.addEventListener('input', () => {
       const term = searchEl.value.toLowerCase().trim();

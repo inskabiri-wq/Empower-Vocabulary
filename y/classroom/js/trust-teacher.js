@@ -32,15 +32,12 @@
   'use strict';
 
   // ── Firebase init ──────────────────────────────────────────
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-    authDomain: "empower-vocabulary-practice.firebaseapp.com",
-    projectId: "empower-vocabulary-practice",
-    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-    messagingSenderId: "136270199832",
-    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // Firebase is started by js/firebase-init.js, which reads the project
+  // from js/tenant.js. This file used to name one university directly, which would
+  // have pointed every deployment at that same project.
+  if (!firebase.apps.length) {
+    throw new Error('trust-teacher: js/tenant.js + js/firebase-init.js must load first.');
+  }
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
@@ -302,6 +299,10 @@
     const qrImg = document.getElementById('qrImg');
     if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${encodeURIComponent(url)}`;
 
+    // Re-entering the lobby (a second create, or a retry after a failed one)
+    // would otherwise strand the previous roster listener. Null on the first
+    // run, so this is a no-op then.
+    if (unsubPlayers) unsubPlayers();
     unsubPlayers = db.collection('trust_sessions').doc(code).collection('players')
       .orderBy('joinedAt', 'asc')
       .onSnapshot(snap => {
@@ -309,7 +310,20 @@
         renderRoster(players);
       });
   }
+  var _lastRoster = 0;
   function renderRoster(players) {
+    // A student arrived. Throttled: a full cohort joining would otherwise
+    // fire a cue per arrival. Guarded on GROWTH so a snapshot caused by a
+    // score change stays silent.
+    // These host pages do not load minigame-core.js, so there is no MG here:
+    // MG.sfx threw "MG is not defined" on every join, BEFORE the count below
+    // was written, and the teacher saw no players at all (2026-09-24, a live
+    // class). The sound goes straight to js/sound.js and can never stop the
+    // roster from drawing.
+    if (players.length > _lastRoster && window.LLSound) {
+      try { LLSound.play('join', { throttle: 400 }); } catch (e) { /* a sound is never worth a roster */ }
+    }
+    _lastRoster = players.length;
     const el = document.getElementById('roster');
     const count = document.getElementById('rosterCount');
     if (count) count.textContent = players.length;
@@ -406,7 +420,7 @@
       return `
         <div style="display:flex; align-items:center; gap:8px;
                     background: var(--t-surface-2);
-                    border: 1px solid ${isImp ? 'rgba(245,158,11,0.4)' : 'rgba(6,182,212,0.4)'};
+                    border: 1px solid ${isImp ? 'rgba(59,130,246,0.4)' : 'rgba(37,99,235,0.4)'};
                     border-radius: 10px; padding: 8px 12px;">
           <span style="font-size:1.3em;">${escHtml(p.avatar || '🚀')}</span>
           <span style="flex:1; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escHtml(p.name)}</span>
@@ -598,14 +612,14 @@
       // Host-only debug: tag whether the clue was true / false / injected.
       // Students never see these tags - just the text.
       const tag = c.injected
-        ? '<span style="background:rgba(245,158,11,0.18); color:var(--t-amber-2); border:1px solid rgba(245,158,11,0.4); padding:1px 6px; border-radius:999px; font-size:9px; font-weight:800; letter-spacing:0.08em;">PLANTED</span>'
+        ? '<span style="background:rgba(59,130,246,0.18); color:var(--t-amber-2); border:1px solid rgba(59,130,246,0.4); padding:1px 6px; border-radius:999px; font-size:9px; font-weight:800; letter-spacing:0.08em;">PLANTED</span>'
         : (c.isTrue
-            ? '<span style="background:rgba(6,182,212,0.14); color:var(--t-cyan-2); border:1px solid rgba(6,182,212,0.4); padding:1px 6px; border-radius:999px; font-size:9px; font-weight:800; letter-spacing:0.08em;">TRUE</span>'
-            : '<span style="background:rgba(99,102,241,0.14); color:#a5b4fc; border:1px solid rgba(99,102,241,0.4); padding:1px 6px; border-radius:999px; font-size:9px; font-weight:800; letter-spacing:0.08em;">NOISE</span>');
+            ? '<span style="background:rgba(37,99,235,0.14); color:var(--t-cyan-2); border:1px solid rgba(37,99,235,0.4); padding:1px 6px; border-radius:999px; font-size:9px; font-weight:800; letter-spacing:0.08em;">TRUE</span>'
+            : '<span style="background:rgba(37,99,235,0.14); color:#a5b4fc; border:1px solid rgba(37,99,235,0.4); padding:1px 6px; border-radius:999px; font-size:9px; font-weight:800; letter-spacing:0.08em;">NOISE</span>');
       return `
         <div style="padding:8px 10px; border-bottom:1px dashed var(--t-border);
                     font-size:0.9em; display:flex; gap:8px; align-items:flex-start;">
-          <span style="color:var(--t-text-mut); font-family:JetBrains Mono; font-size:0.8em; min-width:62px;">${t}</span>
+          <span style="color:var(--t-text-mut); font-family:var(--ll-mono); font-size:0.8em; min-width:62px;">${t}</span>
           <span style="flex:1; line-height:1.4;">${escHtml(c.text || '')}</span>
           ${tag}
         </div>`;

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile chips box</title>
+<link rel="stylesheet" href="../../css/brand.css">
+<link rel="stylesheet" href="../../student/css/styles.css">
+<link rel="stylesheet" href="../../student/css/extra.css">
+<link rel="stylesheet" href="../../student/css/hub.css">
+<link rel="stylesheet" href="../../css/app-settings.css">
+<style>
+  body{margin:0;padding:24px;background:#e8edf4;}
+  *,*::before,*::after{animation:none !important;transition:none !important;}
+  .stage{max-width:440px;margin:0 auto;}
+  #out{margin:18px auto 0;max-width:440px;background:#fff;border:1px solid #cbd5e1;border-radius:8px;
+       padding:10px;font:12px/1.6 'Segoe UI',Arial,sans-serif;}
+</style>
+</head>
+<body class="light-mode">
+<div class="stage">
+  <!-- exact markup from student-dashboard.html #profileModal .profile-preview -->
+  <div class="profile-preview">
+    <div class="avatar-large"><span class="avatar-emoji">&#129418;</span></div>
+    <div class="profile-preview-name">Ahmet Yilmaz</div>
+    <div class="profile-xp-bar"><div class="xp-fill" style="width:33%"></div></div>
+    <div class="profile-xp-text">Level <span>4</span> &bull; <span>33</span>/<span>100</span> XP</div>
+    <div class="student-info-chips" id="studentInfoChips">
+      <span class="info-chip" id="infoClass">Class B125</span>
+      <span class="info-chip" id="infoLevel">Level B1+</span>
+      <span class="info-chip" id="infoModule">Module 4</span>
+      <span class="info-chip" id="infoYear">2026-2027</span>
+    </div>
+  </div>
+</div>
+<div id="out">measuring...</div>
+<script>
+window.addEventListener('load', () => setTimeout(() => {
+  const w = document.getElementById('studentInfoChips');
+  const cs = getComputedStyle(w);
+  const chip = getComputedStyle(document.getElementById('infoClass'));
+  const wr = w.getBoundingClientRect();
+  const chips = [...w.querySelectorAll('.info-chip')].map(c => {
+    const b = c.getBoundingClientRect();
+    return c.textContent + ' ' + Math.round(b.width) + 'x' + Math.round(b.height);
+  });
+  const res = {
+    wrapperDisplay: cs.display,
+    wrapperBackground: cs.backgroundColor,
+    wrapperBorder: cs.borderTopWidth + ' ' + cs.borderTopColor,
+    wrapperRadius: cs.borderTopLeftRadius,
+    wrapperBox: Math.round(wr.width) + 'x' + Math.round(wr.height),
+    chipDisplay: chip.display,
+    chipBackground: chip.backgroundColor,
+    chipRadius: chip.borderTopLeftRadius,
+    chips,
+    isBoxed: cs.display === 'flex' && cs.borderTopWidth !== '0px'
+             && cs.backgroundColor !== 'rgba(0, 0, 0, 0)',
+    // NB the chips are declared inline-flex but they are flex ITEMS of the
+    // wrapper, and a flex item's display is blockified, so the computed value
+    // is "flex". Asserting inline-flex here fails against correct CSS.
+    chipsArePills: chip.display === 'flex' && parseFloat(chip.borderTopLeftRadius) > 20
+  };
+  document.getElementById('out').innerHTML =
+    Object.entries(res).map(([k,v]) => '<b>'+k+'</b>: '+(Array.isArray(v)?v.join(' | '):v)).join('<br>');
+  window.__chips = res;
+}, 150));
+</script>
+</body>
+</html>

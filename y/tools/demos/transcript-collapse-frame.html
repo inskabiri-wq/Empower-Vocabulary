@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>transcript frame</title>
+<!-- The real stylesheets. This page is loaded in an iframe at a specific
+     width by transcript-collapse-trace.html; media queries inside an iframe
+     respond to the IFRAME's width, which is what makes per-width testing work.
+     It is a real file rather than a srcdoc string so there is no HTML-inside-
+     JS-string escaping to get wrong. -->
+<link rel="stylesheet" href="/css/brand.css">
+<link rel="stylesheet" href="/student/css/styles.css">
+<link rel="stylesheet" href="/student/css/extra.css">
+<link rel="stylesheet" href="/css/app-settings.css">
+<style>
+  *,*::before,*::after{animation:none !important;transition:none !important;}
+  /* The app's body is display:flex, which in this bare frame makes the exam
+     screen a flex ITEM that shrinks to its content - 544px inside a 1280px
+     frame - and the grid then measured nonsense. The real dashboard nests the
+     screen in its own full-width wrapper. Reproduce that, or the harness
+     measures a layout no student ever sees. */
+  body { display: block !important; }
+  #listeningExamScreen { width: 100%; }
+</style>
+</head>
+<body class="light-mode">
+
+<!-- Markup copied from student-dashboard.html:1207-1249, with the transcript
+     OPEN (has-transcript + drawer-open + data-mobile-view="transcript"), which
+     is the state the student is stuck in. -->
+<div id="listeningExamScreen" class="screen active has-transcript drawer-open"
+     data-mobile-view="transcript" style="display:block">
+  <div class="exam-mobile-tabs" id="examMobileTabs">
+    <button type="button" class="exam-mobile-tab" data-view="answers">Your Answers</button>
+    <button type="button" class="exam-mobile-tab active" data-view="transcript">Transcript</button>
+  </div>
+  <div class="exam-split has-transcript drawer-open">
+    <div class="exam-split-main"><div style="height:600px">questions</div></div>
+    <aside class="exam-split-side" id="examTranscriptDrawer">
+      <button class="transcript-close" id="tClose" aria-label="Close transcript">X</button>
+      <div id="examTranscript"><div class="transcript-lines" id="transcriptLines">
+        <div class="transcript-seg">line one</div>
+        <div class="transcript-seg">line two</div>
+      </div></div>
+    </aside>
+  </div>
+  <button class="transcript-toggle" id="transcriptToggle">Transcript</button>
+</div>
+
+<script>
+function vis(el) {
+  if (!el) return false;
+  var s = getComputedStyle(el);
+  if (s.display === 'none' || s.visibility === 'hidden' || parseFloat(s.opacity) === 0) return false;
+  var r = el.getBoundingClientRect();
+  return r.width > 0 && r.height > 0;
+}
+// A real tap, not an assumption: does elementFromPoint at the control's centre
+// actually land on it? A transparent overlay sitting on top would swallow the
+// tap while the element still reports as visible.
+function tappable(el) {
+  if (!vis(el)) return false;
+  var r = el.getBoundingClientRect();
+  var cx = Math.round(r.left + r.width / 2), cy = Math.round(r.top + r.height / 2);
+  if (cx < 0 || cy < 0 || cx > innerWidth || cy > innerHeight) return false;
+  var hit = document.elementFromPoint(cx, cy);
+  return !!hit && (hit === el || el.contains(hit));
+}
+window.addEventListener('load', function () {
+  // Cache-bust our own stylesheets before measuring. These <link>s carry no
+  // ?v=, so the browser serves whatever it already has and the harness reports
+  // the PREVIOUS build as if it were current. This has caught me out twice.
+  document.querySelectorAll('link[rel="stylesheet"]').forEach(function (l) {
+    var u = new URL(l.href, location.href);
+    u.searchParams.set('cb', String(Math.random()));
+    l.href = u.toString();
+  });
+  setTimeout(function () {
+    var tabs   = document.getElementById('examMobileTabs');
+    var close  = document.getElementById('tClose');
+    var toggle = document.getElementById('transcriptToggle');
+    var answersTab = document.querySelector('.exam-mobile-tab[data-view="answers"]');
+    var outs = {
+      tabBar: vis(tabs) && vis(answersTab),
+      closeX: vis(close),
+      toggle: vis(toggle)
+    };
+    var reachable = (outs.tabBar && tappable(answersTab))
+                 || (outs.closeX && tappable(close))
+                 || (outs.toggle && tappable(toggle));
+    // Size matters as much as presence. A control can be visible and
+    // hit-testable and still be missed by a thumb: 30x30 is well under the
+    // 44px minimum, and a missed tap is indistinguishable from "it does not
+    // work". Report the size of whichever control is actually offered.
+    var r = close.getBoundingClientRect();
+    var t = answersTab.getBoundingClientRect();
+    var offered = outs.tabBar ? t : (outs.closeX ? r : null);
+    // The fix is gated on touch, not width alone, so the harness has to know
+    // which kind of device it is emulating. Run the page under the browser's
+    // mobile emulation to exercise the touch branch, and under a normal
+    // desktop viewport to confirm mouse users are untouched.
+    var coarse = false;
+    try { coarse = matchMedia('(hover: none) and (pointer: coarse)').matches; } catch (e) {}
+    parent.postMessage({
+      w: innerWidth,
+      coarse: coarse,
+      outs: outs,
+      anyOut: outs.tabBar || outs.closeX || outs.toggle,
+      reachable: reachable,
+      offeredSize: offered ? (Math.round(offered.width) + 'x' + Math.round(offered.height)) : null,
+      meets44: !!offered && offered.width >= 44 && offered.height >= 44
+    }, '*');
+  }, 1300);
+});
+</script>
+</body>
+</html>

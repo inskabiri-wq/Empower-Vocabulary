@@ -159,12 +159,64 @@
       name: 'Listening',
       levels: {
         'B1': [
+          // NUMBERING: these follow the paper numbers on the source Word
+          // documents ("LISTENING 2 News Media.docx"), NOT the order the
+          // exams were added here. They used to follow insertion order, which
+          // meant this file and the exam data in student/js/listening-exam.js
+          // disagreed about every single title - the data called The Forger
+          // paper 1 while this called it paper 2. A teacher assigning
+          // "Listening 2" would have picked the wrong paper. Titles are display
+          // only; assignments are keyed on the ids below, which never change.
           {
             id: 'sample-fsmept',
-            title: 'FSMEPT Listening 1',
+            title: 'FSMEPT Listening - Sample Exam',
             subtitle: 'Interview · Conversation · Podcast',
             audio: 'student/audio/listening-exam-1.mp3',
             timeLimitMin: 30,
+            available: true
+          },
+          // Imported 2026-08-20 / 2026-08-21 from the source Word papers via
+          // tools/import-listening.js. Timings come from a Whisper SRT, each
+          // checked against the human transcript before import (word agreement
+          // noted on each exam in student/js/listening-exam.js).
+          {
+            id: 'fsmept-forger',
+            title: 'FSMEPT Listening 1 - The Forger',
+            subtitle: 'Film feature · 6 true/false + 10 multiple choice',
+            audio: 'student/audio/listening-forger.mp3',
+            timeLimitMin: 20,
+            available: true
+          },
+          {
+            id: 'fsmept-news-media',
+            title: 'FSMEPT Listening 2 - News Media',
+            subtitle: 'News feature · 7 gap-fill + 9 multiple choice',
+            audio: 'student/audio/listening-news-media.mp3',
+            timeLimitMin: 30,
+            available: true
+          },
+          {
+            id: 'fsmept-slang',
+            title: 'FSMEPT Listening 3 - What is up with Slang?',
+            subtitle: 'Lecture · 6 true/false + 9 multiple choice',
+            audio: 'student/audio/listening-slang.mp3',
+            timeLimitMin: 30,
+            available: true
+          },
+          {
+            id: 'fsmept-best-places',
+            title: 'FSMEPT Listening 4 - The Best Places to Live in the US',
+            subtitle: 'TV news report · 6 true/false + 11 multiple choice',
+            audio: 'student/audio/listening-best-places.mp3',
+            timeLimitMin: 20,
+            available: true
+          },
+          {
+            id: 'fsmept-museum',
+            title: 'FSMEPT Listening 5 - Museum of Science and Technology',
+            subtitle: 'Museum tour · 6 true/false',
+            audio: 'student/audio/listening-museum.mp3',
+            timeLimitMin: 15,
             available: true
           }
         ]

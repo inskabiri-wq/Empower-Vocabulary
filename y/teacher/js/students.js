@@ -5,7 +5,7 @@
 // before modals.js / admin.js / teacher-assignments.js. The const
 // declared here lives in the page's shared classic-script scope and
 // is reused by every later teacher-side script. Do NOT redeclare it
-// elsewhere — that's a SyntaxError that kills the whole dashboard.
+// elsewhere - that's a SyntaxError that kills the whole dashboard.
 const _normCls = (s) => String(s || '').trim().toUpperCase();
 
 // ============================================
@@ -13,8 +13,14 @@ const _normCls = (s) => String(s || '').trim().toUpperCase();
 // ============================================
 function updateStats() {
   document.getElementById('totalStudents').textContent = allStudents.length;
+  // "1000+" when the fetch hit its cap, because the exact total is not known.
+  // A flat 1000 reads as a real figure and is not one - the dashboard fetches
+  // at most the most recent 1000 sessions (see teacher/js/config.js).
+  const _sessionCap = 1000;
   document.getElementById('totalSessions').textContent =
-    (typeof window.totalSessionsCount === 'number' ? window.totalSessionsCount : allSessions.length);
+    (typeof window.totalSessionsCount === 'number')
+      ? window.totalSessionsCount
+      : (allSessions.length >= _sessionCap ? _sessionCap + '+' : allSessions.length);
   
   // Active today
   const today = new Date();
@@ -26,11 +32,10 @@ function updateStats() {
   ).size;
   document.getElementById('activeToday').textContent = activeToday;
   
-  // Average score
-  if (allSessions.length > 0) {
-    const avgScore = Math.round(
-      allSessions.reduce((sum, s) => sum + (s.percentage || 0), 0) / allSessions.length
-    );
+  // Average score. Marked work only - see teacher/js/score-utils.js for why
+  // an ungraded writing exam must not arrive here as a zero.
+  const avgScore = window.LLScore ? LLScore.avgRounded(allSessions) : null;
+  if (avgScore !== null) {
     document.getElementById('avgScore').textContent = avgScore + '%';
   }
 }
@@ -50,13 +55,13 @@ function renderStudentsTable() {
 
   let filtered = allStudents;
 
-  // Skill filter — keep only students with at least one session in the skill
+  // Skill filter - keep only students with at least one session in the skill
   if (skillFilter && skillFilter !== 'all' && typeof filterStudentsBySkill === 'function') {
     filtered = filterStudentsBySkill(filtered, allSessions, skillFilter);
   }
   
   // (Removed redundant in-render filter that read `currentUser.assignedClasses`
-  // — `currentUser` is the Firebase Auth user object which doesn't carry
+  // - `currentUser` is the Firebase Auth user object which doesn't carry
   // that field. allStudents is already correctly filtered upstream in
   // config.js loadDashboard for non-admin teachers, so no second pass needed.)
 
@@ -101,7 +106,7 @@ function renderStudentsTable() {
   
   if (filtered.length === 0) {
     // Friendlier message for teachers who haven't been assigned any
-    // classes / year / module yet — they'd otherwise see an empty
+    // classes / year / module yet - they'd otherwise see an empty
     // table and think the page was broken.
     const noAssignments = !isAdmin()
       && typeof currentUserData !== 'undefined' && currentUserData
@@ -143,22 +148,23 @@ function renderStudentsTable() {
     if (skillFilter && skillFilter !== 'all' && typeof filterSessionsBySkill === 'function') {
       studentSessions = filterSessionsBySkill(studentSessions, skillFilter);
     }
-    const avgScore = studentSessions.length > 0
-      ? Math.round(studentSessions.reduce((sum, s) => sum + (s.percentage || 0), 0) / studentSessions.length)
-      : 0;
+    // Marked work only. A student waiting on three essay marks used to show
+    // up here as someone who scored zero three times.
+    const avgRaw = window.LLScore ? LLScore.avgRounded(studentSessions) : null;
+    const avgScore = avgRaw === null ? 0 : avgRaw;
 
     // Second column value depends on the skill filter:
     //   - Vocabulary / All Skills → unique words learned (sum of wordsLearned arrays)
     //   - Reading / Listening     → best (max) percentage across attempts
     // Reading/listening sessions don't populate wordsLearned, so the
-    // "Words Studied" number for those skills would always be 0 — which
+    // "Words Studied" number for those skills would always be 0 - which
     // is correct but reads as "broken" to a teacher. Best Score is the
     // more useful per-skill metric in those cases.
     let secondValue;
     if (isExamSkill) {
-      secondValue = studentSessions.length > 0
-        ? Math.max(...studentSessions.map(s => s.percentage || 0)) + '%'
-        : '—';
+      // Best MARKED score. Math.max over an unmarked set returns -Infinity.
+      const bestPct = window.LLScore ? LLScore.best(studentSessions) : null;
+      secondValue = bestPct === null ? '-' : Math.round(bestPct) + '%';
     } else {
       const uniqueWords = new Set();
       studentSessions.forEach(s => {
@@ -269,7 +275,7 @@ function isTeacherEligibleStudent(student) {
 // Mirrors the existing demote flow in admin.js: updates the user doc role
 // AND keeps settings/teacherEmails in sync so the admin tab's whitelist
 // view stays accurate. Firestore rules already restrict this to admin
-// AND block promotion of @stu.fsm.edu.tr emails — this function adds a
+// AND block promotion of @stu.fsm.edu.tr emails - this function adds a
 // matching client-side gate so the UI fails fast with a clear message.
 // ============================================
 async function promoteStudentToTeacher(studentId, studentName, studentEmail) {
@@ -287,9 +293,9 @@ async function promoteStudentToTeacher(studentId, studentName, studentEmail) {
   }
 
   const displayName = studentName || 'this student';
-  // Show the EMAIL in the confirm as a safeguard — so the admin can verify
+  // Show the EMAIL in the confirm as a safeguard - so the admin can verify
   // they're promoting the intended person, not the wrong row.
-  const whoLine = studentEmail ? `${displayName} — ${studentEmail}` : displayName;
+  const whoLine = studentEmail ? `${displayName} - ${studentEmail}` : displayName;
   showConfirm(
     '👑',
     'Promote to Teacher?',
@@ -360,7 +366,7 @@ function updateLevelDistribution() {
   };
 
   // Tally sessions by level. Sessions outside the four canonical levels
-  // (e.g. legacy data with missing or odd `level`) are ignored — we
+  // (e.g. legacy data with missing or odd `level`) are ignored - we
   // don't want to silently inflate any bucket.
   const counts = { 'A2': 0, 'B1': 0, 'B1+': 0, 'B2': 0 };
   allSessions.forEach(s => {

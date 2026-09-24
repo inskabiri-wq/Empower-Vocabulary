@@ -1,5 +1,5 @@
 /* ============================================================
-   READING CLASSROOM — Student client
+   READING CLASSROOM - Student client
    ----------------------------------------------------------------
    The no-leak design lives in this file. Critical rules:
 
@@ -26,15 +26,12 @@
 (function () {
   'use strict';
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-    authDomain: "empower-vocabulary-practice.firebaseapp.com",
-    projectId: "empower-vocabulary-practice",
-    storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-    messagingSenderId: "136270199832",
-    appId: "1:136270199832:web:174222066ef1cbdc8f576d"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // Firebase is started by js/firebase-init.js, which reads the project
+  // from js/tenant.js. This file used to name one university directly, which would
+  // have pointed every deployment at that same project.
+  if (!firebase.apps.length) {
+    throw new Error('reading-student: js/tenant.js + js/firebase-init.js must load first.');
+  }
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
@@ -110,7 +107,7 @@
     session = sdoc.data();
     if (session.status === 'finished') { toast('That exam has ended', 'fail'); return; }
     manifest = session.questionsManifest || null;
-    if (!manifest) { toast('Exam not ready yet — try again in a moment.', 'fail'); return; }
+    if (!manifest) { toast('Exam not ready yet - try again in a moment.', 'fail'); return; }
 
     try {
       await sref.collection('players').doc(myUid).set({
@@ -206,7 +203,7 @@
     });
     unsubs.push(u);
   }
-  // Local mirror of /answers — keeps the selected/typed values
+  // Local mirror of /answers - keeps the selected/typed values
   // sticky across refreshes. Reading my own answers is allowed
   // by the rules; the host needs this same path to grade.
   function subscribeMyAnswers() {
@@ -270,7 +267,7 @@
     if (!wrap) return;
 
     wrap.innerHTML = (manifest.sections || []).map(sec => {
-      // Section header — wrapped as an accordion. The whole body
+      // Section header - wrapped as an accordion. The whole body
       // (instructions + items) lives inside `.exam-section-body` so
       // collapsing it animates cleanly without disturbing the header.
       // Defaults to expanded so the page behaves exactly as before
@@ -285,7 +282,7 @@
           <div class="exam-section-body">
           ${sec.instructions ? `<div class="exam-section-instr">${escHtml(sec.instructions)}</div>` : ''}
       `;
-      // Per-type item renderers — each `.exam-item` is now its own
+      // Per-type item renderers - each `.exam-item` is now its own
       // accordion: the stem stays visible; the answer area (.exam-options
       // / .exam-select / .exam-text) wraps in `.exam-item-body` and
       // collapses when the student taps the per-question chevron. The
@@ -321,13 +318,13 @@
               </div>
             </div>`;
         } else if (sec.type === 'match-gaps' || sec.type === 'match-headings') {
-          // Drop-down picker — student picks from sec.options.
+          // Drop-down picker - student picks from sec.options.
           out += `
             <div class="exam-item" data-q="${escHtml(k)}">
               ${stemHead(`<strong>${escHtml(it.label || it.id)}</strong>`)}
               <div class="exam-item-body">
                 <select class="exam-select" data-key="${escHtml(k)}">
-                  <option value="">— pick —</option>
+                  <option value="">- pick -</option>
                   ${(sec.options || []).map(o => `
                     <option value="${escHtml(o.id)}">${escHtml(o.id).toUpperCase()}. ${escHtml(o.text)}</option>
                   `).join('')}
@@ -349,7 +346,7 @@
       return out;
     }).join('');
 
-    // Accordion behaviour — section-level: click the section header
+    // Accordion behaviour - section-level: click the section header
     // to collapse the whole part. Question-level: click the per-
     // question chevron to collapse just that answer area. Both
     // default to expanded so first-load behaviour is unchanged.
@@ -364,7 +361,7 @@
     });
     wrap.querySelectorAll('.exam-item-toggle').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        // Don't bubble into any parent — section header etc.
+        // Don't bubble into any parent - section header etc.
         e.stopPropagation();
         const item = btn.closest('.exam-item');
         if (!item) return;
@@ -382,7 +379,7 @@
         if (submitted) return;
         const k = radio.name;
         saveAnswer(k, radio.value);
-        // Visual sticky state — only "selected" styling, never
+        // Visual sticky state - only "selected" styling, never
         // green/red, never any correctness signal. This is the
         // core leak-prevention rule.
         const grp = wrap.querySelectorAll(`input[name="${CSS.escape(k)}"]`);
@@ -412,7 +409,7 @@
   }
 
   // Re-sync the rendered inputs with myAnswers (after Firestore
-  // snapshots fire). Idempotent — safe to call any time.
+  // snapshots fire). Idempotent - safe to call any time.
   function reflectAnswersInUI() {
     const wrap = document.getElementById('examSections');
     if (!wrap) return;
@@ -508,7 +505,7 @@
       submitted = true;
       if (examTimerInt) { clearInterval(examTimerInt); examTimerInt = null; }
       setView('submitted');
-      // Initial scores update — the host's grader writes back to
+      // Initial scores update - the host's grader writes back to
       // /players/{uid}.score on reveal/end, but we want to show a
       // placeholder immediately. We'll keep showing 0 until the
       // host's snapshot writes the real score back, at which point
@@ -537,7 +534,7 @@
         const mine = myAnswers[k];
         if (mine == null || mine === '' || expected == null) return;
         // Lenient compare for find-word; exact (case-insensitive) for others.
-        // We rely on the host's grader as the ultimate source of truth — this
+        // We rely on the host's grader as the ultimate source of truth - this
         // is a display-side approximation.
         if (String(mine).toLowerCase().trim() === String(expected).toLowerCase().trim()) {
           c++;

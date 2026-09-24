@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Classroom Mode load test</title>
+<!-- ============================================================
+     CLASSROOM MODE - how many students fit in ONE room?
+
+     Answers a capacity question with measurement instead of arithmetic.
+     The suspicion was that Firestore would be the limit; it is not. The
+     limit is the TEACHER'S BROWSER, because classroom/js/teacher.js
+     listens to the whole players subcollection and rebuilds every player
+     card on every snapshot.
+
+     Two things are measured:
+
+       1. RENDER COST. The real updatePlayersDisplay is pulled out of
+          classroom/js/teacher.js by brace matching, so this runs the
+          shipped code and not a retyped copy of it.
+
+       2. SNAPSHOT COUNT. Firestore coalesces changes, so N students
+          answering does NOT necessarily mean N callbacks. That number
+          decides everything, and it can only be observed, which is what
+          the emulator is for.
+
+     Needs the Firestore emulator:  firebase emulators:start --only firestore
+     Served by the static-y launch config.
+     ============================================================ -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 20px; background: #f6f8fb; color: #0f172a; }
+  #out { white-space: pre; font-family: ui-monospace, monospace; font-size: 13px;
+         background: #fff; border: 1px solid #d8e1ee; border-radius: 10px; padding: 14px; }
+  /* The render target must exist AND BE VISIBLE. Hiding it made the browser
+     skip layout and paint, which is most of the cost being measured: the first
+     run of this harness reported 1.4ms for 300 players against 49ms measured
+     standalone. A hidden element is not a cheap render, it is no render.
+     Clipped to a small window so the page stays usable while still laying out. */
+  #playersContainer { height: 300px; overflow: auto; contain: none; }
+</style>
+</head>
+<body>
+<h1>Classroom Mode load test</h1>
+<div id="playerCount"></div>
+<button id="startGameBtn">start</button>
+<div id="playersContainer"></div>
+<div id="out">idle</div>
+
+<script>
+const out = document.getElementById('out');
+const log = (s) => { out.textContent += '\n' + s; };
+
+window.RESULTS = null;
+window.runLoadTest = async function (sizes, questionsPerGame) {
+  sizes = sizes || [30, 100, 300, 600, 1000];
+  questionsPerGame = questionsPerGame || 20;
+  out.textContent = 'connecting to emulator...';
+
+  firebase.initializeApp({ projectId: 'empower-vocabulary-practice' });
+  const db = firebase.firestore();
+  db.useEmulator('127.0.0.1', 8080);
+
+  // Pull the REAL render function out of the shipped file.
+  const srcTxt = await (await fetch('/classroom/js/teacher.js?cb=' + Math.random())).text();
+  const grab = (name) => {
+    const i = srcTxt.indexOf('function ' + name);
+    if (i < 0) return null;
+    let depth = 0, started = false;
+    for (let k = srcTxt.indexOf('{', i); k < srcTxt.length; k++) {
+      if (srcTxt[k] === '{') { depth++; started = true; }
+      else if (srcTxt[k] === '}') { depth--; if (started && depth === 0) return srcTxt.slice(i, k + 1); }
+    }
+    return null;
+  };
+  const code = ['updatePlayersDisplay', 'getInitials', 'escapeHtml'].map(grab);
+  if (code.some(c => !c)) { log('FAILED to extract render fn'); return; }
+  (0, eval)(code.join('\n'));
+  log('extracted real updatePlayersDisplay from classroom/js/teacher.js');
+
+  const results = [];
+
+  for (const N of sizes) {
+    const code4 = 'LT' + N;
+    log('\n=== ' + N + ' players ===');
+
+    // Clean slate for this room.
+    const prev = await db.collection('classroom_sessions').doc(code4).collection('players').get();
+    for (let i = 0; i < prev.docs.length; i += 400) {
+      const b = db.batch();
+      prev.docs.slice(i, i + 400).forEach(dd => b.delete(dd.ref));
+      await b.commit();
+    }
+    await db.collection('classroom_sessions').doc(code4)
+      .set({ status: 'active', createdAt: Date.now() });
+
+    // JOIN: batched, this is setup rather than the thing being measured.
+    const tJoin0 = performance.now();
+    for (let i = 0; i < N; i += 400) {
+      const b = db.batch();
+      for (let k = i; k < Math.min(i + 400, N); k++) {
+        b.set(db.collection('classroom_sessions').doc(code4).collection('players').doc('u' + k),
+              { name: 'Student Name ' + k, score: 0, correctAnswers: 0, status: 'ready' });
+      }
+      await b.commit();
+    }
+    const joinMs = performance.now() - tJoin0;
+
+    // TEACHER listens exactly as classroom/js/teacher.js does.
+    let snapshots = 0, renderMs = 0, docsSeen = 0;
+    const unsub = db.collection('classroom_sessions').doc(code4).collection('players')
+      .onSnapshot(snap => {
+        snapshots++; docsSeen += snap.docs.length;
+        const t = performance.now();
+        updatePlayersDisplay(snap.docs);
+        void document.getElementById('playersContainer').offsetHeight;
+        renderMs += performance.now() - t;
+      });
+    await new Promise(r => setTimeout(r, 800));   // let the first snapshot land
+    const baseSnapshots = snapshots, baseRender = renderMs;
+
+    // ONE QUESTION ROUND: every student writes a score update at once, the
+    // way a class answering the same question does.
+    const tR0 = performance.now();
+    await Promise.all(Array.from({ length: N }, (_, k) =>
+      db.collection('classroom_sessions').doc(code4).collection('players').doc('u' + k)
+        .update({ score: 10 * (k % 7) + 1, correctAnswers: (k % 5) })
+        .catch(() => {})));
+    const writeMs = performance.now() - tR0;
+    await new Promise(r => setTimeout(r, 2500));  // let snapshots settle
+    unsub();
+
+    const roundSnapshots = snapshots - baseSnapshots;
+    const roundRenderMs = renderMs - baseRender;
+    const row = {
+      players: N,
+      joinMs: Math.round(joinMs),
+      oneRound: {
+        writeMs: Math.round(writeMs),
+        writesPerSec: Math.round(N / (writeMs / 1000)),
+        snapshotCallbacks: roundSnapshots,
+        renderMsTotal: Math.round(roundRenderMs),
+        avgRenderMs: roundSnapshots ? Math.round(roundRenderMs / roundSnapshots * 10) / 10 : 0
+      },
+      wholeGameEstimate: {
+        questions: questionsPerGame,
+        snapshotCallbacks: roundSnapshots * questionsPerGame,
+        renderSecondsOnTeacherCpu: Math.round(roundRenderMs * questionsPerGame / 100) / 10
+      }
+    };
+    results.push(row);
+    log(JSON.stringify(row));
+  }
+
+  window.RESULTS = results;
+  log('\nDONE');
+  return results;
+};
+</script>
+</body>
+</html>

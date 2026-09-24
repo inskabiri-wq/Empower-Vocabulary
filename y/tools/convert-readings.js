@@ -8,11 +8,11 @@
      student/data/readings/<LEVEL>/exam-N.json
 
    The plain-text authoring format is documented at the top of
-   student/data/readings/_raw/B2/exam-4.txt — see that file for a
+   student/data/readings/_raw/B2/exam-4.txt - see that file for a
    complete worked example. Summary:
 
      ID:            <exam id used in exam-registry.js>
-     LEVEL:         <CEFR level — A2, B1, B1+, B2, ...>
+     LEVEL:         <CEFR level - A2, B1, B1+, B2, ...>
      TITLE:         <human-readable title>
      SUBTITLE:      <secondary line>
      TIME_LIMIT_MIN: <number>
@@ -212,14 +212,14 @@ function parseMcqSection(block, ctx, kind) {
     if (lab) { label = lab[1].trim(); continue; }
     const inst = ln.match(/^INSTRUCTIONS:\s*(.+)$/);
     if (inst) { instructions = inst[1].trim(); continue; }
-    // Question header — start of a new item
+    // Question header - start of a new item
     const q = ln.match(/^(\d+)\.\s+(.+)$/);
     if (q) {
       if (current) items.push(current);
       current = { id: kind[0] + q[1], question: q[2].trim(), options: [], answer: '' };
       continue;
     }
-    // Option line — looser regex to be tolerant of leading whitespace.
+    // Option line - looser regex to be tolerant of leading whitespace.
     // Up to [a-h] so vocab-matching MCQs with 6-8 options (e.g. Part C
     // of A2 R3 "Slow Food") can still parse cleanly. The renderer just
     // shows however many options the question has.
@@ -250,7 +250,7 @@ function parseMcqSection(block, ctx, kind) {
   };
 }
 
-// True/False — N statements, each with ANSWER: T or F. Rendered as
+// True/False - N statements, each with ANSWER: T or F. Rendered as
 // an MCQ with two fixed options (True / False) so we don't have to
 // teach the engine a new section type.
 function parseTrueFalseSection(block, ctx, label) {
@@ -297,7 +297,7 @@ function parseTrueFalseSection(block, ctx, label) {
 // Short-answer (one input per item, auto-graded). Each item has a
 // question stem + a reference answer. The engine's `find-word`
 // renderer (reading-exam.js renderFindWord) gives each item its own
-// text input, and computeScore() uses freeTextMatch() — a forgiving
+// text input, and computeScore() uses freeTextMatch() - a forgiving
 // matcher that lowercases, trims punctuation, strips leading
 // articles, and collapses whitespace. So "Itard's" matches "itards"
 // and "(a million dollars)" matches "million dollars".
@@ -305,7 +305,7 @@ function parseTrueFalseSection(block, ctx, label) {
 // Multi-acceptable answers: if your AUTHOR text writes the answer
 // as "fat / fructose" with slashes, we split on " / " and pass each
 // alternative as part of the `acceptable` array so any of them
-// matches. Use slashes deliberately — comma stays literal.
+// matches. Use slashes deliberately - comma stays literal.
 function parseShortAnswerSection(block, ctx, label) {
   const lines = block.split('\n');
   let secLabel = label || '', instructions = '';
@@ -371,7 +371,7 @@ function parseWritingSection(block, ctx) {
 
 // ── Top-level file parser ─────────────────────────────────
 function parseFile(raw) {
-  // Strip lines that are pure comments (## prefix) — they're meant
+  // Strip lines that are pure comments (## prefix) - they're meant
   // for authors only and shouldn't be parsed as data.
   const cleaned = raw
     .split('\n')
@@ -456,7 +456,7 @@ function convertFile(srcPath, outPath) {
   const passageHtml = blocks.__PASSAGE__ ? buildPassage(blocks.__PASSAGE__) : '';
 
   // Walk the sectionList in the order they appeared. Duplicates of
-  // the same type (e.g. two `# WRITING` blocks) are supported —
+  // the same type (e.g. two `# WRITING` blocks) are supported -
   // each block is rendered as its own section, distinguished by the
   // LABEL field. Section ids are made unique by suffixing with a
   // counter when the same type repeats.

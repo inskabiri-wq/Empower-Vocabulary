@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animation rewrite - visual check</title>
+<link rel="stylesheet" href="/css/brand.css">
+<link rel="stylesheet" href="/student/css/styles.css">
+<link rel="stylesheet" href="/student/css/extra.css">
+<link rel="stylesheet" href="/student/css/coming-soon.css">
+<link rel="stylesheet" href="/assignments/css/assignments.css">
+<link rel="stylesheet" href="/css/app-settings.css">
+<style>
+  body{margin:0;padding:24px;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a;}
+  .demo{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:22px;margin:0 0 14px;max-width:760px;}
+  .demo h4{margin:0 0 14px;font-size:12px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+  table{border-collapse:collapse;width:100%;max-width:760px;font-size:13px;background:#fff;}
+  th,td{border:1px solid #e2e8f0;padding:7px 9px;text-align:left;}
+  th{background:#eef2f7;}
+  .pass{color:#047857;font-weight:700;} .fail{color:#b91c1c;font-weight:700;}
+  #sum{margin-top:12px;font-size:15px;font-weight:700;}
+  p.lede{color:#475569;font-size:13px;max-width:78ch;line-height:1.55;}
+</style>
+</head>
+<body class="light-mode">
+<h3 style="margin:0 0 4px;font-size:16px;">Rewritten animations - still there?</h3>
+<p class="lede">
+  Cheap is not the goal on its own - the effects had to survive. Each element
+  below is the real markup with the real CSS. The checks confirm the moving
+  layer EXISTS, is animated, and that what it animates is transform or opacity
+  rather than a paint property.
+</p>
+
+<div class="demo"><h4>Level badge (was: animated box-shadow)</h4>
+  <div class="level-badge">
+    <div class="level-badge-icon">&#127891;</div>
+    <div class="level-badge-info"><div>Level 4</div></div>
+  </div>
+</div>
+
+<div class="demo"><h4>XP bar (was: animated background-position)</h4>
+  <div id="menuScreen">
+    <div class="xp-bar" style="height:10px;background:#e3e9f2;border-radius:9999px;overflow:hidden">
+      <div class="xp-bar-fill" style="width:60%;height:100%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="demo"><h4>Assignment progress (was: animated background-position)</h4>
+  <div style="height:10px;background:#e3e9f2;border-radius:5px;overflow:hidden">
+    <div class="assignment-progress-fill" style="width:55%"></div>
+  </div>
+</div>
+
+<div class="demo"><h4>Create button (was: animated background-position)</h4>
+  <button class="create-assignment-btn">+ New assignment</button>
+</div>
+
+<table id="t"><thead><tr><th>#</th><th>Check</th><th>Expected</th><th>Actual</th><th></th></tr></thead><tbody></tbody></table>
+<div id="sum">checking...</div>
+
+<script>
+const rows = [];
+function check(name, expected, actual){ rows.push({name, expected, actual, ok:String(expected)===String(actual)}); }
+
+function anim(el, pseudo) { return getComputedStyle(el, pseudo || null).animationName; }
+
+window.addEventListener('load', () => setTimeout(() => {
+  const badge = document.querySelector('.level-badge-icon');
+  check('1. badge still animates', 'badgePulse', anim(badge));
+  check('2. badge glow layer exists and animates', 'badgeGlow', anim(badge, '::before'));
+  check('3. badge glow layer is behind the badge', true, parseFloat(getComputedStyle(badge, '::before').zIndex) < 0);
+
+  const xp = document.querySelector('.xp-bar-fill');
+  check('4. XP bar itself no longer animates', 'none', anim(xp));
+  check('5. XP shine layer animates', 'dashXpShine', anim(xp, '::before'));
+
+  const prog = document.querySelector('.assignment-progress-fill');
+  check('6. progress bar itself no longer animates', 'none', anim(prog));
+  check('7. progress shine layer animates', 'progressShimmer', anim(prog, '::before'));
+
+  const btn = document.querySelector('.create-assignment-btn');
+  check('8. button itself no longer animates', 'none', anim(btn));
+  check('9. button gradient layer animates', 'gradientShift', anim(btn, '::before'));
+
+  // the whole point: nothing visible should still be on the paint path
+  const PAINT = /box-shadow|background-position|background-size|filter|width|height/;
+  let painty = 0;
+  [[badge,null],[badge,'::before'],[xp,'::before'],[prog,'::before'],[btn,'::before']].forEach(([el,p]) => {
+    const cs = getComputedStyle(el, p);
+    if (cs.animationName !== 'none' && PAINT.test(cs.animationName)) painty++;
+  });
+  check('10. no layer animates a paint property by name', 0, painty);
+
+  const tb = document.querySelector('#t tbody');
+  tb.innerHTML = rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.expected+
+    '</td><td>'+r.actual+'</td><td class="'+(r.ok?'pass">PASS':'fail">FAIL')+'</td></tr>').join('');
+  const pass = rows.filter(r=>r.ok).length;
+  const el = document.getElementById('sum');
+  el.textContent = pass+' / '+rows.length+(pass===rows.length?'  PASS':'  FAIL');
+  el.className = pass===rows.length?'pass':'fail';
+  window.__animVisual = { pass, total: rows.length, failed: rows.filter(r=>!r.ok) };
+}, 400));
+</script>
+</body>
+</html>

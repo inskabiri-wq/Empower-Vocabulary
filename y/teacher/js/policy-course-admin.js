@@ -242,7 +242,7 @@
       }
     }
     for (const [, t] of tests) {
-      if (!t.passed && t.restudy) return ['📖 Restudying', '#fbbf24'];
+      if (!t.passed && t.restudy) return ['📖 Restudying', '#60a5fa'];
     }
     return ['▶ In progress', 'var(--text-muted, #94a3b8)'];
   }
@@ -318,7 +318,7 @@
     if (!out) return;
     const code = String(($('pcVerifyCode') || {}).value || '').trim().toUpperCase();
     const typedName = String(($('pcVerifyName') || {}).value || '').trim();
-    if (!code) { out.innerHTML = '<span style="color:#fbbf24;">Enter the certificate code printed on the document.</span>'; return; }
+    if (!code) { out.innerHTML = '<span style="color:#60a5fa;">Enter the certificate code printed on the document.</span>'; return; }
     out.innerHTML = '<span style="color:var(--text-muted,#94a3b8);">Checking...</span>';
 
     let rec = null;
@@ -353,7 +353,7 @@
     if (!typedName || normName(typedName) === normName(rec.name)) {
       out.innerHTML = '<div style="padding:10px 12px; border-radius:8px; background:rgba(16,185,129,0.12); color:#34d399; font-weight:700;">✓ Genuine certificate.<div style="font-weight:600; color:var(--text-primary,#e6edf3); margin-top:4px;">' + details + '</div></div>';
     } else {
-      out.innerHTML = '<div style="padding:10px 12px; border-radius:8px; background:rgba(251,191,36,0.12); color:#fbbf24; font-weight:700;">⚠ This code is real, but it was issued to a different name. The name on the document may have been altered.<div style="font-weight:600; color:var(--text-primary,#e6edf3); margin-top:4px;">On record: ' + details + '</div><div style="margin-top:2px; color:var(--text-muted,#94a3b8);">You typed: ' + esc(typedName) + '</div></div>';
+      out.innerHTML = '<div style="padding:10px 12px; border-radius:8px; background:rgba(96,165,250,0.12); color:#60a5fa; font-weight:700;">⚠ This code is real, but it was issued to a different name. The name on the document may have been altered.<div style="font-weight:600; color:var(--text-primary,#e6edf3); margin-top:4px;">On record: ' + details + '</div><div style="margin-top:2px; color:var(--text-muted,#94a3b8);">You typed: ' + esc(typedName) + '</div></div>';
     }
   }
 
@@ -374,10 +374,34 @@
     const saveBtn = $('caSaveBtn');
     if (saveBtn) saveBtn.addEventListener('click', saveActivation);
     const waitAuth = () => {
-      if (auth.currentUser) { loadConfig(); return; }
+      if (auth.currentUser) { revealCoursesTab(auth.currentUser); loadConfig(); return; }
       setTimeout(waitAuth, 500);
     };
     waitAuth();
+  }
+
+  // ── Who may see the Courses tab ──────────────────────────────
+  //
+  // Nobody was checking. The sidebar button had no gate of any kind, so every
+  // teacher could open this panel and activate or deactivate the mini course
+  // and its modules for the whole organisation. Placement at least had a grant
+  // document behind it, even though its check let everyone through.
+  //
+  // The tab now starts hidden in the markup and is revealed only for the owner
+  // admin or a teacher ticked in Admin > Access (settings/coursesAccess).
+  // Failing closed is the point: if the read errors, the tab stays hidden.
+  const COURSES_ADMIN_EMAIL = 'akabiriaslifar@fsm.edu.tr';
+  function revealCoursesTab(user) {
+    const show = () => {
+      document.querySelectorAll('[data-tab="courses"]').forEach(b => { b.style.display = ''; });
+    };
+    if (!user) return;
+    if (String(user.email || '').toLowerCase() === COURSES_ADMIN_EMAIL) { show(); return; }
+    db.collection('settings').doc('coursesAccess').get().then(snap => {
+      const cfg = snap.exists ? (snap.data() || {}) : {};
+      const uids = Array.isArray(cfg.teacherUids) ? cfg.teacherUids : [];
+      if (uids.indexOf(user.uid) !== -1) show();
+    }).catch(() => { /* stays hidden */ });
   }
   document.addEventListener('DOMContentLoaded', init);
 })();

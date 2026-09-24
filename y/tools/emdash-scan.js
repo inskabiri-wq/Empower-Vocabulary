@@ -16,7 +16,14 @@
    Used by preflight.js (batch) and emdash-hook.js (per write).
    ============================================================ */
 var fs = require('fs');
-var DASH = /[–—―]/;
+// Written as unicode ESCAPES, not literal dash characters, and that is the
+// whole point: this file is app source too, so a repo-wide "replace em dashes
+// with hyphens" pass rewrites the literals inside it. That is exactly what
+// happened once - `/[<em><en><bar>]/` became `/[--<bar>]/`, which a regex reads
+// as the RANGE U+002D to U+2015. It then matched nearly every letter and digit,
+// so the guard fired on every line of any file and blocked edits.
+// Escapes cannot be rewritten by a dash sweep, so the detector stays correct.
+var DASH = /[\u2013\u2014\u2015]/;
 
 function scan(file) {
   var content;

@@ -36,6 +36,11 @@
     { id: 'game_tug',       icon: '🪢', name: 'Tug of War', group: 'Classroom games' },
     { id: 'game_bingo',     icon: '🎱', name: 'Vocab Bingo', group: 'Classroom games' },
     { id: 'game_scramble',  icon: '🔀', name: 'Sentence Scramble', group: 'Classroom games' },
+    // The AI Quiz. Its launcher (#pickAiQuiz) and its gate entry
+    // (game_aiquiz, in the toggle map at the foot of classroom-teacher.html)
+    // both existed already - this row was the missing half, so the switch had
+    // nothing to draw and an admin could never turn the game off.
+    { id: 'game_aiquiz',    icon: '🤖', name: 'AI Quiz', group: 'Classroom games' },
     // Vocabulary practice modes - deactivating one hides its card from the
     // vocabulary screen (student dashboard).
     { id: 'mode_choice',        icon: '📋', name: 'Multiple Choice', group: 'Vocabulary modes' },

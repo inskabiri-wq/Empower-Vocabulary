@@ -38,18 +38,32 @@ Firestore doc on load, so both emulators are required for a real login flow.
    - teacher  `demo.teacher@fsm.edu.tr` / `Passw0rd!`
    - one class doc
 
-3. Point the app at the emulators. Do NOT commit this into production config. Add the
-   snippet below to a LOCAL-only copy, or paste it once in the browser console right
-   after the page's Firebase init, or guard it so it only runs on localhost with a flag.
-   The guard shown here refuses to run anywhere except localhost:
+3. Point the app at the emulators. **This is now built in - no snippet to paste and no
+   local copy to maintain.** Open any page on localhost and run this once in the
+   console:
 
    ```js
-   // run only against the emulators, never production
-   if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-     firebase.auth().useEmulator('http://127.0.0.1:9099');
-     firebase.firestore().useEmulator('127.0.0.1', 8080);
-   }
+   localStorage.setItem('useEmulators', '1');   // then reload
    ```
+
+   `js/firebase-init.js` reads that flag right after `initializeApp` and, ONLY when the
+   page is served from localhost or 127.0.0.1, points Auth and Firestore at the local
+   emulators. Clear the flag (`localStorage.removeItem('useEmulators')`) to go back to
+   the real project. Measured both ways: with the flag Firestore reports
+   `127.0.0.1:8080`; without it, `firestore.googleapis.com`.
+
+   It has to live in `firebase-init.js` and not in a page script, because Firestore
+   refuses settings changes once the client has started ("Firestore has already been
+   started and its settings can no longer be changed"), so immediately after
+   `initializeApp` is the last safe moment.
+
+   `student/js/config.js` and `teacher/js/config.js` still carry their own copy of the
+   same block, which is harmless: on a fresh app instance the second `useEmulator` call
+   is a no-op for both Auth and Firestore.
+
+   **This covers all 32 pages.** It used to be only the 10 that load a `config.js`, so
+   `app.html`, `courses.html`, `placement.html`, `writing-exam.html` and most of the
+   classroom pages could not be driven logged in at all.
 
 4. Serve the app locally (the existing `static-y` launch config, or
    `firebase emulators:start` also serves hosting if you add `--only hosting`), open it,

@@ -61,12 +61,117 @@ function sessionSkill(s) {
   return 'vocabulary';
 }
 
+// ---- Prime the journey stats from the last visit ---------------------------
+//
+// THIS IS THE SECOND REFRESH.
+//
+// hub.js builds its grid signature out of the skill percentages (hub.js:186)
+// and those come from journeyStats. Until the Firestore read below resolves,
+// journeyStats is config.js's zero default, so the first paint draws every
+// tile at 0%. When the read lands it writes #journeyAccuracy, a
+// MutationObserver on that element calls renderHub (hub.js:372), the signature
+// no longer matches, and hub.js:212 does `grid.innerHTML = ''` - the whole grid
+// is torn down and rebuilt. That teardown is what a student sees as the
+// dashboard loading a second time, about a second and a half in.
+//
+// loadJourneyStats() has always saved a copy to localStorage on every
+// successful read. It was simply never read back except inside the catch
+// block, so the happy path could never benefit from it. Priming here means the
+// first paint already has the right numbers and the later rebuild becomes a
+// no-op. A stale copy still corrects itself, with exactly one rebuild, which is
+// correct and rare - the same trade-off feature-toggles.js makes.
+//
+// Runs at PARSE time. Load order on the dashboard is config.js -> auth.js ->
+// progress.js -> hub.js, so journeyStats is declared before this runs and
+// populated before hub.js renders.
+// WHOSE cache is this? The stats used to live under a single unscoped
+// `journeyStats` key, so the copy left behind by the last person to use the
+// browser was primed for whoever signed in next. Signing out cleared it, but
+// closing the tab did not, and on a shared campus machine that is the common
+// case. It also meant a cache written before a Firestore cleanup kept being
+// shown afterwards: an account with zero grammar sessions displayed 81% on
+// its grammar tile while the Quest Board correctly showed 0%.
+//
+// The key is per-uid now. Priming runs at parse time, before Firebase Auth
+// has resolved, so the uid is read from the session Firebase itself persists
+// in localStorage. Scanning for the key by prefix rather than rebuilding
+// `firebase:authUser:<apiKey>:[DEFAULT]` keeps this working if the SDK
+// version or the project changes.
+function _statsUid() {
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf('firebase:authUser:') === 0) {
+        var v = JSON.parse(localStorage.getItem(k) || 'null');
+        if (v && v.uid) return String(v.uid);
+      }
+    }
+  } catch (_) { /* private mode, or a corrupt entry */ }
+  return null;
+}
+function _statsKey(uid) { return 'journeyStats:' + uid; }
+
+// Shared so no other file has to know the key format. Returns {} when nobody
+// is signed in, which is the safe answer for every caller.
+window.LLJourneyCache = {
+  read: function () {
+    try {
+      var uid = _statsUid();
+      if (!uid) return {};
+      return JSON.parse(localStorage.getItem(_statsKey(uid)) || '{}') || {};
+    } catch (_) { return {}; }
+  },
+  // Called by auth.js once Firebase has said who is signed in. The parse-time
+  // prime below looks for the uid in localStorage, but the SDK keeps the
+  // session in IndexedDB, so on most browsers it finds nobody and the tiles
+  // drew 0% until the sessions query landed. Same checks as that prime.
+  // Returns true when the tiles now show this student's own last numbers.
+  primeFor: function (uid) {
+    try {
+      if (!uid || typeof journeyStats === 'undefined') return false;
+      var v = JSON.parse(localStorage.getItem(_statsKey(uid)) || 'null');
+      if (!v || typeof v !== 'object' || Array.isArray(v)) return false;
+      if (!v.bySkill || typeof v.bySkill !== 'object' || Array.isArray(v.bySkill)) return false;
+      journeyStats = v;
+      if (typeof renderHub === 'function') renderHub();
+      return true;
+    } catch (_) { return false; }
+  }
+};
+
+(function primeJourneyStats() {
+  try {
+    if (typeof journeyStats === 'undefined') return;   // config.js absent
+
+    // The old unscoped key can never be primed from again. Remove it rather
+    // than leave it, so a cache written by the previous build cannot be read
+    // by anything that still looks for it.
+    try { localStorage.removeItem('journeyStats'); } catch (_) {}
+
+    var uid = _statsUid();
+    if (!uid) return;                                  // nobody signed in yet
+    var raw = localStorage.getItem(_statsKey(uid));
+    if (!raw) return;                                  // first visit for them
+    var v = JSON.parse(raw);
+    // Must be a plain object carrying the field hub.js actually reads. A
+    // corrupt or half-written entry would mis-draw the rings, which is worse
+    // than drawing zeros, so anything unexpected is ignored.
+    if (!v || typeof v !== 'object' || Array.isArray(v)) return;
+    if (!v.bySkill || typeof v.bySkill !== 'object' || Array.isArray(v.bySkill)) return;
+    journeyStats = v;
+  } catch (_) { /* corrupt entry: keep config.js's zero default */ }
+})();
+
 async function loadJourneyStats() {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) {
+    // Nothing to load, so nothing for the boot hold to wait for either.
+    try { if (window.LLHubBoot) LLHubBoot.ready('stats'); } catch (_) {}
+    return;
+  }
 
   try {
-    // Plain `where` query — no `orderBy` because the composite index
+    // Plain `where` query - no `orderBy` because the composite index
     // (userId + createdAt) isn't created in Firestore, which made the
     // first attempt fail with HTTP 400 every page load (cosmetic but
     // noisy). The loop below already sorts client-side to find the
@@ -74,7 +179,14 @@ async function loadJourneyStats() {
     const sessionsSnapshot = await db.collection('sessions')
       .where('userId', '==', user.uid)
       .get();
-    
+    // Offline, the SDK does not fail this query: it answers from its empty
+    // memory cache. That means "no connection", not "no practice", and it used
+    // to overwrite this student's saved numbers with zeros. Treat it as the
+    // failure it is, so the catch below shows the saved copy instead.
+    if (sessionsSnapshot.empty && sessionsSnapshot.metadata && sessionsSnapshot.metadata.fromCache) {
+      throw new Error('offline: the sessions query came back from an empty cache');
+    }
+
     // Cache the raw session docs so the Learning Map can reuse them instead
     // of re-reading the whole collection. Same page-view = same data.
     _sessionsCache = [];
@@ -137,8 +249,8 @@ async function loadJourneyStats() {
       recentActivity: recentSession
     };
     
-    // Save to localStorage as backup
-    localStorage.setItem('journeyStats', JSON.stringify(journeyStats));
+    // Save to localStorage as backup, under THIS user's key.
+    try { localStorage.setItem(_statsKey(user.uid), JSON.stringify(journeyStats)); } catch (_) {}
     
     // Update the journey card UI
     updateJourneyCard();
@@ -148,13 +260,20 @@ async function loadJourneyStats() {
   } catch (e) {
     console.error('Could not load journey stats from Firebase:', e);
     
-    // Try to load from localStorage backup
-    const savedStats = localStorage.getItem('journeyStats');
+    // Try to load from localStorage backup - this user's, never anyone else's.
+    const savedStats = localStorage.getItem(_statsKey(user.uid));
     if (savedStats) {
       journeyStats = JSON.parse(savedStats);
       updateJourneyCard();
       console.log('Loaded journey stats from localStorage backup');
     }
+  } finally {
+    // Fresh (or fallback) percentages are in: tell the hub's boot hold. This
+    // is the ONLY 'stats' signal - the copy auth.js primes from the cache can
+    // be stale, so the page is not revealed on it. The tiles pick the numbers
+    // up from hub.js's #journeyAccuracy observer, a microtask later, so still
+    // before the next frame.
+    try { if (window.LLHubBoot) LLHubBoot.ready('stats'); } catch (_) {}
   }
 }
 
@@ -172,7 +291,7 @@ function updateJourneyCard() {
   if (wordsEl) wordsEl.textContent = journeyStats.totalWordsLearned || 0;
   if (sessionsEl) sessionsEl.textContent = journeyStats.totalSessions || 0;
 
-  // Dashboard welcome banner (design v2) — mirror streak
+  // Dashboard welcome banner (design v2) - mirror streak
   const welcomeStreak = document.getElementById('welcomeStreak');
   if (welcomeStreak) welcomeStreak.textContent = sessionStreak || 0;
 
@@ -211,11 +330,10 @@ function updateLevelDisplay() {
   if (currentXP) currentXP.textContent = xpInCurrentLevel;
   if (nextXP) nextXP.textContent = xpNeeded;
 
-  // Dashboard XP milestone ticks (design v2): mark any milestone ≤ current XP as hit
-  document.querySelectorAll('#xpMilestones .xp-milestone').forEach(m => {
-    const mark = parseInt(m.dataset.xp, 10) || 0;
-    m.classList.toggle('hit', xpInCurrentLevel >= mark);
-  });
+  // The 0/25/50/75/100 tick scale under the XP bar was removed in the density
+  // pass: the "X / 100 XP" label beside it already carries the same information
+  // in a third of the height. Nothing renders #xpMilestones any more, so the
+  // loop that lit the ticks is gone with it.
 }
 
 function updateLastSessionDisplay() {
@@ -251,7 +369,7 @@ function updateLastSessionDisplay() {
     const barFill = document.getElementById('lastSessionBarFill');
     const percentEl = document.getElementById('lastSessionPercent');
     if (barFill) barFill.style.width = '0%';
-    if (percentEl) percentEl.textContent = '—';
+    if (percentEl) percentEl.textContent = '-';
   }
 }
 
@@ -366,7 +484,7 @@ function addXP(amount) {
 
 // Game challenges that define "mastery" of a unit.
 // NOTE: "Listening Mode" here is the vocabulary practice mode (hear the
-// definition → pick the word) — distinct from the Listening *skill* exam,
+// definition → pick the word) - distinct from the Listening *skill* exam,
 // which lives on its own skill screen and is intentionally NOT a per-unit
 // vocabulary challenge. Renamed for clarity so users don't conflate them.
 const mapChallenges = [
@@ -399,7 +517,7 @@ async function loadMapProgress() {
   if (typeof auth !== 'undefined' && auth.currentUser) {
     try {
       // Reuse the sessions already fetched by loadJourneyStats() on dashboard
-      // load — same page-view, same data — to avoid a second full-collection
+      // load - same page-view, same data - to avoid a second full-collection
       // read. Fall back to a fresh query only if the cache was never populated.
       let sessions;
       if (Array.isArray(_sessionsCache)) {
@@ -488,7 +606,7 @@ function showMapLevel(level) {
         <div class="qc-challenge ${done ? 'done' : ''}" onclick="startChallengeFromMap('${level}','${unit}','${ch.activity}'); event.stopPropagation();" title="${done ? 'Completed!' : 'Score ' + ch.threshold + '% to complete'}">
           <span class="qc-challenge-icon">${ch.icon}</span>
           <span class="qc-challenge-name">${ch.name}</span>
-          <span class="qc-challenge-score">${best > 0 ? best + '%' : '—'}</span>
+          <span class="qc-challenge-score">${best > 0 ? best + '%' : '-'}</span>
           <span class="qc-challenge-check">${done ? '✅' : '⬜'}</span>
         </div>`;
     }).join('');

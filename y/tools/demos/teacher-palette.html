@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher palette harness</title>
+<!-- Real stylesheets, same order as teacher-dashboard.html, so the cascade
+     that decides the palette is the one under test. The dashboard itself is
+     auth-gated and bounces to the login page, so the shell is reproduced here
+     instead of stubbing Firebase. -->
+<!-- Written from JS with a per-load cache-buster. Static hrefs meant the
+     harness kept showing a stylesheet from an earlier edit, which is worse than
+     no harness: it reports a palette that is no longer in the file. -->
+<script>
+(function () {
+  var b = '?b=' + Date.now();
+  [ '../../css/brand.css',
+    '../../teacher/css/styles.css',
+    '../../teacher/css/skills.css',
+    '../../assignments/css/assignments.css',
+    '../../teacher/css/dashboard-v2.css',
+    '../../css/app-settings.css'
+  ].forEach(function (href) {
+    document.write('<link rel="stylesheet" href="' + href + b + '">');
+  });
+  document.write('<scr' + 'ipt src="../../js/app-settings.js' + b + '"></scr' + 'ipt>');
+})();
+</script>
+</head>
+<body data-app-settings="off" class="t2-active">
+
+<div class="container">
+  <aside class="t2-sidebar">
+    <div class="t2-sidebar-brand">
+      <div class="t2-brand-logo">L</div>
+      <div class="t2-brand-text">
+        <span class="top">Lingualab</span>
+        <span class="bottom">Teacher</span>
+      </div>
+    </div>
+    <div class="t2-sidebar-section-lbl">Main</div>
+    <button class="t2-nav-item active"><span class="ico">■</span><span class="label">Overview</span></button>
+    <button class="t2-nav-item"><span class="ico">■</span><span class="label">Students</span><span class="badge">3</span></button>
+    <button class="t2-nav-item"><span class="ico">■</span><span class="label">Assignments</span></button>
+    <button class="t2-nav-item"><span class="ico">■</span><span class="label">Reports</span></button>
+  </aside>
+
+  <main id="mainContent" style="display:flex; flex-direction:column; padding:24px; gap:20px; overflow:auto;">
+    <h1 style="font-size:1.4rem; margin:0;">Overview</h1>
+
+    <div class="t2-stat-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px;">
+      <div class="t2-stat-card blue">
+        <div class="t2-stat-icon">■</div>
+        <div class="t2-stat-value">62</div>
+        <div class="t2-stat-label">Students</div>
+      </div>
+      <div class="t2-stat-card cyan">
+        <div class="t2-stat-icon">■</div>
+        <div class="t2-stat-value">1,204</div>
+        <div class="t2-stat-label">Sessions</div>
+      </div>
+      <div class="t2-stat-card amber">
+        <div class="t2-stat-icon">■</div>
+        <div class="t2-stat-value">18</div>
+        <div class="t2-stat-label">Active today</div>
+      </div>
+      <div class="t2-stat-card green">
+        <div class="t2-stat-icon">■</div>
+        <div class="t2-stat-value">74%</div>
+        <div class="t2-stat-label">Avg score</div>
+      </div>
+    </div>
+
+    <div class="t2-panel">
+      <div class="t2-panel-title">Needs attention</div>
+      <div class="t2-attn-row severity-critical">Ayşe K. has not signed in for 14 days</div>
+      <div class="t2-attn-row severity-warning">3 assignments past their deadline</div>
+      <div class="t2-attn-row">Placement test results ready to review</div>
+      <div style="margin-top:10px; display:flex; gap:8px;">
+        <span class="t2-badge success">Passed</span>
+        <span class="t2-badge warning">Pending</span>
+        <span class="t2-badge danger">Overdue</span>
+      </div>
+    </div>
+
+    <div class="t2-panel">
+      <div class="t2-panel-title">Activity popularity</div>
+      <div id="pop"></div>
+    </div>
+
+    <div class="t2-panel">
+      <div class="t2-panel-title">Level distribution</div>
+      <div id="levels" style="display:flex; gap:8px; align-items:flex-end; height:90px;"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+// Mirrors the real scales in teacher/js/overview-v2.js so the harness shows the
+// colours the dashboard will actually draw.
+var POP_SCALE = ['#1e3a8a','#1d4ed8','#2563eb','#3b82f6','#0369a1','#0284c7',
+                 '#60a5fa','#075985','#1e40af','#38bdf8','#93c5fd','#0c4a6e','#7dd3fc'];
+var POP_NAMES = ['Grammar MCQ','Grammar Fill','Grammar Unscramble','Match','Multiple Choice',
+                 'Fill in Blank','Spelling','Listening Mode','Word Order','Pronunciation',
+                 'Unscramble','Listening Exam','Reading Exam'];
+document.getElementById('pop').innerHTML = POP_NAMES.map(function (n, i) {
+  var pct = 95 - i * 6;
+  return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:0.8rem;">'
+    + '<span style="width:150px;color:var(--t2-text-muted)">' + n + '</span>'
+    + '<span style="flex:1;height:10px;border-radius:6px;background:var(--t2-surface3);overflow:hidden;">'
+    + '<i style="display:block;height:100%;width:' + pct + '%;background:' + POP_SCALE[i] + '"></i></span>'
+    + '<span style="width:38px;text-align:right;">' + pct + '</span></div>';
+}).join('');
+
+var LEVELS = { 'A2':'#93c5fd', 'B1':'#60a5fa', 'B1+':'#3b82f6', 'B2':'#2563eb', 'C1':'#1e40af' };
+document.getElementById('levels').innerHTML = Object.keys(LEVELS).map(function (k, i) {
+  var h = 30 + i * 14;
+  return '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;">'
+    + '<div style="width:44px;height:' + h + 'px;border-radius:6px 6px 0 0;background:' + LEVELS[k] + '"></div>'
+    + '<span style="font-size:0.7rem;color:var(--t2-text-muted)">' + k + '</span></div>';
+}).join('');
+</script>
+</body>
+</html>

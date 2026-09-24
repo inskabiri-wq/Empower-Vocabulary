@@ -6,19 +6,12 @@ function escapeHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-// Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDmTTictWJmxVxj9frqSODPUjOgpRPPNzU",
-  authDomain: "empower-vocabulary-practice.firebaseapp.com",
-  projectId: "empower-vocabulary-practice",
-  storageBucket: "empower-vocabulary-practice.firebasestorage.app",
-  messagingSenderId: "136270199832",
-  appId: "1:136270199832:web:174222066ef1cbdc8f576d",
-  measurementId: "G-1BBXBVEP5C"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Firebase is started by js/firebase-init.js, which reads the project
+// from js/tenant.js. This file used to name the project itself, which
+// would have pointed every deployment at that same project.
+if (!firebase.apps.length) {
+  throw new Error('teacher config: js/tenant.js + js/firebase-init.js must load first.');
+}
 const auth = firebase.auth();
 const db = firebase.firestore();
 
@@ -79,7 +72,7 @@ auth.onAuthStateChanged(async (user) => {
   console.log('[auth] onAuthStateChanged', user && user.email);
   if (!user) {
     console.log('[auth] no user, redirecting to index.html');
-    window.location.href = 'index.html';
+    window.location.replace('index.html');
     return;
   }
 
@@ -153,6 +146,10 @@ async function loadDashboard() {
     // Get current user data
     const currentUserDoc = await db.collection('users').doc(auth.currentUser.uid).get();
     currentUserData = currentUserDoc.data();
+    // Tell the university logo the profile is here (js/org-brand.js). Its own
+    // re-checks give up after ~20s, so a slow load would otherwise never
+    // show the seal.
+    try { if (window.LLOrgBrand) LLOrgBrand.refresh(); } catch (e) {}
 
     // EARLY EXIT for teachers with no scope. Firestore rules now require
     // teacherHasScope() (any assignedClasses / assignedYear / assignedModule)
@@ -239,8 +236,19 @@ async function loadDashboard() {
     // The free Spark tier allows 50K Firestore reads/day. This query used
     // to read EVERY session doc on every dashboard load (thousands), which
     // blows the quota fast under repeated reloads. Fix:
-    //   1) keep the lifetime "Total Sessions" accurate via the cheap count()
-    //      aggregation (~1 read per 1000 docs), then
+    //   1) TRY the count() aggregation for a true lifetime total, then
+    //      2) only FETCH the most recent N docs.
+    //
+    // MEASURED, AND count() IS NOT AVAILABLE HERE. It is a modular-SDK API
+    // (getCountFromServer); the COMPAT build this app uses does not expose
+    // `query.count()` at any version, 10.7.1 included. So this call has always
+    // thrown straight into the catch and `totalSessionsCount` has always been
+    // null - the tile has been showing the FETCHED length, capped at 1000, the
+    // whole time.
+    //
+    // The attempt is kept because it costs nothing and starts working the day
+    // the app moves to the modular SDK. What is fixed is the claim: the tile
+    // now says "1000+" instead of a flat 1000 that reads as a true total.
     //   2) only FETCH the most recent N docs - that's all the activity feed,
     //      popularity, and recent-score analytics actually need.
     window.totalSessionsCount = null;

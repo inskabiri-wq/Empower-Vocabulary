@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI Quiz listener load</title>
+<!-- ============================================================
+     AI QUIZ - what the HOST'S TAB actually receives during a game
+     ------------------------------------------------------------
+     tools/demos/aiquiz-scale.html measured how long the host takes
+     to DRAW the lobby, and found it flat: the lobby is one number,
+     not a card per student. That was the right thing to check
+     after Vocab Race, and it passed.
+
+     It never measured how OFTEN the host is asked to draw it.
+
+     watchPlayers() subscribes to the whole players subcollection.
+     Every student's score write is a change to that collection, so
+     the host gets a callback per student per question - and the
+     subscription used to live until the game ENDED, not until the
+     quiz started. A flat render cost multiplied by twenty thousand
+     callbacks is still twenty thousand document reads pushed down
+     to one laptop at the front of a hall.
+
+     This measures the callback count directly, with the listener
+     attached and then released, so the fix is a number rather than
+     a claim. It also checks the other direction: one host write
+     fanning out to many student listeners.
+
+     Needs:  firebase emulators:start --only firestore,auth
+     Run:    window.runLoad(1000)
+     ============================================================ -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 20px; }
+  #out { white-space: pre-wrap; font-family: ui-monospace, monospace; font-size: 13px;
+         background: #fff; border: 1px solid #d8e1ee; border-radius: 10px; padding: 14px; }
+  /* Visible on purpose. A hidden container makes the browser skip layout and
+     paint, which reports a fake win - that mistake cost a whole run once. */
+  #roster { min-height: 90px; border: 1px dashed #ccd; margin: 8px 0; }
+</style>
+</head>
+<body>
+<h1>AI Quiz listener load</h1>
+<div id="rosterCount"></div>
+<button id="startBtn"></button>
+<div id="roster"></div>
+<div id="out">idle</div>
+<script>
+const out = document.getElementById('out');
+const log = (s) => { out.textContent += '\n' + s; console.log(s); };
+const EMU_FS = 'http://127.0.0.1:8080';
+const PROJ = 'empower-vocabulary-practice';
+const DOCS = EMU_FS + '/v1/projects/' + PROJ + '/databases/(default)/documents';
+window.RESULT = null;
+
+// Admin write, bypassing rules. Fixture setup only - never the thing measured.
+function adminPatch(path, fields) {
+  return fetch(DOCS + path, {
+    method: 'PATCH',
+    headers: { 'Authorization': 'Bearer owner', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields })
+  });
+}
+
+// Wait for a stream to go QUIET rather than sleeping a fixed time. Returns
+// once no callback has arrived for `quiet` ms. Driving off the observed
+// stream instead of a guessed delay is the difference between measuring the
+// system and measuring my own timeout.
+function untilQuiet(getCount, quiet, cap) {
+  return new Promise((resolve) => {
+    let last = getCount(), lastChange = performance.now(), t0 = performance.now();
+    const tick = setInterval(() => {
+      const now = getCount();
+      if (now !== last) { last = now; lastChange = performance.now(); }
+      const idle = performance.now() - lastChange;
+      if (idle >= quiet || performance.now() - t0 > cap) { clearInterval(tick); resolve(last); }
+    }, 50);
+  });
+}
+
+window.runLoad = async function (N) {
+  N = N || 1000;
+  out.textContent = 'starting, N=' + N;
+
+  // Fail loudly if the emulator is not actually there. "No errors, no result"
+  // has been a dead harness every single time.
+  let probe;
+  try { probe = await fetch(DOCS + '/__probe__/x', { headers: { 'Authorization': 'Bearer owner' } }); }
+  catch (e) { log('EMULATOR UNREACHABLE at ' + EMU_FS + ' - ' + e.message); return; }
+  if (probe.status >= 500) { log('emulator responded ' + probe.status); return; }
+  log('emulator reachable (' + probe.status + ')');
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp({ projectId: PROJ, apiKey: 'x', authDomain: 'x' });
+    firebase.auth().useEmulator('http://127.0.0.1:9099', { disableWarnings: true });
+    firebase.firestore().useEmulator('127.0.0.1', 8080);
+  }
+  const auth = firebase.auth(), db = firebase.firestore();
+
+  const t = await auth.createUserWithEmailAndPassword('load' + Date.now() + '@fsm.edu.tr', 'Test1234!');
+  const hostUid = t.user.uid;
+  await adminPatch('/users/' + hostUid, { role: { stringValue: 'teacher' } });
+  log('host ready: ' + hostUid);
+
+  const code = 'L' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  const ref = db.collection('aiquiz_sessions').doc(code);
+  await ref.set({ code, status: 'waiting', currentQuestion: -1, phase: 'asking',
+                  questionEndsAt: null, total: 20, seconds: 30, hostUid, teacherName: 'Host' });
+
+  // ---- seed N players (fixture) ----
+  const s0 = performance.now();
+  for (let i = 0; i < N; i += 250) {
+    const w = [];
+    for (let k = i; k < Math.min(i + 250, N); k++) {
+      w.push(adminPatch('/aiquiz_sessions/' + code + '/players/u' + k,
+        { name: { stringValue: 'Student ' + k }, score: { integerValue: '0' } }));
+    }
+    await Promise.all(w);
+  }
+  log('seeded ' + N + ' players in ' + Math.round(performance.now() - s0) + 'ms');
+
+  const R = { players: N };
+
+  // ============================================================
+  // A. THE OLD BEHAVIOUR: roster listener left attached during a
+  //    question. Count the callbacks one question costs the host.
+  // ============================================================
+  let cbA = 0, lastSizeA = 0;
+  const unsubA = ref.collection('players').onSnapshot((snap) => {
+    cbA++; lastSizeA = snap.size;
+    // the shipped lobby render, so the cost is the real one
+    const r = document.getElementById('roster');
+    r.innerHTML = '<div class="mg-player-count">' + snap.size +
+      '<span>' + (snap.size === 1 ? 'student joined' : 'students joined') + '</span></div>';
+    void r.offsetHeight;
+  });
+  await untilQuiet(() => cbA, 800, 20000);
+  const baselineA = cbA;
+  log('listener attached, initial snapshot settled at ' + baselineA + ' callback(s), size=' + lastSizeA);
+
+  const a0 = performance.now();
+  for (let i = 0; i < N; i += 250) {
+    const w = [];
+    for (let k = i; k < Math.min(i + 250, N); k++) {
+      w.push(adminPatch('/aiquiz_sessions/' + code + '/players/u' + k,
+        { name: { stringValue: 'Student ' + k }, score: { integerValue: String(100 + k) } }));
+    }
+    await Promise.all(w);
+  }
+  const writeMs = performance.now() - a0;
+  await untilQuiet(() => cbA, 1500, 60000);
+  unsubA();
+  R.attached_callbacksPerQuestion = cbA - baselineA;
+  R.attached_callbacksPer20qGame = R.attached_callbacksPerQuestion * 20;
+  R.writeBurstMs = Math.round(writeMs);
+  R.writesPerSec = Math.round(N / (writeMs / 1000));
+  log('A. listener ATTACHED through the question: ' + R.attached_callbacksPerQuestion +
+      ' callbacks (' + R.attached_callbacksPer20qGame + ' across a 20-question game)');
+
+  // ============================================================
+  // B. THE FIX: released when the quiz starts, as askQuestion()
+  //    now does. Same write burst, count what still arrives.
+  // ============================================================
+  let cbB = 0;
+  const unsubB = ref.collection('players').onSnapshot(() => { cbB++; });
+  await untilQuiet(() => cbB, 800, 20000);
+  unsubB();                                   // <- what askQuestion() does now
+  const afterRelease = cbB;
+  for (let i = 0; i < N; i += 250) {
+    const w = [];
+    for (let k = i; k < Math.min(i + 250, N); k++) {
+      w.push(adminPatch('/aiquiz_sessions/' + code + '/players/u' + k,
+        { name: { stringValue: 'Student ' + k }, score: { integerValue: String(500 + k) } }));
+    }
+    await Promise.all(w);
+  }
+  await new Promise((r) => setTimeout(r, 2500));   // generous: nothing SHOULD arrive
+  R.released_callbacksPerQuestion = cbB - afterRelease;
+  log('B. listener RELEASED at quiz start:     ' + R.released_callbacksPerQuestion + ' callbacks');
+
+  // ============================================================
+  // C. THE OTHER DIRECTION: one host write fanning out to many
+  //    student listeners on the session document.
+  // ============================================================
+  const FAN = 60;                              // browser tab limit, not a system limit
+  let fanCb = 0;
+  const subs = [];
+  for (let i = 0; i < FAN; i++) subs.push(ref.onSnapshot(() => { fanCb++; }));
+  await untilQuiet(() => fanCb, 800, 20000);
+  const fanBase = fanCb;
+  const f0 = performance.now();
+  await ref.update({ currentQuestion: 3, phase: 'asking', questionEndsAt: Date.now() + 30000 });
+  await untilQuiet(() => fanCb, 1200, 20000);
+  R.fanoutListeners = FAN;
+  R.fanoutCallbacksForOneWrite = fanCb - fanBase;
+  R.fanoutMs = Math.round(performance.now() - f0);
+  subs.forEach((u) => u());
+  log('C. one question advance -> ' + R.fanoutCallbacksForOneWrite + ' callbacks across ' +
+      FAN + ' listeners in ' + R.fanoutMs + 'ms');
+
+  // ============================================================
+  // D. The document every phone listens to, and the ladder.
+  // ============================================================
+  const sess = await ref.get();
+  R.sessionDocBytes = new TextEncoder().encode(JSON.stringify(sess.data())).length;
+  const l0 = performance.now();
+  const top = await ref.collection('players').orderBy('score', 'desc').limit(10).get();
+  R.ladderDocsRead = top.size;
+  R.ladderMs = Math.round(performance.now() - l0);
+  log('D. session doc ' + R.sessionDocBytes + ' B; ladder read ' + R.ladderDocsRead +
+      ' docs in ' + R.ladderMs + 'ms');
+
+  // Reads saved per game by the fix, which is the number that matters to the bill
+  R.readsSavedPer20qGame = R.attached_callbacksPer20qGame - (R.released_callbacksPerQuestion * 20);
+
+  window.RESULT = R;
+  log('\nDONE\n' + JSON.stringify(R, null, 1));
+  return R;
+};
+</script>
+</body>
+</html>

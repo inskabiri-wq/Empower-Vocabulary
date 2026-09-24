@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEMP harness - real Overview at 390</title>
+<link rel="stylesheet" href="../../css/brand.css">
+<link rel="stylesheet" href="../../teacher/css/styles.css">
+<link rel="stylesheet" href="../../teacher/css/skills.css">
+<link rel="stylesheet" href="../../assignments/css/assignments.css">
+<link rel="stylesheet" href="../../teacher/css/dashboard-v2.css">
+</head>
+<body class="t2-active">
+<div class="container">
+  <aside class="t2-sidebar" id="t2sidebar">
+    <button class="t2-nav-item active" data-tab="overview"><span class="ico">O</span><span class="label">Overview</span></button>
+    <button class="t2-nav-item" data-tab="students"><span class="ico">S</span><span class="label">Students</span></button>
+    <button class="t2-nav-item" data-tab="assignments"><span class="ico">A</span><span class="label">Assignments</span></button>
+    <button class="t2-nav-item" data-tab="activity"><span class="ico">C</span><span class="label">Activity</span></button>
+  </aside>
+  <div class="t2-main">
+    <header class="t2-page-header">
+      <div><h1 id="t2HeaderTitle">Good morning, Alireza</h1><p class="sub" id="t2HeaderSub">Saturday, August 22 - 6 students need your attention</p></div>
+      <div class="t2-header-actions" id="t2OverviewActions">
+        <select class="t2-period-select ll-select"><option>Last 7 days</option></select>
+      </div>
+    </header>
+    <div id="tab-overview" class="tab-content active">
+      <div class="t2-overview">
+
+        <!-- Stat cards - sparklines + trend deltas -->
+        <div class="t2-stats-grid">
+          <div class="t2-stat-card cyan" id="t2card-students">
+            <div class="t2-stat-top">
+              <span class="t2-stat-icon" data-icon="users" data-icon-size="22"></span>
+              <span class="t2-stat-trend" id="t2trend-students" style="display:none"></span>
+            </div>
+            <div class="t2-stat-value" id="t2val-students">0</div>
+            <div class="t2-stat-label" id="t2lbl-students">Total Students</div>
+            <div class="t2-stat-spark" id="t2spark-students"></div>
+            <div class="t2-stat-sub" id="t2sub-students" style="display:none"></div>
+          </div>
+
+          <div class="t2-stat-card purple" id="t2card-sessions">
+            <div class="t2-stat-top">
+              <span class="t2-stat-icon" data-icon="target" data-icon-size="22"></span>
+              <span class="t2-stat-trend" id="t2trend-sessions" style="display:none"></span>
+            </div>
+            <div class="t2-stat-value" id="t2val-sessions">0</div>
+            <div class="t2-stat-label" id="t2lbl-sessions">Total Sessions</div>
+            <div class="t2-stat-spark" id="t2spark-sessions"></div>
+            <div class="t2-stat-sub" id="t2sub-sessions" style="display:none"></div>
+          </div>
+
+          <div class="t2-stat-card amber" id="t2card-active">
+            <div class="t2-stat-top">
+              <span class="t2-stat-icon" data-icon="zap" data-icon-size="22"></span>
+              <span class="t2-stat-trend" id="t2trend-active" style="display:none"></span>
+            </div>
+            <div class="t2-stat-value" id="t2val-active">0</div>
+            <div class="t2-stat-label" id="t2lbl-active">Active Today</div>
+            <div class="t2-stat-spark" id="t2spark-active"></div>
+            <div class="t2-stat-sub" id="t2sub-active"></div>
+          </div>
+
+          <div class="t2-stat-card green" id="t2card-score">
+            <div class="t2-stat-top">
+              <span class="t2-stat-icon" data-icon="trending-up" data-icon-size="22"></span>
+              <span class="t2-stat-trend" id="t2trend-score" style="display:none"></span>
+            </div>
+            <div class="t2-stat-value" id="t2val-score">0%</div>
+            <div class="t2-stat-label" id="t2lbl-score">Avg. Score</div>
+            <div class="t2-stat-spark" id="t2spark-score"></div>
+            <div class="t2-stat-sub" id="t2sub-score" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- Row 1: Level Distribution + Weekly Activity heatmap -->
+        <div class="t2-panels-row">
+          <div class="t2-panel">
+            <div class="t2-panel-title">
+              <span data-icon="bar-chart" data-icon-size="16"></span>
+              <span>Level Distribution</span>
+            </div>
+            <p class="t2-panel-sub">Number of students at each CEFR level (from their profile)</p>
+            <div class="t2-bars" id="t2levelBars"></div>
+            <div class="t2-bar-legend" id="t2levelLegend"></div>
+          </div>
+
+          <div class="t2-panel">
+            <div class="t2-panel-title">
+              <span data-icon="activity" data-icon-size="16"></span>
+              <span>Activity Popularity</span>
+            </div>
+            <p class="t2-panel-sub">Which games students used most - last 7 days</p>
+            <div class="t2-popularity" id="t2popularity"></div>
+          </div>
+        </div>
+
+        <!-- Row 2: Needs Attention + Recent Activity -->
+        <div class="t2-panels-row" style="grid-template-columns: 1.4fr 1fr;">
+          <div class="t2-panel alert-tinted">
+            <div class="t2-panel-title" style="justify-content:space-between">
+              <span style="display:flex; align-items:center; gap:8px;">
+                <span data-icon="alert-triangle" data-icon-size="16"></span>
+                <span>Needs Attention</span>
+                <span class="t2-badge warning" id="t2attnCount">0 students</span>
+              </span>
+              <button type="button" class="t2-btn" onclick="switchTab('students')">View All</button>
+            </div>
+            <div class="t2-attn-list" id="t2attnList"></div>
+          </div>
+
+          <div class="t2-panel">
+            <div class="t2-panel-title" style="justify-content: space-between;">
+              <span style="display:flex; align-items:center; gap:8px;">
+                <span data-icon="file-text" data-icon-size="16"></span>
+                <span>Recent Activity</span>
+              </span>
+              <!-- Teaser → full list. Clarifies this is a 5-item preview
+                   of the Activity tab's full filterable feed, not a
+                   separate data source. -->
+              <button type="button" class="t2-btn" onclick="switchTab('activity')"
+                      style="font-size: 0.78em; padding: 4px 10px;">View all →</button>
+            </div>
+            <div class="t2-feed" id="t2feedList"></div>
+            <div style="margin-top: 8px; font-size: 0.76em; color: var(--t2-text-muted, #94a3b8); text-align: center;">
+              Showing the latest 5 · full history on the Activity tab
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+var RED='#ef4444', AMBER='#f59e0b', BLUE='#3b82f6';
+var rows = [
+  {name:'Zeynep Kaya', init:'ZK', sev:'critical', color:RED,   issue:'Inactive 21 days \u00b7 Avg score 34%'},
+  {name:'Mehmet Demir', init:'MD', sev:'critical', color:RED,   issue:'Avg score 38%'},
+  {name:'Ay\u015fe Y\u0131lmaz', init:'AY', sev:'warning',  color:AMBER, issue:'Inactive 9 days'},
+  {name:'Emre \u00c7elik', init:'E\u00c7', sev:'warning',  color:AMBER, issue:'No sessions completed'},
+  {name:'Elif \u015eahin', init:'E\u015e', sev:'warning',  color:AMBER, issue:'Avg score 47%'},
+  {name:'Burak Ar\u0131k', init:'BA', sev:'info',     color:BLUE,  issue:'Inactive 7 days'}
+];
+document.getElementById('t2attnCount').textContent = '6 students';
+document.getElementById('t2attnList').innerHTML = rows.map(function(r){
+  return '<div class="t2-attn-row severity-'+r.sev+'">'
+   + '<div class="t2-attn-avatar" style="background:'+r.color+'20; border-color:'+r.color+'50; color:'+r.color+';">'+r.init+'</div>'
+   + '<div class="t2-attn-info"><div class="t2-attn-name">'+r.name+'</div><div class="t2-attn-issue">'+r.issue+'</div></div>'
+   + '<span class="t2-badge '+r.sev+'">'+r.sev.toUpperCase()+'</span>'
+   + '<button type="button" class="t2-attn-flag">\u2690</button>'
+   + '<button type="button" class="t2-attn-action">View</button>'
+   + '</div>';
+}).join('');
+var feed = [
+  ['Zeynep Kaya','completed Multiple Choice \u00b7 82%','3 hr ago'],
+  ['Mehmet Demir','submitted Reading Exam \u00b7 61%','5 hr ago'],
+  ['Ay\u015fe Y\u0131lmaz','submitted Listening Exam \u00b7 74%','1 d ago'],
+  ['Emre \u00c7elik','practised Grammar \u00b7 Unscramble \u00b7 90%','1 d ago'],
+  ['Elif \u015eahin','completed Spelling \u00b7 55%','2 d ago']
+];
+document.getElementById('t2feedList').innerHTML = feed.map(function(f){
+  return '<div class="t2-feed-row"><span class="t2-feed-dot" style="background:'+BLUE+'"></span>'
+    + '<div><div class="t2-feed-text"><strong>'+f[0]+'</strong> '+f[1]+'</div>'
+    + '<div class="t2-feed-time">'+f[2]+'</div></div></div>';
+}).join('');
+var LEVELS=['A2','B1','B1+','B2','C1'];
+var LC={'A2':'#93c5fd','B1':'#60a5fa','B1+':'#3b82f6','B2':'#2563eb','C1':'#1e40af'};
+var counts={'A2':12,'B1':38,'B1+':21,'B2':9};
+var max=40;
+document.getElementById('t2levelBars').innerHTML = LEVELS.map(function(l){
+  var v=counts[l]; var h=Math.max(6, Math.round((v/max)*100));
+  return '<div class="t2-bar-col"><span class="num">'+v+'</span><div class="t2-bar-track"><div class="t2-bar-fill" style="height:'+h+'%; background:'+LC[l]+'"></div></div><span class="lbl">'+l+'</span></div>';
+}).join('');
+document.getElementById('t2levelLegend').innerHTML = LEVELS.map(function(l){
+  return '<div class="t2-legend-item"><span class="t2-legend-dot" style="background:'+LC[l]+'"></span><span class="lbl">'+l+'</span><span class="val">'+counts[l]+'</span></div>';
+}).join('');
+var pops=[['Multiple Choice','\ud83c\udfaf',48],['Grammar \u00b7 Fill in the Blank','\ud83d\udcdd',31],['Spelling','\u2328\ufe0f',22],['Reading Exam','\ud83d\udcd6',14]];
+document.getElementById('t2popularity').innerHTML = pops.map(function(p){
+  var pct=Math.round((p[2]/48)*100);
+  return '<div class="t2-pop-row"><span class="t2-pop-icon">'+p[1]+'</span><span class="t2-pop-name">'+p[0]+'</span>'
+   +'<div class="t2-pop-track"><div class="t2-pop-fill" style="width:'+pct+'%; background:#2563eb"></div></div>'
+   +'<span class="t2-pop-count">'+p[2]+'</span></div>';
+}).join('');
+</script>
+<script src="../../teacher/js/mobile-shell.js"></script>
+<script src="../../teacher/js/mobile-tables.js"></script>
+</body>
+</html>

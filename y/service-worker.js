@@ -27,16 +27,21 @@
        always network-first so pages are fresh regardless.
    ============================================================ */
 
-const CACHE_VERSION = 'v198';
+const CACHE_VERSION = 'v459';
 const CACHE_NAME = 'empower-shell-' + CACHE_VERSION;
 const CACHE_PREFIX = 'empower-shell-';
 
 // Tiny precache - just the login entry + manifest/icon so the very
 // first offline open shows something. Everything else is cached
 // on-demand as the student navigates. Kept minimal so install is fast.
+//
+// The manifest carries ?v=2 because this cache is keyed on the FULL url: the
+// pages now link /manifest.json?v=2 (so Android re-reads it and picks up the
+// new Lingualab icons instead of the older ones it cached at install time), and
+// precaching the bare path would store a url nothing ever asks for.
 const PRECACHE = [
   '/index.html',
-  '/manifest.json',
+  '/manifest.json?v=2',
   '/favicon.ico'
 ];
 
