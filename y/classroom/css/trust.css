@@ -595,6 +595,89 @@ body.trust::before {
   text-transform: uppercase;
 }
 
+/* Eject reveal card — its own spacing, size and type so it never
+   stretches edge to edge or lets the avatar balloon. */
+.trust-eject {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px 40px;
+}
+.trust-eject h1 {
+  font-family: 'Space Grotesk', 'Poppins', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.8em, 4vw, 2.4em);
+  margin: 0 0 28px;
+}
+.trust-eject .role-card {
+  width: 100%;
+  max-width: 380px;
+  box-sizing: border-box;
+  padding: 32px 28px 28px;
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  animation: roleReveal 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.trust-eject .role-card .role-emoji {
+  width: 88px;
+  height: 88px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  line-height: 1;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.14);
+}
+.trust-eject .role-card.impostor .role-emoji { border-color: rgba(245, 158, 11, 0.55); }
+.trust-eject .role-card.crewmate .role-emoji { border-color: rgba(6, 182, 212, 0.55); }
+.trust-eject .role-card .role-name {
+  font-family: 'Space Grotesk', 'Poppins', system-ui, sans-serif;
+  font-size: 1.7em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  line-height: 1.2;
+  margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.trust-eject .role-card .role-meta {
+  margin: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+.trust-eject .role-card.impostor .role-meta {
+  color: var(--t-amber-2);
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+.trust-eject .role-card.crewmate .role-meta {
+  color: var(--t-cyan-2);
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+}
+.trust-eject .role-brief {
+  margin: 24px 0 0;
+  color: var(--t-text-mut);
+  font-size: 1em;
+}
+.trust-eject .role-brief span {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 700;
+  color: var(--t-text);
+}
+#ejectTally { max-width: 560px; }
+
 /* Ghost view */
 .trust-ghost {
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(10, 14, 31, 0.99));

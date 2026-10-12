@@ -413,6 +413,7 @@
     const role = myPlayer.role;
     const card = document.getElementById('liftoffRole');
     card.className = 'role-card ' + role;
+    card.style.borderStyle = '';
     card.querySelector('.role-emoji').textContent = role === 'impostor' ? '🎭' : '🛰️';
     card.querySelector('.role-name').textContent  = role === 'impostor' ? 'Impostor' : 'Crewmate';
 
@@ -875,6 +876,7 @@
     const storyEl = document.getElementById('ejectStory');
     if (meeting.ejectedUid) {
       card.className = 'role-card ' + (meeting.ejectedRole || 'crewmate');
+      card.style.borderStyle = '';
       avaEl.textContent  = meeting.ejectedAvatar || '🚀';
       nameEl.textContent = meeting.ejectedName || 'Player';
       labelEl.textContent = `was ${meeting.ejectedRole === 'impostor' ? 'an IMPOSTOR' : 'a CREWMATE'}`;

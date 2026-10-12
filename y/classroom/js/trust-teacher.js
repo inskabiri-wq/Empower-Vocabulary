@@ -1036,6 +1036,7 @@
 
     if (meeting.ejectedUid) {
       card.className = 'role-card ' + (meeting.ejectedRole || 'crewmate');
+      card.style.borderStyle = '';
       avaEl.textContent  = meeting.ejectedAvatar || '🚀';
       nameEl.textContent = meeting.ejectedName || 'Player';
       labelEl.textContent = `was ${meeting.ejectedRole === 'impostor' ? 'an IMPOSTOR' : 'a CREWMATE'}`;
